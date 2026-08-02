@@ -417,6 +417,24 @@ Other, rarer causes:
 - **Slow link:** the `augmentum` image is large; give the pull time, and re-run
   it if a layer drops — it resumes.
 
+### Stuck, or want it tuned to your setup? Point your AI agent at the repo
+
+Augmentum is a big system, and the fastest way to get it installed *your* way is
+to let a coding agent drive. Point **Claude Code, Codex, Cursor, Cline — or
+Augmentum's own coder mode** at a checkout and it has everything it needs:
+[`AGENTS.md`](AGENTS.md) (and [`CLAUDE.md`](CLAUDE.md)) give it the install/run
+flow, a map of the codebase, and the invariants not to break. It can:
+
+- **Diagnose install issues** — the MTU/TLS timeout above, Docker/WSL2 setup,
+  port conflicts, GPU passthrough — against your actual machine and error output.
+- **Tune it to your hardware** — pick CPU vs GPU, set model/context/GPU-layer
+  defaults, enable the right optional services in the compose overlays.
+- **Adapt it to your needs** — wire up a provider, add a knowledge pack, adjust
+  settings, or extend a surface — all with the repo's own docs as ground truth.
+
+Just tell it what you want ("get Augmentum running on this box", "switch me to
+the GPU image", "my pull keeps timing out") and let it work from `AGENTS.md`.
+
 ## Documentation
 
 Full guides live in **[`docs/`](docs/README.md)**. A few starting points:
