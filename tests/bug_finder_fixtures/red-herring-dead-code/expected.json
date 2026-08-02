@@ -1,0 +1,8 @@
+{
+  "fixture_id": "red-herring-dead-code",
+  "language": "python",
+  "kind": "red_herring",
+  "expected_findings": [],
+  "max_extra_findings": 0,
+  "notes": "Red herring. `eval()` is genuinely scary, but `_legacy_compute` has no caller — the planner's call graph (Phase 2) should mark it unreachable. A pre-call-graph detector flagging this at high/critical is a false positive; flagging at info with a note that no caller was found is acceptable but counts against the score."
+}

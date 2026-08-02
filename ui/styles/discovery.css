@@ -1,0 +1,1649 @@
+/* ==========================================================================
+   Discovery Engine — For You Tab + History View
+   ========================================================================== */
+
+/* --- Layout --- */
+#discovery-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  padding: 0 var(--space-md, 12px);
+}
+
+/* --- Tab Toggle --- */
+.discovery-view-toggle {
+  display: flex;
+  gap: 2px;
+  background: var(--surface);
+  border-radius: var(--radius-md, 8px);
+  padding: 2px;
+  margin-bottom: var(--space-md, 12px);
+  flex-shrink: 0;
+}
+
+.discovery-toggle-btn {
+  flex: 1;
+  padding: var(--space-xs, 4px) var(--space-md, 12px);
+  border: none;
+  border-radius: var(--radius-sm, 6px);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--text-sm, 13px);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--duration-fast, 100ms), color var(--duration-fast, 100ms);
+}
+
+.discovery-toggle-btn.active {
+  background: var(--bg-elevated, var(--bg));
+  color: var(--text-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Scrollable content area --- */
+.discovery-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb, rgba(128,128,128,0.3)) transparent;
+}
+.discovery-content::-webkit-scrollbar { width: 6px; }
+.discovery-content::-webkit-scrollbar-track { background: transparent; }
+.discovery-content::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb, rgba(128,128,128,0.3));
+  border-radius: 3px;
+}
+
+/* --- Empty States --- */
+.discovery-empty,
+.discovery-recs-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-xl, 32px) var(--space-lg, 20px);
+  color: var(--text-secondary);
+  font-size: var(--text-sm, 13px);
+  line-height: 1.7;
+}
+.discovery-empty p,
+.discovery-recs-empty p { margin: 0 0 var(--space-sm, 8px); }
+
+/* Empty state typography upgrade — was a flat <p> in the JS template,
+   now picks up Augmentum's editorial hero treatment via these classes
+   so it reads as designed restraint, not "nothing to show."
+   Stagger reuses the established notes/landing rhythm. */
+.discovery-recs-empty {
+  position: relative;
+  padding: 64px var(--space-lg, 20px);
+  gap: 8px;
+}
+.discovery-recs-empty::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 55% 40% at 50% 32%,
+    color-mix(in srgb, var(--accent) 6%, transparent) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+.discovery-recs-empty > * {
+  position: relative;
+  z-index: 1;
+  animation: discovery-empty-in 0.5s var(--ease-decelerate, cubic-bezier(0.2, 0.8, 0.2, 1)) both;
+}
+.discovery-recs-empty-icon {
+  color: var(--accent);
+  opacity: 0.55;
+  margin-bottom: 14px;
+  animation-delay: 0ms;
+}
+.discovery-recs-empty-title {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: clamp(20px, 2.4vw, 26px);
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin: 0;
+  animation-delay: 60ms;
+}
+.discovery-recs-empty-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-family: var(--font-editorial);
+  font-style: italic;
+  letter-spacing: 0.005em;
+  max-width: 280px;
+  animation-delay: 120ms;
+}
+@keyframes discovery-empty-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .discovery-recs-empty > * { animation: none; }
+}
+
+/* --- History Search --- */
+.discovery-history-search {
+  width: 100%;
+  padding: var(--space-sm, 8px) var(--space-md, 12px) var(--space-sm, 8px) 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 8px);
+  background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none' stroke='%23888' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='7' cy='7' r='4.5'/%3E%3Cpath d='M11 11l3 3'/%3E%3C/svg%3E") no-repeat 10px center;
+  color: var(--text-primary);
+  font-size: var(--text-sm, 13px);
+  margin-bottom: var(--space-md, 12px);
+  outline: none;
+  transition: border-color var(--duration-fast, 100ms);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+.discovery-history-search:focus { border-color: var(--accent); }
+
+/* --- Day Headers --- */
+.discovery-day-header {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: var(--space-sm, 8px) 0 var(--space-xs, 4px);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  margin-bottom: var(--space-xs, 4px);
+}
+.discovery-day-header:not(:first-child) {
+  margin-top: var(--space-sm, 8px);
+}
+
+/* ============================================================
+   HISTORY ITEMS — Articles
+   ============================================================ */
+.discovery-history-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm, 8px);
+  padding: 6px var(--space-sm, 8px);
+  border-radius: var(--radius-sm, 4px);
+  cursor: pointer;
+  transition: background var(--duration-fast, 100ms), opacity 0.2s, transform 0.2s;
+  /* Perf: contain layout/paint. Discovery history can grow into the
+     thousands before the JS trim kicks in (see discovery.js); without
+     this, hovering one row triggers a whole-list repaint. No size
+     containment — titles wrap, so intrinsic height varies. */
+  contain: layout style paint;
+}
+.discovery-history-item:hover { background: var(--surface-hover); }
+.discovery-history-item.removing {
+  opacity: 0;
+  transform: translateX(-20px);
+  pointer-events: none;
+}
+
+.discovery-history-favicon {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.discovery-history-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.discovery-history-title {
+  font-size: var(--text-sm, 13px);
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.discovery-history-domain {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.discovery-history-menu {
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity var(--duration-fast, 100ms);
+}
+.discovery-history-item:hover .discovery-history-menu { opacity: 1; }
+.discovery-history-menu button {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm, 4px);
+  font-size: 14px;
+  line-height: 1;
+}
+.discovery-history-menu button:hover {
+  color: var(--text-primary);
+  background: var(--surface);
+}
+
+/* ============================================================
+   HISTORY ITEMS — Videos (with thumbnail)
+   ============================================================ */
+.discovery-history-item--video {
+  gap: 10px;
+  padding: 8px var(--space-sm, 8px);
+}
+
+.discovery-history-thumb {
+  width: 80px;
+  min-width: 80px;
+  height: 56px;
+  border-radius: var(--radius-sm, 4px);
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+  background: var(--surface);
+}
+.discovery-history-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.discovery-history-duration {
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 9px;
+  font-family: var(--font-mono, monospace);
+  padding: 1px 4px;
+  border-radius: 2px;
+  line-height: 1.3;
+}
+
+.discovery-history-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 0 0 var(--radius-sm, 4px) var(--radius-sm, 4px);
+  transition: width 0.3s;
+}
+
+.discovery-history-item--video .discovery-history-title {
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.discovery-history-progress {
+  font-size: 10px;
+  color: var(--accent);
+  font-family: var(--font-mono, monospace);
+}
+
+/* ============================================================
+   RECOMMENDATION CARDS — editorial bento layout
+   ============================================================ */
+
+.discovery-zone { margin-bottom: 28px; }
+
+/* Zone header — was a flat utility row. Now reads as an editorial
+   section opener: kicker carries a thin accent glow gutter on the left,
+   subtitle stays italic but with breathing-room tracking. The whole
+   header animates in with the zone so revisits feel staged. */
+.discovery-zone-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 0 2px 10px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border, #333) 35%, transparent);
+  position: relative;
+}
+.discovery-zone-kicker {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  color: var(--text-primary);
+  position: relative;
+  padding-left: 8px;
+}
+.discovery-zone-kicker::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 0.85em;
+  background: var(--accent);
+  border-radius: 2px;
+  opacity: 0.7;
+}
+.discovery-zone-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+  letter-spacing: 0.012em;
+}
+
+.discovery-zone-bento {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Shared card chassis */
+.discovery-card {
+  position: relative;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: transform 0.2s var(--ease-standard, cubic-bezier(0.2, 0.8, 0.2, 1)),
+              background 0.2s var(--ease-standard, ease),
+              box-shadow 0.2s var(--ease-standard, ease);
+}
+.discovery-card-body { flex: 1; min-width: 0; }
+.discovery-card-source {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.discovery-card-favicon {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.discovery-card-cluster {
+  background: var(--accent-subtle);
+  color: var(--accent-text);
+  padding: 0 6px;
+  border-radius: 99px;
+  font-size: 9px;
+  font-weight: 500;
+}
+.discovery-card-ribbon {
+  background: color-mix(in srgb, var(--text-primary, #fff) 85%, transparent);
+  color: var(--bg, #111);
+  padding: 1px 6px;
+  border-radius: 2px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.discovery-card-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+.discovery-card:hover .discovery-card-title {
+  color: var(--accent);
+}
+/* Snippet — Crimson Pro italic, mirroring the browse-result-snippet
+   polish. Reads as an editorial excerpt rather than a utility tag-line. */
+.discovery-card-snippet {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.45;
+  letter-spacing: 0.005em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 3px;
+}
+
+/* --- Hero card: full-bleed cover, title overlaid, editorial feel --- */
+.discovery-card-hero {
+  display: block;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--bg-elevated, #1a1a24) 95%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border, #333) 30%, transparent);
+  min-height: 180px;
+}
+.discovery-card-hero:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+.discovery-hero-cover {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+.discovery-hero-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.05);
+  transition: transform 8s linear;
+}
+.discovery-card-hero:hover .discovery-hero-cover img {
+  transform: scale(1.12);
+}
+.discovery-hero-cover-empty {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent, #4caf50) 28%, var(--bg-elevated, #1a1a24)),
+    var(--bg-elevated, #1a1a24));
+}
+.discovery-hero-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+    rgba(0, 0, 0, 0.88) 0%,
+    rgba(0, 0, 0, 0.55) 45%,
+    rgba(0, 0, 0, 0.15) 70%,
+    transparent 100%);
+  z-index: 1;
+}
+.discovery-hero-body {
+  position: relative;
+  z-index: 2;
+  padding: 14px 16px 14px;
+  margin-top: 120px;
+}
+.discovery-hero-body .discovery-card-source {
+  color: rgba(255, 255, 255, 0.78);
+  margin-bottom: 6px;
+}
+.discovery-hero-title {
+  font-size: 17px;
+  font-weight: 650;
+  color: #fff;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+}
+/* Paper variant — was Georgia generic serif. Switching to Augmentum's
+   --font-editorial (Crimson Pro) italic gives papers a real editorial
+   voice instead of a system-fallback feel. The italic on a hero card
+   reads as "this is a piece of writing, not a link" and pairs well
+   with the dark scrim. */
+.discovery-hero-title-paper {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.discovery-hero-snippet {
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.discovery-hero-play {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  padding-left: 2px;
+}
+
+/* --- Medium card: thumbnail-left, compact --- */
+.discovery-card-medium {
+  display: flex;
+  gap: 12px;
+  padding: 10px 12px;
+}
+.discovery-card-medium:hover { background: var(--surface-hover); }
+
+.discovery-card-thumb {
+  width: 88px;
+  height: 60px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+  background: var(--surface);
+}
+.discovery-card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* --- Peek card: single-line, very compact --- */
+.discovery-card-peek {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  min-height: 32px;
+}
+.discovery-card-peek:hover { background: var(--surface-hover); }
+.discovery-peek-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.discovery-peek-domain {
+  font-size: 10px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Actions: share a row for hero (overlay) vs medium/peek (inline) */
+.discovery-card-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 3;
+}
+.discovery-card:hover .discovery-card-actions { opacity: 1; }
+.discovery-card-hero .discovery-card-actions { top: 12px; right: 12px; }
+.discovery-card-peek .discovery-card-actions {
+  position: static;
+  opacity: 0.3;
+}
+.discovery-card-peek:hover .discovery-card-actions { opacity: 1; }
+
+/* Play overlay on video thumbnails */
+.discovery-thumb-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--duration-fast, 100ms);
+  pointer-events: none;
+}
+.discovery-card:hover .discovery-thumb-play,
+.discovery-history-item:hover .discovery-thumb-play { opacity: 1; }
+.discovery-thumb-play svg { margin-left: 1px; }
+
+/* Hero action chrome — sits over the dark scrim, so the buttons
+   themselves are frosted glass with white-on-glass icons. Dismiss
+   keeps a subtle red tint on hover (semantic-token mix instead of
+   the prior raw rgba(239,68,68) so theme + token changes propagate). */
+.discovery-card-hide,
+.discovery-card-dismiss {
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+  padding: 4px 5px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  transition: background var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+}
+.discovery-card-hide:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+.discovery-card-dismiss:hover {
+  background: color-mix(in srgb, var(--error, #ef4444) 30%, transparent);
+  border-color: color-mix(in srgb, var(--error, #ef4444) 50%, transparent);
+  color: #fff;
+}
+
+/* Medium/peek cards sit on the app bg, not on a dark hero image —
+   bare icons by default; accent on hide-hover, error on dismiss-hover.
+   Mirrors the rest of Augmentum's icon-action treatment. */
+.discovery-card-medium .discovery-card-hide,
+.discovery-card-medium .discovery-card-dismiss,
+.discovery-card-peek .discovery-card-hide,
+.discovery-card-peek .discovery-card-dismiss {
+  background: transparent;
+  backdrop-filter: none;
+  border-color: transparent;
+  color: var(--text-muted);
+}
+.discovery-card-medium .discovery-card-hide:hover,
+.discovery-card-peek .discovery-card-hide:hover {
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface-hover));
+  color: var(--accent);
+}
+.discovery-card-medium .discovery-card-dismiss:hover,
+.discovery-card-peek .discovery-card-dismiss:hover {
+  background: color-mix(in srgb, var(--error, #ef4444) 12%, var(--surface-hover));
+  color: var(--error, #ef4444);
+}
+
+/* --- Scroll sentinel (invisible, triggers infinite scroll) --- */
+.discovery-scroll-sentinel {
+  height: 1px;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   REFRESH PILL + FLASH (live feed state)
+   ============================================================ */
+
+/* Floating chip that appears when background polling has new items queued.
+   Sticks to the bottom of the scroll area so it's reachable without
+   interrupting the user's reading position. Tap → reveal pending items. */
+.discovery-refresh-pill[hidden] { display: none; }
+.discovery-refresh-pill {
+  position: sticky;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  margin: 16px auto 8px;
+  width: fit-content;
+  background: color-mix(in srgb, var(--accent, #4caf50) 16%, var(--bg-elevated, #1a1a24));
+  color: var(--accent-text, #fff);
+  border: 1px solid color-mix(in srgb, var(--accent, #4caf50) 40%, transparent);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25),
+              0 0 20px color-mix(in srgb, var(--accent, #4caf50) 20%, transparent);
+  z-index: 5;
+  animation: discovery-pill-rise 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.discovery-refresh-pill:hover {
+  transform: translateX(-50%) translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3),
+              0 0 28px color-mix(in srgb, var(--accent, #4caf50) 30%, transparent);
+}
+.discovery-refresh-pill svg {
+  animation: discovery-pill-pulse 2.2s ease-in-out infinite;
+}
+@keyframes discovery-pill-rise {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+@keyframes discovery-pill-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+
+/* Brief color wash on cards/zones that arrived via a poll reveal, so the
+   user can see what's new without scroll-jumping to track it. */
+.discovery-card-flash,
+.discovery-zone-flash {
+  animation: discovery-flash 1.6s ease-out;
+}
+@keyframes discovery-flash {
+  0% {
+    background: color-mix(in srgb, var(--accent, #4caf50) 18%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #4caf50) 40%, transparent);
+  }
+  100% {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .discovery-refresh-pill,
+  .discovery-refresh-pill svg,
+  .discovery-card-flash,
+  .discovery-zone-flash { animation: none !important; }
+}
+
+/* ============================================================
+   RESPONSIVE — mobile is the baseline; widen for desktop reading
+   ============================================================ */
+
+/* Touch devices can't hover. Keep hide/dismiss visible at the project-
+   standard 0.7 opacity so cards remain actionable without a long-press.
+   Matches the pattern in components.css / library.css / voice.css. */
+@media (hover: none) {
+  .discovery-card-actions,
+  .discovery-card:hover .discovery-card-actions,
+  .discovery-card-peek .discovery-card-actions { opacity: 0.7; }
+}
+
+/* Desktop: the browse panel is a full-viewport overlay, so without a cap
+   the bento sprawls 1200px+ wide and snippets become unreadable. Centre
+   the column at a comfortable reading width and give the hero a less
+   letterbox aspect. */
+@media (min-width: 768px) {
+  #discovery-container {
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .discovery-card-hero { min-height: 220px; }
+  .discovery-hero-body { margin-top: 140px; }
+  .discovery-hero-title { font-size: 19px; }
+  .discovery-zone-kicker { font-size: 14px; }
+}
+
+/* Roomier screens can afford a 2-up medium-card row. Hero + peek chips
+   span both columns so the hierarchy (hero → row of 2 → single-line
+   peeks) stays readable top-down. */
+@media (min-width: 900px) {
+  .discovery-zone-bento {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 10px;
+    row-gap: 8px;
+  }
+  .discovery-zone-bento > .discovery-card-hero,
+  .discovery-zone-bento > .discovery-card-peek { grid-column: 1 / -1; }
+}
+
+/* Very roomy: larger hero for drama; matches desktop reading cadence. */
+@media (min-width: 1024px) {
+  .discovery-card-hero { min-height: 260px; }
+  .discovery-hero-body { margin-top: 170px; }
+  .discovery-hero-title { font-size: 21px; }
+}
+
+/* ============================================================
+   RESUME LISTENING (history view top strip — audiobook phase 1)
+   ============================================================ */
+
+.resume-section {
+  margin: 4px 0 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border, #333) 35%, transparent);
+}
+
+.resume-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+}
+/* Was solid green-fallback accent — now matches the project-wide
+   accent-tinted-icon idiom (~0.55 opacity, lets the heading text win
+   the eye while the glyph signals category). The hardcoded #4caf50
+   fallback is dropped: if --accent is unset the icon goes uncolored,
+   which is correct for an unthemed system, vs. flashing a default green. */
+.resume-header svg {
+  color: var(--accent);
+  opacity: 0.55;
+}
+
+/* Horizontal scroll strip — feels "row on Netflix/Spotify," not another
+   stacked list. Snap so flick gestures land on a card, not between. */
+.resume-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 2px 8px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--border, #333) 70%, transparent) transparent;
+}
+.resume-scroll::-webkit-scrollbar { height: 6px; }
+.resume-scroll::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--border, #333) 70%, transparent);
+  border-radius: 3px;
+}
+
+.resume-card {
+  flex: 0 0 auto;
+  width: 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  scroll-snap-align: start;
+  background: color-mix(in srgb, var(--bg-elevated, #1a1a24) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border, #333) 30%, transparent);
+  transition: transform 0.18s var(--ease-standard, ease),
+              box-shadow 0.18s var(--ease-standard, ease),
+              border-color 0.18s var(--ease-standard, ease);
+}
+.resume-card:hover,
+.resume-card:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  border-color: color-mix(in srgb, var(--accent, #4caf50) 40%, transparent);
+  outline: none;
+}
+
+.resume-cover {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent, #4caf50) 26%, var(--bg-elevated, #1a1a24)),
+    var(--bg-elevated, #1a1a24));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.35);
+}
+.resume-cover img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.resume-cover-fallback { position: relative; z-index: 0; opacity: 0; }
+.resume-cover-empty img { display: none; }
+.resume-cover-empty .resume-cover-fallback { opacity: 1; }
+
+.resume-play {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 2px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.18s, transform 0.18s;
+}
+.resume-card:hover .resume-play,
+.resume-card:focus-visible .resume-play {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.resume-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.resume-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.resume-author {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resume-progress-track {
+  height: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border, #333) 50%, transparent);
+  overflow: hidden;
+  margin-top: 2px;
+}
+.resume-progress-fill {
+  height: 100%;
+  background: var(--accent, #4caf50);
+  border-radius: inherit;
+  transition: width 0.3s ease;
+}
+
+.resume-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.01em;
+}
+.resume-meta-sep { opacity: 0.45; }
+
+/* ============================================================
+   HISTORY MEDIA ITEMS — library media (audiobooks, comics, movies, etc.)
+   ============================================================ */
+/* These rows reuse the existing video-history layout (cover-thumb-left,
+   title + meta) but swap in a kind label instead of a domain. Cover
+   uses the same /api/media/cover/{file_id} endpoint as the For You
+   library zones, so visual identity is consistent across surfaces. */
+
+/* Kind label sits where a domain would on a web-history row.
+   Accent-tinted small caps so it reads as an editorial section
+   marker rather than a domain hostname. */
+.discovery-history-kind {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent) 60%, var(--text-muted));
+}
+
+/* Progress label ("47% · 2h 15m left", "Page 84 of 230"). Sits
+   inline with the kind label and reads as live state — accent
+   tint so the eye spots resumable items quickly. */
+.discovery-history-progress {
+  color: color-mix(in srgb, var(--accent) 70%, var(--text-muted));
+  font-variant-numeric: tabular-nums;
+}
+
+/* Finished badge — corner pill on the cover. Subtle accent so it
+   reads as "you completed this" not "alert." */
+.discovery-history-finished {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 2;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--accent) 80%, var(--bg));
+  color: var(--accent-contrast, #fff);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* In-progress rows get a faint accent gutter on the left so a long
+   history list reads as "here's what you're in the middle of" at a
+   glance. Subtle — same idiom as the active-note backlight. */
+/* Finished rows get the cover slightly desaturated so they read as
+   "done" without dominating the list. */
+/* ============================================================
+   STAGGERED CARD ENTRANCE — paints assemble like a designed reveal
+   ============================================================ */
+/* Each card inside a real (non-skeleton) bento gets a fade+lift on
+   mount. JS stamps animation-delay (capped at 8 steps) so the first
+   ~9 cards stagger at 45ms each, after which subsequent cards arrive
+   together. The motion is small (5px) so it stays subtle on long
+   feeds — no dance, just an assembling rhythm. */
+.discovery-zone:not(.discovery-zone-skel) .discovery-zone-bento > .discovery-card {
+  animation: discovery-card-in 0.42s var(--ease-decelerate, cubic-bezier(0.2, 0.8, 0.2, 1)) both;
+}
+@keyframes discovery-card-in {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .discovery-zone:not(.discovery-zone-skel) .discovery-zone-bento > .discovery-card {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   REFRESH INDICATOR — quiet "we're checking" hint during stale-cache
+   ============================================================ */
+/* Renders as a small inline pill above the first zone. Only appears
+   when the cache is between FRESH and USABLE windows (i.e. 60s-5m
+   old) — fresher than that we trust the cache silently; older we
+   show skeletons instead. The dot uses the same pulse cadence as the
+   refresh-pill SVG so the two share a visual vocabulary. */
+.discovery-refreshing {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 4px 12px 4px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--accent) 70%, var(--text-muted));
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+  border-radius: 99px;
+  animation: discovery-card-in 0.25s var(--ease-decelerate);
+}
+.discovery-refreshing-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: discovery-pill-pulse 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .discovery-refreshing-dot { animation: none; }
+}
+
+/* ============================================================
+   SKELETON CARDS — shape-only shimmer for cold loads
+   ============================================================ */
+/* Reuses .skeleton + skeleton-shimmer from components.css. The shapes
+   below mirror the real card geometry (hero with 180-220px cover,
+   medium with 88×60 thumb, peek with favicon + line) so the fill-in
+   reads as "data arriving in the same scaffold," not a layout shift. */
+
+.discovery-zone-skel .discovery-zone-header {
+  border-bottom-color: color-mix(in srgb, var(--border) 25%, transparent);
+}
+.skel-zone-kicker {
+  height: 12px; width: 120px;
+  border-radius: 6px;
+  display: inline-block;
+}
+.skel-zone-subtitle {
+  height: 10px; width: 180px;
+  border-radius: 5px;
+  display: inline-block;
+  opacity: 0.7;
+}
+
+.discovery-card-skel-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--border) 25%, transparent);
+  min-height: 180px;
+  background: var(--bg-elevated, var(--surface));
+}
+.skel-cover {
+  position: absolute;
+  inset: 0;
+  border-radius: 0;
+}
+.skel-hero-body {
+  position: relative;
+  z-index: 1;
+  padding: 14px 16px;
+  margin-top: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: linear-gradient(to top,
+    color-mix(in srgb, #000 70%, transparent) 0%,
+    color-mix(in srgb, #000 30%, transparent) 60%,
+    transparent 100%);
+}
+
+.discovery-card-skel-medium {
+  display: flex;
+  gap: 12px;
+  padding: 10px 12px;
+  align-items: flex-start;
+}
+.skel-medium-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.skel-thumb {
+  width: 88px; height: 60px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.discovery-card-skel-peek {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  min-height: 32px;
+}
+.skel-favicon {
+  width: 14px; height: 14px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* Skeleton text-line variants — width tracks the role (source line
+   short, title medium, snippet wider, peek wide). The :short modifier
+   makes the second line ragged so consecutive skeletons don't read
+   as repeating rectangles. */
+.skel-line {
+  height: 10px;
+  border-radius: 5px;
+  display: block;
+}
+.skel-line-source { width: 60%; height: 9px; opacity: 0.7; }
+.skel-line-title  { width: 90%; height: 12px; }
+.skel-line-snippet { width: 80%; height: 10px; opacity: 0.85; }
+.skel-line-peek   { width: 70%; height: 10px; }
+.skel-line-short  { width: 55%; }
+
+@media (min-width: 900px) {
+  .discovery-zone-skel .discovery-zone-bento {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 10px;
+    row-gap: 8px;
+  }
+  .discovery-zone-skel .discovery-zone-bento > .discovery-card-skel-hero,
+  .discovery-zone-skel .discovery-zone-bento > .discovery-card-skel-peek {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ============================================================
+   LIBRARY ZONES — comics / audiobooks / movies / shows
+   ============================================================ */
+/* Sits above the web-feed zones in For You. Each zone is a horizontal
+   scroll strip — same idiom as Resume Listening but extended to the
+   four library media types. The strip pattern (vs. bento) is right
+   here because library content is best skimmed left-to-right (covers
+   are visually distinct) rather than scanned top-to-bottom (which is
+   how text-heavy web feeds work). */
+
+.discovery-library-region:empty { display: none; }
+.discovery-library-region {
+  margin-bottom: 8px;
+}
+
+.discovery-library-zone {
+  margin-bottom: 24px;
+  /* Subtle break to separate the user's content from web feeds below. */
+}
+.discovery-library-zone + .discovery-feed-region,
+.discovery-library-region:not(:empty) ~ .discovery-feed-region {
+  border-top: 1px solid color-mix(in srgb, var(--border) 25%, transparent);
+  padding-top: 18px;
+  margin-top: 4px;
+}
+
+/* Section header — leans on the same accent-gutter idiom as feed
+   zone-kickers so the two systems read as one design language. */
+.discovery-library-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 0 2px 10px;
+  margin-bottom: 8px;
+}
+.discovery-library-kicker {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  color: var(--text-primary);
+  position: relative;
+  padding-left: 8px;
+}
+.discovery-library-kicker::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 0.85em;
+  background: var(--accent);
+  border-radius: 2px;
+  opacity: 0.7;
+}
+
+/* Horizontal scroll strip — Netflix/Spotify idiom. Snap-to-start so
+   flick gestures land on a card edge, not between two. */
+.discovery-library-strip {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 2px 8px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--border) 70%, transparent) transparent;
+}
+.discovery-library-strip::-webkit-scrollbar { height: 6px; }
+.discovery-library-strip::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--border) 70%, transparent);
+  border-radius: 3px;
+}
+
+/* The card chassis — 190px wide matches Resume Listening so the two
+   strips share visual rhythm. <button> not <div> so keyboard
+   activation works without aria gymnastics. */
+.discovery-library-card {
+  flex: 0 0 auto;
+  width: 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--bg-elevated, var(--surface)) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  scroll-snap-align: start;
+  transition: transform 0.18s var(--ease-standard, ease),
+              box-shadow 0.18s var(--ease-standard, ease),
+              border-color 0.18s var(--ease-standard, ease);
+}
+.discovery-library-card:hover,
+.discovery-library-card:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  outline: none;
+}
+.discovery-library-card:active {
+  transform: translateY(0);
+}
+
+/* Cover — aspect ratio per kind. Comics/movies/shows are 2:3 portrait
+   posters; audiobooks are 1:1 squares. The aspect-* classes are stamped
+   by JS based on kind, keeping per-kind shape decisions out of the
+   render template. */
+.discovery-library-cover {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent) 22%, var(--bg-elevated, var(--surface))),
+    var(--bg-elevated, var(--surface)));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: color-mix(in srgb, var(--text-muted) 60%, transparent);
+}
+.discovery-library-cover.aspect-portrait { aspect-ratio: 2 / 3; }
+.discovery-library-cover.aspect-square   { aspect-ratio: 1 / 1; }
+.discovery-library-cover img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.discovery-library-cover-fallback {
+  position: relative;
+  z-index: 0;
+  opacity: 1;
+}
+/* When the real cover loads, the fallback hides naturally because the
+   <img> sits above it (z-index 1 implicit by source order + position).
+   When the <img> errors out it sets display:none via inline JS, and
+   the fallback shows through. */
+.discovery-library-cover img:not([style*="display: none"]) ~ .discovery-library-cover-fallback {
+  opacity: 0;
+}
+
+/* Progress bar — pinned to the bottom edge of the cover, same shape
+   as the comic and resume-listening progress bars in the rest of the
+   app. Only renders when JS injects it (i.e. progress_pct > 0). */
+.discovery-library-progress {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  height: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, #000 50%, transparent);
+  overflow: hidden;
+  z-index: 2;
+}
+.discovery-library-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+  transition: width 0.3s ease;
+}
+
+/* "Continuing" status pill — small chip in the top corner of the cover
+   for in-progress items. Skipped for "recent" status so the strip's
+   default visual state is uncluttered. */
+.discovery-library-status {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 2;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--accent) 80%, var(--bg));
+  color: var(--accent-contrast, #fff);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Card body — title + subtitle + source label. Each line clamps so a
+   long title doesn't disrupt strip alignment. */
+.discovery-library-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+}
+.discovery-library-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.discovery-library-subtitle {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.35;
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.discovery-library-source {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent) 55%, var(--text-muted));
+  margin-top: 2px;
+}
+
+/* Per-card stagger entrance — same idiom as feed cards (45ms steps,
+   discovery-card-in keyframes), but uses 35ms steps because horizontal
+   strips show more cards at once and a tighter cadence reads better. */
+.discovery-library-zone:not(.discovery-library-zone-skel) .discovery-library-strip > .discovery-library-card {
+  animation: discovery-card-in 0.4s var(--ease-decelerate, cubic-bezier(0.2, 0.8, 0.2, 1)) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .discovery-library-zone:not(.discovery-library-zone-skel) .discovery-library-strip > .discovery-library-card {
+    animation: none;
+  }
+}
+
+/* Skeleton library cards — reuse the .skeleton class for shimmer.
+   Cards stay 190px wide so the strip scrolls feel right pre-fetch. */
+.discovery-library-card-skel {
+  pointer-events: none;
+}
+.discovery-library-card-skel .skel-cover {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius-sm);
+}
+.discovery-library-card-skel .skel-line-title {
+  width: 90%;
+  height: 12px;
+}
+.discovery-library-card-skel .skel-line-snippet {
+  width: 70%;
+  height: 9px;
+  margin-top: 1px;
+}
+
+/* ============================================================
+   INLINE LINK AFFORDANCES — clickable author/source/series
+   ============================================================ */
+/* On Discovery cards (resume + library) and the mini player, the
+   subtitle/author/source labels become click-throughs to Files
+   filtered by that name. The treatment is restraint-first: nothing
+   visually changes from the static state until the user hovers, at
+   which point a subtle underline + accent color reveals the link.
+   This avoids cluttering every card with link-blue text while still
+   exposing the navigation on intent.
+
+   Common reset for all four .is-link variants: drop button-native
+   chrome (border, background, padding, default font), inherit type
+   from the surrounding label, allow ellipsis on the same axis the
+   plain version used. */
+.discovery-library-subtitle.is-link,
+.discovery-library-source.is-link,
+.resume-author.is-link,
+.mini-player-author-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  /* Underline-on-hover. The thin transparent border-bottom matches
+     the current text color on hover without shifting layout when it
+     transitions in. */
+  border-bottom: 1px solid transparent;
+  transition: color var(--duration-fast) var(--ease-standard),
+              border-bottom-color var(--duration-fast) var(--ease-standard);
+  /* Cards are tight on horizontal real estate; ellipsis truncates
+     long author names instead of breaking line and pushing siblings. */
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.discovery-library-subtitle.is-link:hover,
+.discovery-library-source.is-link:hover,
+.resume-author.is-link:hover,
+.mini-player-author-link:hover {
+  color: var(--accent);
+  border-bottom-color: color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+.discovery-library-subtitle.is-link:focus-visible,
+.discovery-library-source.is-link:focus-visible,
+.resume-author.is-link:focus-visible,
+.mini-player-author-link:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  outline-offset: 2px;
+  border-radius: 2px;
+  color: var(--accent);
+}
+
+/* Mini-player chapter span sits next to the author link — keep it
+   muted so the hierarchy reads "author (clickable) · chapter (read-
+   only)". The separator dot is always muted regardless of state. */
+.mini-player-chapter {
+  color: inherit;
+}
+.mini-player-sep {
+  opacity: 0.4;
+  margin: 0 2px;
+}
+
+/* ── Feed sources editor ─────────────────────────────────────────── */
+
+.discovery-sources-btn {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  border: none;
+  border-radius: var(--radius-sm, 6px);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--duration-fast, 100ms), color var(--duration-fast, 100ms);
+}
+
+.discovery-sources-btn:hover {
+  background: var(--bg-elevated, var(--bg));
+  color: var(--text-primary);
+}
+
+.discovery-sources-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--bg, #0f0f1a) 60%, transparent);
+  backdrop-filter: blur(2px);
+}
+
+.discovery-sources-modal {
+  width: min(480px, calc(100vw - 32px));
+  max-height: min(80vh, 640px);
+  overflow-y: auto;
+  background: var(--surface, #16182a);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: var(--radius-lg, 12px);
+  padding: var(--space-lg, 16px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md, 12px);
+}
+
+.discovery-sources-modal header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.discovery-sources-modal h3 {
+  margin: 0;
+  font-size: var(--text-base, 15px);
+  color: var(--text-primary);
+}
+
+.discovery-sources-modal .dsm-close {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.discovery-sources-modal .dsm-hint {
+  margin: 0;
+  font-size: var(--text-xs, 12px);
+  color: var(--text-secondary);
+}
+
+.discovery-sources-modal .dsm-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 8px);
+  font-size: var(--text-sm, 13px);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.discovery-sources-modal .dsm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--text-sm, 13px);
+  color: var(--text-primary);
+}
+
+.discovery-sources-modal .dsm-field span {
+  font-size: var(--text-xs, 11px);
+  color: var(--text-secondary);
+}
+
+.discovery-sources-modal input[type="text"],
+.discovery-sources-modal textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-xs, 6px) var(--space-sm, 8px);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-sm, 6px);
+  background: var(--bg, #0f0f1a);
+  color: var(--text-primary);
+  font-size: var(--text-sm, 13px);
+  font-family: inherit;
+  resize: vertical;
+}
+
+.discovery-sources-modal footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-md, 12px);
+}
+
+.discovery-sources-modal .dsm-status {
+  font-size: var(--text-xs, 12px);
+  color: var(--text-secondary);
+}
+
+.discovery-sources-modal .dsm-save {
+  padding: var(--space-xs, 6px) var(--space-lg, 16px);
+  border: none;
+  border-radius: var(--radius-sm, 6px);
+  background: var(--accent, #6366f1);
+  color: #fff;
+  font-size: var(--text-sm, 13px);
+  font-weight: 500;
+  cursor: pointer;
+}

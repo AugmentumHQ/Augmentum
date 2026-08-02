@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang=en>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width, initial-scale=1">
+<title>CSM Voice Studio</title>
+<style>
+  :root { --bg:#14151a; --panel:#1d1f26; --line:#2a2d36; --fg:#e8e8ea; --mut:#9aa0ad;
+          --accent:#7c9cff; --good:#3fb37f; --bad:#e0708a; }
+  * { box-sizing:border-box }
+  body { font:15px/1.5 system-ui,sans-serif; margin:0; background:var(--bg); color:var(--fg) }
+  .wrap { max-width:1100px; margin:0 auto; padding:24px }
+  h1 { font-weight:600; margin:0 0 2px } .sub { color:var(--mut); margin:0 0 20px }
+  .grid { display:grid; grid-template-columns:1fr 320px; gap:18px }
+  @media(max-width:820px){ .grid{ grid-template-columns:1fr } }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px }
+  textarea { width:100%; min-height:120px; background:#16171d; color:var(--fg); border:1px solid var(--line);
+             border-radius:8px; padding:12px; font:15px/1.5 inherit; resize:vertical }
+  label { display:block; font-size:12px; color:var(--mut); margin:14px 0 5px; text-transform:uppercase; letter-spacing:.04em }
+  select, input[type=number] { width:100%; background:#16171d; color:var(--fg); border:1px solid var(--line);
+             border-radius:8px; padding:9px }
+  input[type=range] { width:100% } .rowval { float:right; color:var(--accent); font-variant-numeric:tabular-nums }
+  .chk { display:flex; align-items:center; gap:8px; margin-top:14px } .chk input { width:auto }
+  button { width:100%; margin-top:18px; padding:12px; background:var(--accent); color:#0b0d12; border:0;
+           border-radius:8px; font-weight:600; font-size:15px; cursor:pointer }
+  button:disabled { opacity:.5; cursor:default }
+  .results { margin-top:22px; display:flex; flex-direction:column; gap:10px }
+  .cand { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 14px }
+  .cand.best { border-color:var(--good); box-shadow:0 0 0 1px var(--good) inset }
+  .cand .top { display:flex; align-items:center; gap:10px; flex-wrap:wrap }
+  .badge { font-size:11px; padding:2px 8px; border-radius:20px; background:#2a2d36; color:var(--mut) }
+  .badge.best { background:var(--good); color:#06281b } .badge.bad { background:#3a2330; color:var(--bad) }
+  audio { height:34px; flex:1; min-width:200px } .meta { color:var(--mut); font-size:12px; margin-top:6px }
+  .tx { color:#c7ccd6; font-size:13px; margin-top:5px; font-style:italic }
+  .spin { display:inline-block; width:14px; height:14px; border:2px solid #0b0d12; border-top-color:transparent;
+          border-radius:50%; animation:s .7s linear infinite; vertical-align:-2px; margin-right:8px }
+  @keyframes s { to { transform:rotate(360deg) } }
+</style>
+<div class=wrap>
+  <h1>CSM Voice Studio</h1>
+  <p class=sub>Type a script, generate N takes, keep the one that survives rejection scoring.</p>
+  <div class=grid>
+    <div>
+      <div class=panel>
+        <label>Script</label>
+        <textarea id=text placeholder="Type anything for the voice to say...">Hey — I'm really glad you're here. Want to pick up where we left off?</textarea>
+        <button id=go onclick=generate()>Generate</button>
+      </div>
+      <div id=results class=results></div>
+    </div>
+    <div class=panel>
+      <label>Voice</label><select id=voice></select>
+      <label>Emotion / style</label><select id=emotion></select>
+      <label>Candidates (best-of-N) <span class=rowval id=nval>3</span></label>
+      <input type=range id=n min=1 max=8 value=3 oninput="nval.textContent=this.value">
+      <label>Temperature <span class=rowval id=tval>0.7</span></label>
+      <input type=range id=temp min=0.2 max=1.2 step=0.05 value=0.7 oninput="tval.textContent=this.value">
+      <label>Seed (blank = random)</label><input type=number id=seed placeholder="random">
+      <div class=chk><input type=checkbox id=anchor checked><label style="margin:0;text-transform:none;letter-spacing:0;font-size:14px;color:var(--fg)">Reference anchor (more stable)</label></div>
+    </div>
+  </div>
+</div>
+<script>
+async function init(){
+  const r = await (await fetch('/api/voices')).json();
+  voice.innerHTML = r.voices.map(v=>`<option>${v}</option>`).join('') || '<option>(train a voice first)</option>';
+  emotion.innerHTML = r.emotions.map(e=>`<option${e==='neutral'?' selected':''}>${e}</option>`).join('');
+}
+async function generate(){
+  const body = { text:text.value, voice:voice.value, emotion:emotion.value,
+    n:+n.value, temperature:+temp.value, use_anchor:anchor.checked,
+    seed: seed.value===''? null : +seed.value };
+  go.disabled = true; go.innerHTML = '<span class=spin></span>Generating '+n.value+' takes…';
+  results.innerHTML = '';
+  try {
+    const res = await (await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})).json();
+    if(res.error){ results.innerHTML = `<div class=cand>Error: ${res.error}</div>`; return; }
+    results.innerHTML = res.candidates.map((c,i)=>render(c,i)).join('');
+  } catch(e){ results.innerHTML = `<div class=cand>Request failed: ${e}</div>`; }
+  finally { go.disabled = false; go.textContent = 'Generate'; }
+}
+function render(c,rank){
+  const flags = (c.flags||[]).map(f=>`<span class="badge bad">${f}</span>`).join(' ');
+  const best = c.best ? '<span class="badge best">★ best</span>' : `<span class=badge>#${rank+1}</span>`;
+  return `<div class="cand ${c.best?'best':''}">
+    <div class=top>${best}<audio controls preload=auto src="${c.url}"></audio>
+      <span class=badge>score ${c.score}</span> ${flags}</div>
+    <div class=meta>WER ${c.wer} · ${c.dur}s · level ${c.rms} · ${c.gen_s}s to make</div>
+    <div class=tx>heard: “${c.transcript || '(nothing)'}”</div>
+  </div>`;
+}
+init();
+</script>
+</html>

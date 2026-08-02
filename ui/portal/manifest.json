@@ -1,0 +1,14 @@
+{
+  "name": "My private line",
+  "short_name": "Private line",
+  "description": "Private, secure messaging and calling with your host.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#14141a",
+  "theme_color": "#14141a",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

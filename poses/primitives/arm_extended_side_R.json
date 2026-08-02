@@ -1,0 +1,30 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "arm_extended_side_R",
+  "tags": [
+    "single-arm",
+    "R",
+    "reaching"
+  ],
+  "description": "Single-arm primitive: right arm in 'extended_side_R' pose. Lands at region 'belly' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+  "family": "per_arm",
+  "anchors": {
+    "rightHand": {
+      "type": "region-contact",
+      "region": "belly",
+      "tolerance": 0.04,
+      "fingerStyle": "extended_side_R"
+    },
+    "leftHand": {
+      "type": "free-space"
+    }
+  },
+  "body": {},
+  "provenance": {
+    "source": "auto-generated",
+    "generator": "scripts/generate_per_arm_primitives.py",
+    "wrapsAffordance": "extended_side_R",
+    "consensusRegion": "belly",
+    "createdAt": "2026-05-14"
+  }
+}

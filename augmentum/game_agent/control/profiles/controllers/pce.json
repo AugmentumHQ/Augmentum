@@ -1,0 +1,19 @@
+{
+  "schema": "control.controller.v1",
+  "id": "pce",
+  "description": "PC Engine / TurboGrafx-16 controller as exposed by libretro / mednafen_pce. 8 buttons: d-pad, two face buttons (I south, II east), Run (start), Select. Source for the libretro id mapping: mednafen_pce input descriptor (I=B(0), II=A(8)).",
+  "wire": {
+    "kind": "libretro_joypad",
+    "port": 0
+  },
+  "buttons": {
+    "face_south":   { "wire_code": 0,  "label": "I" },
+    "face_east":    { "wire_code": 8,  "label": "II" },
+    "dpad_up":      { "wire_code": 4,  "label": "Up" },
+    "dpad_down":    { "wire_code": 5,  "label": "Down" },
+    "dpad_left":    { "wire_code": 6,  "label": "Left" },
+    "dpad_right":   { "wire_code": 7,  "label": "Right" },
+    "start":        { "wire_code": 3,  "label": "Run" },
+    "select":       { "wire_code": 2,  "label": "Select" }
+  }
+}

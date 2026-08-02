@@ -1,0 +1,114 @@
+{
+  "timestamp": "2026-03-28 13:46:58",
+  "config": {
+    "model": "Qwen3-30B-A3B-Q4_K_M",
+    "kv_cache_type": "q8_0",
+    "features": {
+      "sequence_management": true,
+      "prefix_caching": true,
+      "host_kv_cache": true,
+      "radix_prefix_cache": true,
+      "turboquant_kv": true,
+      "turboquant_native": true,
+      "priority_scheduling": true,
+      "kv_persistence": true,
+      "moe_expert_offload": true,
+      "model_profile_cache": true,
+      "suspend_resume": true,
+      "warm_model_pool": true
+    },
+    "pool": {
+      "size": 1,
+      "max_size": 3,
+      "models": [
+        "NVIDIA-Nemotron-3-Nano-4B-Q4_K_M"
+      ]
+    }
+  },
+  "results": {
+    "Nemotron 4B": {
+      "type": "dense",
+      "load_ms": 182,
+      "avg_tok_s": 141.9,
+      "runs": [
+        {
+          "run": 1,
+          "completion_tokens": 150,
+          "prompt_tokens": 30,
+          "elapsed_ms": 1057,
+          "tok_s": 142.0
+        },
+        {
+          "run": 2,
+          "completion_tokens": 150,
+          "prompt_tokens": 30,
+          "elapsed_ms": 1061,
+          "tok_s": 141.4
+        },
+        {
+          "run": 3,
+          "completion_tokens": 150,
+          "prompt_tokens": 30,
+          "elapsed_ms": 1055,
+          "tok_s": 142.2
+        }
+      ]
+    },
+    "heretic-27b": {
+      "type": "dense",
+      "load_ms": 18864,
+      "avg_tok_s": 29.9,
+      "runs": [
+        {
+          "run": 1,
+          "completion_tokens": 150,
+          "prompt_tokens": 24,
+          "elapsed_ms": 5049,
+          "tok_s": 29.7
+        },
+        {
+          "run": 2,
+          "completion_tokens": 150,
+          "prompt_tokens": 24,
+          "elapsed_ms": 5021,
+          "tok_s": 29.9
+        },
+        {
+          "run": 3,
+          "completion_tokens": 150,
+          "prompt_tokens": 24,
+          "elapsed_ms": 4986,
+          "tok_s": 30.1
+        }
+      ]
+    },
+    "Qwen3-30B MoE": {
+      "type": "moe",
+      "load_ms": 200,
+      "avg_tok_s": 4.3,
+      "runs": [
+        {
+          "run": 1,
+          "completion_tokens": 150,
+          "prompt_tokens": 22,
+          "elapsed_ms": 36654,
+          "tok_s": 4.1
+        },
+        {
+          "run": 2,
+          "completion_tokens": 150,
+          "prompt_tokens": 22,
+          "elapsed_ms": 33608,
+          "tok_s": 4.5
+        },
+        {
+          "run": 3,
+          "completion_tokens": 150,
+          "prompt_tokens": 22,
+          "elapsed_ms": 34187,
+          "tok_s": 4.4
+        }
+      ]
+    }
+  }
+}

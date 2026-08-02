@@ -1,0 +1,18 @@
+{
+  "schema": "control.controller.v1",
+  "id": "gg",
+  "description": "Sega Game Gear controller as exposed by libretro / genesis_plus_gx. 7 buttons: d-pad, two face buttons (1 south, 2 east), Start. Same layout as SMS plus a Start button on the handheld itself.",
+  "wire": {
+    "kind": "libretro_joypad",
+    "port": 0
+  },
+  "buttons": {
+    "face_south":   { "wire_code": 0,  "label": "1" },
+    "face_east":    { "wire_code": 8,  "label": "2" },
+    "dpad_up":      { "wire_code": 4,  "label": "Up" },
+    "dpad_down":    { "wire_code": 5,  "label": "Down" },
+    "dpad_left":    { "wire_code": 6,  "label": "Left" },
+    "dpad_right":   { "wire_code": 7,  "label": "Right" },
+    "start":        { "wire_code": 3,  "label": "Start" }
+  }
+}

@@ -1,0 +1,30 @@
+# OPTIONAL personal overlay: give the classifier sidecar GPU access so a
+# capable model (effective-2B+) can run it with fast prefill of the architect
+# router's ~2400-token catalog. NOT part of the OSS default (most installs
+# keep the classifier CPU-only for portability). Pair with .env:
+#   AUGMENTUM_CLASSIFIER_HF=unsloth/gemma-4-E2B-it-qat-GGUF:UD-Q4_K_XL
+#   AUGMENTUM_CLASSIFIER_NGL=99
+#
+# VISION / VIDEO: Gemma 4 E2B/E4B are natively multimodal, but llama-server
+# only serves images when launched WITH the model's mmproj projector. Point
+# the classifier at it so the SAME resident model also does frame captioning
+# / video understanding (no separate SmolVLM sibling), then flip the app
+# setting ``classifier_vision_enabled`` on so the vision router uses it:
+#   AUGMENTUM_CLASSIFIER_VISION_ARGS=--mmproj-url https://huggingface.co/unsloth/gemma-4-E2B-it-qat-GGUF/resolve/main/mmproj-F16.gguf
+# (or --mmproj /path/to/mmproj.gguf if you've baked it into the volume).
+# Gemma's guidance: use a LOW visual-token budget for frames/video —
+# add e.g. --image-min-tokens 70 to that var for fast many-frame inference.
+# Leave the var unset to keep the classifier text-only.
+services:
+  classifier:
+    # CUDA llama.cpp build — the default ``:server`` tag is CPU-only and
+    # prints "no usable GPU found" even with a device reservation, so
+    # --n-gpu-layers is silently ignored. This variant actually offloads.
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

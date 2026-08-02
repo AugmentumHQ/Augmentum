@@ -1,0 +1,214 @@
+/* ==========================================================================
+   Animations & Transitions
+   ========================================================================== */
+
+/* --- Keyframes --- */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-down {
+  from { transform: translateY(-8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes scale-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes typing-dot {
+  /* Gentler pulse: smaller vertical travel, narrower opacity range,
+   * higher floor. Reads as a quiet breath rather than the previous
+   * punchy bounce. Slower loop (1.8s) below. */
+  0%, 60%, 100% { opacity: 0.45; transform: translateY(0); }
+  30% { opacity: 0.95; transform: translateY(-2px); }
+}
+
+/* --- Entrance/Exit --- */
+
+@keyframes slide-in-right {
+  from { transform: translateX(12px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-12px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes pop-in {
+  0% { transform: scale(0.9); opacity: 0; }
+  70% { transform: scale(1.02); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* --- Breathing / Ambient --- */
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 4px color-mix(in srgb, currentColor 15%, transparent); }
+  50% { box-shadow: 0 0 12px color-mix(in srgb, currentColor 30%, transparent); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* --- Feedback --- */
+
+@keyframes press {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+@keyframes success-flash {
+  0% { background-color: transparent; }
+  30% { background-color: color-mix(in srgb, var(--success) 12%, transparent); }
+  100% { background-color: transparent; }
+}
+
+/* --- Streaming indicator --- */
+
+.streaming-dots {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+}
+
+.streaming-dots span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  /* Slower loop + softer keyframes (see @keyframes typing-dot above) —
+   * the dots breathe rather than bounce. */
+  animation: typing-dot 1.8s ease-in-out infinite;
+}
+
+.streaming-dots span:nth-child(2) { animation-delay: 0.25s; }
+.streaming-dots span:nth-child(3) { animation-delay: 0.5s; }
+
+.streaming-status-label {
+  display: inline-block;
+  width: auto !important;
+  height: auto !important;
+  border-radius: 0 !important;
+  background: none !important;
+  animation: none !important;
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin-left: 4px;
+  letter-spacing: 0.01em;
+  transition: opacity 0.2s ease;
+}
+
+.streaming-status-label:empty {
+  display: none;
+}
+
+/* Prefill progress bar — appended to .streaming-dots during the
+ * "Preparing context…" stage. Updated by MessageRenderer
+ * .setPrefillProgress() based on the polled /api/engine/v2/prefill_progress
+ * endpoint. Cleared by .clearPrefillProgress() once first content
+ * arrives. Override the .streaming-dots span animation (the
+ * "width: 6px; height: 6px; border-radius: 50%" inherited from the
+ * dots above would otherwise wrap our flat bar shape). */
+.streaming-prefill-bar {
+  width: 96px;
+  height: 4px;
+  margin-left: 8px;
+  background: color-mix(in srgb, var(--text-muted) 25%, transparent);
+  border-radius: 2px;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+
+.streaming-prefill-fill {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 250ms ease-out;
+}
+
+/* --- Skeleton loading --- */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface) 25%,
+    var(--surface-hover) 50%,
+    var(--surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* --- Transitions utility --- */
+
+
+
+
+
+
+
+/* --- Spinner --- */
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* --- Reduced motion --- */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Universal clamp: kill decorative motion. Games are excluded because
+   * their gameplay IS animation (bubbles rising, plants growing, etc.) —
+   * clamping to 0.01ms breaks the game, not the user's experience. */
+  *:not(.lg-overlay, .lg-overlay *),
+  *:not(.lg-overlay, .lg-overlay *)::before,
+  *:not(.lg-overlay, .lg-overlay *)::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

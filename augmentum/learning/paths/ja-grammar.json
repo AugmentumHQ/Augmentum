@@ -1,0 +1,598 @@
+{
+  "lang": "ja",
+  "version": "1.0.0",
+  "name": "Japanese Grammar Drill",
+  "credits": "Hand-curated against Genki I/II, Tae Kim's Grammar Guide, A Dictionary of Basic Japanese Grammar (Makino & Tsutsui), and Imabi's particle reference. Examples use N5-N4 vocabulary so drills can be done right after the matching curriculum unit.",
+  "license": "CC BY 4.0",
+  "units": [
+    {
+      "id": "ja-gram-01-wa-vs-ga",
+      "title": "は vs が — topic vs subject",
+      "level": "N5",
+      "goal": "Choose the correct particle for sentence topic vs grammatical subject.",
+      "explanation": "は marks the TOPIC (what we're talking about — known/contextual). が marks the SUBJECT (who/what is doing the action, or the answer to a question). Quick test: は = 'as for X, ...' / contrast; が = 'X is the one that ...' / new information. In subordinate clauses (relative clauses, conditionals), the subject must take が, not は.",
+      "pattern": {
+        "wa": [
+          "私は学生です。 (As for me, I'm a student.)",
+          "今日は月曜日です。 (Today is Monday.)",
+          "象は鼻が長い。 (Elephants have long trunks — topic 'elephant', subject 'trunk')"
+        ],
+        "ga": [
+          "誰が来ましたか? — 田中さんが来ました。 (Who came? — Tanaka came. — 'Tanaka' is new info)",
+          "雨が降っています。 (It's raining. — sudden observation)",
+          "犬が好きな人 (a person who likes dogs — relative clause)"
+        ]
+      },
+      "common_errors": [
+        "Using は in subordinate clauses (relative/conditional) — must be が",
+        "Using が for general topics that are already known (should be は)",
+        "Saying 私が学生です when you mean 'I'm a student' (correct only when answering 'who is the student?')"
+      ],
+      "drill": [
+        {"sentence": "私___学生です。", "answer": "は", "explanation": "Topic introduction — 'as for me, I'm a student'."},
+        {"sentence": "誰___この本を書きましたか?", "answer": "が", "explanation": "Asking which person — identifying the subject."},
+        {"sentence": "あ、雨___降っている!", "answer": "が", "explanation": "Sudden observation of a new event — 'it's raining!'"},
+        {"sentence": "象___鼻___長い。", "answer": "は / が", "explanation": "象 is the topic ('as for elephants'), 鼻 is the grammatical subject of 'is long'."},
+        {"sentence": "私___本を読んでいる人です。", "answer": "が", "explanation": "Relative clause modifying 人 — must use が, not は."},
+        {"sentence": "明日___日曜日です。", "answer": "は", "explanation": "Topic — known/contextual time reference."},
+        {"sentence": "田中さん___コーヒーが好きです。", "answer": "は", "explanation": "Topic of the sentence; 好き takes が for its object."},
+        {"sentence": "あの店___何___ありますか?", "answer": "に / が", "explanation": "に for location; が for the existing thing (object of ある)."}
+      ]
+    },
+    {
+      "id": "ja-gram-02-wo-object",
+      "title": "を — direct object marker",
+      "level": "N5",
+      "goal": "Mark the direct object of a transitive verb.",
+      "explanation": "を marks the direct object — the thing acted upon by a transitive verb. Pronounced 'o' (same as お). Some motion verbs also use を to mark the path traversed: 道を歩く (walk along the road), 公園を散歩する (stroll through the park). And 出る/降りる use を for the place left/disembarked from: 家を出る (leave the house), バスを降りる (get off the bus) — even though the action is 'exiting', the place takes を.",
+      "pattern": {
+        "direct_object": [
+          "本を読む。 (read a book)",
+          "ご飯を食べる。 (eat rice)",
+          "手紙を書く。 (write a letter)"
+        ],
+        "path_traversed": [
+          "道を歩く。 (walk along the road)",
+          "橋を渡る。 (cross the bridge)",
+          "空を飛ぶ。 (fly through the sky)"
+        ],
+        "departure_point": [
+          "家を出る。 (leave the house)",
+          "電車を降りる。 (get off the train)",
+          "大学を卒業する。 (graduate from university)"
+        ]
+      },
+      "common_errors": [
+        "Using を with intransitive verbs (e.g. ✗ 私を行く)",
+        "Confusing 家を出る (leave) with 家に入る (enter — uses に)",
+        "Saying バスに降りる instead of バスを降りる"
+      ],
+      "drill": [
+        {"sentence": "毎朝、コーヒー___飲みます。", "answer": "を", "explanation": "Direct object of 飲む (drink)."},
+        {"sentence": "次の駅___降ります。", "answer": "を", "explanation": "降りる takes を for the place exited."},
+        {"sentence": "公園___散歩します。", "answer": "を", "explanation": "Path traversed during 散歩する."},
+        {"sentence": "新しい車___買いました。", "answer": "を", "explanation": "Direct object of 買う."},
+        {"sentence": "七時に家___出ます。", "answer": "を", "explanation": "出る uses を for the place being left."},
+        {"sentence": "日本語___勉強しています。", "answer": "を", "explanation": "勉強する takes を for the subject studied."},
+        {"sentence": "あの橋___渡ってください。", "answer": "を", "explanation": "渡る takes を for the path crossed."}
+      ]
+    },
+    {
+      "id": "ja-gram-03-ni-vs-de",
+      "title": "に vs で — destination/time vs location-of-action",
+      "level": "N5",
+      "goal": "Pick the right particle for static location (に) vs action location (で).",
+      "explanation": "に marks (a) destination/direction of motion, (b) static location of existence (with いる/ある), (c) specific points in time, and (d) indirect object/recipient. で marks the LOCATION where an action takes place. Test: if the verb is いる/ある or 住む — use に. If the verb is an active action (eat, study, work, play) — use で.",
+      "pattern": {
+        "ni": [
+          "学校に行く。 (go to school — destination)",
+          "猫が部屋にいる。 (cat is in the room — existence)",
+          "三時に会いましょう。 (meet at 3 — time point)",
+          "友達に手紙を送る。 (send a letter to a friend — recipient)"
+        ],
+        "de": [
+          "学校で勉強する。 (study at school — location of action)",
+          "レストランで食べる。 (eat at a restaurant)",
+          "公園で遊ぶ。 (play in the park)",
+          "電車で行く。 (go by train — means)"
+        ]
+      },
+      "common_errors": [
+        "Using で with いる/ある (✗ 部屋で猫がいる → ○ 部屋に猫がいる)",
+        "Using に for action locations (✗ レストランに食べる → ○ レストランで食べる)",
+        "住む always takes に (東京に住む), not で",
+        "Time markers that aren't specific points (今日, 毎日) take NO particle"
+      ],
+      "drill": [
+        {"sentence": "図書館___勉強します。", "answer": "で", "explanation": "Active action (study) — location of action takes で."},
+        {"sentence": "東京___住んでいます。", "answer": "に", "explanation": "住む always takes に for the place lived."},
+        {"sentence": "九時___会いましょう。", "answer": "に", "explanation": "Specific time point — に."},
+        {"sentence": "猫が机の下___います。", "answer": "に", "explanation": "Existence (いる) — location takes に."},
+        {"sentence": "公園___写真を撮りました。", "answer": "で", "explanation": "Active action (taking a photo) — で."},
+        {"sentence": "明日、学校___行きます。", "answer": "に", "explanation": "Destination of motion — に (or へ)."},
+        {"sentence": "バス___駅まで行きます。", "answer": "で", "explanation": "Means of transport — で."},
+        {"sentence": "母___プレゼントをあげました。", "answer": "に", "explanation": "Indirect object / recipient — に."}
+      ]
+    },
+    {
+      "id": "ja-gram-04-he-direction",
+      "title": "へ — direction (and when it overlaps with に)",
+      "level": "N5",
+      "goal": "Use へ for direction; recognise when it's interchangeable with に.",
+      "explanation": "へ (pronounced 'e', not 'he') marks DIRECTION — the general way you're headed. With motion verbs, へ and に often overlap and can be substituted (学校へ行く ≈ 学校に行く). The nuance: へ emphasises the direction/movement, に emphasises arrival/destination. へ is more formal/written and is preferred on addresses and travel signs. へ cannot replace に for existence (✗ 部屋へいる), time points (✗ 三時へ), or recipients (✗ 友達へ手紙を送る — though へ is acceptable in addresses).",
+      "pattern": {
+        "interchangeable": [
+          "日本へ行く ≈ 日本に行く (go to Japan)",
+          "家へ帰る ≈ 家に帰る (return home)",
+          "南へ向かう ≈ 南に向かう (head south)"
+        ],
+        "he_preferred": [
+          "ようこそ日本へ! (Welcome to Japan!)",
+          "田中さんへ (To Mr. Tanaka — letter address)",
+          "未来へ (Toward the future — slogan/poetic)"
+        ],
+        "ni_only": [
+          "部屋にいる (be in the room — NOT へ)",
+          "三時に会う (meet at 3 — NOT へ)",
+          "椅子に座る (sit on the chair — NOT へ)"
+        ]
+      },
+      "common_errors": [
+        "Pronouncing へ as 'he' instead of 'e' as a particle",
+        "Trying to use へ with いる/ある or specific times",
+        "Mixing up the particle へ (e) with the kana へ in vocabulary"
+      ],
+      "drill": [
+        {"sentence": "毎朝、会社___行きます。", "answer": "へ / に", "explanation": "Motion verb — either works."},
+        {"sentence": "未来___! (poster slogan)", "answer": "へ", "explanation": "Directional/poetic usage — へ preferred."},
+        {"sentence": "椅子___座ってください。", "answer": "に", "explanation": "座る = sit on (specific destination of body) — only に."},
+        {"sentence": "東京___飛行機で行きます。", "answer": "へ / に", "explanation": "Motion verb (行く) — both acceptable."},
+        {"sentence": "田中さん___ (letter heading)", "answer": "へ", "explanation": "Addressee on correspondence — へ is conventional."},
+        {"sentence": "ホテル___ある。", "answer": "に", "explanation": "Existence verb (ある) — only に."}
+      ]
+    },
+    {
+      "id": "ja-gram-05-kara-made",
+      "title": "から / まで — from / until",
+      "level": "N5",
+      "goal": "Mark starting and ending points in time and space.",
+      "explanation": "から marks the start (from, since). まで marks the end (until, up to). They commonly pair: 月曜日から金曜日まで (from Monday until Friday), 東京から大阪まで (from Tokyo to Osaka). から also means 'because' when attached to a clause-final verb/copula: 寒いから、コートを着る (Because it's cold, I'll wear a coat). Don't confuse 〜まで with 〜までに: 〜まで is continuous up-to (study until 9pm), 〜までに is a deadline (turn it in by 9pm).",
+      "pattern": {
+        "from_to_time": [
+          "授業は九時から始まります。 (Class starts from 9.)",
+          "九時から五時まで働きます。 (I work from 9 to 5.)",
+          "去年から日本語を勉強しています。 (I've been studying Japanese since last year.)"
+        ],
+        "from_to_place": [
+          "東京から大阪まで新幹線で行きます。 (Go from Tokyo to Osaka by bullet train.)",
+          "ここから駅まで歩きます。 (Walk from here to the station.)"
+        ],
+        "kara_because": [
+          "寒いから、家にいます。 (Because it's cold, I'm staying home.)",
+          "高いから、買いません。 (Since it's expensive, I won't buy it.)"
+        ]
+      },
+      "common_errors": [
+        "Confusing 〜まで (until, continuous) with 〜までに (by, deadline)",
+        "Using から for 'because' at the wrong position — it goes AT THE END of the cause clause",
+        "Forgetting that から/まで can attach to both nouns and clauses"
+      ],
+      "drill": [
+        {"sentence": "会議は十時___十二時___です。", "answer": "から / まで", "explanation": "Time range — from 10 to 12."},
+        {"sentence": "寒い___、窓を閉めてください。", "answer": "から", "explanation": "Reason — 'because it's cold'."},
+        {"sentence": "京都___東京まで何時間かかりますか?", "answer": "から", "explanation": "Starting place of journey."},
+        {"sentence": "宿題は明日___出してください。", "answer": "までに", "explanation": "Deadline — 'by tomorrow', not 'until'."},
+        {"sentence": "昨日___頭が痛いです。", "answer": "から", "explanation": "Time starting point — 'since yesterday'."},
+        {"sentence": "九時___ここで待ってください。", "answer": "まで", "explanation": "Continuous up-to — 'wait here until 9'."},
+        {"sentence": "雨が降っている___、傘を持って行きます。", "answer": "から", "explanation": "Causal connective at end of cause clause."}
+      ]
+    },
+    {
+      "id": "ja-gram-06-to-vs-ya",
+      "title": "と / や — and (exhaustive vs partial)",
+      "level": "N5",
+      "goal": "List items with the right 'and' particle.",
+      "explanation": "と lists items EXHAUSTIVELY — these are all the items in the set. や lists items as EXAMPLES — these and others. With や, the list often ends with など (etc.): 本や雑誌など (books and magazines, among others). と also marks 'with (someone)' for accompaniment: 友達と話す (talk with a friend). Don't use と/や to connect clauses or adjectives — that's a different construction (て-form or し).",
+      "pattern": {
+        "to_exhaustive": [
+          "りんごとバナナを買いました。 (I bought apples and bananas — just those two.)",
+          "私の家族は父と母と弟です。 (My family is dad, mom, and younger brother — that's all.)"
+        ],
+        "ya_partial": [
+          "りんごやバナナを買いました。 (I bought apples, bananas, and so on.)",
+          "店には本や雑誌などがあります。 (The store has books, magazines, etc.)"
+        ],
+        "to_with_someone": [
+          "友達と映画を見ました。 (I watched a movie with a friend.)",
+          "母と話します。 (I'll talk with my mother.)"
+        ]
+      },
+      "common_errors": [
+        "Using と/や to connect clauses (must use て-form: 食べて寝る = eat and sleep)",
+        "Forgetting that や implies 'and others' — incorrect for a complete list",
+        "Using と for accompaniment but omitting it (✗ 友達映画を見る → ○ 友達と映画を見る)"
+      ],
+      "drill": [
+        {"sentence": "私は犬___猫が好きです。 (only those two)", "answer": "と", "explanation": "Exhaustive list — just dogs and cats."},
+        {"sentence": "週末は買い物___映画を見たり、忙しいです。", "answer": "や", "explanation": "Partial — these and others."},
+        {"sentence": "昨日、田中さん___一緒に食事をしました。", "answer": "と", "explanation": "Accompaniment — 'with Tanaka'."},
+        {"sentence": "果物は、りんご___みかん___バナナなどがあります。", "answer": "や / や", "explanation": "Partial list ending in など."},
+        {"sentence": "兄___姉が一人ずついます。", "answer": "と", "explanation": "Exhaustive — one brother and one sister."},
+        {"sentence": "新しい先生___話しましたか?", "answer": "と", "explanation": "Accompaniment — 'with the new teacher'."}
+      ]
+    },
+    {
+      "id": "ja-gram-07-no-possessive",
+      "title": "の — possessive & noun-linking",
+      "level": "N5",
+      "goal": "Connect nouns with の for possession, description, and apposition.",
+      "explanation": "の links two nouns: A の B usually means 'B of A' (possessive) but covers a broader range: possession (私の本 = my book), origin (日本のお茶 = Japanese tea), description (赤いの = the red one — pronominal), and apposition (友達の田中さん = my friend Tanaka). の can also nominalise: 食べるのが好き (I like eating). Sentence-final の/のだ adds explanation tone: どうしたの? (What's wrong?).",
+      "pattern": {
+        "possession": [
+          "私の本 (my book)",
+          "田中さんの車 (Tanaka's car)"
+        ],
+        "description": [
+          "日本の文化 (Japanese culture)",
+          "学校の先生 (school teacher)"
+        ],
+        "pronominal": [
+          "赤いのをください。 (Please give me the red one.)",
+          "私のはどこですか? (Where's mine?)"
+        ],
+        "apposition": [
+          "友達の田中さん (my friend Tanaka)",
+          "弟の学 (my younger brother Manabu)"
+        ],
+        "nominalise": [
+          "走るのが速い。 (Running is fast = quick at running.)",
+          "日本に行くのが夢です。 (Going to Japan is my dream.)"
+        ]
+      },
+      "common_errors": [
+        "Doubling up: ✗ 私の私の本 — only one の per link",
+        "Forgetting の between adjectival nouns and head noun: ✗ 日本人友達 → ○ 日本人の友達",
+        "Using の to link i-adjectives to nouns: ✗ 高いの本 → ○ 高い本"
+      ],
+      "drill": [
+        {"sentence": "これは私___本です。", "answer": "の", "explanation": "Possessive — 'my book'."},
+        {"sentence": "日本___お茶は美味しい。", "answer": "の", "explanation": "Origin/description — 'Japanese tea'."},
+        {"sentence": "赤い___をください。", "answer": "の", "explanation": "Pronominal — 'the red one'."},
+        {"sentence": "友達___田中さんを紹介します。", "answer": "の", "explanation": "Apposition — 'my friend Tanaka'."},
+        {"sentence": "歌を歌う___が好きです。", "answer": "の", "explanation": "Nominalises the verb phrase 'singing songs'."},
+        {"sentence": "高い___本を買いました。", "answer": "(none)", "explanation": "い-adjective directly modifies noun — NO の. ✗高いの本 → ○高い本"},
+        {"sentence": "彼は学校___先生です。", "answer": "の", "explanation": "Descriptive — 'school teacher'."}
+      ]
+    },
+    {
+      "id": "ja-gram-08-masu-form",
+      "title": "Polite ます-form",
+      "level": "N5",
+      "goal": "Conjugate verbs into the polite present/future form.",
+      "explanation": "The ます-form is the polite present/future. Ichidan (る-verbs, group 2): drop る + ます (食べる → 食べます, 見る → 見ます). Godan (う-verbs, group 1): change final u-sound to i-sound + ます (書く → 書きます, 飲む → 飲みます, 話す → 話します). Irregular: する → します, 来る → 来ます (kimasu). Negative: ます → ません. Past: ました. Past negative: ませんでした. Use with strangers, superiors, customers, and any non-intimate context.",
+      "pattern": {
+        "ichidan": [
+          "食べる → 食べます (eat)",
+          "見る → 見ます (see)",
+          "起きる → 起きます (get up)"
+        ],
+        "godan": [
+          "書く → 書きます (write)",
+          "飲む → 飲みます (drink)",
+          "話す → 話します (speak)",
+          "買う → 買います (buy — note: う→い, NOT う→う)",
+          "行く → 行きます (go)"
+        ],
+        "irregular": [
+          "する → します (do)",
+          "来る → 来ます (kimasu — come)",
+          "勉強する → 勉強します (study)"
+        ]
+      },
+      "common_errors": [
+        "Treating godan -る verbs as ichidan: ✗ 帰る → 帰えます → ○ 帰ります",
+        "Wrong reading for 来る: ✗ くます → ○ きます (kimasu)",
+        "Stopping at the i-stem without adding ます: ✗ 飲み (just stem)"
+      ],
+      "drill": [
+        {"sentence": "毎日、本を読み___。", "answer": "ます", "explanation": "Polite present — 読む → 読みます."},
+        {"sentence": "明日、友達に会い___。", "answer": "ます", "explanation": "Polite — 会う → 会います."},
+        {"sentence": "昨日、テレビを見___。", "answer": "ました", "explanation": "Polite past — 見る → 見ました."},
+        {"sentence": "私はお酒を飲み___。", "answer": "ません", "explanation": "Polite negative — 飲む → 飲みません."},
+        {"sentence": "先週、京都に行き___。", "answer": "ました", "explanation": "Polite past — 行く → 行きました."},
+        {"sentence": "学校に来___か?", "answer": "ます", "explanation": "Polite question — 来る → 来ます (kimasu)."},
+        {"sentence": "宿題をし___でした。", "answer": "ません", "explanation": "Polite past neg — する → しませんでした."}
+      ]
+    },
+    {
+      "id": "ja-gram-09-plain-form",
+      "title": "Plain form basics",
+      "level": "N4",
+      "goal": "Switch from ます-form to dictionary (plain) form and back.",
+      "explanation": "The plain form is the dictionary form — what you find in JMdict. Ichidan plain = dictionary form ending in る. Godan plain = dictionary form ending in any u-row kana (く, ぐ, す, つ, ぬ, ぶ, む, る, う). Use plain form with close friends/family, in subordinate clauses (relative, conditional), in writing, and in casual speech. Mixing levels mid-conversation can sound off — pick a register and stay consistent. To go from ます → plain: identify if the verb is ichidan or godan from the i-stem, then return to dictionary form.",
+      "pattern": {
+        "masu_to_plain": [
+          "食べます → 食べる (eat)",
+          "書きます → 書く (write)",
+          "飲みます → 飲む (drink)",
+          "話します → 話す (speak)",
+          "します → する (do)",
+          "来ます → 来る (come)"
+        ],
+        "plain_in_subordinate": [
+          "雨が降る時 (when it rains — must be plain)",
+          "高い本 (an expensive book — adjective modifies plain)",
+          "食べる人 (the person who eats — relative clause)"
+        ]
+      },
+      "common_errors": [
+        "Mixing plain with formal honorifics inappropriately",
+        "Using plain form to a superior or stranger",
+        "Forgetting that subordinate-clause verbs must be plain even in polite speech"
+      ],
+      "drill": [
+        {"sentence": "「行きます」 → plain: ___", "answer": "行く", "explanation": "Godan — drop ます, restore u-sound."},
+        {"sentence": "「食べます」 → plain: ___", "answer": "食べる", "explanation": "Ichidan — drop ます, restore る."},
+        {"sentence": "「します」 → plain: ___", "answer": "する", "explanation": "Irregular — する."},
+        {"sentence": "「来ます」 → plain: ___", "answer": "来る", "explanation": "Irregular — 来る (kuru)."},
+        {"sentence": "「話します」 → plain: ___", "answer": "話す", "explanation": "Godan — し → す."},
+        {"sentence": "「飲みます」 → plain: ___", "answer": "飲む", "explanation": "Godan — み → む."},
+        {"sentence": "「買います」 → plain: ___", "answer": "買う", "explanation": "Godan — い → う (not 買る)."}
+      ]
+    },
+    {
+      "id": "ja-gram-10-te-form",
+      "title": "Te-form construction",
+      "level": "N4",
+      "goal": "Produce the te-form for ichidan, godan, and irregular verbs.",
+      "explanation": "The te-form connects clauses (do X and Y), forms the progressive 〜ている, makes requests 〜てください, gives permission 〜てもいい, and prohibits 〜てはいけない. Ichidan: drop る + て (食べる → 食べて). Godan rules by final kana: う/つ/る → って (買う→買って, 立つ→立って, 帰る→帰って), む/ぶ/ぬ → んで (飲む→飲んで, 遊ぶ→遊んで, 死ぬ→死んで), く → いて (書く→書いて), ぐ → いで (泳ぐ→泳いで), す → して (話す→話して). Irregular: 行く → 行って (NOT 行いて), する → して, 来る → 来て.",
+      "pattern": {
+        "ichidan": [
+          "食べる → 食べて (eat)",
+          "見る → 見て (see)",
+          "起きる → 起きて (get up)"
+        ],
+        "godan_utsu_ru": [
+          "買う → 買って (buy)",
+          "待つ → 待って (wait)",
+          "帰る → 帰って (return)"
+        ],
+        "godan_mu_bu_nu": [
+          "飲む → 飲んで (drink)",
+          "遊ぶ → 遊んで (play)",
+          "死ぬ → 死んで (die)"
+        ],
+        "godan_ku_gu_su": [
+          "書く → 書いて (write)",
+          "泳ぐ → 泳いで (swim)",
+          "話す → 話して (speak)"
+        ],
+        "irregular": [
+          "行く → 行って (NOT 行いて — exception)",
+          "する → して (do)",
+          "来る → 来て (kite — come)"
+        ]
+      },
+      "common_errors": [
+        "Treating 行く as regular: ✗ 行いて → ○ 行って (special exception)",
+        "Confusing godan -る endings with ichidan: ✗ 帰てる → ○ 帰って (godan)",
+        "Forgetting the ん in む/ぶ/ぬ verbs: ✗ 飲って → ○ 飲んで"
+      ],
+      "drill": [
+        {"sentence": "「書く」 → te-form: ___", "answer": "書いて", "explanation": "Godan く → いて."},
+        {"sentence": "「飲む」 → te-form: ___", "answer": "飲んで", "explanation": "Godan む → んで."},
+        {"sentence": "「行く」 → te-form: ___", "answer": "行って", "explanation": "Irregular exception — NOT 行いて."},
+        {"sentence": "「食べる」 → te-form: ___", "answer": "食べて", "explanation": "Ichidan — drop る + て."},
+        {"sentence": "「話す」 → te-form: ___", "answer": "話して", "explanation": "Godan す → して."},
+        {"sentence": "「待つ」 → te-form: ___", "answer": "待って", "explanation": "Godan つ → って."},
+        {"sentence": "「帰る」 → te-form: ___", "answer": "帰って", "explanation": "Godan る (う/つ/る group) → って."},
+        {"sentence": "「する」 → te-form: ___", "answer": "して", "explanation": "Irregular — する → して."},
+        {"sentence": "「来る」 → te-form: ___", "answer": "来て", "explanation": "Irregular — kite (the kanji reading changes from kuru to kite)."},
+        {"sentence": "「泳ぐ」 → te-form: ___", "answer": "泳いで", "explanation": "Godan ぐ → いで (voiced version of く → いて)."}
+      ]
+    },
+    {
+      "id": "ja-gram-11-past-tense",
+      "title": "Past tense — ました and た-form",
+      "level": "N4",
+      "goal": "Form polite and plain past tense for verbs and adjectives.",
+      "explanation": "Polite past: ます → ました (食べました), neg past: ませんでした (食べませんでした). Plain past (た-form): follows the SAME rules as te-form, just て → た and で → だ. So 書く → 書いた (wrote), 飲む → 飲んだ (drank), 食べる → 食べた (ate), 行く → 行った (went, exception). i-adjective past: い → かった (高い → 高かった = was expensive). i-adj negative past: くなかった (高くなかった). na-adj and noun past: でした (polite) or だった (plain).",
+      "pattern": {
+        "verb_polite": [
+          "食べました (ate)",
+          "行きました (went)",
+          "しませんでした (didn't do)"
+        ],
+        "verb_plain_past": [
+          "食べた (ate)",
+          "書いた (wrote)",
+          "飲んだ (drank)",
+          "行った (went — exception)"
+        ],
+        "i_adj_past": [
+          "高い → 高かった (was expensive)",
+          "美味しい → 美味しかった (was delicious)",
+          "良い → 良かった (was good — note い irregular: いい → よかった)"
+        ],
+        "na_adj_and_noun": [
+          "静かでした / 静かだった (was quiet)",
+          "学生でした / 学生だった (was a student)"
+        ]
+      },
+      "common_errors": [
+        "Treating い-adj past like a noun: ✗ 高いでした → ○ 高かったです",
+        "Using よい past as よいかった (✗) — must use いい → よかった",
+        "Confusing でした with だった's register (でした polite, だった plain)"
+      ],
+      "drill": [
+        {"sentence": "昨日、寿司を食べ___。 (polite)", "answer": "ました", "explanation": "Polite past — 食べました."},
+        {"sentence": "先週、京都に行___。 (plain past)", "answer": "った", "explanation": "Plain past — 行った (exception)."},
+        {"sentence": "テストは難し___です。 (past)", "answer": "かった", "explanation": "i-adj past — 難しい → 難しかった."},
+        {"sentence": "映画は面白___。 (plain past)", "answer": "かった", "explanation": "i-adj plain past — 面白い → 面白かった."},
+        {"sentence": "子供の時、元気___。 (na-adj plain past)", "answer": "だった", "explanation": "na-adj plain past — copula だ → だった."},
+        {"sentence": "天気は良___。 (i-adj past, irreg)", "answer": "かった", "explanation": "いい has irregular past: よかった (NOT いかった)."},
+        {"sentence": "コーヒーを飲___。 (plain past)", "answer": "んだ", "explanation": "Godan む → んだ in plain past."}
+      ]
+    },
+    {
+      "id": "ja-gram-12-negative-forms",
+      "title": "Negative forms — ません, ない, じゃない",
+      "level": "N4",
+      "goal": "Negate verbs, adjectives, and the copula in both registers.",
+      "explanation": "Polite verb neg: ます → ません (行きません). Plain verb neg: ichidan drop る + ない (食べない), godan final u-sound → a-sound + ない (書く → 書かない, 飲む → 飲まない, 買う → 買わない — note う → わ, NOT あ). Irregulars: する → しない, 来る → 来ない (こない), ある → ない (no 'aranai'). i-adj neg: い → くない (高くない). na-adj/noun neg: じゃない or ではない (静かじゃない). Past neg: なかった (plain) / ませんでした (polite). ない conjugates like an i-adjective: なかった (past), なくて (te-form).",
+      "pattern": {
+        "verb_polite_neg": [
+          "食べません (don't eat)",
+          "行きません (don't go)",
+          "しません (don't do)"
+        ],
+        "verb_plain_neg": [
+          "食べない (don't eat)",
+          "書かない (don't write)",
+          "飲まない (don't drink)",
+          "買わない (don't buy — う → わ, exception)",
+          "来ない (konai — don't come)",
+          "ある → ない (NOT あらない)"
+        ],
+        "i_adj_neg": [
+          "高い → 高くない (not expensive)",
+          "美味しい → 美味しくない (not delicious)",
+          "いい → よくない (irregular)"
+        ],
+        "na_adj_noun_neg": [
+          "静か → 静かじゃない / 静かではない (not quiet)",
+          "学生 → 学生じゃない / 学生ではない (not a student)"
+        ]
+      },
+      "common_errors": [
+        "Saying あらない instead of ない for 'doesn't exist'",
+        "Treating 買う as 買あない instead of 買わない (う-verbs use わ, not あ)",
+        "Conjugating いい normally: ✗ いくない → ○ よくない",
+        "Forgetting じゃない is contracted from ではない (same meaning, ではない is more formal)"
+      ],
+      "drill": [
+        {"sentence": "私はお酒を飲___。 (polite neg)", "answer": "みません", "explanation": "Polite neg — 飲む → 飲みません."},
+        {"sentence": "今日、学校に行___。 (plain neg)", "answer": "かない", "explanation": "Godan く → かない."},
+        {"sentence": "テストは難し___です。 (neg)", "answer": "くない", "explanation": "i-adj neg — 難しい → 難しくない."},
+        {"sentence": "ここに本はあり___。 (polite neg of ある)", "answer": "ません", "explanation": "あります → ありません (the plain form ない replaces ある, no 'aranai')."},
+        {"sentence": "彼は学生___。 (plain neg of noun)", "answer": "じゃない", "explanation": "Noun plain neg — copula → じゃない."},
+        {"sentence": "肉を食べ___人もいます。 (plain neg)", "answer": "ない", "explanation": "Ichidan plain neg — 食べる → 食べない."},
+        {"sentence": "天気は良___です。 (neg, irreg)", "answer": "くない", "explanation": "いい → よくない (irregular root よ-)."},
+        {"sentence": "昨日、雨は降___。 (plain past neg)", "answer": "らなかった", "explanation": "Godan る → らない → らなかった."}
+      ]
+    },
+    {
+      "id": "ja-gram-13-adjective-conjugation",
+      "title": "Adjective conjugation — i-adj vs na-adj",
+      "level": "N4",
+      "goal": "Conjugate both adjective types for present, past, negative, and connective.",
+      "explanation": "Japanese has TWO adjective types: i-adjectives (end in い, e.g. 高い, 美味しい) and na-adjectives (require な before a noun, e.g. 静かな, 元気な). i-adj conjugate themselves: 高い (is expensive), 高かった (was), 高くない (isn't), 高くなかった (wasn't), 高くて (connective), 高く (adverb). na-adj use the copula: 静かです (is quiet), 静かでした (was), 静かじゃない (isn't), 静かじゃなかった (wasn't), 静かで (connective), 静かに (adverb). Warning: いい is irregular — past is よかった, NOT いかった.",
+      "pattern": {
+        "i_adj_full": [
+          "高い (is expensive)",
+          "高かった (was expensive)",
+          "高くない (isn't expensive)",
+          "高くなかった (wasn't expensive)",
+          "高くて (expensive, and...)",
+          "高く (expensively)"
+        ],
+        "na_adj_full": [
+          "静かです (is quiet)",
+          "静かでした (was quiet)",
+          "静かじゃありません (isn't quiet)",
+          "静かじゃなかった (wasn't quiet)",
+          "静かで (quiet, and...)",
+          "静かに (quietly)",
+          "静かな部屋 (a quiet room — needs な before noun)"
+        ],
+        "ii_irregular": [
+          "いい / 良い (is good)",
+          "よかった (was good — NOT いかった)",
+          "よくない (isn't good — NOT いくない)"
+        ]
+      },
+      "common_errors": [
+        "Forgetting な before noun: ✗ 静か部屋 → ○ 静かな部屋",
+        "Conjugating いい like a regular i-adj — must switch to よ- root",
+        "Connecting i-adj with で: ✗ 高くで → ○ 高くて (i-adj uses くて, NOT で)",
+        "Making na-adj sound i-like: ✗ 静かい → ○ 静か"
+      ],
+      "drill": [
+        {"sentence": "昨日の試験は難し___です。 (past)", "answer": "かった", "explanation": "i-adj past — 難しい → 難しかったです."},
+        {"sentence": "ラーメンは熱___辛かった。 (connect)", "answer": "くて", "explanation": "i-adj connective — 熱い → 熱くて."},
+        {"sentence": "あの店は有名___ありません。 (na-adj neg)", "answer": "じゃ", "explanation": "na-adj neg — 有名じゃありません / 有名ではありません."},
+        {"sentence": "静か___町に住んでいます。 (modifying noun)", "answer": "な", "explanation": "na-adj needs な before noun."},
+        {"sentence": "天気は良___です。 (past, irreg)", "answer": "かった", "explanation": "いい → よかった irregular past."},
+        {"sentence": "便利___、安いです。 (na-adj connect)", "answer": "で", "explanation": "na-adj connective — 便利で."},
+        {"sentence": "彼女は静か___笑いました。 (adverb)", "answer": "に", "explanation": "na-adj adverbial — 静か + に."},
+        {"sentence": "新し___本を買いました。 (modifying noun)", "answer": "い", "explanation": "i-adj modifies noun directly with い — no な."}
+      ]
+    },
+    {
+      "id": "ja-gram-14-counters",
+      "title": "Counters — generic and shape-specific",
+      "level": "N5",
+      "goal": "Count objects using the appropriate counter.",
+      "explanation": "Japanese has dozens of counters that change based on what you're counting. Generic counter (1-10) for small/abstract things: 一つ (ひとつ hitotsu), 二つ (ふたつ futatsu), 三つ (みっつ mittsu), 四つ (よっつ yottsu), 五つ (いつつ itsutsu), 六つ (むっつ muttsu), 七つ (ななつ nanatsu), 八つ (やっつ yattsu), 九つ (ここのつ kokonotsu), 十 (とお too). After 10, switch to plain numerals + 個 (ko). Common specialised counters: 本 (long thin: pens, bottles, trees), 枚 (flat thin: paper, plates, shirts), 人 (people), 匹 (small animals), 頭 (large animals), 冊 (books), 杯 (cups/glasses), 台 (machines/vehicles), 階 (floors), 歳/才 (years old). Many counters trigger sound changes: 一本 (いっぽん ippon), 三本 (さんぼん sanbon), 六本 (ろっぽん roppon) — irregular due to phonological assimilation.",
+      "pattern": {
+        "generic_tsu": [
+          "りんごを三つください。 (Please give me three apples.)",
+          "問題が二つあります。 (There are two problems.)"
+        ],
+        "people_nin": [
+          "一人 (ひとり hitori — irregular)",
+          "二人 (ふたり futari — irregular)",
+          "三人 (さんにん sannin)",
+          "四人 (よにん yonin — NOT shinin)"
+        ],
+        "long_thin_hon": [
+          "ペンを一本 (いっぽん ippon — pen)",
+          "ビールを三本 (さんぼん sanbon — beers)",
+          "傘を六本 (ろっぽん roppon — umbrellas)"
+        ],
+        "flat_mai": [
+          "切符を二枚 (にまい nimai — two tickets)",
+          "紙を十枚 (じゅうまい juumai — ten sheets of paper)"
+        ],
+        "small_animals_hiki": [
+          "猫が一匹 (いっぴき ippiki — one cat)",
+          "犬が三匹 (さんびき sanbiki — three dogs)"
+        ],
+        "books_satsu": [
+          "本を二冊 (にさつ nisatsu — two books)",
+          "雑誌を五冊 (ごさつ gosatsu — five magazines)"
+        ],
+        "cups_hai": [
+          "コーヒーを一杯 (いっぱい ippai — one cup of coffee)",
+          "水を三杯 (さんばい sanbai — three glasses of water)"
+        ],
+        "machines_dai": [
+          "車が二台 (にだい nidai — two cars)",
+          "パソコンを一台 (いちだい ichidai — one computer)"
+        ],
+        "age_sai": [
+          "二十歳 (はたち hatachi — 20 years old, irregular)",
+          "三十歳 (さんじゅっさい sanjussai — 30 years old)"
+        ]
+      },
+      "common_errors": [
+        "Using 一つ for people instead of 一人 (✗ 学生一つ → ○ 学生一人)",
+        "Saying しにん (四人) — sounds like 死人 'dead person' — use よにん",
+        "Forgetting sound changes: 一本 is いっぽん, NOT いちほん",
+        "Using 匹 for big animals like horses/cows — those take 頭"
+      ],
+      "drill": [
+        {"sentence": "りんごを___ください。 (3, generic)", "answer": "三つ (みっつ)", "explanation": "Generic counter — small abstract items use つ up to 9."},
+        {"sentence": "学生が___います。 (4 people)", "answer": "四人 (よにん)", "explanation": "People counter — note よにん, not しにん."},
+        {"sentence": "ビールを___ください。 (3 bottles)", "answer": "三本 (さんぼん)", "explanation": "Long thin objects — 本; sound change ほ→ぼ."},
+        {"sentence": "切符を___買いました。 (2 tickets)", "answer": "二枚 (にまい)", "explanation": "Flat thin objects — 枚."},
+        {"sentence": "猫が___います。 (1 cat)", "answer": "一匹 (いっぴき)", "explanation": "Small animals — 匹; irregular sound いっぴき."},
+        {"sentence": "本を___読みました。 (5 books)", "answer": "五冊 (ごさつ)", "explanation": "Books/bound volumes — 冊."},
+        {"sentence": "コーヒーを___飲みました。 (2 cups)", "answer": "二杯 (にはい)", "explanation": "Cups/glasses — 杯."},
+        {"sentence": "車が___あります。 (3 cars)", "answer": "三台 (さんだい)", "explanation": "Machines/vehicles — 台."},
+        {"sentence": "弟は___です。 (10 years old)", "answer": "十歳 (じゅっさい)", "explanation": "Age — 歳; note 二十歳 = はたち (exception)."},
+        {"sentence": "ペンを___ください。 (1 pen)", "answer": "一本 (いっぽん)", "explanation": "Long thin — 本; sound change いち+ほん → いっぽん."}
+      ]
+    }
+  ]
+}

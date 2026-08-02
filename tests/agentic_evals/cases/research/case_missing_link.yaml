@@ -1,0 +1,23 @@
+name: research_delivery_missing_artifact_link
+# Regression probe: when the deliver response forgets the artifact link,
+# the has_artifact_link property must fail. Flip this to passing by
+# ensuring artifact presence propagates through the system prompt.
+flow: _eval_minimal_deliver_flow
+query: "Summarize our findings."
+
+responses:
+  - content: "1. Plan\n2. Deliver"
+  - content: |
+      Our findings show three key patterns emerging across the data.
+      Each pattern reinforces the central hypothesis.
+
+assertions:
+  # This case intentionally omits a link — the assertion below documents
+  # that contract. When we add mid-stream artifact propagation, flip to
+  # has_artifact_link without forbidden:"download".
+  - property: does_not_mention
+    forbidden: ["VERDICT", "work_notes"]
+  - property: is_conversational
+  - property: length_between
+    min_chars: 20
+    max_chars: 1000

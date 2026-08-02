@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="400" height="400">
+  <rect width="100" height="100" fill="#111118"/>
+  <g fill="none" stroke="#6c8aff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <!-- the A -->
+    <path d="M 26 72 L 50 24 L 74 72"/>
+    <!-- crossbar as a branching node -->
+    <path d="M 36 54 L 64 54"/>
+    <!-- leaf offshoot from crossbar -->
+    <path d="M 64 54 C 70 52, 72 46, 70 40"/>
+    <!-- roots descending from left leg -->
+    <path d="M 26 72 L 20 82"/>
+    <path d="M 26 72 L 28 86"/>
+    <path d="M 22 79 L 16 84"/>
+    <!-- roots descending from right leg -->
+    <path d="M 74 72 L 80 82"/>
+    <path d="M 74 72 L 72 86"/>
+    <path d="M 78 79 L 84 84"/>
+    <!-- apex leaf/bud -->
+    <circle cx="50" cy="22" r="3" fill="#6c8aff" stroke="none"/>
+  </g>
+</svg>

@@ -1,0 +1,38 @@
+# Becca — identity LoRA on the EXPRESSIVE onecxi base (not flat base CSM).
+# The whole point: onecxi already carries emotional range in its weights, so a
+# LIGHT identity adapt nudges timbre toward Becca (Ruby/p089 clips) while leaving
+# that expression intact. The opposite of Ruby v1/v2, which built identity on flat
+# base CSM and could only ever be monotone.
+#
+# Deliberately gentle to avoid catastrophic forgetting of onecxi's expression:
+#   r=8 (half of v2), LR 1e-5, 2 epochs. Listen, then nudge heavier only if the
+#   identity isn't Becca enough — never the reverse (heavy = back to monotone).
+
+voice_name: becca
+base_model: ./out/onecxi-base    # the expressive base, assembled by assemble_onecxi_base.py
+speaker_id: 0
+
+sample_rate: 24000
+out_dir: ./data/ruby-v2          # reuse the existing dialogue-mixed manifest (Ruby + Tess context)
+
+emotion:
+  enabled: true
+  tag_format: "({emotion}) "
+
+train:
+  output_dir: ./out/becca-onecxi-lora
+  lora_r: 8                      # light — nudge identity, preserve onecxi's expression
+  lora_alpha: 16
+  lora_dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+  learning_rate: 1.0e-5          # gentle
+  num_epochs: 2                  # few — minimize forgetting
+  per_device_batch_size: 1
+  grad_accum: 8
+  bf16: false                    # fp32 (CSM audio-embed dtype clash with bf16 on the merge path)
+  gradient_checkpointing: false
+  warmup_ratio: 0.03
+  logging_steps: 10
+  save_steps: 500                # >total steps -> only the final save (disk-tight)
+  save_total_limit: 1
+  seed: 3407

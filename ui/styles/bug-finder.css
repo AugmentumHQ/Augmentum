@@ -1,0 +1,1574 @@
+/*
+ * Bug Finder — Forensic Diagnostic Lab aesthetic.
+ *
+ * Diverges from Augmentum's softer surfaces on purpose: false-positive
+ * fatigue is the dominant failure mode for autonomous security tools,
+ * and the antidote is credibility-by-craft. The interface should read as
+ * an instrument, not as an assistant.
+ *
+ * Reference points: Wireshark's data density, NASA technical documents'
+ * typographic discipline, oscilloscope readouts. Avoided: SaaS dashboard
+ * chrome, purple gradients, demo-product polish.
+ */
+
+/* ---------------------------------------------------------------- */
+/* Surface variables — scoped so they cannot leak to other modes    */
+/* ---------------------------------------------------------------- */
+
+.bug-finder-surface {
+  --bf-bg:           #0E1014;
+  --bf-panel:        #15181E;
+  --bf-panel-hi:     #1B1F26;
+  --bf-hairline:     rgba(255, 255, 255, 0.08);
+  --bf-hairline-hi:  rgba(255, 255, 255, 0.14);
+
+  --bf-text:         #E8E6E1;
+  --bf-text-muted:   #7A7F88;
+  --bf-text-dim:     #4A4F58;
+
+  --bf-amber:        #F2C14E;   /* phosphor — primary accent       */
+  --bf-amber-dim:    #8C6A1F;
+  --bf-critical:     #F25C5C;   /* coral, not fire-engine          */
+  --bf-confirmed:    #F2A03F;   /* between amber and critical      */
+  --bf-fixed:        #7FB069;   /* sage, not lime                  */
+  --bf-speculative:  #5A5F6A;
+  --bf-chrome:       #3A5F73;   /* petrol — meta info              */
+
+  --bf-font-sans:    "IBM Plex Sans", "Söhne", system-ui,
+                     -apple-system, sans-serif;
+  --bf-font-mono:    "JetBrains Mono", "SF Mono", "Cascadia Code",
+                     Menlo, Monaco, monospace;
+
+  --bf-radius:       2px;     /* hard edges, not pillowed cards    */
+  --bf-stroke:       1px solid var(--bf-hairline);
+
+  /* Anchored to the viewport (not body) so the app header + mobile orb
+   * bar + iOS safe-area notches all stay clear. Mirrors the pattern
+   * used by .lib-overlay / files / browse surfaces. */
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  grid-template-rows: 100%;
+  background-color: var(--bf-bg);
+  /* Hairline grid backdrop — engineering-drawing texture. 32px
+   * spacing, 4% opacity. Combined with a faint film grain layer to
+   * add analog texture without competing with the data. */
+  background-image:
+    linear-gradient(var(--bf-hairline) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bf-hairline) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: -1px -1px;
+  color: var(--bf-text);
+  font-family: var(--bf-font-sans);
+  font-size: 13px;
+  line-height: 1.45;
+  font-feature-settings: "ss01", "ss02", "cv02", "cv11", "tnum", "zero";
+  /* Tabular numerals as default — counts, ms, tokens all snap to the
+   * same column. Critical for the instrument feel. */
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+}
+
+.bug-finder-surface.hidden { display: none; }
+
+/* Mobile chrome: lift the bottom edge above the orb bar + iOS home
+ * indicator. On phones (≤720px) drop the two-column shape entirely
+ * and switch to a single-pane app shell — either the rail OR the
+ * detail fills the viewport, not both. Pane selection rides on
+ * `data-bf-pane` set by the JS; default "rail" so users land on the
+ * run list and tap a card to drill in. The back button in the detail
+ * header takes them back. Same pattern as Browse / Files / Library. */
+@media (max-width: 767px) {
+  .bug-finder-surface {
+    bottom: calc(var(--orb-bar-height) + env(safe-area-inset-bottom, 0px));
+  }
+}
+@media (max-width: 720px) {
+  .bug-finder-surface {
+    grid-template-columns: 1fr;
+    grid-template-rows: 100%;
+  }
+  .bf-rail { border-right: none; }
+  .bug-finder-surface[data-bf-pane="detail"] .bf-rail { display: none; }
+  .bug-finder-surface[data-bf-pane="rail"]   .bf-detail { display: none; }
+
+  /* Tab strip + filter row: scroll horizontally, never wrap.
+   * Four tabs at ~75-95px each don't fit a 360px viewport, and the
+   * filter row has 8+ chips that otherwise eat 3 wrapped rows of
+   * vertical space before any finding is visible. */
+  .bf-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    padding: 0 12px;
+  }
+  .bf-tabs::-webkit-scrollbar { height: 4px; }
+  .bf-tabs::-webkit-scrollbar-thumb { background-color: var(--bf-hairline); }
+  .bf-tab { flex-shrink: 0; padding: 12px 12px; }
+
+  .bf-filter-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .bf-filter-chip { flex-shrink: 0; }
+  /* The variance read-out is informational; hide it on phones to keep
+   * the actionable chips in reach. Available on desktop. */
+  .bf-filter-passive { display: none; }
+
+  /* Finding header: the desktop 4-column grid (mnemonic | id | pips
+   * | status) clips the status pill text below ~380px. Restack into
+   * a 2x2 grid so each row breathes. */
+  .bf-finding-head {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "mn id"
+      "pp st";
+    gap: 6px 10px;
+  }
+  .bf-fmnemonic { grid-area: mn; }
+  .bf-fid       { grid-area: id; justify-self: end; }
+  .bf-fpips     { grid-area: pp; }
+  .bf-fstatus   { grid-area: st; justify-self: end; }
+
+  /* Cost table — 8 columns won't squash. Wrap in a horizontal scroll
+   * container and pin a min-width so columns stay readable. */
+  .bf-cost-scroll {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .bf-cost-table { min-width: 580px; }
+
+  /* Tighten chrome padding so the data dominates */
+  .bf-tab-panel { padding: 12px 14px 28px; }
+  .bf-detail-header { padding: 14px 14px 12px; }
+  .bf-rail-header { padding: 12px 14px 10px; }
+
+  /* Launcher modal: take more of the viewport and stack the role
+   * grid into a single column — 150px-wide selects are unusable. */
+  .bf-modal-card { width: min(560px, 96vw); }
+  .bf-form { padding: 14px 14px 16px; gap: 14px; }
+}
+
+/* "Back to runs" button — rendered into every detail-header template,
+ * shown only when the surface is in single-pane mobile mode. */
+.bf-back-to-rail {
+  display: none;
+  align-self: flex-start;
+  background: transparent;
+  border: 1px solid var(--bf-hairline-hi);
+  color: var(--bf-text-muted);
+  padding: 5px 10px;
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: var(--bf-radius);
+  transition: color 120ms steps(2, end),
+              border-color 120ms steps(2, end);
+}
+.bf-back-to-rail:hover {
+  color: var(--bf-amber);
+  border-color: var(--bf-amber);
+}
+@media (max-width: 720px) {
+  .bf-back-to-rail { display: inline-block; }
+}
+
+/* Film-grain pseudo-overlay — extremely subtle, adds analog warmth */
+.bug-finder-surface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(rgba(255,255,255,0.012) 1px, transparent 1px);
+  background-size: 3px 3px;
+  z-index: 0;
+}
+
+/* The content panes sit above the grain layer. Scope this to the rail +
+ * detail explicitly — a blanket `> *` also matches the launcher overlay
+ * (#bf-modal lives directly under the surface), clobbering its
+ * `position: fixed` with `relative` so it gets swallowed by the grid +
+ * `overflow: hidden` and never appears. */
+.bug-finder-surface > .bf-rail,
+.bug-finder-surface > .bf-detail { position: relative; z-index: 1; }
+
+
+/* ---------------------------------------------------------------- */
+/* Run history rail (left)                                          */
+/* ---------------------------------------------------------------- */
+
+.bf-rail {
+  display: flex;
+  flex-direction: column;
+  border-right: var(--bf-stroke);
+  background-color: rgba(14, 16, 20, 0.92);  /* slight overlay over grid */
+  min-height: 0;
+}
+
+.bf-rail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 14px 12px;
+  border-bottom: var(--bf-stroke);
+}
+
+.bf-rail-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bf-rail-close {
+  background: transparent;
+  border: 1px solid var(--bf-hairline-hi);
+  color: var(--bf-text-muted);
+  width: 22px;
+  height: 22px;
+  border-radius: var(--bf-radius);
+  cursor: pointer;
+  font-family: var(--bf-font-mono);
+  font-size: 11px;
+  line-height: 1;
+}
+.bf-rail-close:hover { color: var(--bf-amber); border-color: var(--bf-amber); }
+
+.bf-form-hint {
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  color: var(--bf-text-muted);
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+}
+
+.bf-label-hint {
+  font-weight: 400;
+  color: var(--bf-text-dim);
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+
+.bf-stop-btn {
+  background: transparent;
+  border: 1px solid var(--bf-critical);
+  color: var(--bf-critical);
+  border-radius: var(--bf-radius);
+  padding: 4px 10px;
+  margin-left: 12px;
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 120ms steps(2, end);
+}
+.bf-stop-btn:hover:not(:disabled) {
+  background: var(--bf-critical);
+  color: var(--bf-bg);
+}
+.bf-stop-btn:disabled { opacity: 0.6; cursor: wait; }
+
+.bf-form-group-inline {
+  border: 1px solid var(--bf-critical);
+  background: rgba(242, 92, 92, 0.06);
+  padding: 10px 12px;
+  border-radius: var(--bf-radius);
+}
+
+.bf-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--bf-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--bf-text);
+  cursor: pointer;
+}
+.bf-checkbox-label input[type="checkbox"] {
+  accent-color: var(--bf-critical);
+  margin: 0;
+}
+
+.bf-rail-title {
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bf-text-muted);
+}
+
+.bf-new-run-btn {
+  background: transparent;
+  color: var(--bf-amber);
+  border: 1px solid var(--bf-amber-dim);
+  border-radius: var(--bf-radius);
+  padding: 5px 10px;
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 120ms steps(2, end),
+              border-color 120ms steps(2, end),
+              color 120ms steps(2, end);
+}
+.bf-new-run-btn:hover {
+  background: var(--bf-amber);
+  color: var(--bf-bg);
+  border-color: var(--bf-amber);
+}
+.bf-new-run-btn:active { transform: translateY(1px); }
+
+.bf-rail-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.bf-rail-empty {
+  padding: 28px 14px;
+  font-family: var(--bf-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--bf-text-muted);
+  text-align: center;
+}
+.bf-rail-empty .bf-ready-label {
+  display: inline-block;
+  border: 1px solid var(--bf-amber-dim);
+  color: var(--bf-amber);
+  padding: 6px 12px;
+  letter-spacing: 0.24em;
+  margin-bottom: 12px;
+}
+
+.bf-card {
+  display: block;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px 12px;
+  border-bottom: var(--bf-stroke);
+  cursor: pointer;
+  color: var(--bf-text);
+  position: relative;
+  transition: background-color 120ms steps(2, end);
+  /* Stagger reveal — see staggered-fade-in keyframes below */
+  animation: bfRailReveal 240ms steps(3, end) backwards;
+}
+.bf-card:hover { background-color: var(--bf-panel); }
+.bf-card.bf-card-active {
+  background-color: var(--bf-panel-hi);
+}
+/* Left-edge instrument bar — appears on active card */
+.bf-card.bf-card-active::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0; width: 3px;
+  background-color: var(--bf-amber);
+}
+
+.bf-card-line1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+.bf-card-target {
+  font-family: var(--bf-font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--bf-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+.bf-card-time {
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  color: var(--bf-text-muted);
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.bf-card-line2 {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  color: var(--bf-text-muted);
+  letter-spacing: 0.06em;
+}
+
+.bf-card-counts {
+  display: inline-flex;
+  gap: 8px;
+}
+.bf-card-counts span { color: var(--bf-text-muted); }
+.bf-card-counts .bf-count-fixed { color: var(--bf-fixed); }
+.bf-card-counts .bf-count-confirmed { color: var(--bf-confirmed); }
+.bf-card-counts .bf-count-failed { color: var(--bf-critical); }
+
+
+/* ---------------------------------------------------------------- */
+/* Status pill — used on rail cards and inside the detail view      */
+/* ---------------------------------------------------------------- */
+
+.bf-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--bf-font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border: 1px solid currentColor;
+  border-radius: var(--bf-radius);
+}
+.bf-status-pill.bf-status-running    { color: var(--bf-amber); }
+.bf-status-pill.bf-status-complete   { color: var(--bf-fixed); }
+.bf-status-pill.bf-status-cancelled  { color: var(--bf-speculative); }
+.bf-status-pill.bf-status-wallclock  { color: var(--bf-confirmed); }
+.bf-status-pill.bf-status-error      { color: var(--bf-critical); }
+.bf-status-pill.bf-status-intake_rejected { color: var(--bf-critical); }
+
+
+/* ---------------------------------------------------------------- */
+/* Detail panel (right)                                             */
+/* ---------------------------------------------------------------- */
+
+.bf-detail {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+.bf-detail-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 14px;
+  font-family: var(--bf-font-mono);
+  color: var(--bf-text-muted);
+}
+.bf-detail-empty .bf-ready-label {
+  display: inline-block;
+  border: 1px solid var(--bf-amber-dim);
+  color: var(--bf-amber);
+  padding: 8px 18px;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  font-weight: 600;
+}
+.bf-detail-empty .bf-empty-hint {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--bf-text-muted);
+}
+
+/* Containment-warning banner (shown when an untrusted-remote override
+ * was used). Visible above everything else in the run detail. */
+.bf-containment-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 18px;
+  background-color: rgba(242, 92, 92, 0.08);
+  border-bottom: 1px solid var(--bf-critical);
+  color: var(--bf-text);
+  font-size: 12px;
+  line-height: 1.55;
+}
+.bf-containment-banner-label {
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bf-critical);
+  padding: 1px 6px;
+  border: 1px solid var(--bf-critical);
+  flex-shrink: 0;
+}
+
+.bf-detail-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 20px 14px;
+  border-bottom: var(--bf-stroke);
+}
+.bf-detail-id {
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  color: var(--bf-text-muted);
+  letter-spacing: 0.14em;
+}
+.bf-detail-title {
+  font-family: var(--bf-font-sans);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--bf-text);
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+.bf-detail-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-family: var(--bf-font-mono);
+  font-size: 11px;
+  color: var(--bf-text-muted);
+  letter-spacing: 0.04em;
+}
+.bf-detail-meta strong {
+  color: var(--bf-text);
+  font-weight: 500;
+}
+.bf-detail-meta-sep {
+  color: var(--bf-text-dim);
+}
+
+/* ---------------------------------------------------------------- */
+/* Live dashboard (running detail view)                              */
+/* ---------------------------------------------------------------- */
+
+.bf-live-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.bf-live-counters {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  border: var(--bf-stroke);
+  border-radius: var(--bf-radius);
+  padding: 12px;
+  background-color: var(--bf-panel);
+}
+
+.bf-counter {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 10px;
+  border-left: 2px solid var(--bf-amber-dim);
+  min-width: 0;
+}
+
+.bf-counter:first-child { border-left-color: var(--bf-amber); }
+
+.bf-counter-num {
+  font-family: var(--bf-font-mono);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--bf-amber);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bf-counter-sep {
+  color: var(--bf-text-dim);
+  margin: 0 2px;
+  font-weight: 400;
+}
+
+.bf-counter-label {
+  font-family: var(--bf-font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bf-text-muted);
+  margin-top: 2px;
+}
+
+.bf-counter-sub {
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  color: var(--bf-text-dim);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Token burndown — per-stage spend bars + cumulative meter. */
+.bf-burndown {
+  border: var(--bf-stroke);
+  border-radius: var(--bf-radius);
+  background: var(--bf-panel);
+  padding: 12px 14px;
+}
+.bf-burn-empty {
+  font-family: var(--bf-font-mono);
+  font-size: 11px;
+  color: var(--bf-text-dim);
+}
+.bf-burn-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.bf-burn-title {
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--bf-chrome);
+}
+.bf-burn-total {
+  font-family: var(--bf-font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--bf-amber);
+}
+.bf-burn-proj { color: var(--bf-text-dim); font-weight: 400; font-size: 11px; }
+.bf-burn-meter {
+  height: 3px;
+  background: var(--bf-hairline);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.bf-burn-meter-fill {
+  display: block;
+  height: 100%;
+  background: var(--bf-amber-dim);
+  transition: width 300ms ease;
+}
+.bf-burn-bars { display: flex; flex-direction: column; gap: 5px; }
+.bf-burn-row {
+  display: grid;
+  grid-template-columns: 72px 1fr 44px;
+  align-items: center;
+  gap: 8px;
+}
+.bf-burn-label {
+  font-family: var(--bf-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--bf-text-muted);
+}
+.bf-burn-track {
+  height: 6px;
+  background: var(--bf-bg);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.bf-burn-fill {
+  display: block;
+  height: 100%;
+  background: var(--bf-chrome);
+  transition: width 300ms ease;
+}
+.bf-burn-active .bf-burn-fill { background: var(--bf-amber); }
+.bf-burn-active .bf-burn-label { color: var(--bf-amber); }
+.bf-burn-val {
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  color: var(--bf-text-muted);
+  text-align: right;
+}
+
+/* Confidence provenance chip on live findings. */
+.bf-conf {
+  display: inline-block;
+  font-family: var(--bf-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 2px;
+  border: 1px solid var(--bf-hairline-hi);
+  color: var(--bf-text-muted);
+  margin: 2px 0;
+}
+.bf-conf-strong { color: var(--bf-fixed); border-color: color-mix(in srgb, var(--bf-fixed) 50%, transparent); }
+.bf-conf-mid    { color: var(--bf-confirmed); border-color: color-mix(in srgb, var(--bf-confirmed) 45%, transparent); }
+.bf-conf-weak   { color: var(--bf-text-dim); }
+
+.bf-live-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 12px;
+  min-height: 320px;
+}
+
+.bf-live-feed-panel,
+.bf-live-findings-panel {
+  border: var(--bf-stroke);
+  border-radius: var(--bf-radius);
+  background-color: var(--bf-panel);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.bf-live-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 14px;
+  border-bottom: var(--bf-stroke);
+  background-color: rgba(0, 0, 0, 0.18);
+}
+
+.bf-live-panel-title {
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bf-amber);
+}
+
+.bf-live-panel-hint {
+  font-family: var(--bf-font-mono);
+  font-size: 9px;
+  color: var(--bf-text-dim);
+  letter-spacing: 0.1em;
+}
+
+.bf-live-feed,
+.bf-live-findings {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 0;
+  min-height: 0;
+}
+
+.bf-feed-empty,
+.bf-tick-empty {
+  padding: 30px 16px;
+  text-align: center;
+  font-family: var(--bf-font-mono);
+  font-size: 11px;
+  color: var(--bf-text-muted);
+  letter-spacing: 0.04em;
+  line-height: 1.7;
+}
+
+.bf-feed-row {
+  display: grid;
+  grid-template-columns: 60px auto 1fr;
+  gap: 10px;
+  padding: 6px 14px;
+  font-family: var(--bf-font-mono);
+  font-size: 11px;
+  border-bottom: 1px dashed var(--bf-hairline);
+  animation: bfFeedReveal 200ms steps(3, end) backwards;
+}
+.bf-feed-row:last-child { border-bottom: none; }
+
+.bf-feed-time {
+  color: var(--bf-text-dim);
+  letter-spacing: 0.04em;
+}
+.bf-feed-label {
+  color: var(--bf-amber);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.bf-feed-detail {
+  color: var(--bf-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes bfFeedReveal {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.bf-tick-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 10px;
+  padding: 10px 14px;
+  border-bottom: var(--bf-stroke);
+  font-family: var(--bf-font-mono);
+  animation: bfTickReveal 320ms steps(4, end) backwards;
+}
+.bf-tick-row:last-child { border-bottom: none; }
+
+.bf-tick-mn {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--bf-amber);
+  grid-column: 1;
+  grid-row: 1;
+}
+.bf-tick-loc {
+  font-size: 10px;
+  color: var(--bf-text-muted);
+  letter-spacing: 0.02em;
+  grid-column: 2;
+  grid-row: 1;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bf-tick-claim {
+  font-size: 12px;
+  color: var(--bf-text);
+  line-height: 1.45;
+  grid-column: 1 / span 2;
+  grid-row: 2;
+}
+
+.bf-tick-row.bf-sev-critical .bf-tick-mn { color: var(--bf-critical); }
+.bf-tick-row.bf-sev-high     .bf-tick-mn { color: var(--bf-confirmed); }
+.bf-tick-row.bf-sev-medium   .bf-tick-mn { color: var(--bf-amber); }
+.bf-tick-row.bf-sev-low      .bf-tick-mn { color: var(--bf-fixed); }
+
+@keyframes bfTickReveal {
+  from { opacity: 0; transform: scale(0.985) translateX(8px); }
+  to   { opacity: 1; transform: scale(1) translateX(0); }
+}
+
+.bf-live-explainer {
+  font-family: var(--bf-font-mono);
+  font-size: 10.5px;
+  color: var(--bf-text-muted);
+  line-height: 1.7;
+  padding: 12px 14px;
+  border: 1px dashed var(--bf-hairline-hi);
+  border-radius: var(--bf-radius);
+  background-color: rgba(0, 0, 0, 0.16);
+}
+.bf-live-explainer strong {
+  color: var(--bf-amber);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+@media (max-width: 720px) {
+  .bf-live-counters { grid-template-columns: repeat(2, 1fr); }
+  .bf-live-grid { grid-template-columns: 1fr; }
+  .bf-live-dashboard { padding: 12px 14px 20px; }
+}
+
+
+/* In-flight progress bar — segmented, not smooth */
+.bf-progress {
+  display: flex;
+  gap: 2px;
+  height: 4px;
+  margin-top: 4px;
+}
+.bf-progress-seg {
+  flex: 1;
+  background-color: var(--bf-hairline);
+  transition: background-color 120ms steps(2, end);
+}
+.bf-progress-stage {
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bf-amber);
+  margin-top: 6px;
+}
+
+/* Tabs — letterpress style, not iOS pills */
+.bf-tabs {
+  display: flex;
+  border-bottom: var(--bf-stroke);
+  padding: 0 20px;
+  gap: 0;
+}
+.bf-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--bf-text-muted);
+  padding: 12px 16px;
+  font-family: var(--bf-font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-bottom: -1px;
+  transition: color 120ms steps(2, end),
+              border-color 120ms steps(2, end);
+}
+.bf-tab:hover { color: var(--bf-text); }
+.bf-tab.bf-tab-active {
+  color: var(--bf-amber);
+  border-bottom-color: var(--bf-amber);
+}
+.bf-tab-count {
+  display: inline-block;
+  margin-left: 6px;
+  color: var(--bf-text-dim);
+  font-weight: 400;
+}
+.bf-tab.bf-tab-active .bf-tab-count { color: var(--bf-amber-dim); }
+
+
+/* ---------------------------------------------------------------- */
+/* Findings tab — the centerpiece                                   */
+/* ---------------------------------------------------------------- */
+
+.bf-tab-panel {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px 32px;
+}
+
+.bf-filter-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.bf-filter-chip {
+  background: transparent;
+  border: 1px solid var(--bf-hairline-hi);
+  color: var(--bf-text-muted);
+  padding: 3px 9px;
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: var(--bf-radius);
+  transition: color 120ms steps(2, end),
+              border-color 120ms steps(2, end);
+}
+.bf-filter-chip:hover { color: var(--bf-text); }
+.bf-filter-chip.bf-filter-active {
+  color: var(--bf-amber);
+  border-color: var(--bf-amber);
+}
+
+/* Status section header (FIXED / CONFIRMED / etc.) */
+.bf-section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed var(--bf-hairline);
+}
+.bf-section-head:first-child { margin-top: 0; }
+.bf-section-label {
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.bf-section-label.bf-sl-fixed       { color: var(--bf-fixed); }
+.bf-section-label.bf-sl-confirmed   { color: var(--bf-confirmed); }
+.bf-section-label.bf-sl-fix_failed  { color: var(--bf-critical); }
+.bf-section-label.bf-sl-unconfirmable { color: var(--bf-speculative); }
+.bf-section-label.bf-sl-speculative { color: var(--bf-speculative); }
+
+.bf-section-count {
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  color: var(--bf-text-muted);
+  letter-spacing: 0.08em;
+}
+.bf-section-rule {
+  flex: 1;
+  height: 0;
+  border-top: 1px dashed var(--bf-hairline);
+}
+
+/* Finding card — the instrument signature aesthetic */
+.bf-finding {
+  background-color: var(--bf-panel);
+  border: var(--bf-stroke);
+  border-radius: var(--bf-radius);
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: border-color 120ms steps(2, end);
+}
+.bf-finding:hover { border-color: var(--bf-hairline-hi); }
+.bf-finding.bf-finding-open { border-color: var(--bf-amber-dim); }
+
+.bf-finding-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 14px;
+  cursor: pointer;
+  font-family: var(--bf-font-mono);
+}
+.bf-finding-head:hover { background-color: var(--bf-panel-hi); }
+
+/* Signature mnemonic — leftmost column */
+.bf-fmnemonic {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--bf-text-muted);
+}
+.bf-fmnemonic .bf-fm-sev {
+  display: inline-block;
+  padding: 0 4px;
+  border: 1px solid currentColor;
+  border-radius: var(--bf-radius);
+}
+.bf-fmnemonic.bf-sev-critical { color: var(--bf-critical); }
+.bf-fmnemonic.bf-sev-high     { color: var(--bf-confirmed); }
+.bf-fmnemonic.bf-sev-medium   { color: var(--bf-amber); }
+.bf-fmnemonic.bf-sev-low      { color: var(--bf-fixed); }
+.bf-fmnemonic.bf-sev-info     { color: var(--bf-text-muted); }
+
+.bf-fid {
+  font-size: 10px;
+  color: var(--bf-text-dim);
+  letter-spacing: 0.06em;
+  justify-self: start;
+}
+
+/* The 3◉/3◉ confirmation pip indicator */
+.bf-fpips {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  font-size: 11px;
+  color: var(--bf-text-muted);
+  letter-spacing: 0.04em;
+}
+.bf-fpip-filled  { color: var(--bf-amber); }
+.bf-fpip-empty   { color: var(--bf-text-dim); }
+.bf-fpip-sep     {
+  color: var(--bf-text-dim);
+  margin: 0 2px;
+}
+
+.bf-fstatus {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border: 1px solid currentColor;
+}
+.bf-fstatus.bf-fs-fixed       { color: var(--bf-fixed); }
+.bf-fstatus.bf-fs-confirmed   { color: var(--bf-confirmed); }
+.bf-fstatus.bf-fs-fix_failed  { color: var(--bf-critical); }
+.bf-fstatus.bf-fs-unconfirmable { color: var(--bf-speculative); }
+.bf-fstatus.bf-fs-speculative { color: var(--bf-speculative); }
+
+.bf-finding-body {
+  padding: 6px 14px 14px;
+  border-top: var(--bf-stroke);
+}
+
+.bf-finding-claim {
+  font-family: var(--bf-font-sans);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--bf-text);
+  margin: 8px 0 10px;
+}
+
+.bf-finding-loc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-family: var(--bf-font-mono);
+  font-size: 11px;
+  color: var(--bf-text-muted);
+  margin-bottom: 10px;
+}
+.bf-finding-loc strong {
+  color: var(--bf-text);
+  font-weight: 500;
+}
+
+.bf-finding-meta-block {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  background-color: var(--bf-bg);
+  border-left: 2px solid var(--bf-hairline-hi);
+  font-family: var(--bf-font-mono);
+  font-size: 11px;
+  line-height: 1.6;
+}
+.bf-finding-meta-block dt {
+  color: var(--bf-text-muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+.bf-finding-meta-block dt:first-child { margin-top: 0; }
+.bf-finding-meta-block dd {
+  margin: 2px 0 0;
+  color: var(--bf-text);
+}
+
+.bf-finding-notes {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--bf-hairline);
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  color: var(--bf-text-muted);
+  line-height: 1.65;
+}
+.bf-finding-notes li {
+  padding-left: 14px;
+  position: relative;
+  list-style: none;
+}
+.bf-finding-notes li::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+  color: var(--bf-text-dim);
+}
+
+
+/* ---------------------------------------------------------------- */
+/* Patches tab                                                      */
+/* ---------------------------------------------------------------- */
+
+.bf-patch-card {
+  background-color: var(--bf-panel);
+  border: var(--bf-stroke);
+  border-radius: var(--bf-radius);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.bf-patch-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: var(--bf-stroke);
+  font-family: var(--bf-font-mono);
+  font-size: 11px;
+}
+.bf-patch-title {
+  color: var(--bf-text);
+  letter-spacing: 0.05em;
+}
+.bf-patch-copy {
+  background: transparent;
+  border: 1px solid var(--bf-hairline-hi);
+  color: var(--bf-text-muted);
+  font-family: var(--bf-font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  cursor: pointer;
+  border-radius: var(--bf-radius);
+  transition: color 120ms steps(2, end),
+              border-color 120ms steps(2, end);
+}
+.bf-patch-copy:hover { color: var(--bf-amber); border-color: var(--bf-amber); }
+.bf-patch-copy.bf-copied { color: var(--bf-fixed); border-color: var(--bf-fixed); }
+
+.bf-patch-diff {
+  margin: 0;
+  padding: 12px 14px;
+  font-family: var(--bf-font-mono);
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--bf-text);
+  overflow-x: auto;
+  white-space: pre;
+}
+.bf-patch-diff .bf-diff-add { color: var(--bf-fixed); }
+.bf-patch-diff .bf-diff-del { color: var(--bf-critical); }
+.bf-patch-diff .bf-diff-hunk { color: var(--bf-chrome); }
+
+
+/* ---------------------------------------------------------------- */
+/* Cost ledger tab                                                  */
+/* ---------------------------------------------------------------- */
+
+.bf-cost-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--bf-font-mono);
+  font-size: 11px;
+}
+.bf-cost-table thead th {
+  text-align: left;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bf-text-muted);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--bf-hairline-hi);
+  background-color: rgba(0,0,0,0.18);
+}
+.bf-cost-table tbody td {
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--bf-hairline);
+  color: var(--bf-text);
+}
+.bf-cost-table tbody td.bf-cost-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.bf-cost-table tbody tr:hover { background-color: var(--bf-panel); }
+.bf-cost-table tfoot td {
+  padding: 10px 12px;
+  border-top: 1px solid var(--bf-hairline-hi);
+  font-weight: 700;
+  color: var(--bf-amber);
+  text-align: right;
+}
+.bf-cost-table tfoot td:first-child { text-align: left; }
+.bf-cost-table .bf-cost-stop-stuck    { color: var(--bf-confirmed); }
+.bf-cost-table .bf-cost-stop-budget   { color: var(--bf-confirmed); }
+.bf-cost-table .bf-cost-stop-error    { color: var(--bf-critical); }
+.bf-cost-table .bf-cost-stop-complete { color: var(--bf-fixed); }
+
+
+/* ---------------------------------------------------------------- */
+/* Baseline tab                                                     */
+/* ---------------------------------------------------------------- */
+
+.bf-baseline {
+  font-family: var(--bf-font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.bf-baseline dt {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bf-text-muted);
+  margin-top: 16px;
+}
+.bf-baseline dt:first-of-type { margin-top: 0; }
+.bf-baseline dd {
+  margin: 4px 0 0;
+  color: var(--bf-text);
+}
+.bf-baseline pre.bf-baseline-stdout {
+  margin: 6px 0 0;
+  padding: 10px 12px;
+  background-color: var(--bf-bg);
+  border-left: 2px solid var(--bf-hairline-hi);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--bf-text);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+
+/* ---------------------------------------------------------------- */
+/* New run modal                                                    */
+/* ---------------------------------------------------------------- */
+
+.bf-modal-card {
+  width: min(560px, 92vw);
+  max-height: 88vh;
+  overflow-y: auto;
+  background-color: var(--bf-bg);
+  border: 1px solid var(--bf-hairline-hi);
+  font-family: var(--bf-font-sans);
+}
+.bf-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border-bottom: var(--bf-stroke);
+}
+.bf-modal-title {
+  font-family: var(--bf-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--bf-amber);
+}
+.bf-modal-close {
+  background: transparent;
+  border: 1px solid var(--bf-hairline-hi);
+  color: var(--bf-text-muted);
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  font-family: var(--bf-font-mono);
+  font-size: 13px;
+  line-height: 1;
+  border-radius: var(--bf-radius);
+}
+.bf-modal-close:hover { color: var(--bf-amber); border-color: var(--bf-amber); }
+
+.bf-form {
+  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.bf-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.bf-form-label {
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bf-text-muted);
+}
+.bf-form-input,
+.bf-form-select,
+.bf-form-textarea {
+  background-color: var(--bf-panel);
+  border: 1px solid var(--bf-hairline-hi);
+  border-radius: var(--bf-radius);
+  color: var(--bf-text);
+  font-family: var(--bf-font-mono);
+  font-size: 12px;
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color 120ms steps(2, end);
+}
+.bf-form-textarea { min-height: 64px; resize: vertical; }
+.bf-form-input:focus,
+.bf-form-select:focus,
+.bf-form-textarea:focus { border-color: var(--bf-amber); }
+
+.bf-form-error {
+  font-family: var(--bf-font-mono);
+  font-size: 11px;
+  color: var(--bf-critical);
+  padding: 8px 12px;
+  border: 1px solid var(--bf-critical);
+  border-radius: var(--bf-radius);
+  background-color: rgba(242, 92, 92, 0.07);
+}
+
+/* Segmented controls — mode + depth. Hard-edged toggle row, amber active. */
+.bf-segmented {
+  display: flex;
+  gap: 2px;
+  background: var(--bf-bg);
+  border: var(--bf-stroke);
+  border-radius: var(--bf-radius);
+  padding: 2px;
+}
+.bf-seg {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--bf-text-muted);
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 7px 6px;
+  cursor: pointer;
+  border-radius: var(--bf-radius);
+  transition: background-color 120ms, color 120ms;
+}
+.bf-seg:hover { color: var(--bf-text); }
+.bf-seg[data-active="true"] {
+  background: var(--bf-amber);
+  color: #14110A;
+}
+
+/* Token-cost estimate line under the depth selector. */
+.bf-estimate {
+  margin-top: 7px;
+  font-family: var(--bf-font-mono);
+  font-size: 11px;
+  color: var(--bf-text-muted);
+  letter-spacing: 0.02em;
+}
+.bf-est-num { color: var(--bf-amber); font-weight: 700; }
+.bf-est-soft { color: var(--bf-text-dim); }
+
+/* Advanced collapsible — token budget + legs. */
+.bf-advanced {
+  border: var(--bf-stroke);
+  border-radius: var(--bf-radius);
+  background: var(--bf-bg);
+}
+.bf-advanced-summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 9px 12px;
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bf-chrome);
+  user-select: none;
+}
+.bf-advanced-summary::-webkit-details-marker { display: none; }
+.bf-advanced-summary::before { content: "▸ "; color: var(--bf-text-dim); }
+.bf-advanced[open] .bf-advanced-summary::before { content: "▾ "; }
+.bf-advanced[open] .bf-advanced-summary { color: var(--bf-amber); border-bottom: var(--bf-stroke); }
+.bf-advanced-body { padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+.bf-adv-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.bf-adv-field { display: flex; flex-direction: column; gap: 4px; }
+.bf-adv-label {
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bf-text-muted);
+}
+.bf-adv-note { font-size: 10px; color: var(--bf-text-dim); line-height: 1.3; }
+.bf-adv-toggles { display: flex; flex-direction: column; gap: 8px; }
+@media (max-width: 540px) {
+  .bf-adv-grid { grid-template-columns: 1fr; }
+}
+
+.bf-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 6px;
+  border-top: var(--bf-stroke);
+  margin-top: 4px;
+}
+.bf-btn-secondary {
+  background: transparent;
+  border: 1px solid var(--bf-hairline-hi);
+  color: var(--bf-text-muted);
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  cursor: pointer;
+  border-radius: var(--bf-radius);
+}
+.bf-btn-secondary:hover { color: var(--bf-text); border-color: var(--bf-hairline-hi); }
+
+.bf-btn-primary {
+  background-color: var(--bf-amber);
+  border: 1px solid var(--bf-amber);
+  color: var(--bf-bg);
+  font-family: var(--bf-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 7px 16px;
+  cursor: pointer;
+  border-radius: var(--bf-radius);
+}
+.bf-btn-primary:hover { background-color: #FFD06A; }
+.bf-btn-primary:disabled {
+  background-color: var(--bf-amber-dim);
+  border-color: var(--bf-amber-dim);
+  cursor: not-allowed;
+}
+
+
+/* ---------------------------------------------------------------- */
+/* Animations                                                       */
+/* ---------------------------------------------------------------- */
+
+@keyframes bfRailReveal {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+/* Cascade reveal — applied via nth-child so we don't need JS */
+.bf-card:nth-child(1)  { animation-delay:   0ms; }
+.bf-card:nth-child(2)  { animation-delay:  30ms; }
+.bf-card:nth-child(3)  { animation-delay:  60ms; }
+.bf-card:nth-child(4)  { animation-delay:  90ms; }
+.bf-card:nth-child(5)  { animation-delay: 120ms; }
+.bf-card:nth-child(6)  { animation-delay: 150ms; }
+.bf-card:nth-child(7)  { animation-delay: 180ms; }
+.bf-card:nth-child(8)  { animation-delay: 210ms; }
+.bf-card:nth-child(n+9) { animation-delay: 240ms; }
+
+
+/* ---------------------------------------------------------------- */
+/* Scrollbars — subdued                                             */
+/* ---------------------------------------------------------------- */
+
+.bf-rail-list::-webkit-scrollbar,
+.bf-tab-panel::-webkit-scrollbar { width: 8px; }
+.bf-rail-list::-webkit-scrollbar-thumb,
+.bf-tab-panel::-webkit-scrollbar-thumb {
+  background-color: var(--bf-hairline);
+  border-radius: 0;
+}
+.bf-rail-list::-webkit-scrollbar-thumb:hover,
+.bf-tab-panel::-webkit-scrollbar-thumb:hover {
+  background-color: var(--bf-hairline-hi);
+}
+.bf-rail-list::-webkit-scrollbar-track,
+.bf-tab-panel::-webkit-scrollbar-track {
+  background-color: transparent;
+}

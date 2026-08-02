@@ -1,0 +1,80 @@
+# Sesame CSM-1B — conversational streaming TTS (GPU, opt-in)
+# Prosody conditioned on the conversation so far (not just text). ~3-4GB
+# VRAM in bf16; needs an NVIDIA GPU. Built on the davidbrowne17/csm-streaming
+# fork for incremental (real-time) decoding.
+#
+# GATED WEIGHTS: requires an HF token whose account has accepted BOTH
+#   https://huggingface.co/sesame/csm-1b
+#   https://huggingface.co/meta-llama/Llama-3.2-1B
+# Set AUGMENTUM_HUGGINGFACE_TOKEN in your .env before starting.
+#
+# Usage: add `compose.sesame-csm.yaml` to .augmentum.conf, then start.
+# API: http://localhost:6700   (Augmentum reaches it at http://sesame-csm:8920)
+services:
+  sesame-csm:
+    build:
+      context: ./services/sesame-csm
+    ports:
+      - "6700:8920"
+    volumes:
+      - sesame_csm_cache:/cache
+      - ./data/voices:/voices
+      # Fine-tuned voice (Sesame-format, built by training/bridge_to_sesame.py).
+      # Mounted read-only; swap the path to serve a different trained voice.
+      - ./services/sesame-csm/training/out/ruby-v2-sesame:/model:ro
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "8920"
+      DEVICE: "cuda"
+      VOICE_LIBRARY_DIR: "/voices"
+      HF_HOME: "/cache/hf"
+      # Load the fine-tuned voice mounted above instead of base CSM-1B.
+      # Comment out (or set empty) to fall back to base CSM cloning.
+      CSM_MODEL_DIR: "${AUGMENTUM_CSM_MODEL_DIR:-/model}"
+      # Display name + dialogue capability of the mounted fine-tuned voice.
+      CSM_VOICE_NAME: "${AUGMENTUM_CSM_VOICE_NAME:-ruby}"
+      CSM_DIALOGUE: "${AUGMENTUM_CSM_DIALOGUE:-1}"
+      # Release ~3-4GB VRAM after this many idle seconds (lazy-reloads from
+      # the local cache on next use / a /warmup ping). 0 = never unload
+      # (set on slow GPUs where reloads hurt; pairs with the companion
+      # "always" residency setting).
+      CSM_IDLE_UNLOAD_S: "${AUGMENTUM_CSM_IDLE_UNLOAD_S:-90}"
+      # Model dtype. Empty = bf16 (CSM default). Set fp16 on Turing GPUs
+      # (RTX 20-series, e.g. 2080 Super) which have no native bf16.
+      CSM_DTYPE: "${AUGMENTUM_CSM_DTYPE:-}"
+      # Bridge Augmentum's HF token into the gated-weights download chain.
+      HF_TOKEN: "${AUGMENTUM_HUGGINGFACE_TOKEN:-}"
+      HUGGING_FACE_HUB_TOKEN: "${AUGMENTUM_HUGGINGFACE_TOKEN:-}"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://0.0.0.0:8920/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 600s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    logging:
+      options:
+        max-size: "50m"
+        max-file: "3"
+    # Host-RAM backstop. CSM-1B + the Llama-3.2-1B backbone go to VRAM, but
+    # every idle-unload/reload cycle (CSM_IDLE_UNLOAD_S=90 by default) re-reads
+    # the safetensors through host RAM and page cache — so this path is hit
+    # repeatedly, not just once at boot. Unverified estimate — this service
+    # isn't running. Raise it if you serve additional fine-tuned voices.
+    mem_limit: ${AUGMENTUM_SESAME_CSM_MEM_LIMIT:-12g}
+
+  # Point Augmentum at the sidecar so it auto-registers as a TTS provider
+  # at startup (see _BUNDLED in server.py). Compose merges this into the
+  # augmentum service defined in compose.yaml.
+  augmentum:
+    environment:
+      AUGMENTUM_TTS_SESAME_CSM_URL: "http://sesame-csm:8920"
+
+volumes:
+  sesame_csm_cache:

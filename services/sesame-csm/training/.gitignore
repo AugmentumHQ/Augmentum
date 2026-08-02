@@ -1,0 +1,8 @@
+# Generated / heavy artifacts — never commit these (multi-GB).
+# The harness code (*.py, config.yaml, *.md, *.txt) stays tracked.
+.venv/
+data/
+samples/
+out/
+__pycache__/
+*.pyc

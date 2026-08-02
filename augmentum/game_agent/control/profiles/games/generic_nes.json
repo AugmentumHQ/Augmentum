@@ -1,0 +1,43 @@
+{
+  "schema": "control.game.v1",
+  "id": "generic_nes",
+  "description": "Generic NES game profile. Maps the universal action vocabulary to the standard NES two-face-button layout. Suitable as a vision-only default for any NES title without a game-specific profile.",
+  "applies_to_controllers": ["nes"],
+  "applies_to_log_schema": "nes_vision.v1",
+  "actions": {
+    "confirm": {
+      "binding": "face_east",
+      "hint": "Press A. Advance dialog, confirm menu choice, fire in shooters, primary action in platformers."
+    },
+    "cancel": {
+      "binding": "face_south",
+      "hint": "Press B. Cancel menu, secondary action (jump in some games, special in others)."
+    },
+    "menu": {
+      "binding": "start",
+      "hint": "Press Start. Open the pause / inventory menu in most games; start the game on the title screen."
+    },
+    "back": {
+      "binding": "select",
+      "hint": "Press Select. Game-specific: typically swaps weapons or opens a secondary menu (rarely used outside RPGs and Metroid)."
+    },
+    "nav_up": {
+      "binding": "dpad_up",
+      "hint": "Walk / fly / move up. In menus: cursor up."
+    },
+    "nav_down": {
+      "binding": "dpad_down",
+      "hint": "Walk / move down. In menus: cursor down."
+    },
+    "nav_left": {
+      "binding": "dpad_left",
+      "hint": "Walk / move left. In menus: cursor left."
+    },
+    "nav_right": {
+      "binding": "dpad_right",
+      "hint": "Walk / move right. In menus: cursor right."
+    }
+  },
+  "hardware_passthrough": [],
+  "notes": "Per-game profiles should override action hints to describe the in-game effect (e.g. 'confirm = jump' for Super Mario Bros.); the universal verbs still describe the player's intent."
+}

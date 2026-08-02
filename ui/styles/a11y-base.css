@@ -1,0 +1,62 @@
+/* ==========================================================================
+   a11y-base.css — global accessibility + input-polish baseline.
+
+   Loaded right after variables.css / themes.css (so design tokens exist) and
+   BEFORE the component sheets, so its low-specificity rules are the floor that
+   any component can override. Two jobs, both about feeling professional on
+   EVERY device + input method:
+
+     1. A single, consistent keyboard/D-pad focus ring. Uses :focus-visible so
+        it only appears for keyboard / programmatic / D-pad focus — never on a
+        mouse click or touch tap (which would look broken on desktop). This is
+        what makes the app usable on a TV remote and for keyboard users without
+        each surface having to remember to style focus.
+
+     2. An app-wide prefers-reduced-motion guard. animations.css already clamps
+        its own keyframes; this extends the courtesy to every transition/
+        animation everywhere. We shorten durations to ~0 rather than setting
+        `none` so `transitionend` / `animationend` listeners still fire — JS
+        that awaits a transition won't hang.
+   ========================================================================== */
+
+/* --- Keyboard / D-pad focus ring -------------------------------------------
+   :focus-visible is the load-bearing part: pointer interactions don't match
+   it in modern browsers, so this never adds a click outline. */
+:focus-visible {
+  outline: 2px solid var(--primary, #4cc9f0);
+  outline-offset: 2px;
+  /* Rounded targets get a ring that follows their corners where supported. */
+  border-radius: inherit;
+}
+
+/* Suppress the legacy default outline ONLY when the engine has decided this
+   isn't a keyboard-style focus (so we don't strip focus from anyone relying
+   on it — :focus-visible above always wins for them). */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Form controls keep a slightly stronger ring — they're the highest-stakes
+   focus targets and benefit from extra contrast on dense forms. */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--primary, #4cc9f0);
+  outline-offset: 2px;
+}
+
+/* --- Reduced motion --------------------------------------------------------
+   Honour the OS setting everywhere. ~0ms (not 0) keeps *end events firing. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

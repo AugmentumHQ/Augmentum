@@ -1,0 +1,41 @@
+# Higgs Audio v3 TTS (4B) serving image — rebuild recipe
+# ----------------------------------------------------------------------------
+# PERSONAL / NON-COMMERCIAL. See compose.higgs.yaml header for licensing.
+#
+# compose.higgs.yaml uses the `higgs-tts:local` image produced by
+# `docker commit` of a working container. This Dockerfile documents how that
+# container was bootstrapped, so the image can be rebuilt reproducibly:
+#
+#     docker build -f Dockerfile.higgs -t higgs-tts:local .
+#
+# The base `lmsysorg/sglang-omni:dev` image (~57GB) ships the serving runtime
+# but NOT the sglang-omni Python package, so it is installed from source here.
+# The first model load JITs sm86 kernels via nvrtc (image carries sm100/
+# Blackwell kernels), which is why the flashinfer version guard is disabled at
+# runtime (see compose env).
+# ----------------------------------------------------------------------------
+FROM lmsysorg/sglang-omni:dev
+
+# PEP 668: base image marks the system env as externally-managed; we install
+# the omni package into it deliberately for this single-purpose container.
+RUN rm -f /usr/lib/python3.12/EXTERNALLY-MANAGED
+
+# Install sglang-omni (provides `sgl-omni` + HiggsTTSModel) from source.
+RUN git clone https://github.com/sgl-project/sglang-omni.git /root/sglang-omni \
+    && uv pip install --system -e /root/sglang-omni
+
+# The prebuilt flashinfer JIT cache targets sm100; on Ampere (sm86) it must
+# JIT at runtime instead. Remove the cache package so the runtime nvrtc path
+# is taken (paired with FLASHINFER_DISABLE_VERSION_CHECK=1 at serve time).
+RUN uv pip uninstall --system flashinfer-jit-cache || true
+
+EXPOSE 8000
+
+# Reset the base image's ENTRYPOINT (it is `sleep` in the dev image) so the
+# container serves by default. compose.higgs.yaml also overrides this, so a
+# rebuilt image and the committed image behave identically.
+ENTRYPOINT ["sgl-omni"]
+CMD ["serve", "--model-path", "bosonai/higgs-audio-v3-tts-4b", "--host", "0.0.0.0", "--port", "8000"]
+
+# Runtime env (LD_LIBRARY_PATH / FLASHINFER_DISABLE_VERSION_CHECK / HF_HUB_OFFLINE)
+# is supplied by compose.higgs.yaml so it stays easy to tweak without a rebuild.

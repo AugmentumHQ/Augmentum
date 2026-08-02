@@ -1,0 +1,172 @@
+/* ==========================================================================
+   Sheet — reusable centered modal (desktop) / bottom sheet (mobile)
+   Matches the design tokens in variables.css and the popover pattern already
+   used by flow-picker.  One sheet may be open at a time; z-index sits at the
+   --z-modal layer so it covers overlays but yields to toasts and the
+   command palette.
+   ========================================================================== */
+
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: var(--z-modal);
+  animation: sheet-backdrop-in var(--duration-200) var(--ease-out);
+}
+
+.sheet {
+  position: fixed;
+  z-index: calc(var(--z-modal) + 1);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xl);
+  color: var(--text-primary);
+  overflow: hidden;
+  --sheet-accent: var(--accent);
+
+  /* Desktop defaults: centered modal */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(560px, calc(100vw - 32px));
+  max-height: min(640px, calc(100dvh - 64px));
+  border-radius: var(--radius-lg);
+  animation: sheet-in-desktop var(--duration-slow) var(--ease-out);
+}
+
+.sheet__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sheet__title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.sheet__close {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+}
+
+.sheet__close:hover {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+}
+
+.sheet__close:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-glow);
+}
+
+.sheet__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-lg);
+}
+
+.sheet__footer {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: flex-end;
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  flex-shrink: 0;
+}
+
+/* --- Mobile: bottom sheet --------------------------------------------- */
+
+@media (max-width: 767px) {
+  .sheet {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    max-width: none;
+    /* dvh tracks the actual visual viewport so the sheet doesn't fight the
+       mobile address bar when it shows/hides. 90vh would shrink/grow the
+       open sheet during scroll on iOS Safari and oscillate the layout. */
+    max-height: 90dvh;
+    transform: none;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    animation: sheet-in-mobile var(--duration-slow) var(--ease-out);
+  }
+
+  /* Grabber — decorative affordance hinting the sheet can be dismissed */
+  .sheet::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    margin: 8px auto 0;
+    background: var(--text-muted);
+    opacity: 0.25;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .sheet__header {
+    padding: 6px var(--space-md) var(--space-md);
+  }
+
+  .sheet__body {
+    padding: 0 var(--space-md) var(--space-md);
+  }
+
+  .sheet__footer {
+    padding: var(--space-md);
+    padding-bottom: max(var(--space-md), env(safe-area-inset-bottom));
+  }
+}
+
+/* --- Animations ------------------------------------------------------- */
+
+@keyframes sheet-backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes sheet-in-desktop {
+  from { opacity: 0; transform: translate(-50%, -46%) scale(0.96); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes sheet-in-mobile {
+  from { opacity: 0; transform: translateY(100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .sheet-backdrop {
+    animation: none !important;
+  }
+}

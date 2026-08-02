@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Augmentum · Watching</title>
+  <link rel="stylesheet" href="cast-video.css">
+</head>
+<body>
+  <!-- The video itself. Native controls hidden — the phone is the
+       transport, and on-TV remote support comes later.
+
+       NO ``crossorigin`` attribute: the stream URL is same-origin
+       (/api/media/stream/...), so the browser sends the session
+       cookie automatically without needing CORS-credentials
+       validation. Setting ``crossorigin="use-credentials"`` here
+       forced even same-origin fetches through CORS validation, and
+       since the proxy doesn't echo Access-Control-Allow-Credentials,
+       the resource became "tainted" — playback worked but
+       createMediaElementSource produced silence (spec-mandated for
+       tainted media). Result: turning on A/V sync killed audio. -->
+  <video
+    class="player"
+    data-cv-video
+    autoplay
+    playsinline
+    preload="auto"
+  ></video>
+
+  <!-- Title overlay top-left. Fades after settle, re-appears briefly
+       on any patch arrival so the user gets visual feedback that
+       their phone action landed. -->
+  <header class="hud-top" data-cv-hud-top>
+    <div class="hud-overline" data-cv-overline>—</div>
+    <h1 class="hud-title" data-cv-title>Loading…</h1>
+    <div class="hud-sub" data-cv-sub></div>
+  </header>
+
+  <!-- Transport bar — bottom strip. Position + progress + indicators
+       for active features (CC, speed, paused). Same fade behavior. -->
+  <footer class="hud-bottom" data-cv-hud-bottom>
+    <div class="hud-time-row">
+      <span data-cv-elapsed>0:00</span>
+      <span class="hud-sep">/</span>
+      <span data-cv-duration>—:—</span>
+      <span class="hud-flags">
+        <span class="hud-flag" data-cv-flag-paused hidden>paused</span>
+        <span class="hud-flag" data-cv-flag-speed hidden>1.0×</span>
+        <span class="hud-flag" data-cv-flag-cc hidden>CC</span>
+      </span>
+    </div>
+    <div class="hud-bar">
+      <div class="hud-bar-fill" data-cv-bar-fill></div>
+    </div>
+  </footer>
+
+  <!-- Initial loading + error states overlay -->
+  <div class="state-overlay" data-cv-state hidden>
+    <div class="state-msg" data-cv-state-msg>Loading…</div>
+  </div>
+
+  <script type="module" src="cast-video.js"></script>
+</body>
+</html>

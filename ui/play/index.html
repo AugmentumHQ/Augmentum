@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Augmentum Play</title>
+  <link rel="stylesheet" href="../styles/emulator-stage.css">
+  <link rel="stylesheet" href="../styles/stream-stage.css">
+  <link rel="stylesheet" href="../styles/agent-panel.css">
+  <style>
+    /* Standalone play page: black bg + no margins. The stage overlays
+       claim the whole viewport via position:fixed; this just keeps the
+       fallback (error / loading) clean. */
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #ddd;
+      font: 14px/1.4 "Source Sans 3", "Inter", system-ui, sans-serif;
+      height: 100%;
+      overflow: hidden;
+    }
+    .play-fallback {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      text-align: center;
+      padding: 32px;
+    }
+    .play-fallback-title { font-size: 18px; opacity: 0.9; }
+    .play-fallback-detail { font-size: 13px; opacity: 0.55; max-width: 480px; }
+  </style>
+</head>
+<body>
+  <div class="play-fallback" id="play-fallback">
+    <div class="play-fallback-title">Loading…</div>
+    <div class="play-fallback-detail" id="play-fallback-detail"></div>
+  </div>
+  <!-- Universal cast-input adapter pipeline — installed BEFORE play.js
+       so the gamepad shim is in place before the EmulatorJS iframe
+       mounts. The loader boots with ['gamepad_api'] and listens for
+       postMessage 'augmentum.cast_input_config' to swap in keyboard /
+       touch / pointer chains (selected per-game by the classifier in
+       Phase 2). See spec docs/superpowers/specs/2026-06-04-universal-
+       cast-pipeline-design.md. -->
+  <script type="module" src="../scripts/cast-input/universal-input-adapter.js"></script>
+  <script type="module" src="./play.js"></script>
+</body>
+</html>

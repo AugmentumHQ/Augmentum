@@ -1,0 +1,215 @@
+{
+  "lang": "ja",
+  "version": "1.0.0",
+  "name": "Japanese Skill Assessment",
+  "credits": "Adapted from JLPT N5/N4 specifications (Japan Foundation) + JF Standard for Japanese-Language Education (CEFR-aligned, 2010) Can-do statements. LLM-grader prompts hand-tuned for Japanese-specific signals (particle correctness, register, kanji-skipping, counters). Kanji recognition/production targets derived from the standard JLPT N5 ~100-kanji / N4 ~300-kanji body of literature.",
+  "license": "CC BY 4.0",
+  "levels": [
+    {
+      "code": "N5",
+      "name": "Beginner",
+      "summary": "Can understand basic Japanese to a certain degree. Can read and understand typical expressions and sentences written in hiragana, katakana, and basic kanji. Can listen and comprehend short, slowly-spoken conversations in daily-life situations.",
+      "can_do": {
+        "reading": [
+          {
+            "id": "ja-n5-r-01",
+            "statement": "Can read hiragana and katakana fluently and decode short, simple sentences written in basic kanji + kana with furigana support.",
+            "evidence": "Bubble Pop / Echo Chamber session correctly resolves >= 15 distinct N5 phrases drawn from ja.json units; no >2s stall on pure-kana lines."
+          },
+          {
+            "id": "ja-n5-r-02",
+            "statement": "Can understand short, well-rehearsed sentences on familiar topics (self, family, food, time, weather) when written in simple sentence patterns.",
+            "evidence": "Story Weaver / Browse: >= 10 N5 sentences from ja-n5-01..ja-n5-12 units read with correct gloss-on-hover usage < 30% of words (i.e. learner mostly reads without lookups)."
+          },
+          {
+            "id": "ja-n5-r-03",
+            "statement": "Can read katakana loanwords (コーヒー, レストラン, ノート, ペン) and map them to the source meaning.",
+            "evidence": "Vocab queue: >= 20 katakana N5 entries reach 'mature' state, no >25% lapse rate on katakana cards."
+          }
+        ],
+        "writing": [
+          {
+            "id": "ja-n5-w-01",
+            "statement": "Can write short, simple sentences about self, family, and daily routine using the topic-comment pattern (Xは Yです).",
+            "evidence": "Companion produces >= 5 graded writing samples averaging >= 3 valid Xは Yです / Xを Yます sentences with correct particles."
+          },
+          {
+            "id": "ja-n5-w-02",
+            "statement": "Can use the core particles は (topic), が (subject), を (object), に (location/time goal), で (means/place of action), の (possessive) at N5 frequency without systematic confusion.",
+            "evidence": "Across last 10 writing turns: particle-error rate < 25% on these six particles, no single particle systematically swapped (e.g. は/が swapped > 50% = fail)."
+          },
+          {
+            "id": "ja-n5-w-03",
+            "statement": "Can spell N5 content words in kanji where the standard N5 list expects kanji (今日, 私, 学校, 日本, 食べる, 行く, 見る, 一/二/三 etc.), not in pure hiragana fallback.",
+            "evidence": ">= 70% of the N5 content-kanji headwords appear as kanji (not hiragana) in 5 most recent writing samples."
+          }
+        ],
+        "listening": [
+          {
+            "id": "ja-n5-l-01",
+            "statement": "Can understand short, slow utterances on everyday topics (greetings, prices, time, simple instructions) delivered at <= 4 mora/sec.",
+            "evidence": "Companion voice mode: >= 10 N5 prompts answered correctly when TTS speech_rate <= 0.85, no repeat requested on > 40% of turns."
+          },
+          {
+            "id": "ja-n5-l-02",
+            "statement": "Can recognise numbers 0-100, days of the week, time-of-day expressions, and basic counters (時, 分, 歳, 円) when spoken slowly.",
+            "evidence": "Numbers-and-time drill in Echo Chamber: >= 15 correct out of 20 N5 numeric prompts."
+          }
+        ],
+        "speaking": [
+          {
+            "id": "ja-n5-s-01",
+            "statement": "Can introduce self (name, nationality, occupation, age) and greet appropriately for the time of day.",
+            "evidence": "Companion 5-turn speaking probe scores level_assessment in {'N5', 'N4-ready'} with self-introduction can-do listed in `can_do[]`."
+          },
+          {
+            "id": "ja-n5-s-02",
+            "statement": "Can ask and answer simple questions using N5 question words (何, 誰, どこ, いつ, いくら, 何時, 何歳).",
+            "evidence": "Across companion sessions, >= 7 distinct question words produced unprompted; reciprocal Q&A logged >= 5 times."
+          },
+          {
+            "id": "ja-n5-s-03",
+            "statement": "Can use polite ます-form verbs in conversation with a stranger or non-peer; uses でしょう / ですか appropriate to N5 hedging.",
+            "evidence": "Companion speaking probe with register='polite' assigned by grader on >= 3 of last 5 sessions where context dictates polite form."
+          },
+          {
+            "id": "ja-n5-s-04",
+            "statement": "Can use at least 4 distinct N5 counters correctly (人 for people, 本 for cylindrical objects, 枚 for flat objects, 匹 for small animals, 個 for generic things, 歳 for age, 時 for hours).",
+            "evidence": "Speaking probes log >= 4 distinct correct counter usages across last 10 sessions; counter-error annotations from grader < 30%."
+          }
+        ]
+      },
+      "kanji_skills": {
+        "recognition_target": 100,
+        "production_target": 50,
+        "evidence": "Recognition: SRS vocab queue counts >= 80 distinct N5 kanji headwords as 'reviewing' or 'mature' (script detected = Han). Production: companion writing-grader's `kanji_skipped` list is empty on >= 70% of N5 writing samples, AND the learner has produced >= 50 distinct N5 kanji unprompted across the last 20 writing turns."
+      },
+      "promotion_to_next_level": "All 12 N5 can-dos have evidence registered, >= 600 N5 words settled (mature + reviewing), >= 80 N5 kanji recognised, AND last 3 companion speaking probes returned level_assessment in {'N5', 'N4-ready'} (not 'pre-N5'). Particle-error rate across last 10 writing samples < 25%."
+    },
+    {
+      "code": "N4",
+      "name": "Elementary",
+      "summary": "Can understand basic Japanese. Can read and understand passages on familiar daily topics written in basic vocabulary and kanji. Can listen and comprehend conversations encountered in daily life and follow content roughly, provided they are spoken slowly.",
+      "can_do": {
+        "reading": [
+          {
+            "id": "ja-n4-r-01",
+            "statement": "Can read short passages (~200 chars) about everyday life — diary entries, schedules, simple emails — written in N4-level kanji and grammar.",
+            "evidence": "Story Weaver / Browse: >= 5 N4-grade short texts read end-to-end with gloss-on-hover usage < 20% of content words."
+          },
+          {
+            "id": "ja-n4-r-02",
+            "statement": "Can recognise the て-form, plain-form, past plain-form, and negative plain-form of verbs in reading without consulting a conjugation table.",
+            "evidence": "Reading-comprehension drill: >= 80% correct on a 20-item form-identification quiz (presented form → identify base verb + tense)."
+          },
+          {
+            "id": "ja-n4-r-03",
+            "statement": "Can understand conditional ～たら, ～ば, ～と, and connectives ～から / ～ので in short paragraphs.",
+            "evidence": ">= 6 distinct conditional/causal constructions correctly paraphrased in companion comprehension probes."
+          }
+        ],
+        "writing": [
+          {
+            "id": "ja-n4-w-01",
+            "statement": "Can switch between polite ます-form and plain (dictionary) form appropriately based on the addressee, and not mix them within a single utterance/text.",
+            "evidence": "Last 10 writing samples: companion grader reports register='polite' OR register='plain' (NOT 'mixed-error') on >= 8 of them."
+          },
+          {
+            "id": "ja-n4-w-02",
+            "statement": "Can produce the て-form correctly for 3 verb classes (ichidan, godan, irregular) and connect clauses with it.",
+            "evidence": ">= 15 distinct correctly-formed て-form verbs produced across writing turns; companion grader's `conjugation_errors` < 20% on て-form."
+          },
+          {
+            "id": "ja-n4-w-03",
+            "statement": "Can use N4 grammar patterns: ～たい (want to), ～ながら (while), ～ことがある (have done), ～ようになる (come to), ～かもしれない (might), ～でしょう (probably).",
+            "evidence": ">= 4 of these 6 patterns produced unprompted at least 3 times each across recent writing samples."
+          },
+          {
+            "id": "ja-n4-w-04",
+            "statement": "Can write a short paragraph (5+ sentences) connected by appropriate conjunctions (それから, でも, しかし, それで) rather than disconnected one-line sentences.",
+            "evidence": "Companion grader scores >= 4 of last 5 paragraph-writing samples as 'connected' (not 'choppy/list-like')."
+          }
+        ],
+        "listening": [
+          {
+            "id": "ja-n4-l-01",
+            "statement": "Can follow short conversations (1-2 min) on daily-life topics — shopping, asking directions, doctor's office, work small-talk — spoken at near-natural pace.",
+            "evidence": "Companion voice mode at speech_rate >= 1.0: >= 8 of 10 comprehension-check questions answered correctly across recent sessions."
+          },
+          {
+            "id": "ja-n4-l-02",
+            "statement": "Can distinguish similar-sounding particles / morphology in speech (は vs が, に vs で, plain past 食べた vs て-form 食べて) without visual aid.",
+            "evidence": "Echo Chamber audio-only drill: >= 80% correct on a 15-item minimal-pair particle/conjugation discrimination task."
+          }
+        ],
+        "speaking": [
+          {
+            "id": "ja-n4-s-01",
+            "statement": "Can switch between polite and plain speech based on social register; uses humble/honorifics in their N5 forms (お父さん vs 父, いらっしゃいます vs います) with awareness.",
+            "evidence": "Companion grader's `register` field matches the context-appropriate setting on >= 4 of last 5 speaking probes; no honorific-on-own-family errors in last 3 family-topic sessions."
+          },
+          {
+            "id": "ja-n4-s-02",
+            "statement": "Can give a short opinion or describe a past experience using ～と思う, ～ことがある, past plain forms.",
+            "evidence": ">= 5 opinion-or-experience prompts answered with grammatically valid past-plain or ～と思う construction in last 20 turns."
+          },
+          {
+            "id": "ja-n4-s-03",
+            "statement": "Can hold a 5-turn casual conversation in plain form with a peer/companion without falling back to English or to ます-form for every utterance.",
+            "evidence": "Companion 5-turn speaking probe with register='plain' on >= 3 of last 5 casual-context sessions; no >2 English fall-back tokens per session."
+          }
+        ]
+      },
+      "kanji_skills": {
+        "recognition_target": 300,
+        "production_target": 150,
+        "evidence": "Recognition: SRS vocab queue counts >= 250 distinct kanji headwords (N5 + N4 combined) as 'reviewing' or 'mature'. Production: companion writing-grader's `kanji_skipped` list is empty on >= 80% of N4 writing samples, AND the learner has produced >= 150 distinct kanji unprompted across the last 30 writing turns. New-at-N4 kanji set (e.g. 旅行, 病院, 銀行, 友達, 練習, 説明, 質問) appears in writing at least 5 times each."
+      },
+      "promotion_to_next_level": "All 13 N4 can-dos have evidence registered, >= 1500 settled words (mature + reviewing), >= 250 kanji recognised, AND last 3 companion speaking probes returned level_assessment in {'N4', 'N3-ready'}. Companion grader's register field matches context on >= 80% of recent sessions (i.e. polite/plain switching is real, not random)."
+    }
+  ],
+  "companion_grader_prompts": {
+    "speaking_n5": "You are a JLPT N5 examiner conducting a 5-turn casual conversation with the learner in Japanese. Topic: ${topic}. Speak in Japanese during the conversation; use polite ます-form yourself so the learner is exposed to it but don't penalise them for replying in plain form to you (that's age/peer appropriate). Stay within N5 vocabulary and grammar. After turn 5, output ONLY a JSON object with no surrounding prose: {\"can_do\": [list of N5 can-do IDs from ja-n5-* the learner demonstrated], \"gaps\": [list of N5 can-do IDs they did NOT reach], \"particle_errors\": [{\"said\": \"original phrase\", \"should_be\": \"corrected phrase\", \"rule\": \"short rule, e.g. 'は marks topic, が marks new info'\"}], \"counter_errors\": [{\"said\": \"...\", \"should_be\": \"...\", \"noun_class\": \"e.g. people/flat/long-cylindrical\"}], \"kanji_skipped\": [\"content words written in hiragana that should be kanji at N5, e.g. 'きょう' for 今日, 'わたし' for 私\"], \"register\": \"polite\" | \"plain\" | \"mixed-error\", \"level_assessment\": \"pre-N5\" | \"N5\" | \"N4-ready\", \"feedback\": \"one short paragraph honest critique in English; call out the single biggest gap, don't list every error\"}. Be honest. If they answered in English more than twice, return level_assessment='pre-N5'. If they produced fewer than 3 complete Japanese sentences across 5 turns, return level_assessment='pre-N5'.",
+    "writing_n5": "You are a JLPT N5 writing grader. The learner wrote the following text on the prompt: ${prompt}. Text: ${text}. Grade ONLY against N5 expectations — do not penalise for missing N4+ grammar. Output ONLY a JSON object: {\"can_do\": [list of N5 ja-n5-w-* IDs demonstrated], \"gaps\": [list of N5 ja-n5-w-* IDs not reached], \"particle_errors\": [{\"said\": \"...\", \"should_be\": \"...\", \"rule\": \"...\"}], \"kanji_skipped\": [\"hiragana words that should be N5 kanji\"], \"conjugation_errors\": [{\"said\": \"...\", \"should_be\": \"...\"}], \"register\": \"polite\" | \"plain\" | \"mixed-error\", \"sentence_count\": <int>, \"correct_sentences\": <int>, \"level_assessment\": \"pre-N5\" | \"N5\" | \"N4-ready\", \"feedback\": \"one short paragraph honest critique in English\"}. Treat は/が swap as a particle_error every time — they're not interchangeable at N5. Treat いる/ある swap on animacy as a particle_error. If the text is pure hiragana with no kanji on words the N5 list expects kanji for, list every such word in kanji_skipped — that's the audit point of this grader.",
+    "speaking_n4": "You are a JLPT N4 examiner conducting a 5-turn conversation with the learner in Japanese. Topic: ${topic}. The expected register for this topic is ${expected_register} ('polite' or 'plain'). Speak Japanese throughout in the expected register; the learner should match it. After turn 5, output ONLY a JSON object: {\"can_do\": [list of N4 ja-n4-* IDs demonstrated], \"gaps\": [list of N4 IDs not reached], \"particle_errors\": [{\"said\": \"...\", \"should_be\": \"...\", \"rule\": \"...\"}], \"counter_errors\": [...], \"conjugation_errors\": [{\"form\": \"e.g. te-form / past-plain / negative-plain\", \"said\": \"...\", \"should_be\": \"...\"}], \"kanji_skipped\": [\"hiragana words that should be N5/N4 kanji\"], \"register\": \"polite\" | \"plain\" | \"mixed-error\", \"register_matches_expected\": true | false, \"grammar_patterns_used\": [\"e.g. ～たい, ～ながら, ～ことがある, ～と思う\"], \"level_assessment\": \"pre-N4\" | \"N4\" | \"N3-ready\", \"feedback\": \"one short paragraph honest critique in English\"}. If the learner switches register mid-conversation without contextual reason, mark register='mixed-error'. If they only produce N5 grammar (no N4 patterns at all), level_assessment='pre-N4' regardless of fluency.",
+    "writing_n4": "You are a JLPT N4 writing grader. Prompt: ${prompt}. Text: ${text}. Expected register: ${expected_register}. Output ONLY JSON: {\"can_do\": [N4 ja-n4-w-* IDs demonstrated], \"gaps\": [...], \"particle_errors\": [...], \"conjugation_errors\": [{\"form\": \"...\", \"said\": \"...\", \"should_be\": \"...\"}], \"kanji_skipped\": [...], \"register\": \"polite\" | \"plain\" | \"mixed-error\", \"register_matches_expected\": true | false, \"connectives_used\": [\"それから\", \"でも\", \"しかし\", \"それで\", \"～から\", \"～ので\"], \"grammar_patterns_used\": [...], \"paragraph_cohesion\": \"connected\" | \"choppy/list-like\", \"sentence_count\": <int>, \"level_assessment\": \"pre-N4\" | \"N4\" | \"N3-ready\", \"feedback\": \"one short paragraph honest critique in English\"}. Cohesion check: if the text is 5+ sentences with zero connectives, mark paragraph_cohesion='choppy/list-like'. Register check: an honorific applied to one's own in-group (e.g. お父さん used for one's own father in a humble context) is a register error at N4."
+  },
+  "language_specific_signals": {
+    "particle_correctness": {
+      "checked_in": ["ja-n5-w-02", "ja-n5-s-03", "ja-n4-w-01", "ja-n4-s-01"],
+      "common_errors": [
+        "は vs が confusion (topic vs new-information subject)",
+        "を vs に on motion verbs (公園を歩く = walk THROUGH park; 公園に行く = go TO park)",
+        "missing の possessive (私本 instead of 私の本)",
+        "に vs で for location (に for existence/destination; で for action venue)",
+        "は vs も swap when contrasting/adding (私は学生です vs 私も学生です)",
+        "が vs を on transitive likes/wants (お茶が好き — が, NOT を; 水を飲む — を, NOT が)"
+      ],
+      "rule": "The N5/N4 particle set is small (は が を に で の も へ と か ね よ) but the wrong choice changes meaning, not just style. Every particle error is logged, not soft-pardoned."
+    },
+    "verb_polite_vs_plain": {
+      "checked_in": ["ja-n4-w-01", "ja-n4-s-01", "ja-n4-s-03"],
+      "rule": "At N5 we expect mostly ます-form (the learner doesn't yet have plain). At N4 we expect the learner to choose: ます-form with a teacher/stranger/customer, plain form with a friend/family/younger peer. Mixing the two within a single utterance ('食べました。美味しい。' is fine — those are independent sentences; '食べる。美味しいです。' inside one chunk to one addressee is mixed-error). The companion is permitted to speak ます-form to the learner without forcing the learner to reply in ます — that's pedagogically intentional."
+    },
+    "kanji_in_use": {
+      "checked_in": ["ja-n5-w-03", "ja-n5-s-01", "ja-n4-w-02"],
+      "rule": "Production grading flags content words written in pure hiragana when the N5/N4 list expects kanji. Specifically: 今日, 昨日, 明日, 私, 学校, 会社, 銀行, 病院, 日本, 家族, 父/母, 食べる/飲む, 行く/来る/見る, 一/二/三/十/百/千. Hiragana fallback is graded as kanji_skipped, NOT as a misspelling — the goal is to track production growth separately from recognition. Furigana-only writing is acceptable at N5 with a kanji_skipped count > 0 (learner is mid-transition); at N4 the kanji_skipped rate should drop below 20% on the N5+N4 list combined."
+    },
+    "counter_usage": {
+      "checked_in": ["ja-n5-s-04", "ja-n4-s-01"],
+      "rule": "Counters are a discrete N5 skill, NOT a vocabulary skill. The grader logs counter_errors with the noun class so the learner can see WHY 三本のりんご is wrong (apples take 個, not 本 — 本 is for long cylindrical things; pencils, bottles, umbrellas). Acceptable at N5: 人 (people), 個 (generic), 本 (long cylindrical), 枚 (flat), 匹 (small animals), 歳 (age), 時 (hours), 分 (minutes), 円 (yen). Wrong counter on a noun the learner knows = error logged."
+    },
+    "honorific_own_in_group": {
+      "checked_in": ["ja-n4-s-01"],
+      "rule": "Using polite/honorific forms for one's own in-group when speaking to outsiders is a register error in Japanese — uniquely so among the languages Augmentum tracks. Saying お母さんは先生です to a stranger about your own mother (instead of 母は先生です) is wrong because お〜さん elevates the referent and you don't elevate your own family to outsiders. The N4 register grader checks this on family-topic prompts."
+    },
+    "transitivity_pairs": {
+      "checked_in": ["ja-n4-w-02"],
+      "rule": "Japanese has paired transitive/intransitive verbs (開ける/開く, 始める/始まる, 入れる/入る, 出す/出る) where the choice determines what particle the noun takes (を vs が). At N4 the grader flags pair-confusion as a conjugation_error annotated with the pair direction (transitive-used-as-intransitive or vice versa)."
+    },
+    "iru_aru_animacy": {
+      "checked_in": ["ja-n5-w-02"],
+      "rule": "いる for animate (people, animals — but NOT plants in N5 register; plants take ある), ある for inanimate. 猫がいる, 本がある. Swap = particle_error with rule='animacy: いる for living, ある for non-living'."
+    }
+  }
+}

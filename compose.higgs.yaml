@@ -1,0 +1,86 @@
+# Higgs Audio v3 TTS (4B) — PERSONAL / NON-COMMERCIAL overlay
+# ----------------------------------------------------------------------------
+# Boson AI Higgs Audio v3 is RESEARCH / NON-COMMERCIAL licensed. This overlay
+# is for personal use only and is intentionally NOT part of the shipped OSS
+# default stack. Augmentum talks to it model-agnostically through the generic
+# `openai-tts` provider (any /v1/audio/speech endpoint works) — the protocol is
+# the contract, not this particular model. Swap the image/model freely.
+#
+# The image `higgs-tts:local` was produced with `docker commit` from a manually
+# bootstrapped sglang-omni install (the base `lmsysorg/sglang-omni:dev` ships
+# WITHOUT the omni package). See Dockerfile.higgs for how to rebuild it from
+# scratch if the committed image is ever lost.
+#
+# Voices (zero-shot clones, *.safetensors) persist on the host so they survive
+# container recreate. New clones made via Augmentum's clone UI land here too.
+#
+# API: http://localhost:8000/v1/audio/speech   Health: /health
+# ----------------------------------------------------------------------------
+
+services:
+  higgs-tts:
+    image: higgs-tts:local
+    container_name: higgs-tts
+    ports:
+      - "8000:8000"
+    volumes:
+      # HF model cache (the 4B weights live here). Defaults to a named volume so
+      # the layout is portable and leaks no host path; point AUGMENTUM_HF_CACHE at
+      # an existing host cache (e.g. ~/.cache/huggingface) to reuse downloaded weights.
+      - "${AUGMENTUM_HF_CACHE:-higgs_hf_cache}:/root/.cache/huggingface"
+      # Voice clones persist so recreate/reboot keeps them. Named-volume default;
+      # override AUGMENTUM_HIGGS_VOICES with a host path to keep them outside Docker.
+      - "${AUGMENTUM_HIGGS_VOICES:-higgs_voices}:/root/.cache/sglang-omni/speakers"
+    environment:
+      # cu13 libs must lead LD_LIBRARY_PATH or the JIT/runtime libs aren't found
+      LD_LIBRARY_PATH: "/usr/local/lib/python3.12/dist-packages/nvidia/cu13/lib:/usr/local/cuda/lib64:/usr/local/nvidia/lib:/usr/local/nvidia/lib64"
+      # image ships sm100 (Blackwell) kernels; 3090 is sm86 -> nvrtc JIT path,
+      # which trips flashinfer's version guard. Disable the guard.
+      FLASHINFER_DISABLE_VERSION_CHECK: "1"
+      # model is already cached; never reach out to the Hub at serve time
+      HF_HUB_OFFLINE: "1"
+    # The committed image inherited ENTRYPOINT ["sleep"] from how it was
+    # bootstrapped; reset it so `command` is the serve invocation, not args
+    # appended to sleep.
+    entrypoint: ["sgl-omni"]
+    command:
+      - serve
+      - --model-path
+      - bosonai/higgs-audio-v3-tts-4b
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://0.0.0.0:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      # 4B + audio tokenizer load + first JIT can take a while on cold start
+      start_period: 600s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    logging:
+      options:
+        max-size: "50m"
+        max-file: "3"
+    # Host-RAM backstop. Sized for cold start, which is the peak: sglang-omni
+    # stages the 4B weights + audio tokenizer through host RAM before they
+    # reach VRAM, and on this box the sm100-vs-sm86 mismatch forces the nvrtc
+    # JIT path (see FLASHINFER_DISABLE_VERSION_CHECK above) — compilation is
+    # host-side and memory-hungry. Unverified estimate, deliberately loose so
+    # the 600s cold start can't be OOM-killed halfway through.
+    mem_limit: ${AUGMENTUM_HIGGS_TTS_MEM_LIMIT:-24g}
+
+# Portable defaults so a fresh clone needs no host paths. Overriding
+# AUGMENTUM_HF_CACHE / AUGMENTUM_HIGGS_VOICES with a host path turns the
+# corresponding mount into a bind and leaves these named volumes unused.
+volumes:
+  higgs_hf_cache:
+  higgs_voices:

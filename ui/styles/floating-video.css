@@ -1,0 +1,853 @@
+/* ==========================================================================
+   FloatingVideo — app-wide standard for watchable video content.
+   Three shell states: fullscreen, companion, collapsed.
+   Desktop: floating utility window. Mobile: docked/sheet treatment.
+   ========================================================================== */
+
+.fv-root {
+  position: fixed;
+  z-index: 10000;  /* above everything app-level, below native FS */
+  background: #000;
+  border-radius: var(--radius-md, 8px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45),
+              0 0 0 1px rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  transition: width 0.2s ease, height 0.2s ease,
+              right 0.2s ease, bottom 0.2s ease;
+}
+
+.fv-root[hidden] { display: none; }
+
+/* --- Iframe slot: where the adopted iframe/video lives --- */
+.fv-iframe-slot {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+.fv-iframe-slot iframe,
+.fv-iframe-slot video,
+.fv-iframe-slot .fv-adopted {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.fv-remote-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: none;
+  padding: 42px 14px 14px;
+  background:
+    radial-gradient(circle at top left, rgba(71, 85, 105, 0.28), transparent 48%),
+    linear-gradient(160deg, rgba(12, 14, 22, 0.98), rgba(6, 8, 14, 0.98));
+  color: #fff;
+}
+
+.fv-root[data-remote-active="1"] .fv-remote-panel {
+  display: block;
+}
+
+.fv-root[data-remote-active="1"] .fv-iframe-slot {
+  display: none;
+}
+
+.fv-remote-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  height: 100%;
+}
+
+.fv-remote-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.fv-remote-thumb {
+  width: 72px;
+  height: 72px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.fv-remote-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fv-remote-kicker {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.fv-remote-title,
+.fv-remote-subtitle {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fv-remote-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.fv-remote-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.fv-remote-note {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.fv-remote-progress,
+.fv-remote-volume {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.fv-remote-time {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  font-variant-numeric: tabular-nums;
+}
+
+.fv-remote-range,
+.fv-remote-volume-range {
+  width: 100%;
+  accent-color: #f8fafc;
+}
+
+.fv-remote-transport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fv-remote-volume {
+  grid-template-columns: auto auto 1fr auto auto;
+}
+
+.fv-remote-volume-label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.fv-remote-play-toggle .fv-remote-icon-play,
+.fv-remote-play-toggle .fv-remote-icon-pause {
+  display: none;
+}
+
+.fv-local-progress {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  /* Layout: skip-back · play/pause · skip-forward · cur · seek · total
+     · mute · volume. Auto columns for the icon buttons + numeric time
+     labels keep their natural width; the seek bar (5fr) and volume
+     slider (1fr) split the remaining space, with the seek bar taking
+     the lion's share since it's the primary affordance. */
+  display: grid;
+  grid-template-columns: auto auto auto auto 5fr auto auto 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  color: #fff;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0));
+}
+
+.fv-local-time {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.78);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.fv-local-range {
+  width: 100%;
+  accent-color: #f8fafc;
+}
+
+/* Transport buttons inside .fv-local-progress reuse .fv-btn but need
+   slightly tuned sizing + colors for the dark video-overlay context.
+   Inherits hover/focus states from the base .fv-btn rule. */
+.fv-local-progress .fv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.88);
+  cursor: pointer;
+  transition: background 0.14s ease, color 0.14s ease, transform 0.14s ease;
+}
+.fv-local-progress .fv-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+.fv-local-progress .fv-btn:focus-visible {
+  outline: 2px solid #f8fafc;
+  outline-offset: 2px;
+}
+.fv-local-progress .fv-btn:active:not(:disabled) {
+  transform: scale(0.94);
+}
+.fv-local-progress .fv-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Play/pause is the dominant affordance — slightly larger so the eye
+   lands on it first when scanning the transport row. */
+.fv-local-play {
+  width: 34px !important;
+  height: 34px !important;
+}
+
+.fv-local-volume-range {
+  width: 100%;
+  min-width: 60px;
+  accent-color: #f8fafc;
+}
+
+/* --- Audio sync (A/V offset) -------------------------------------------- */
+
+/* Sync button is positioned relative so the popover anchors above it.
+   `has-offset` class tints the icon to communicate "filter is active"
+   even before the user opens the popover; the dot inside the button
+   gives a second visual cue. */
+.fv-local-sync-btn {
+  position: relative;
+}
+.fv-local-sync-btn.has-offset {
+  color: #4caf50;
+}
+.fv-local-sync-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4caf50;
+  box-shadow: 0 0 6px #4caf50;
+  pointer-events: none;
+}
+.fv-local-sync-btn:not(.has-offset) .fv-local-sync-dot,
+.fv-local-sync-dot[hidden] {
+  display: none;
+}
+
+/* Popover anchors above the sync button — the transport bar sits at
+   the bottom of the player, so opening downward would clip off-screen.
+   Right-aligned to the button so it stays on-screen even when the
+   player is in a narrow window. */
+.fv-local-sync-popover {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 8px;
+  z-index: 5;
+  min-width: 240px;
+  padding: 12px 14px;
+  background: rgba(14, 14, 22, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: fv-sync-popover-in 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.fv-local-sync-popover[hidden] { display: none; }
+@keyframes fv-sync-popover-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fv-local-sync-popover { animation: none; }
+}
+
+.fv-local-sync-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.fv-local-sync-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.92);
+  text-transform: uppercase;
+}
+.fv-local-sync-value {
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: #4caf50;
+}
+.fv-local-sync-range {
+  width: 100%;
+  accent-color: #4caf50;
+  margin: 4px 0 2px;
+}
+.fv-local-sync-bounds {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.04em;
+}
+.fv-local-sync-hint {
+  font-size: 11px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.62);
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.fv-local-sync-reset {
+  align-self: stretch;
+  margin-top: 4px;
+  padding: 6px 10px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.85);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+.fv-local-sync-reset:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.32);
+  color: #fff;
+}
+
+/* Hide volume + mute on very narrow viewports — the seek bar gets all
+   the breathing room it needs, and OS volume controls are still
+   reachable elsewhere. Below this width the volume slider would
+   shrink into uselessness anyway. The sync button stays — it's the
+   reason the user is engaging at all. */
+@media (max-width: 480px) {
+  .fv-local-progress {
+    grid-template-columns: auto auto auto auto 1fr auto auto;
+  }
+  .fv-local-mute,
+  .fv-local-volume-range {
+    display: none;
+  }
+  .fv-local-sync-popover {
+    /* Center on narrow viewports so it doesn't clip the right edge
+       when the player is full-width. */
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 220px;
+  }
+  @keyframes fv-sync-popover-in {
+    from { opacity: 0; transform: translate(-50%, 4px); }
+    to   { opacity: 1; transform: translate(-50%, 0);   }
+  }
+}
+
+.fv-root[data-remote-paused="1"] .fv-remote-play-toggle .fv-remote-icon-play,
+.fv-root[data-remote-paused="0"] .fv-remote-play-toggle .fv-remote-icon-pause {
+  display: block;
+}
+
+/* --- Audio-only chip (shown when mode=audio) --- */
+.fv-audio-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgba(14, 14, 22, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.fv-root[data-mode="collapsed"] .fv-audio-chip {
+  opacity: 1;
+  pointer-events: auto;
+}
+.fv-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #1a1a24;
+}
+.fv-audio-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.fv-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fv-channel {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- Controls bar (top edge, visible in companion + collapsed; overlays iframe) --- */
+.fv-controls {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.65), transparent);
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.fv-root[data-mode="companion"]:hover .fv-controls,
+.fv-root[data-mode="companion"]:focus-within .fv-controls { opacity: 1; }
+/* Always show in collapsed mode so users can find the mode toggles */
+.fv-root[data-mode="collapsed"] .fv-controls {
+  opacity: 1;
+  background: transparent;
+  top: auto;
+  bottom: 0;
+  padding: 0 4px;
+}
+
+.fv-drag-handle {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 4px 6px;
+  cursor: grab;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 11px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.fv-drag-handle:active { cursor: grabbing; }
+.fv-root[data-mode="collapsed"] .fv-drag-handle { display: none; }
+
+.fv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+.fv-btn:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+.fv-btn:active { transform: scale(0.94); }
+.fv-btn.is-active {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.32);
+  color: #fff;
+}
+.fv-close:hover { background: rgba(239, 68, 68, 0.35); color: #fff; }
+.fv-root[data-mode="collapsed"] .fv-btn {
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border-color: transparent;
+}
+.fv-root[data-mode="native_pip"] .fv-btn {
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border-color: transparent;
+}
+.fv-root[data-mode="collapsed"] .fv-btn.is-active,
+.fv-root[data-mode="native_pip"] .fv-btn.is-active {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+.fv-popover {
+  position: absolute;
+  top: 36px;
+  right: 8px;
+  width: min(280px, calc(100vw - 24px));
+  max-height: min(60vh, 360px);
+  overflow: auto;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(12, 14, 22, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  z-index: 4;
+  color: #fff;
+}
+
+.fv-root[data-mode="collapsed"] .fv-popover {
+  top: auto;
+  bottom: 44px;
+}
+
+.fv-root[data-mode="native_pip"] .fv-popover {
+  top: auto;
+  bottom: 44px;
+}
+
+.fv-popover-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fv-popover-group + .fv-popover-group {
+  margin-top: 12px;
+}
+
+.fv-popover-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.fv-popover-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.fv-popover-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fv-popover-btn {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 7px 9px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.88);
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 1.35;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.fv-popover-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.fv-popover-btn:active {
+  transform: scale(0.97);
+}
+
+.fv-popover-btn.active {
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+.fv-popover-btn--row {
+  width: 100%;
+  justify-content: space-between;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.fv-popover-text,
+.fv-popover-subtext {
+  display: block;
+}
+
+.fv-popover-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.fv-popover-subtext {
+  margin-top: 2px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.fv-popover-empty {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.fv-popover-note {
+  font-size: 10px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.56);
+}
+
+/* --- Shell: COMPANION (default) --- */
+.fv-root[data-mode="companion"] {
+  width: 360px;
+  height: 203px;
+  right: 16px;
+  bottom: 16px;
+  aspect-ratio: 16 / 9;
+}
+
+/* --- Shell: COLLAPSED --- */
+.fv-root[data-mode="collapsed"] {
+  width: 320px;
+  height: 56px;
+  right: 16px;
+  bottom: 16px;
+  aspect-ratio: auto;
+}
+
+/* --- Shell: NATIVE PIP --- */
+.fv-root[data-mode="native_pip"] {
+  width: 360px;
+  height: 56px;
+  right: 16px;
+  bottom: 16px;
+  aspect-ratio: auto;
+}
+/* In collapsed mode we still need the iframe mounted (YT pauses on display:none)
+   so we shrink + push offscreen instead of hiding. */
+.fv-root[data-mode="collapsed"] .fv-iframe-slot {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  width: 320px;
+  height: 180px;
+  pointer-events: none;
+  opacity: 0;
+}
+.fv-root[data-mode="native_pip"] .fv-iframe-slot {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  width: 2px;
+  height: 2px;
+  pointer-events: none;
+  opacity: 0;
+}
+.fv-root[data-mode="native_pip"] .fv-audio-chip {
+  opacity: 1;
+  pointer-events: auto;
+}
+.fv-root[data-mode="collapsed"] .fv-local-progress,
+.fv-root[data-mode="native_pip"] .fv-local-progress {
+  display: none !important;
+}
+.fv-root[data-remote-active="1"] .fv-audio-chip {
+  opacity: 0;
+  pointer-events: none;
+}
+.fv-root[data-remote-active="1"][data-mode="collapsed"] .fv-audio-chip,
+.fv-root[data-remote-active="1"][data-mode="native_pip"] .fv-audio-chip {
+  opacity: 1;
+  pointer-events: auto;
+}
+.fv-root[data-mode="native_pip"] .fv-controls {
+  opacity: 1;
+  background: transparent;
+  top: auto;
+  bottom: 0;
+  padding: 0 4px;
+}
+.fv-root[data-mode="native_pip"] .fv-drag-handle {
+  flex: 0 1 24px;
+  padding: 0 2px;
+  min-width: 16px;
+}
+.fv-root[data-remote-active="1"][data-mode="collapsed"] .fv-remote-panel,
+.fv-root[data-remote-active="1"][data-mode="native_pip"] .fv-remote-panel {
+  display: none;
+}
+
+/* --- Shell: FULLSCREEN (native fullscreen via requestFullscreen on .fv-iframe-slot) --- */
+.fv-root[data-mode="fullscreen"] {
+  /* The slot itself goes fullscreen via the FS API. Root stays where it
+     was sized (ambient) so the exit-FS transition back to companion is smooth. */
+}
+.fv-iframe-slot:fullscreen { width: 100vw; height: 100dvh; background: #000; }
+.fv-iframe-slot:fullscreen iframe,
+.fv-iframe-slot:fullscreen video { width: 100%; height: 100%; }
+
+.fv-resize-handle {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  z-index: 3;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: nwse-resize;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.fv-root[data-mode="companion"][data-device="desktop"] .fv-resize-handle,
+.fv-root[data-mode="companion"][data-device="tablet"] .fv-resize-handle {
+  display: inline-flex;
+}
+
+/* --- Desktop ↔ Mobile --- */
+
+/* Mobile: companion becomes a docked sheet, collapsed becomes a slim bar. */
+@media (hover: none), (max-width: 640px) {
+  .fv-root[data-mode="companion"] {
+    right: 0;
+    left: 0;
+    bottom: calc(var(--orb-bar-height) + env(safe-area-inset-bottom, 0px));
+    width: 100%;
+    max-width: 100%;
+    height: min(42vh, 320px);
+    max-height: min(42vh, 320px);
+    border-radius: 16px 16px 0 0;
+    aspect-ratio: auto;
+  }
+  .fv-root[data-mode="collapsed"] {
+    right: 0;
+    left: 0;
+    bottom: calc(var(--orb-bar-height) + env(safe-area-inset-bottom, 0px));
+    width: 100%;
+    height: 56px;
+    border-radius: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .fv-root[data-mode="native_pip"] {
+    right: 0;
+    left: 0;
+    bottom: calc(var(--orb-bar-height) + env(safe-area-inset-bottom, 0px));
+    width: 100%;
+    height: 56px;
+    border-radius: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .fv-root[data-mode="companion"] .fv-controls {
+    opacity: 1;
+  }
+  .fv-popover {
+    right: 8px;
+    left: 8px;
+    width: auto;
+  }
+  .fv-remote-panel {
+    padding: 46px 12px 14px;
+  }
+  .fv-remote-meta {
+    align-items: flex-start;
+  }
+  .fv-remote-thumb {
+    width: 58px;
+    height: 58px;
+  }
+  .fv-remote-title {
+    font-size: 16px;
+  }
+  .fv-remote-progress {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .fv-remote-progress .fv-remote-time-cur,
+  .fv-remote-progress .fv-remote-time-total {
+    display: none;
+  }
+  .fv-local-progress {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .fv-local-progress .fv-local-time-cur,
+  .fv-local-progress .fv-local-time-total {
+    display: none;
+  }
+  .fv-remote-volume {
+    grid-template-columns: auto auto 1fr auto;
+  }
+  .fv-remote-volume-label {
+    display: none;
+  }
+  .fv-drag-handle { cursor: default; }
+  .fv-resize-handle { display: none !important; }
+}
+
+/* Tablet: allow drag but keep a more generous default shell than desktop. */
+@media (hover: none) and (min-width: 641px), (pointer: coarse) and (min-width: 641px) {
+  .fv-root[data-mode="companion"] {
+    width: min(52vw, 520px);
+    height: min(30vw, 292px);
+    border-radius: 14px;
+  }
+  .fv-root[data-mode="companion"] .fv-controls {
+    opacity: 1;
+  }
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .fv-root { transition: none; }
+  .fv-audio-chip, .fv-controls { transition: none; }
+}

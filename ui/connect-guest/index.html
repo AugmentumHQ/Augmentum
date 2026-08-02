@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0d0f14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/ui/connect-guest/manifest.json">
+  <link rel="apple-touch-icon" href="/ui/icons/icon-192.png">
+  <title>Connect</title>
+  <link rel="stylesheet" href="connect-guest.css">
+</head>
+<body>
+  <main class="cg-wrap">
+    <!-- connecting -->
+    <section class="cg-card" data-state="loading">
+      <div class="cg-spinner"></div>
+      <div class="cg-title">Connecting…</div>
+    </section>
+
+    <!-- active surface -->
+    <section class="cg-app" data-state="active" hidden>
+      <header class="cg-header">
+        <div class="cg-host">
+          <div class="cg-avatar" data-host-initial>?</div>
+          <div>
+            <div class="cg-host-name" data-host-name>—</div>
+            <div class="cg-host-sub">on Augmentum Connect</div>
+          </div>
+        </div>
+        <button class="cg-call" type="button" data-call hidden title="Request a call">
+          <span>Call</span>
+        </button>
+      </header>
+
+      <div class="cg-thread" data-thread></div>
+
+      <form class="cg-composer" data-composer>
+        <textarea data-input rows="1" placeholder="Message…" maxlength="4000"></textarea>
+        <button type="submit" class="cg-send" data-send aria-label="Send">Send</button>
+      </form>
+
+      <div class="cg-install" data-install hidden>
+        <span>Add this to your home screen to come back anytime.</span>
+        <button type="button" data-install-btn>Add</button>
+      </div>
+    </section>
+
+    <!-- terminal: access ended / no token -->
+    <section class="cg-card" data-state="ended" hidden>
+      <div class="cg-status-dot cg-err"></div>
+      <div class="cg-title" data-ended-title>Access ended</div>
+      <div class="cg-sub" data-ended-sub></div>
+    </section>
+  </main>
+  <script type="module" src="connect-guest.js"></script>
+</body>
+</html>

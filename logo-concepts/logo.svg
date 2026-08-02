@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" color="#4caf50">
+  <defs>
+    <filter id="leafBloom" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.1"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <style>
+      .leaf {
+        opacity: 0.82;
+        animation: leafBreathe 6s ease-in-out infinite;
+      }
+      .leaf:nth-of-type(1) { animation-delay: 0s; }
+      .leaf:nth-of-type(2) { animation-delay: 1.5s; }
+      .leaf:nth-of-type(3) { animation-delay: 3s; }
+      .leaf:nth-of-type(4) { animation-delay: 4.5s; }
+      @keyframes leafBreathe {
+        0%, 100% { opacity: 0.78; }
+        50%      { opacity: 1; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .leaf { animation: none; opacity: 0.92; }
+      }
+    </style>
+  </defs>
+
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M100 168 L100 124" stroke-width="3"/>
+    <path d="M100 124 L72 96"   stroke-width="2.2"/>
+    <path d="M100 124 L128 96"  stroke-width="2.2"/>
+    <path d="M72 96 L52 60"     stroke-width="1.6"/>
+    <path d="M72 96 L84 60"     stroke-width="1.6"/>
+    <path d="M128 96 L116 60"   stroke-width="1.6"/>
+    <path d="M128 96 L148 60"   stroke-width="1.6"/>
+  </g>
+
+  <g fill="currentColor" filter="url(#leafBloom)">
+    <circle class="leaf" cx="52"  cy="60" r="2.2"/>
+    <circle class="leaf" cx="84"  cy="60" r="2.2"/>
+    <circle class="leaf" cx="116" cy="60" r="2.2"/>
+    <circle class="leaf" cx="148" cy="60" r="2.2"/>
+  </g>
+
+  <circle cx="100" cy="168" r="2.8" fill="currentColor"/>
+</svg>

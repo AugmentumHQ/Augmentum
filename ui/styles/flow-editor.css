@@ -1,0 +1,1941 @@
+/* ==========================================================================
+   Flow Editor — Reusable component for analytical and agentic flow editing.
+   Uses --fe-accent custom property for theming (set by parent panel).
+   ========================================================================== */
+
+/* --- Container --- */
+
+.flow-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* --- Selector Bar (legacy — kept for any external consumer) --- */
+
+.flow-editor-selector-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.flow-editor-select {
+  flex: 1;
+  min-width: 0;
+  padding: 6px var(--space-sm);
+  font-size: var(--text-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------------------------
+   Flow rail — horizontally scrollable list of flows
+   Replaces the old single-pick <select> so every available flow is
+   discoverable at a glance. The active flow auto-loads on init and is
+   highlighted with the mode accent + a soft glow. A trailing "+" chip
+   creates new flows.
+   --------------------------------------------------------------------------- */
+.flow-editor-rail-wrap {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  padding: 10px var(--space-sm) 10px var(--space-sm);
+  border-bottom: 1px solid var(--border-light);
+  background:
+    linear-gradient(to right,
+      color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 4%, transparent),
+      transparent 24%,
+      transparent 76%,
+      color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 4%, transparent));
+}
+
+.flow-editor-rail {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* Soft fade-mask on the right edge hints at off-screen flows without
+     making a scrollbar visible in a tight inspector column. */
+  mask-image: linear-gradient(to right,
+                              transparent 0,
+                              #000 12px,
+                              #000 calc(100% - 18px),
+                              transparent 100%);
+  -webkit-mask-image: linear-gradient(to right,
+                                      transparent 0,
+                                      #000 12px,
+                                      #000 calc(100% - 18px),
+                                      transparent 100%);
+  padding: 1px 14px 1px 6px;
+}
+
+.flow-editor-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.flow-editor-chip {
+  position: relative;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 11px 5px 5px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-standard),
+              background var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard),
+              box-shadow var(--duration-fast) var(--ease-standard);
+  text-align: left;
+  font-family: inherit;
+  white-space: nowrap;
+  max-width: 260px;
+}
+
+.flow-editor-chip:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-light);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.flow-editor-chip:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 60%, transparent);
+  outline-offset: 2px;
+}
+
+.flow-editor-chip__mark {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 90%, var(--text-primary));
+  background: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 28%, transparent);
+  text-transform: uppercase;
+  font-feature-settings: "ss01" on;
+}
+
+.flow-editor-chip__body {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  line-height: 1.15;
+}
+
+.flow-editor-chip__name {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.flow-editor-chip__meta {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+/* Default-flow tinted edge: a thin accent rule pinned to the left of
+   the chip avatar so "this is your default" reads quickly without
+   stealing the active-state treatment. */
+.flow-editor-chip.is-default::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  border-radius: 0 2px 2px 0;
+  background: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 55%, transparent);
+}
+
+.flow-editor-chip.is-builtin .flow-editor-chip__mark {
+  background: color-mix(in srgb, var(--mode-narrative) 12%, transparent);
+  border-color: color-mix(in srgb, var(--mode-narrative) 28%, transparent);
+  color: color-mix(in srgb, var(--mode-narrative) 90%, var(--text-primary));
+}
+
+.flow-editor-chip.is-active {
+  background: linear-gradient(135deg,
+                              color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 18%, var(--surface)),
+                              color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 6%, var(--surface)));
+  border-color: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 55%, transparent);
+  color: var(--text-primary);
+  box-shadow:
+    0 6px 18px -10px color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 90%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 18%, transparent);
+}
+
+.flow-editor-chip.is-active .flow-editor-chip__mark {
+  background: var(--fe-accent, var(--mode-analytical));
+  border-color: var(--fe-accent, var(--mode-analytical));
+  color: #fff;
+  box-shadow: 0 0 12px -2px color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 55%, transparent);
+}
+
+.flow-editor-chip.is-active .flow-editor-chip__name {
+  color: var(--text-primary);
+}
+
+.flow-editor-chip.is-active .flow-editor-chip__meta {
+  color: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 75%, var(--text-muted));
+}
+
+.flow-editor-chip__pulse {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--fe-accent, var(--mode-analytical));
+  box-shadow: 0 0 0 2px var(--bg-elevated, var(--surface));
+  animation: fe-chip-pulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes fe-chip-pulse {
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%      { transform: scale(1.25); opacity: 0.6; }
+}
+
+.flow-editor-rail__new {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--fe-accent, var(--mode-analytical));
+  border: 1.5px dashed color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 55%, transparent);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-standard);
+}
+
+.flow-editor-rail__new:hover {
+  background: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 12%, transparent);
+  border-style: solid;
+  transform: rotate(90deg);
+  box-shadow: 0 0 16px -4px color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 60%, transparent);
+}
+
+.flow-editor-rail__new:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 60%, transparent);
+  outline-offset: 2px;
+}
+
+.flow-editor-rail__skeleton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 2px;
+}
+
+.flow-editor-rail__skeleton span {
+  display: inline-block;
+  width: 96px;
+  height: 32px;
+  border-radius: 999px;
+  background: linear-gradient(90deg,
+                              color-mix(in srgb, var(--border) 50%, transparent),
+                              color-mix(in srgb, var(--border) 30%, transparent),
+                              color-mix(in srgb, var(--border) 50%, transparent));
+  background-size: 200% 100%;
+  animation: fe-rail-shimmer 1.4s linear infinite;
+  opacity: 0.55;
+}
+
+.flow-editor-rail__skeleton span:nth-child(2) { width: 130px; opacity: 0.42; }
+.flow-editor-rail__skeleton span:nth-child(3) { width: 78px;  opacity: 0.3;  }
+
+@keyframes fe-rail-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.flow-editor-rail__empty {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.flow-editor-rail__empty-glyph {
+  color: var(--fe-accent, var(--mode-analytical));
+  font-size: 14px;
+  font-style: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-editor-chip:hover { transform: none; }
+  .flow-editor-chip__pulse,
+  .flow-editor-rail__skeleton span,
+  .flow-editor-rail__new { animation: none; transition: none; }
+  .flow-editor-rail__new:hover { transform: none; }
+}
+
+/* --- Info Section --- */
+
+.flow-editor-info {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.flow-editor-info-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xs);
+}
+
+.flow-editor-info-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.flow-editor-info-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.flow-editor-info-desc {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin: 0 0 var(--space-sm);
+  line-height: 1.5;
+}
+
+.flow-editor-info-actions {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+/* --- Badges --- */
+
+.flow-editor-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.flow-editor-badge-default {
+  background: rgba(33, 150, 243, 0.15);
+  color: var(--mode-analytical);
+}
+
+.flow-editor-badge-builtin {
+  background: rgba(156, 39, 176, 0.12);
+  color: var(--mode-narrative);
+}
+
+/* --- Buttons --- */
+
+.flow-editor-btn {
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-standard);
+  line-height: 1.4;
+}
+
+.flow-editor-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-light);
+}
+
+.flow-editor-btn-primary {
+  background: var(--fe-accent, var(--mode-analytical));
+  border-color: var(--fe-accent, var(--mode-analytical));
+  color: #fff;
+}
+
+.flow-editor-btn-primary:hover {
+  opacity: 0.9;
+  color: #fff;
+}
+
+.flow-editor-btn-danger {
+  color: var(--error);
+  border-color: var(--border);
+}
+
+.flow-editor-btn-danger:hover {
+  background: rgba(244, 67, 54, 0.1);
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.flow-editor-btn-sm {
+  padding: 4px 8px;
+  font-size: 11px;
+}
+
+/* Icon-only ghost trigger (e.g. the info-actions overflow `⋯` button).
+   Pairs visually with .flow-editor-btn but optimised for a single glyph
+   instead of a label — uniform square hit target, no text weight. */
+.flow-editor-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-standard);
+}
+
+.flow-editor-btn-icon:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-light);
+}
+
+.flow-editor-btn-icon[aria-expanded="true"] {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-light);
+}
+
+/* Overflow menu for secondary flow actions (Clone / Set Default /
+   Export / Delete). Anchored to the trigger; closed by default. */
+.flow-editor-info-overflow {
+  position: relative;
+  display: inline-block;
+}
+
+.flow-editor-info-menu {
+  /* Fixed so it escapes the `.panel-content` scroll/clip container — the
+     inspector panel hides horizontal overflow and scrolls vertically,
+     which would clip an absolutely-positioned menu against the panel
+     edge. JS computes top/left from the trigger's bounding rect. */
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  background: var(--bg-elevated, var(--surface));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard);
+}
+
+.flow-editor-info-overflow.is-open .flow-editor-info-menu {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.flow-editor-info-menu[hidden] {
+  display: none;
+}
+
+.flow-editor-info-menu .flow-editor-btn {
+  display: flex;
+  width: 100%;
+  text-align: left;
+  justify-content: flex-start;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+}
+
+.flow-editor-info-menu .flow-editor-btn:hover {
+  background: var(--bg-hover);
+}
+
+.flow-editor-info-menu .flow-editor-btn-danger {
+  color: var(--error);
+}
+
+.flow-editor-info-menu .flow-editor-btn-danger:hover {
+  background: rgba(244, 67, 54, 0.08);
+}
+
+.flow-editor-info-menu-sep {
+  height: 1px;
+  margin: 4px 2px;
+  background: var(--border-light, var(--border));
+}
+
+/* --- Steps Container --- */
+
+.flow-editor-steps-container {
+  padding: var(--space-sm);
+  position: relative;
+}
+
+.flow-editor-steps-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.flow-editor-steps-title {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+/* --- Step List --- */
+
+.flow-editor-step-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+}
+
+.flow-editor-step-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--duration-fast) var(--ease-standard);
+  border: 1px solid transparent;
+  position: relative;
+}
+
+.flow-editor-step-item:hover {
+  background: var(--bg-hover);
+}
+
+.flow-editor-step-item.selected {
+  background: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 9%, transparent);
+  border-color: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 35%, var(--border));
+}
+
+.flow-editor-step-grip {
+  flex-shrink: 0;
+  cursor: grab;
+  color: var(--text-muted);
+  opacity: 0.5;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+  font-size: var(--text-xs);
+}
+
+.flow-editor-step-item:hover .flow-editor-step-grip {
+  opacity: 1;
+}
+
+.flow-editor-step-number {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+/* Vertical connector line linking step N's circle to step N+1's circle.
+   Drawn from the bottom of the current circle down through the row gap
+   into the top of the next row, where the next circle covers its tail.
+   Length math: row gap (4px) + next item padding-top (10px) + half of
+   the next circle (11px) = 25px. */
+.flow-editor-step-item:not(:last-child) .flow-editor-step-number::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 1px;
+  height: 25px;
+  background: var(--border);
+  transform: translateX(-50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.flow-editor-step-item.selected .flow-editor-step-number {
+  background: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 14%, var(--surface));
+  border-color: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 55%, var(--border));
+  color: var(--fe-accent, var(--mode-analytical));
+}
+
+.flow-editor-step-name {
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  font-weight: 500;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flow-editor-step-role {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  color: var(--text-muted);
+  flex-shrink: 0;
+  text-transform: capitalize;
+}
+
+/* Step model override badge */
+.flow-editor-step-model {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--mode-agentic);
+  background: color-mix(in srgb, var(--mode-agentic) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mode-agentic) 18%, transparent);
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  letter-spacing: -0.01em;
+  flex-shrink: 0;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flow-editor-empty-steps {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  padding: var(--space-md) var(--space-sm);
+  text-align: center;
+}
+
+/* --- Step row quick-actions ---
+   Toggle / duplicate / delete icons that appear on hover (always-on at
+   coarse-pointer widths). Mounted at the right edge of the row, after
+   the role pill. Click bubbling is intercepted in JS so they don't
+   also open the editor. */
+.flow-editor-step-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 4px;
+  flex-shrink: 0;
+  opacity: 0;
+  transform: translateX(2px);
+  transition: opacity var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard);
+}
+
+.flow-editor-step-item:hover .flow-editor-step-actions,
+.flow-editor-step-item.selected .flow-editor-step-actions,
+.flow-editor-step-item:focus-within .flow-editor-step-actions {
+  opacity: 1;
+  transform: none;
+}
+
+.flow-editor-step-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-standard);
+}
+
+.flow-editor-step-action:hover {
+  color: var(--fe-accent, var(--mode-analytical));
+  background: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 10%, transparent);
+  border-color: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 25%, transparent);
+}
+
+.flow-editor-step-action:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 60%, transparent);
+  outline-offset: 1px;
+}
+
+.flow-editor-step-action--danger:hover {
+  color: var(--error);
+  background: color-mix(in srgb, var(--error) 10%, transparent);
+  border-color: color-mix(in srgb, var(--error) 30%, transparent);
+}
+
+/* Disabled-step affordance: grey out the row + force a strikethrough
+   on the name so the toggle's effect is immediately readable. */
+.flow-editor-step-item.is-disabled .flow-editor-step-name {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--text-muted) 50%, transparent);
+}
+
+.flow-editor-step-item.is-disabled .flow-editor-step-number,
+.flow-editor-step-item.is-disabled .flow-editor-step-role {
+  opacity: 0.55;
+}
+
+/* Built-in flow rows: replace the action group with a small lock so
+   the user immediately understands why the actions aren't there.
+   !important wins over the hover-reveal opacity:0 default. */
+.flow-editor-step-actions--builtin {
+  opacity: 0.55 !important;
+  transform: none !important;
+}
+
+.flow-editor-step-locked {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--text-muted);
+}
+
+/* Coarse pointer (touch): no hover, so keep actions visible. Reduce
+   their opacity slightly so they don't compete with the row label. */
+@media (hover: none) {
+  .flow-editor-step-actions {
+    opacity: 0.7;
+    transform: none;
+  }
+}
+
+/* ===========================================================================
+   Test-run drawer — sample-query composer + per-step accordion
+   Lives below the flow info actions row. Streams events from the
+   /api/reasoning/flows/{id}/test SSE endpoint and renders each step
+   as a collapsible details panel.
+   =========================================================================== */
+.flow-editor-test-drawer {
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px dashed color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 35%, transparent);
+}
+
+.flow-editor-test-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.flow-editor-test-query {
+  font-family: inherit;
+  font-size: var(--text-sm);
+  resize: vertical;
+  min-height: 48px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.flow-editor-test-query:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 60%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 18%, transparent);
+}
+
+.flow-editor-test-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.flow-editor-test-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.flow-editor-test-control__label {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+.flow-editor-test-control select.flow-editor-input {
+  padding: 3px 8px;
+  font-size: 11px;
+}
+
+.flow-editor-test-output {
+  margin-top: var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.flow-editor-test-status {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 8%, var(--bg-tertiary));
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.flow-editor-test-status[data-kind="running"] {
+  color: var(--fe-accent, var(--mode-analytical));
+  background: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 10%, transparent);
+}
+
+.flow-editor-test-status[data-kind="complete"] {
+  color: var(--success, #4caf50);
+  background: color-mix(in srgb, var(--success, #4caf50) 10%, transparent);
+}
+
+.flow-editor-test-status[data-kind="cancelled"] {
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+}
+
+.flow-editor-test-status[data-kind="error"] {
+  color: var(--error);
+  background: color-mix(in srgb, var(--error) 10%, transparent);
+}
+
+.flow-editor-test-step {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.flow-editor-test-step[data-status="running"] {
+  border-color: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 50%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 20%, transparent);
+}
+
+.flow-editor-test-step[data-status="complete"] {
+  border-color: color-mix(in srgb, var(--success, #4caf50) 35%, transparent);
+}
+
+.flow-editor-test-step[data-status="failed"],
+.flow-editor-test-step[data-status="error"] {
+  border-color: color-mix(in srgb, var(--error) 45%, transparent);
+}
+
+.flow-editor-test-step__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.flow-editor-test-step__head::-webkit-details-marker {
+  display: none;
+}
+
+.flow-editor-test-step__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.flow-editor-test-step[data-status="running"] .flow-editor-test-step__dot {
+  background: var(--fe-accent, var(--mode-analytical));
+  animation: fe-test-dot-pulse 1.4s ease-in-out infinite;
+}
+
+.flow-editor-test-step[data-status="complete"] .flow-editor-test-step__dot {
+  background: var(--success, #4caf50);
+}
+
+.flow-editor-test-step[data-status="failed"] .flow-editor-test-step__dot,
+.flow-editor-test-step[data-status="error"] .flow-editor-test-step__dot {
+  background: var(--error);
+}
+
+@keyframes fe-test-dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(0.7); }
+}
+
+.flow-editor-test-step__name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: capitalize;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flow-editor-test-step__status {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.flow-editor-test-step__body {
+  padding: 4px 10px 10px;
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-tertiary);
+}
+
+.flow-editor-test-content {
+  margin: 6px 0 0;
+  padding: 8px 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 240px;
+  overflow-y: auto;
+  color: var(--text-primary);
+}
+
+.flow-editor-test-pending {
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 4px 0;
+  letter-spacing: 0.4em;
+  animation: fe-test-pending 1.4s ease-in-out infinite;
+}
+
+@keyframes fe-test-pending {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
+
+.flow-editor-test-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.flow-editor-test-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 12%, transparent);
+  color: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 90%, var(--text-primary));
+  border: 1px solid color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 25%, transparent);
+}
+
+.flow-editor-test-tool__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.flow-editor-test-tool[data-status="failed"],
+.flow-editor-test-tool[data-status="error"] {
+  background: color-mix(in srgb, var(--error) 12%, transparent);
+  color: var(--error);
+  border-color: color-mix(in srgb, var(--error) 30%, transparent);
+}
+
+/* --- Drag and Drop --- */
+
+.flow-editor-step-item.dragging {
+  opacity: 0.4;
+  border-style: dashed;
+  border-color: var(--border);
+}
+
+.flow-editor-step-item.drag-over-above {
+  border-top: 2px solid var(--fe-accent, var(--mode-analytical));
+}
+
+.flow-editor-step-item.drag-over-below {
+  border-bottom: 2px solid var(--fe-accent, var(--mode-analytical));
+}
+
+.flow-editor-drag-indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--fe-accent, var(--mode-analytical));
+  display: none;
+  pointer-events: none;
+  z-index: 10;
+  border-radius: 1px;
+}
+
+/* --- Step Editor --- */
+
+.flow-editor-step-editor {
+  padding: var(--space-sm);
+}
+
+.flow-editor-step-editor.hidden {
+  display: none;
+}
+
+.flow-editor-step-editor-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.flow-editor-step-editor-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+/* --- Form --- */
+
+.flow-editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.flow-editor-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.flow-editor-label-inline {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.flow-editor-input {
+  padding: 6px 8px;
+  font-size: var(--text-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-family: inherit;
+  outline: none;
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.flow-editor-input:focus {
+  border-color: var(--fe-accent, var(--mode-analytical));
+}
+
+.flow-editor-input-sm {
+  max-width: 120px;
+}
+
+.flow-editor-textarea {
+  padding: 6px 8px;
+  font-size: var(--text-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  resize: vertical;
+  outline: none;
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.flow-editor-textarea:focus {
+  border-color: var(--fe-accent, var(--mode-analytical));
+}
+
+.flow-editor-hint {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  margin-top: 2px;
+}
+
+.flow-editor-hint-warn {
+  color: var(--warning, #d9a441);
+}
+
+/* Routing preview — dry-run results under the Trigger Keywords field */
+.flow-editor-routing-result {
+  margin-top: var(--space-xs);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.flow-editor-routing-headline {
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.flow-editor-routing-row {
+  color: var(--text-muted);
+  white-space: pre-wrap;
+}
+
+.flow-editor-routing-row.is-winner {
+  color: var(--fe-accent, var(--mode-analytical));
+}
+
+.flow-editor-row {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-end;
+}
+
+.flow-editor-gate-group {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.flow-editor-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-xs);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.flow-editor-checkbox-standalone {
+  margin-top: auto;
+}
+
+/* --- Tools Grid --- */
+
+.flow-editor-tools-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.flow-editor-tool-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-xs);
+  font-family: var(--font-mono, monospace);
+  color: var(--text-secondary);
+  padding: 2px 6px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--bg-lighter, rgba(255,255,255,0.04));
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-standard);
+}
+
+.flow-editor-tool-label:hover {
+  border-color: var(--fe-accent, var(--mode-analytical));
+}
+
+.flow-editor-tool-label:has(input:checked) {
+  background: rgba(33, 150, 243, 0.08);
+  border-color: var(--fe-accent, var(--mode-analytical));
+  color: var(--fe-accent, var(--mode-analytical));
+}
+
+.flow-editor-tool-label input {
+  margin: 0;
+}
+
+/* --- Form Actions --- */
+
+.flow-editor-form-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.flow-editor-form-actions .flow-editor-btn-primary {
+  flex: 1;
+}
+
+/* --- Import Bar --- */
+
+.flow-editor-import-bar {
+  padding: var(--space-sm);
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  justify-content: center;
+}
+
+/* --- Tools Grid (grouped by capability) ---
+   Tools are bucketed by their backend `category` so non-technical users
+   see capability groups ("Web Search", "Run Code") instead of a flat
+   wall of identifiers. The group header is itself a checkbox — checking
+   it adds the *category* to the step's tool_categories (an "all current
+   and future" subscription); checking individual tools pins specific
+   tool_names. Both can coexist. */
+
+.flow-editor-tools-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.flow-editor-tools-group {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  background: var(--bg);
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.flow-editor-tools-group.is-active {
+  border-color: var(--fe-accent, var(--mode-analytical));
+  background: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 4%, var(--bg));
+}
+
+.flow-editor-tools-group-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  margin-bottom: var(--space-xs);
+}
+
+.flow-editor-tools-group-header input {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.flow-editor-tools-group-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.flow-editor-tools-group-hint {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.flow-editor-tools-group-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  padding-left: 22px; /* aligns with the group-header checkbox text */
+}
+
+/* Legacy section/category styles — left for any inspector-panel callers
+   still relying on them. New code uses .flow-editor-tools-group. */
+.flow-editor-tools-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  align-items: center;
+  margin-bottom: var(--space-xs);
+}
+
+.flow-editor-tools-section-label {
+  width: 100%;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.flow-editor-tool-category {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+
+/* --- Tool grid states --- */
+
+.flow-editor-tools-loading,
+.flow-editor-tools-error {
+  font-size: 0.8rem;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.flow-editor-tools-loading {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.flow-editor-tools-error {
+  color: var(--color-warning, #e8a838);
+  background: rgba(232, 168, 56, 0.08);
+}
+
+/* --- Utility --- */
+
+.flow-editor-import-bar.hidden,
+.flow-editor-info.hidden,
+.flow-editor-steps-container.hidden {
+  display: none;
+}
+
+/* ==========================================================================
+   Mobile Responsive
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  .flow-editor-step-item {
+    padding: var(--space-xs) var(--space-sm);
+  }
+
+  .flow-editor-step-number {
+    font-size: 10px;
+  }
+
+  .flow-editor-step-name {
+    font-size: var(--text-xs);
+  }
+
+  .flow-editor-btn {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .flow-editor-badge {
+    font-size: 9px;
+  }
+
+  .flow-editor-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ==========================================================================
+   Flow Editor Overlay — Full-screen workspace for flow editing
+   Activated when editing from the Settings modal (not the inspector panel).
+   Two-column layout: step list left, step/flow editor right.
+   ========================================================================== */
+
+.flow-editor-overlay {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: calc(var(--z-modal) + 15);
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  animation: fe-overlay-in var(--duration-normal) var(--ease-out);
+}
+
+@media (max-width: 767px) {
+  .flow-editor-overlay {
+    bottom: calc(var(--orb-bar-height) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+.flow-editor-overlay.hidden { display: none; }
+
+@keyframes fe-overlay-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Overlay header bar */
+.fe-overlay-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-lg);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+  flex-shrink: 0;
+}
+
+.fe-overlay-back {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.fe-overlay-back:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.fe-overlay-back svg {
+  width: 14px;
+  height: 14px;
+}
+
+.fe-overlay-title {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fe-overlay-title-badge {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-muted);
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  margin-left: var(--space-xs);
+}
+
+.fe-overlay-actions {
+  display: flex;
+  gap: var(--space-xs);
+  flex-shrink: 0;
+}
+
+/* Two-column layout inside the overlay */
+.fe-overlay-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Left column: step list + flow settings */
+.fe-overlay-sidebar {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  background: var(--bg-elevated);
+  overflow-y: auto;
+}
+
+/* Right column: step editor. The form children below get
+   `margin-inline: auto` to sit in the optical middle of the column on
+   wide screens (instead of hugging the left edge); leaving the parent
+   default-aligned avoids squashing the full-width `.fe-overlay-empty`
+   child, which relies on flex: 1 stretching. */
+.fe-overlay-main {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: var(--space-lg) var(--space-xl);
+}
+
+/* Variable reference bar at bottom */
+.fe-overlay-vars {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  border-top: 1px solid var(--border);
+  background: var(--bg-elevated);
+  font-size: 12px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.fe-overlay-vars code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 2px 6px;
+  background: var(--surface);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--accent-text);
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+}
+
+.fe-overlay-vars code:hover {
+  background: color-mix(in srgb, var(--accent, var(--mode-analytical)) 14%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent, var(--mode-analytical)) 45%, transparent);
+  color: var(--text-primary);
+}
+
+.fe-overlay-vars code:active {
+  background: color-mix(in srgb, var(--accent, var(--mode-analytical)) 22%, var(--surface));
+}
+
+/* When the flow editor lives inside the overlay, override its layout.
+   The selector bar is hidden (overlay header replaces it).
+   The info section moves into the sidebar. */
+.fe-overlay-sidebar .flow-editor {
+  height: 100%;
+}
+
+.fe-overlay-sidebar .flow-editor-selector-bar {
+  display: none;
+}
+
+.fe-overlay-sidebar .flow-editor-info {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.fe-overlay-sidebar .flow-editor-steps-container {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.fe-overlay-sidebar .flow-editor-import-bar {
+  border-top: 1px solid var(--border-light);
+  padding: var(--space-sm);
+}
+
+/* Step editor in the main column. Constrained to a readable line length
+   (~960px) but allowed to expand vertically to fill the column. The
+   sidebar-only layout used a 720px cap that made the editor feel tiny in
+   the fullscreen overlay. */
+.fe-overlay-main .flow-editor-step-editor,
+.fe-overlay-main .flow-editor-form {
+  max-width: min(960px, 100%);
+  width: 100%;
+  margin-inline: auto;
+}
+
+.fe-overlay-main .flow-editor-step-editor:not(.hidden) {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+/* `:not(.hidden)` matters because the .hidden rule above (which sets
+   display: none) has the same specificity as `.fe-overlay-main
+   .flow-editor-step-editor`. Without :not, source order would let this
+   rule override .hidden and the inactive panel would still be visible. */
+
+/* In-overlay header (Back + title) is redundant — the step list lives
+   in the sidebar and is always visible. */
+.fe-overlay-main .flow-editor-step-editor-header {
+  display: none;
+}
+
+.fe-overlay-main .flow-editor-textarea {
+  min-height: 100px;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+/* Empty state for the main column — shown when no step or flow-settings
+   editor is active. JS toggles `.fe-overlay-main--editing` on the column
+   when an editor is in view; the empty state hides under that class. */
+.fe-overlay-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  color: var(--text-muted);
+  padding: var(--space-2xl);
+}
+
+.fe-overlay-main--editing .fe-overlay-empty {
+  display: none;
+}
+
+.fe-overlay-empty svg {
+  width: 48px;
+  height: 48px;
+  opacity: 0.15;
+}
+
+.fe-overlay-empty p {
+  font-size: var(--text-sm);
+  text-align: center;
+  max-width: 320px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Primary CTA inside the overlay's empty state. Visually accented so a
+   brand-new flow with no steps has an obvious next action, rather than
+   a text hint pointing at a button in the other column. */
+.fe-overlay-empty-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--fe-accent, var(--mode-analytical));
+  border-radius: var(--radius-md);
+  background: var(--fe-accent, var(--mode-analytical));
+  color: #fff;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard);
+}
+
+.fe-overlay-empty-btn:hover {
+  filter: brightness(1.1);
+}
+
+.fe-overlay-empty-btn:active {
+  transform: translateY(1px);
+}
+
+.fe-overlay-empty-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 35%, transparent);
+}
+
+/* Built-in flow read-only banner.
+   Replaces the silent "all fields are disabled" dead state with an
+   explicit affordance: tells the user *why* they can't edit and offers
+   a one-click Clone CTA to make a customizable copy. */
+
+.fe-overlay-readonly-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-md);
+  border: 1px solid color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 35%, var(--border));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 6%, var(--bg));
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+}
+
+.fe-overlay-readonly-banner__icon {
+  font-size: var(--text-base);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.fe-overlay-readonly-banner__msg {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-secondary);
+}
+
+.fe-overlay-readonly-banner__action {
+  margin-left: auto;
+  padding: 6px 14px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  border: 1px solid var(--fe-accent, var(--accent));
+  border-radius: var(--radius-sm);
+  background: var(--fe-accent, var(--accent));
+  color: white;
+  cursor: pointer;
+  font-family: inherit;
+  flex-shrink: 0;
+  transition: filter var(--duration-fast) var(--ease-standard);
+}
+
+.fe-overlay-readonly-banner__action:hover {
+  filter: brightness(1.1);
+}
+
+/* Legacy selector preserved for any older markup still relying on it. */
+.fe-overlay-readonly-banner button:not(.fe-overlay-readonly-banner__action) {
+  margin-left: auto;
+  padding: 3px 10px;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--accent-subtle);
+  color: var(--accent-text);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Mobile: stack vertically, sidebar gets proportional height with internal scroll.
+   Previously capped at 200px then 150px which was far too small once a flow had
+   more than a couple of steps — the step list became unusable on phones.
+   Using vh instead keeps the split workable across device heights. */
+@media (max-width: 767px) {
+  .fe-overlay-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 0.45fr) minmax(0, 0.55fr);
+  }
+
+  .fe-overlay-sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    min-height: 0;
+    max-height: none;
+  }
+
+  .fe-overlay-main {
+    padding: var(--space-md);
+    min-height: 0;
+  }
+
+  .fe-overlay-vars {
+    padding: var(--space-xs) var(--space-md);
+  }
+
+  .fe-overlay-header {
+    padding: var(--space-sm) var(--space-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .fe-overlay-body {
+    grid-template-rows: minmax(0, 0.4fr) minmax(0, 0.6fr);
+  }
+
+  .fe-overlay-back span { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-editor-overlay { animation: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Role Cards — visual role selector in step editor
+   --------------------------------------------------------------------------- */
+
+.fe-role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: var(--space-xs);
+  padding: var(--space-xs) 0;
+}
+
+.fe-role-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-sm) var(--space-xs);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color var(--duration-fast) var(--ease-standard),
+              background var(--duration-fast) var(--ease-standard);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+.fe-role-card:hover {
+  border-color: var(--fe-accent, var(--mode-analytical));
+  background: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 6%, transparent);
+}
+
+.fe-role-card--selected {
+  border-color: var(--fe-accent, var(--mode-analytical));
+  background: color-mix(in srgb, var(--fe-accent, var(--mode-analytical)) 10%, transparent);
+  color: var(--text-primary);
+}
+
+.fe-role-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  color: var(--text-secondary);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.fe-role-card__icon svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.fe-role-card:hover .fe-role-card__icon,
+.fe-role-card--selected .fe-role-card__icon {
+  color: var(--fe-accent, var(--mode-analytical));
+}
+
+.fe-role-card__name {
+  font-weight: 500;
+}
+
+/* One-line plain-English description per role. Hidden in the cramped
+   inspector-panel layout (where horizontal space is tight); shown in
+   the fullscreen overlay where each card has more room. */
+.fe-role-card__desc {
+  font-size: var(--text-2xs);
+  font-weight: 400;
+  color: var(--text-muted);
+  line-height: 1.3;
+  margin-top: 2px;
+  display: none;
+}
+
+.fe-role-card--selected .fe-role-card__desc {
+  color: var(--text-secondary);
+}
+
+.fe-role-grid {
+  /* Wider cards in the overlay so descriptions fit without crowding. */
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+}
+
+.fe-overlay-main .fe-role-grid {
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+
+.fe-overlay-main .fe-role-card__desc {
+  display: block;
+}
+
+.fe-role-more-toggle {
+  background: none;
+  border: none;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  margin-top: var(--space-xs);
+}
+
+.fe-role-more-toggle:hover {
+  color: var(--text-primary);
+}
+
+/* ---------------------------------------------------------------------------
+   Advanced section — collapsed by default
+   --------------------------------------------------------------------------- */
+
+.fe-advanced-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: none;
+  border: none;
+  border-top: 1px solid var(--border-light);
+  width: 100%;
+  padding: var(--space-sm) 0;
+  margin-top: var(--space-sm);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.fe-advanced-toggle:hover {
+  color: var(--text-primary);
+}
+
+.fe-advanced-toggle svg {
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.fe-advanced-toggle.open svg {
+  transform: rotate(90deg);
+}
+
+.fe-advanced-section {
+  display: none;
+  padding-top: var(--space-sm);
+}
+
+.fe-advanced-toggle.open + .fe-advanced-section {
+  display: block;
+}
+

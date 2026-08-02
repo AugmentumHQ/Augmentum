@@ -1,0 +1,1313 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Avatar Normalization Lab</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #07090d;
+      color: #edf2ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    body {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(76, 116, 164, 0.18), transparent 36%),
+        linear-gradient(180deg, #111722 0%, #07090d 70%);
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      padding: 14px 18px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(7, 9, 13, 0.78);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 650;
+      letter-spacing: 0;
+    }
+
+    #avatar-name {
+      margin-top: 4px;
+      color: rgba(237, 242, 255, 0.64);
+      font-size: 12px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    select,
+    button {
+      min-width: 190px;
+      height: 34px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #edf2ff;
+      padding: 0 10px;
+      font: inherit;
+      font-size: 12px;
+    }
+
+    button {
+      min-width: auto;
+      padding: 0 12px;
+      cursor: pointer;
+      background: rgba(118, 168, 255, 0.16);
+      color: #f5f8ff;
+    }
+
+    button:hover {
+      border-color: rgba(159, 195, 255, 0.42);
+      background: rgba(118, 168, 255, 0.24);
+    }
+
+    .toggle {
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      color: rgba(237, 242, 255, 0.78);
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .toggle input {
+      margin: 0;
+    }
+
+    main {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+    }
+
+    #views {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .viewer {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        radial-gradient(circle at 50% 32%, rgba(125, 151, 188, 0.16), transparent 32%),
+        #090d14;
+      background-size: 42px 42px, 42px 42px, auto, auto;
+    }
+
+    .viewer canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .viewer-label {
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      display: grid;
+      gap: 4px;
+      max-width: min(340px, calc(100% - 28px));
+      padding: 9px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 7px;
+      background: rgba(4, 6, 10, 0.66);
+      color: rgba(237, 242, 255, 0.78);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      font-size: 12px;
+      line-height: 1.35;
+      pointer-events: none;
+    }
+
+    .viewer-label strong {
+      color: #fff;
+      font-weight: 650;
+    }
+
+    aside {
+      min-width: 0;
+      min-height: 0;
+      overflow: auto;
+      padding: 14px;
+      border-left: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(5, 7, 11, 0.86);
+    }
+
+    .stat {
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      gap: 8px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .stat span:first-child {
+      color: rgba(237, 242, 255, 0.48);
+    }
+
+    .stat span:last-child {
+      overflow-wrap: anywhere;
+      color: rgba(237, 242, 255, 0.86);
+    }
+
+    #warnings {
+      margin-top: 12px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .warning {
+      padding: 8px 9px;
+      border: 1px solid rgba(255, 205, 120, 0.22);
+      border-radius: 7px;
+      background: rgba(255, 190, 90, 0.08);
+      color: rgba(255, 225, 180, 0.92);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(4, 6, 10, 0.78);
+      color: rgba(237, 242, 255, 0.78);
+      font-size: 13px;
+      transition: opacity 0.18s ease;
+    }
+
+    #loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media (max-width: 900px) {
+      header {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        justify-content: stretch;
+      }
+
+      select {
+        min-width: min(100%, 162px);
+        flex: 1 1 142px;
+      }
+
+      button,
+      .toggle {
+        flex: 0 0 auto;
+      }
+
+      main {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr auto;
+      }
+
+      aside {
+        max-height: 34vh;
+        border-left: 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+    }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./lib/three/three.module.min.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Avatar Normalization Lab</h1>
+      <div id="avatar-name">Loading...</div>
+    </div>
+    <div class="toolbar" aria-label="Avatar action controls">
+      <select id="avatar-select" aria-label="Avatar"></select>
+      <select id="state-select" aria-label="Conversation state"></select>
+      <select id="emotion-select" aria-label="Emotion"></select>
+      <select id="action-select" aria-label="Action"></select>
+      <button id="play-action" type="button">Play</button>
+      <label class="toggle">
+        <input id="loop-toggle" type="checkbox">
+        Loop
+      </label>
+    </div>
+  </header>
+
+  <main>
+    <section id="views" aria-label="Normalization comparison">
+      <div class="viewer">
+        <canvas id="naive-canvas"></canvas>
+        <div class="viewer-label">
+          <strong>Naive path</strong>
+          <span>Global idle arm pose, no version-aware facing.</span>
+        </div>
+      </div>
+      <div class="viewer">
+        <canvas id="normalized-canvas"></canvas>
+        <div class="viewer-label">
+          <strong>Profiled path</strong>
+          <span>VRM version facing, normalized rest pose, production animator.</span>
+        </div>
+      </div>
+    </section>
+
+    <aside aria-label="Detected avatar profile">
+      <div id="profile-stats"></div>
+      <div id="warnings"></div>
+    </aside>
+  </main>
+
+  <div id="loading">Loading avatar...</div>
+
+  <script type="module">
+    import * as THREE from './lib/three/three.module.min.js';
+    import { GLTFLoader } from './lib/three/GLTFLoader.js';
+    import { VRMLoaderPlugin, VRMUtils } from './lib/three-vrm/three-vrm.module.min.js';
+    import { AvatarAnimator } from './scripts/avatar-animator.js';
+    import {
+      CALL_ACTIONS,
+      CALL_ACTION_ORDER,
+      CallActionScheduler,
+      DEFAULT_CALL_MOTION_TEXTURE,
+      HAND_SHAPES,
+      assessCallActionCompatibility,
+      getCallActionBones,
+      getCallActionContract,
+      getCallActionHandShapeBones,
+      getCallActionMotionBones,
+      getHandShapeBones,
+      validateCallActionLibrary,
+    } from './scripts/avatar-call-actions.js';
+    import {
+      createAvatarCompatibilityProfile,
+    } from './scripts/avatar-vrm-profile.js';
+
+    const AVATARS = [
+      'vance.vrm',
+      'Becca.vrm',
+    ];
+
+    const REQUIRED_BONES = [
+      'hips', 'spine', 'head',
+      'leftUpperArm', 'leftLowerArm', 'leftHand',
+      'rightUpperArm', 'rightLowerArm', 'rightHand',
+      'leftUpperLeg', 'leftLowerLeg', 'leftFoot',
+      'rightUpperLeg', 'rightLowerLeg', 'rightFoot',
+    ];
+
+    const APP_BONES = [
+      'chest', 'upperChest', 'neck',
+      'leftShoulder', 'rightShoulder',
+      'leftEye', 'rightEye',
+    ];
+
+    const ARM_TARGET_BONES = new Set([
+      'leftUpperArm', 'rightUpperArm',
+      'leftLowerArm', 'rightLowerArm',
+      'leftHand', 'rightHand',
+    ]);
+
+    const FINGER_BONE_SUFFIXES = [
+      'ThumbMetacarpal', 'ThumbProximal', 'ThumbDistal',
+      'IndexProximal', 'IndexIntermediate', 'IndexDistal',
+      'MiddleProximal', 'MiddleIntermediate', 'MiddleDistal',
+      'RingProximal', 'RingIntermediate', 'RingDistal',
+      'LittleProximal', 'LittleIntermediate', 'LittleDistal',
+    ];
+
+    const FINGER_TARGET_BONES = new Set([
+      ...FINGER_BONE_SUFFIXES.map((suffix) => `left${suffix}`),
+      ...FINGER_BONE_SUFFIXES.map((suffix) => `right${suffix}`),
+    ]);
+
+    const IDLE_ARM_POSE = {
+      leftUpperArm: [12, 0, 76],
+      rightUpperArm: [12, 0, -76],
+      leftLowerArm: [-18, 0, -10],
+      rightLowerArm: [-18, 0, 10],
+      leftHand: [-14, 0, -6],
+      rightHand: [-14, 0, 6],
+    };
+
+    const STATES = ['idle', 'listening', 'processing', 'speaking'];
+    const EMOTIONS = ['neutral', 'happy', 'curious', 'thinking', 'relaxed', 'surprised', 'sad', 'angry', 'excited'];
+    const RAW_ACTIONS = [
+      'nod',
+      'shake',
+      'bow',
+      'shrug',
+      'wave',
+      'laugh',
+      'think',
+      'surprise',
+      'lean_forward',
+      'lean_back',
+      'head_tilt',
+      'point_up',
+      'hand_to_chin',
+      'cross_arms',
+      'open_palms',
+      'look_away',
+      'weight_shift',
+      'look_around',
+      'blink_slow',
+      'deep_breath',
+      'stretch_subtle',
+      'posture_adjust',
+      'sigh',
+    ];
+    const ACTIONS = ['none', ...CALL_ACTION_ORDER, ...RAW_ACTIONS];
+    const ACTION_LIBRARY_VALIDATION = validateCallActionLibrary();
+
+    const DEG = Math.PI / 180;
+    const params = new URLSearchParams(window.location.search);
+    const initialAvatar = params.get('avatar') || 'vance.vrm';
+    const initialState = params.get('state') || 'idle';
+    const initialEmotion = params.get('emotion') || 'neutral';
+    const initialAction = params.get('action') || 'none';
+    const autoplay = params.get('autoplay') === '1';
+    const cameraMode = params.get('camera') || 'full';
+    const avatarSelect = document.getElementById('avatar-select');
+    const stateSelect = document.getElementById('state-select');
+    const emotionSelect = document.getElementById('emotion-select');
+    const actionSelect = document.getElementById('action-select');
+    const playActionButton = document.getElementById('play-action');
+    const loopToggle = document.getElementById('loop-toggle');
+    const avatarName = document.getElementById('avatar-name');
+    const statsEl = document.getElementById('profile-stats');
+    const warningsEl = document.getElementById('warnings');
+    const loading = document.getElementById('loading');
+
+    let disposeCurrent = null;
+    let animationId = 0;
+    let activeAnimator = null;
+    let activeActionPlayer = null;
+    let activeProfile = null;
+    let activeGestureCompat = null;
+    let activeAction = initialAction;
+    let lastLoopActionAt = 0;
+
+    window.__avatarPoseHarness = {
+      ready: false,
+      stats: {},
+    };
+
+    for (const file of AVATARS) {
+      const opt = document.createElement('option');
+      opt.value = file;
+      opt.textContent = file;
+      avatarSelect.appendChild(opt);
+    }
+
+    for (const value of STATES) {
+      const opt = document.createElement('option');
+      opt.value = value;
+      opt.textContent = value;
+      stateSelect.appendChild(opt);
+    }
+
+    for (const value of EMOTIONS) {
+      const opt = document.createElement('option');
+      opt.value = value;
+      opt.textContent = value;
+      emotionSelect.appendChild(opt);
+    }
+
+    for (const value of ACTIONS) {
+      const opt = document.createElement('option');
+      opt.value = value;
+      opt.textContent = value === 'none'
+        ? 'none'
+        : (CALL_ACTIONS[value]?.label || value.replaceAll('_', ' '));
+      actionSelect.appendChild(opt);
+    }
+
+    avatarSelect.value = AVATARS.includes(initialAvatar) ? initialAvatar : 'vance.vrm';
+    stateSelect.value = STATES.includes(initialState) ? initialState : 'idle';
+    emotionSelect.value = EMOTIONS.includes(initialEmotion) ? initialEmotion : 'neutral';
+    actionSelect.value = ACTIONS.includes(initialAction) ? initialAction : 'none';
+    loopToggle.checked = params.get('loop') === '1';
+
+    avatarSelect.addEventListener('change', () => {
+      updateUrlParams();
+      runLab(avatarSelect.value);
+    });
+    stateSelect.addEventListener('change', () => {
+      updateUrlParams();
+      if (activeProfile) renderStats(avatarSelect.value, activeProfile, activeGestureCompat);
+      syncHarnessStats();
+    });
+    emotionSelect.addEventListener('change', () => {
+      activeAnimator?.setEmotion?.(emotionSelect.value);
+      updateUrlParams();
+      if (activeProfile) renderStats(avatarSelect.value, activeProfile, activeGestureCompat);
+      syncHarnessStats();
+    });
+    actionSelect.addEventListener('change', () => {
+      activeAction = actionSelect.value;
+      updateUrlParams();
+      if (activeProfile) renderStats(avatarSelect.value, activeProfile, activeGestureCompat);
+      syncHarnessStats();
+    });
+    playActionButton.addEventListener('click', () => triggerSelectedAction());
+    loopToggle.addEventListener('change', () => {
+      updateUrlParams();
+      if (activeProfile) renderStats(avatarSelect.value, activeProfile, activeGestureCompat);
+      syncHarnessStats();
+    });
+
+    function updateUrlParams() {
+      const url = new URL(window.location.href);
+      url.searchParams.set('avatar', avatarSelect.value);
+      url.searchParams.set('state', stateSelect.value);
+      url.searchParams.set('emotion', emotionSelect.value);
+      url.searchParams.set('action', actionSelect.value);
+      if (loopToggle.checked) url.searchParams.set('loop', '1');
+      else url.searchParams.delete('loop');
+      history.replaceState(null, '', url);
+    }
+
+    function createViewer(canvas) {
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        alpha: true,
+        antialias: true,
+        preserveDrawingBuffer: true,
+      });
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.setClearColor(0x000000, 0);
+
+      const key = new THREE.DirectionalLight(0xfff2dd, 1.15);
+      key.position.set(1.2, 1.8, -1.4);
+      scene.add(key);
+      const fill = new THREE.DirectionalLight(0xdce8ff, 0.48);
+      fill.position.set(-1.4, 1.1, -0.6);
+      scene.add(fill);
+      const rim = new THREE.DirectionalLight(0xffe5c5, 0.75);
+      rim.position.set(0, 1.0, 1.4);
+      scene.add(rim);
+      scene.add(new THREE.AmbientLight(0xffffff, 0.18));
+
+      const viewer = { scene, camera, renderer, canvas, vrm: null };
+      canvas.__viewer = viewer;
+      return viewer;
+    }
+
+    function resizeViewer(viewer) {
+      const parent = viewer.canvas.parentElement;
+      const w = Math.max(1, parent.clientWidth);
+      const h = Math.max(1, parent.clientHeight);
+      viewer.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      viewer.renderer.setSize(w, h, false);
+      viewer.camera.aspect = w / h;
+      viewer.camera.updateProjectionMatrix();
+      if (viewer.vrm) frameVRM(viewer);
+    }
+
+    async function loadVRM(file, options = {}) {
+      const loader = new GLTFLoader();
+      loader.register((parser) => new VRMLoaderPlugin(parser));
+      const url = `./lib/bundled-avatars/${encodeURIComponent(file)}`;
+      const gltf = await new Promise((resolve, reject) => {
+        loader.load(url, resolve, undefined, reject);
+      });
+      const vrm = gltf.userData.vrm;
+      if (!vrm) throw new Error('No VRM data found');
+
+      try { VRMUtils.removeUnnecessaryVertices(gltf.scene); } catch {}
+      try { VRMUtils.removeUnnecessaryJoints(gltf.scene); } catch {}
+      try { vrm.humanoid?.resetNormalizedPose?.(); } catch {}
+      vrm.scene.updateMatrixWorld(true);
+
+      const profile = createAvatarCompatibilityProfile(THREE, vrm, {
+        gltfJson: gltf.parser?.json,
+        label: file,
+      });
+
+      if (options.profiled) {
+        if (profile.facingCorrection === 'rotateY180') {
+          vrm.scene.rotation.y = Math.PI;
+        }
+        if (options.applyStaticPose !== false) {
+          applyIdlePose(vrm, profile, true);
+        }
+      } else {
+        applyIdlePose(vrm, profile, false);
+      }
+
+      vrm.scene.traverse((obj) => {
+        obj.frustumCulled = false;
+      });
+      vrm.update?.(0);
+      vrm.scene.updateMatrixWorld(true);
+
+      return { vrm, profile };
+    }
+
+    function detectGeneration(json) {
+      const extensions = json?.extensions || {};
+      if (extensions.VRMC_vrm) return '1.0';
+      if (extensions.VRM) return '0.x';
+      return 'unknown';
+    }
+
+    function detectProfile(vrm, generation) {
+      const humanoid = vrm.humanoid;
+      const bones = {};
+      for (const name of [...REQUIRED_BONES, ...APP_BONES]) {
+        bones[name] = getBone(humanoid, name);
+      }
+
+      const box = new THREE.Box3().setFromObject(vrm.scene);
+      const size = new THREE.Vector3();
+      box.getSize(size);
+
+      const hips = bones.hips;
+      const hipsWorld = hips ? hips.getWorldPosition(new THREE.Vector3()) : null;
+      const leftX = getLocalChildX(bones.leftUpperArm, bones.leftLowerArm);
+      const rightX = getLocalChildX(bones.rightUpperArm, bones.rightLowerArm);
+      let armAxisProfile = 'unknown';
+      if (leftX < -0.001 && rightX > 0.001) armAxisProfile = 'legacy';
+      if (leftX > 0.001 && rightX < -0.001) armAxisProfile = 'mirrored';
+
+      const missingRequired = REQUIRED_BONES.filter((name) => !bones[name]);
+      const missingOptional = APP_BONES.filter((name) => !bones[name]);
+      const handProfile = detectHandProfile(humanoid);
+      const expressionNames = getExpressionNames(vrm);
+      const warnings = [];
+      if (missingRequired.length) warnings.push(`Missing required bones: ${missingRequired.join(', ')}`);
+      if (armAxisProfile === 'unknown') warnings.push('Could not classify arm axis profile.');
+      if (!expressionNames.length) warnings.push('No expression presets detected.');
+
+      return {
+        generation,
+        facingCorrection: generation === '1.0' ? 'rotateY180' : 'none',
+        armAxisProfile,
+        armLocalX: {
+          leftLowerFromUpper: round(leftX),
+          rightLowerFromUpper: round(rightX),
+        },
+        height: round(size.y),
+        hipsHeight: hipsWorld ? round(hipsWorld.y) : null,
+        requiredBonesOk: missingRequired.length === 0,
+        missingRequired,
+        missingOptional,
+        handProfile,
+        expressions: expressionNames,
+        warnings,
+      };
+    }
+
+    function detectHandProfile(humanoid) {
+      const sides = {};
+      for (const side of ['left', 'right']) {
+        const present = [];
+        const missing = [];
+        for (const suffix of FINGER_BONE_SUFFIXES) {
+          const name = `${side}${suffix}`;
+          if (getBone(humanoid, name)) present.push(name);
+          else missing.push(name);
+        }
+        const optionalThumbIntermediate = `${side}ThumbIntermediate`;
+        const optional = getBone(humanoid, optionalThumbIntermediate) ? [optionalThumbIntermediate] : [];
+        sides[side] = {
+          present,
+          missing,
+          optional,
+          coverage: FINGER_BONE_SUFFIXES.length
+            ? present.length / FINGER_BONE_SUFFIXES.length
+            : 0,
+        };
+      }
+      return {
+        left: sides.left,
+        right: sides.right,
+        summary: `L ${sides.left.present.length}/${FINGER_BONE_SUFFIXES.length}, R ${sides.right.present.length}/${FINGER_BONE_SUFFIXES.length}`,
+      };
+    }
+
+    function getBone(humanoid, name) {
+      return humanoid?.getNormalizedBoneNode?.(name)
+        || humanoid?.getRawBoneNode?.(name)
+        || null;
+    }
+
+    function getLocalChildX(parent, child) {
+      if (!parent || !child) return 0;
+      parent.updateWorldMatrix?.(true, false);
+      child.updateWorldMatrix?.(true, false);
+      const point = child.getWorldPosition(new THREE.Vector3());
+      return parent.worldToLocal(point).x;
+    }
+
+    function getExpressionNames(vrm) {
+      const manager = vrm.expressionManager;
+      if (!manager) return [];
+      if (manager.expressionMap instanceof Map) {
+        return [...manager.expressionMap.keys()].sort();
+      }
+      if (manager._expressionMap instanceof Map) {
+        return [...manager._expressionMap.keys()].sort();
+      }
+      if (manager.expressions && typeof manager.expressions === 'object') {
+        return Object.keys(manager.expressions).sort();
+      }
+      return [];
+    }
+
+    function applyIdlePose(vrm, profile, useProfile) {
+      const humanoid = vrm.humanoid;
+      if (!humanoid) return;
+      for (const [boneName, rawAngles] of Object.entries(IDLE_ARM_POSE)) {
+        const bone = getBone(humanoid, boneName);
+        if (!bone) continue;
+        const angles = useProfile ? mapArmTarget(profile, boneName, rawAngles) : rawAngles;
+        const rest = bone.quaternion.clone();
+        const euler = new THREE.Euler(angles[0] * DEG, angles[1] * DEG, angles[2] * DEG, 'XYZ');
+        const q = new THREE.Quaternion().setFromEuler(euler);
+        bone.quaternion.copy(rest).multiply(q);
+      }
+    }
+
+    function mapArmTarget(profile, boneName, angles) {
+      if (!ARM_TARGET_BONES.has(boneName)) return angles;
+      if (profile.armAxisProfile !== 'mirrored') return angles;
+      return [angles[0], angles[1], -angles[2]];
+    }
+
+    function mapFingerTarget(boneName, angles) {
+      if (!FINGER_TARGET_BONES.has(boneName)) return angles;
+      const sideSign = boneName.startsWith('right') ? -1 : 1;
+      return [angles[0], angles[1] * sideSign, angles[2] * sideSign];
+    }
+
+    function smooth01(value) {
+      const t = Math.min(1, Math.max(0, value));
+      return t * t * (3 - 2 * t);
+    }
+
+    class CuratedActionPlayer {
+      constructor(THREERef, vrm, profile) {
+        this.THREE = THREERef;
+        this.vrm = vrm;
+        this.profile = profile;
+        this.current = null;
+        this.currentName = null;
+        this.elapsed = 0;
+        this.expressionNames = new Set();
+        this.bones = {};
+        this.restQuats = {};
+        this.lastTriggerResult = null;
+        const humanoid = vrm.humanoid;
+        const names = new Set();
+        for (const action of Object.values(CALL_ACTIONS)) {
+          for (const boneName of getCallActionBones(action)) names.add(boneName);
+          for (const boneName of getCallActionHandShapeBones(action)) names.add(boneName);
+          for (const boneName of getCallActionMotionBones(action)) names.add(boneName);
+        }
+        for (const boneName of names) {
+          const bone = getBone(humanoid, boneName);
+          if (!bone) continue;
+          this.bones[boneName] = bone;
+          this.restQuats[boneName] = bone.quaternion.clone();
+        }
+        this.availableBones = new Set(Object.keys(this.bones));
+        this.scheduler = new CallActionScheduler({
+          getCompatibility: (name, options = {}) => this.getCoverage(name, options),
+        });
+      }
+
+      getCoverage(name, options = {}) {
+        if (!CALL_ACTIONS[name]) return null;
+        return assessCallActionCompatibility(name, this.availableBones, {
+          phase: stateSelect.value,
+          ...options,
+        });
+      }
+
+      getHandShapeCoverage(name) {
+        const action = CALL_ACTIONS[name];
+        if (!action) return null;
+        const handShapes = action.handShapes || {};
+        const shapeRows = [];
+        for (const [side, shapeName] of Object.entries(handShapes)) {
+          const needed = getHandShapeBones(shapeName, side);
+          const missing = needed.filter((boneName) => !this.bones[boneName]);
+          shapeRows.push({
+            side,
+            shapeName,
+            coverage: needed.length ? (needed.length - missing.length) / needed.length : 1,
+            missing,
+          });
+        }
+        return shapeRows;
+      }
+
+      trigger(name, options = {}) {
+        const result = this.scheduler.request(name, {
+          availableBones: this.availableBones,
+          mode: options.mode || 'manual',
+          ignoreCooldown: options.ignoreCooldown ?? options.mode !== 'auto',
+        });
+        this.lastTriggerResult = result;
+        if (!result.accepted || !result.action) return false;
+
+        this._clearCurrentAction();
+        const action = result.action;
+        this.current = action;
+        this.currentName = result.name;
+        this.elapsed = 0;
+        this._clearActionExpressions();
+        this.expressionNames = new Set(Object.keys(action.expression || {}));
+        return true;
+      }
+
+      update(dt) {
+        if (!this.current) return false;
+        this.elapsed += dt;
+        const action = this.current;
+        const progress = Math.min(1, this.elapsed / Math.max(action.duration || 1, 0.001));
+        const envelope = this._envelope(progress);
+        const pose = this._samplePose(action, progress);
+        this._applyMotionTexture(pose, action, progress, envelope);
+
+        for (const [boneName, angles] of Object.entries(pose)) {
+          const bone = this.bones[boneName];
+          const rest = this.restQuats[boneName];
+          if (!bone || !rest) continue;
+          const mapped = mapArmTarget(this.profile, boneName, angles);
+          const euler = new this.THREE.Euler(mapped[0] * DEG, mapped[1] * DEG, mapped[2] * DEG, 'XYZ');
+          const target = rest.clone().multiply(new this.THREE.Quaternion().setFromEuler(euler));
+          bone.quaternion.slerp(target, envelope);
+        }
+
+        this._applyHandShapes(action, envelope);
+        this._applyActionExpressions(action, envelope);
+
+        if (progress >= 1) {
+          this.scheduler.finish();
+          this._clearCurrentAction();
+          this.current = null;
+          this.currentName = null;
+          this.elapsed = 0;
+        }
+        return true;
+      }
+
+      _samplePose(action, progress) {
+        const keyframes = action.keyframes || [];
+        if (!keyframes.length) return {};
+        let a = keyframes[0];
+        let b = keyframes[keyframes.length - 1];
+        for (let i = 0; i < keyframes.length - 1; i += 1) {
+          if (progress >= keyframes[i].t && progress <= keyframes[i + 1].t) {
+            a = keyframes[i];
+            b = keyframes[i + 1];
+            break;
+          }
+        }
+        const range = Math.max(0.0001, b.t - a.t);
+        const localT = Math.min(1, Math.max(0, (progress - a.t) / range));
+        const eased = localT * localT * (3 - 2 * localT);
+        const bones = new Set([...Object.keys(a.bones || {}), ...Object.keys(b.bones || {})]);
+        const pose = {};
+        for (const boneName of bones) {
+          const neutral = ARM_TARGET_BONES.has(boneName)
+            ? (IDLE_ARM_POSE[boneName] || [0, 0, 0])
+            : [0, 0, 0];
+          const av = a.bones?.[boneName] || neutral;
+          const bv = b.bones?.[boneName] || neutral;
+          pose[boneName] = [
+            av[0] + (bv[0] - av[0]) * eased,
+            av[1] + (bv[1] - av[1]) * eased,
+            av[2] + (bv[2] - av[2]) * eased,
+          ];
+        }
+        return pose;
+      }
+
+      _applyMotionTexture(pose, action, progress, envelope) {
+        const texture = action.motionTexture || DEFAULT_CALL_MOTION_TEXTURE;
+        const bones = texture?.bones || {};
+        const entries = Object.entries(bones);
+        if (!entries.length) return;
+
+        const holdStart = texture.holdStart ?? 0.16;
+        const holdEnd = texture.holdEnd ?? 0.88;
+        const attack = smooth01(Math.min(1, Math.max(0, (progress - holdStart) / 0.16)));
+        const release = smooth01(Math.min(1, Math.max(0, (holdEnd - progress) / 0.18)));
+        const holdWeight = Math.min(attack, release);
+        const frequency = texture.frequency || 0.82;
+        const phase = (texture.phase || 0.17) * Math.PI * 2;
+        const primary = Math.sin((this.elapsed * frequency * Math.PI * 2) + phase);
+        const secondary = Math.sin((this.elapsed * frequency * 0.47 * Math.PI * 2) + phase * 1.7);
+        const drift = ((primary * 0.68) + (secondary * 0.32)) * envelope * holdWeight * (texture.weight || 1);
+
+        for (const [boneName, delta] of entries) {
+          const current = pose[boneName] || [0, 0, 0];
+          pose[boneName] = [
+            current[0] + ((delta[0] || 0) * drift),
+            current[1] + ((delta[1] || 0) * drift),
+            current[2] + ((delta[2] || 0) * drift),
+          ];
+        }
+      }
+
+      _envelope(progress) {
+        const attack = Math.min(1, progress / 0.18);
+        const release = Math.min(1, (1 - progress) / 0.2);
+        const weight = Math.min(attack, release);
+        return weight * weight * (3 - 2 * weight);
+      }
+
+      _applyActionExpressions(action, envelope) {
+        const manager = this.vrm.expressionManager;
+        if (!manager) return;
+        for (const [name, value] of Object.entries(action.expression || {})) {
+          const target = Math.max(0, Math.min(1, value * envelope));
+          manager.setValue?.(name, target);
+        }
+      }
+
+      _applyHandShapes(action, envelope) {
+        for (const [side, shapeName] of Object.entries(action.handShapes || {})) {
+          const shape = HAND_SHAPES[shapeName];
+          if (!shape) continue;
+          for (const [suffix, angles] of Object.entries(shape.bones || {})) {
+            const boneName = `${side}${suffix}`;
+            const bone = this.bones[boneName];
+            const rest = this.restQuats[boneName];
+            if (!bone || !rest) continue;
+            const mapped = mapFingerTarget(boneName, angles);
+            const euler = new this.THREE.Euler(mapped[0] * DEG, mapped[1] * DEG, mapped[2] * DEG, 'XYZ');
+            const target = rest.clone().multiply(new this.THREE.Quaternion().setFromEuler(euler));
+            bone.quaternion.slerp(target, envelope);
+          }
+        }
+      }
+
+      _clearActionExpressions() {
+        const manager = this.vrm.expressionManager;
+        if (!manager) return;
+        for (const name of this.expressionNames || []) {
+          manager.setValue?.(name, 0);
+        }
+        this.expressionNames.clear();
+      }
+
+      _clearCurrentAction() {
+        if (this.current) this._resetHandShapes(this.current);
+        this._clearActionExpressions();
+        this.current = null;
+        this.currentName = null;
+        this.elapsed = 0;
+      }
+
+      _resetHandShapes(action) {
+        for (const [side, shapeName] of Object.entries(action?.handShapes || {})) {
+          const shape = HAND_SHAPES[shapeName];
+          if (!shape) continue;
+          for (const suffix of Object.keys(shape.bones || {})) {
+            const boneName = `${side}${suffix}`;
+            const bone = this.bones[boneName];
+            const rest = this.restQuats[boneName];
+            if (bone && rest) bone.quaternion.copy(rest);
+          }
+        }
+      }
+
+      dispose() {
+        this._clearCurrentAction();
+        this.scheduler.clear();
+        this.bones = {};
+        this.restQuats = {};
+      }
+    }
+
+    function frameVRM(viewer) {
+      const box = new THREE.Box3().setFromObject(viewer.vrm.scene);
+      const size = new THREE.Vector3();
+      const center = new THREE.Vector3();
+      box.getSize(size);
+      box.getCenter(center);
+
+      const aspect = Math.max(0.1, viewer.camera.aspect || 1);
+      const fitScale = cameraMode === 'upper' ? 0.62 : 1.12;
+      const widthScale = cameraMode === 'upper' ? 0.8 : 1.22;
+      const fitHeight = Math.max(size.y * fitScale, (size.x / aspect) * widthScale);
+      const fov = THREE.MathUtils.degToRad(viewer.camera.fov);
+      const dist = (fitHeight / 2) / Math.tan(fov / 2);
+      const lookY = cameraMode === 'upper'
+        ? center.y + size.y * 0.26
+        : center.y + size.y * 0.06;
+      const posY = cameraMode === 'upper'
+        ? center.y + size.y * 0.25
+        : center.y + size.y * 0.03;
+
+      viewer.camera.position.set(center.x, posY, center.z - dist * 1.08);
+      viewer.camera.lookAt(center.x, lookY, center.z);
+      viewer.camera.updateProjectionMatrix();
+    }
+
+    function renderStats(file, profile, gestureCompat = null) {
+      avatarName.textContent = file;
+      const selectedAction = actionSelect.value;
+      const actionDef = CALL_ACTIONS[selectedAction];
+      const actionContract = actionDef ? getCallActionContract(selectedAction) : null;
+      const actionCompat = getActionCoverage(selectedAction, gestureCompat);
+      const handShapeRows = getHandShapeRows(selectedAction);
+      const rows = [
+        ['Generation', profile.generation],
+        ['Facing fix', profile.facingCorrection],
+        ['Arm axis', profile.armAxisProfile],
+        ['State', stateSelect.value],
+        ['Emotion', emotionSelect.value],
+        ['Action', actionDef?.label || actionSelect.value],
+        ['Action cue', actionDef?.cue || (selectedAction === 'none' ? 'idle only' : 'raw animator gesture')],
+        ['Readiness', formatActionReadiness(actionCompat, selectedAction)],
+        ['Safety', actionContract ? `${actionContract.safetyTier}, ${actionContract.autoSafe ? 'auto-safe' : 'explicit-only'}` : 'not applicable'],
+        ['Phases', actionContract?.phases?.join(', ') || 'not applicable'],
+        ['Fallback', actionContract?.fallback || 'none'],
+        ['Motion basis', actionDef?.inspiredBy || 'built-in procedural animator'],
+        ['Motion texture', actionDef?.motionTexture?.label || (actionDef ? DEFAULT_CALL_MOTION_TEXTURE.label : 'not applicable')],
+        ['Action coverage', formatGestureCoverage(actionCompat, selectedAction)],
+        ['Hand shape', formatHandShapeNames(actionDef)],
+        ['Hand coverage', formatHandShapeCoverage(handShapeRows)],
+        ['Finger bones', profile.handProfile?.summary || 'unknown'],
+        ['Arm local X', `L ${profile.armLocalX.leftLowerFromUpper}, R ${profile.armLocalX.rightLowerFromUpper}`],
+        ['Height', `${profile.height} m`],
+        ['Hips height', profile.hipsHeight == null ? 'unknown' : `${profile.hipsHeight} m`],
+        ['Required bones', profile.requiredBonesOk ? 'ok' : 'missing'],
+        ['Missing optional', profile.missingOptional.length ? profile.missingOptional.join(', ') : 'none'],
+        ['Expressions', profile.expressions.length ? profile.expressions.slice(0, 12).join(', ') : 'none'],
+      ];
+      statsEl.innerHTML = rows.map(([label, value]) => (
+        `<div class="stat"><span>${escapeHtml(label)}</span><span>${escapeHtml(String(value))}</span></div>`
+      )).join('');
+      const warnings = [
+        ...(ACTION_LIBRARY_VALIDATION.ok ? [] : ACTION_LIBRARY_VALIDATION.issues),
+        ...profile.warnings,
+        ...(actionCompat?.warnings || []),
+      ];
+      warningsEl.innerHTML = warnings.length
+        ? warnings.map((warning) => `<div class="warning">${escapeHtml(warning)}</div>`).join('')
+        : '<div class="warning">No blocking compatibility warnings.</div>';
+    }
+
+    function formatActionReadiness(actionCompat, selectedAction) {
+      if (selectedAction === 'none') return 'idle only';
+      if (!CALL_ACTIONS[selectedAction]) return 'legacy gesture';
+      if (!actionCompat) return 'unknown';
+      const score = Math.round((actionCompat.score || actionCompat.coverage || 0) * 100);
+      const auto = actionCompat.canAuto ? ', auto ok' : '';
+      return `${actionCompat.status || 'unknown'} ${score}%${auto}`;
+    }
+
+    function formatGestureCoverage(actionCompat, selectedAction) {
+      if (selectedAction === 'none') return 'idle only';
+      if (!actionCompat) return 'unknown';
+      const pct = Math.round((actionCompat.coverage || 0) * 100);
+      return actionCompat.missing?.length
+        ? `${pct}% missing ${actionCompat.missing.join(', ')}`
+        : `${pct}%`;
+    }
+
+    function getActionCoverage(selectedAction, gestureCompat = null) {
+      if (CALL_ACTIONS[selectedAction]) {
+        return activeActionPlayer?.getCoverage(selectedAction) || null;
+      }
+      return gestureCompat?.[selectedAction] || null;
+    }
+
+    function getHandShapeRows(selectedAction) {
+      if (!CALL_ACTIONS[selectedAction]) return null;
+      return activeActionPlayer?.getHandShapeCoverage(selectedAction) || [];
+    }
+
+    function formatHandShapeNames(actionDef) {
+      const handShapes = actionDef?.handShapes || {};
+      const rows = Object.entries(handShapes).map(([side, shapeName]) => {
+        const label = HAND_SHAPES[shapeName]?.label || shapeName;
+        return `${side} ${label}`;
+      });
+      return rows.length ? rows.join(', ') : 'none';
+    }
+
+    function formatHandShapeCoverage(rows) {
+      if (!rows) return 'not applicable';
+      if (!rows.length) return 'none';
+      return rows.map((row) => {
+        const pct = Math.round((row.coverage || 0) * 100);
+        return `${row.side} ${pct}%`;
+      }).join(', ');
+    }
+
+    function syncHarnessStats(extra = {}) {
+      const current = window.__avatarPoseHarness.stats || {};
+      window.__avatarPoseHarness.stats = {
+        ...current,
+        state: stateSelect.value,
+        emotion: emotionSelect.value,
+        action: actionSelect.value,
+        loop: loopToggle.checked,
+        gestureCompat: activeGestureCompat,
+        curatedActionCoverage: activeActionPlayer?.getCoverage(actionSelect.value),
+        actionContract: getCallActionContract(actionSelect.value),
+        actionTrigger: activeActionPlayer?.lastTriggerResult || null,
+        activeCuratedAction: activeActionPlayer?.currentName || null,
+        handShapeCoverage: activeActionPlayer?.getHandShapeCoverage(actionSelect.value),
+        motionTexture: CALL_ACTIONS[actionSelect.value]?.motionTexture?.label || (CALL_ACTIONS[actionSelect.value] ? DEFAULT_CALL_MOTION_TEXTURE.label : null),
+        ...extra,
+      };
+    }
+
+    function disposeViewer(viewer) {
+      if (!viewer) return;
+      viewer.animator?.dispose?.();
+      viewer.actionPlayer?.dispose?.();
+      if (viewer.vrm) {
+        viewer.scene.remove(viewer.vrm.scene);
+        try { VRMUtils.deepDispose?.(viewer.vrm.scene); } catch {}
+      }
+      viewer.renderer.dispose();
+      try { viewer.renderer.getContext()?.getExtension('WEBGL_lose_context')?.loseContext(); } catch {}
+      if (viewer.canvas.__viewer === viewer) {
+        viewer.canvas.__viewer = null;
+      }
+    }
+
+    function animate(viewers) {
+      const last = { t: performance.now() };
+      function tick(now = performance.now()) {
+        const dt = Math.min((now - last.t) / 1000, 0.1);
+        last.t = now;
+        for (const viewer of viewers) {
+          if (viewer.animator) {
+            viewer.animator.setEmotion?.(emotionSelect.value);
+            viewer.animator.update(dt, buildAnimatorState(now / 1000));
+            if (viewer.actionPlayer?.update(dt)) {
+              viewer.vrm?.update?.(0);
+            }
+            if (viewer.actionPlayer && window.__avatarPoseHarness.ready) {
+              window.__avatarPoseHarness.stats.activeCuratedAction = viewer.actionPlayer.currentName;
+              window.__avatarPoseHarness.stats.actionTrigger = viewer.actionPlayer.lastTriggerResult;
+            }
+          } else {
+            viewer.vrm?.update?.(dt);
+          }
+          viewer.renderer.render(viewer.scene, viewer.camera);
+        }
+        maybeLoopAction(now);
+        animationId = requestAnimationFrame(tick);
+      }
+      tick(last.t);
+    }
+
+    function buildAnimatorState(timeSeconds) {
+      const state = stateSelect.value;
+      const speaking = state === 'speaking';
+      const visemes = speaking ? buildSyntheticVisemes(timeSeconds) : null;
+      return {
+        speaking,
+        processing: state === 'processing',
+        userSpeaking: state === 'listening',
+        rms: speaking ? 0.42 : 0.04,
+        visemes,
+      };
+    }
+
+    function buildSyntheticVisemes(timeSeconds) {
+      const names = ['aa', 'ih', 'ou', 'ee', 'oh'];
+      const values = {};
+      for (let i = 0; i < names.length; i += 1) {
+        const wave = Math.sin(timeSeconds * 8.5 + i * 1.7) * 0.5 + 0.5;
+        values[names[i]] = Math.pow(wave, 2.6) * 0.72;
+      }
+      return values;
+    }
+
+    function triggerSelectedAction(options = {}) {
+      const action = actionSelect.value;
+      activeAction = action;
+      if (action === 'none') return;
+      if (CALL_ACTIONS[action] && activeActionPlayer) {
+        if (activeActionPlayer.trigger(action, options)) {
+          syncHarnessStats({
+            triggeredAt: performance.now(),
+            actionKind: 'curated',
+            actionTrigger: activeActionPlayer.lastTriggerResult,
+            activeCuratedAction: activeActionPlayer.currentName,
+          });
+          return;
+        }
+        syncHarnessStats({
+          triggerRejectedAt: performance.now(),
+          actionKind: 'curated',
+          actionTrigger: activeActionPlayer.lastTriggerResult,
+        });
+        return;
+      }
+      if (!activeAnimator) return;
+      activeAnimator.triggerGesture?.(action);
+      syncHarnessStats({ triggeredAt: performance.now() });
+    }
+
+    function maybeLoopAction(now) {
+      if (!loopToggle.checked || actionSelect.value === 'none') return;
+      if (!activeAnimator && !activeActionPlayer) return;
+      const interval = ((CALL_ACTIONS[actionSelect.value]?.duration || 2.2) * 1000) + 900;
+      if (now - lastLoopActionAt < interval) return;
+      lastLoopActionAt = now;
+      triggerSelectedAction({ mode: 'loop' });
+    }
+
+    async function runLab(file) {
+      window.__avatarPoseHarness.ready = false;
+      window.__avatarPoseHarness.error = null;
+      loading.textContent = `Loading ${file}...`;
+      loading.classList.remove('hidden');
+      if (animationId) cancelAnimationFrame(animationId);
+      if (disposeCurrent) disposeCurrent();
+      activeAnimator = null;
+      activeActionPlayer = null;
+      activeProfile = null;
+      activeGestureCompat = null;
+
+      const naiveViewer = createViewer(document.getElementById('naive-canvas'));
+      const profiledViewer = createViewer(document.getElementById('normalized-canvas'));
+      const viewers = [naiveViewer, profiledViewer];
+
+      try {
+        for (const viewer of viewers) resizeViewer(viewer);
+        const [naive, profiled] = await Promise.all([
+          loadVRM(file, { profiled: false }),
+          loadVRM(file, { profiled: true, applyStaticPose: false }),
+        ]);
+
+        naiveViewer.vrm = naive.vrm;
+        profiledViewer.vrm = profiled.vrm;
+        profiledViewer.animator = new AvatarAnimator(THREE, profiled.vrm);
+        profiledViewer.actionPlayer = new CuratedActionPlayer(THREE, profiled.vrm, profiled.profile);
+        profiledViewer.animator.setEmotion?.(emotionSelect.value);
+        activeAnimator = profiledViewer.animator;
+        activeActionPlayer = profiledViewer.actionPlayer;
+        activeGestureCompat = profiledViewer.animator._gestureCompat || null;
+        naiveViewer.scene.add(naive.vrm.scene);
+        profiledViewer.scene.add(profiled.vrm.scene);
+        for (const viewer of viewers) {
+          frameVRM(viewer);
+          viewer.renderer.render(viewer.scene, viewer.camera);
+        }
+
+        activeProfile = profiled.profile;
+        renderStats(file, profiled.profile, activeGestureCompat);
+        window.__avatarPoseHarness.ready = true;
+        window.__avatarPoseHarness.stats = {
+          avatarFile: file,
+          profile: profiled.profile,
+          state: stateSelect.value,
+          emotion: emotionSelect.value,
+          action: actionSelect.value,
+          loop: loopToggle.checked,
+          gestureCompat: activeGestureCompat,
+          curatedActionCoverage: activeActionPlayer?.getCoverage(actionSelect.value),
+          actionContract: getCallActionContract(actionSelect.value),
+          actionLibraryValidation: ACTION_LIBRARY_VALIDATION,
+          actionTrigger: activeActionPlayer?.lastTriggerResult || null,
+          activeCuratedAction: activeActionPlayer?.currentName || null,
+          handShapeCoverage: activeActionPlayer?.getHandShapeCoverage(actionSelect.value),
+          motionTexture: CALL_ACTIONS[actionSelect.value]?.motionTexture?.label || (CALL_ACTIONS[actionSelect.value] ? DEFAULT_CALL_MOTION_TEXTURE.label : null),
+        };
+        loading.classList.add('hidden');
+        animate(viewers);
+        if (autoplay || actionSelect.value !== 'none') {
+          setTimeout(() => triggerSelectedAction(), 160);
+        }
+        disposeCurrent = () => {
+          for (const viewer of viewers) disposeViewer(viewer);
+        };
+      } catch (error) {
+        console.error(error);
+        window.__avatarPoseHarness.error = String(error?.message || error);
+        loading.textContent = `Failed: ${error?.message || error}`;
+      }
+    }
+
+    function round(value) {
+      return Math.round(value * 1000) / 1000;
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (ch) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      }[ch]));
+    }
+
+    window.addEventListener('resize', () => {
+      const canvases = [document.getElementById('naive-canvas'), document.getElementById('normalized-canvas')];
+      for (const canvas of canvases) {
+        const viewer = canvas.__viewer;
+        if (viewer) resizeViewer(viewer);
+      }
+    });
+
+    runLab(avatarSelect.value);
+  </script>
+</body>
+</html>

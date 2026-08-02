@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Artifact Session Overview Harness</title>
+  <link rel="stylesheet" href="styles/variables.css">
+  <link rel="stylesheet" href="styles/themes.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/agentic.css">
+  <link rel="stylesheet" href="styles/studio.css">
+  <style>
+    :root { --header-height: 0px; }
+    html, body { margin: 0; min-height: 100%; background: var(--bg); }
+    body { font-family: var(--font-sans); }
+    .studio-harness-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, #ffffff), #ffffff 40%, #f6f8fb),
+        radial-gradient(circle at top right, rgba(33, 150, 243, 0.12), transparent 42%);
+    }
+    .studio-harness-preview {
+      width: min(860px, 92%);
+      aspect-ratio: 3 / 4;
+      border-radius: 18px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      background: white;
+      box-shadow: 0 28px 60px rgba(15, 23, 42, 0.14);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .studio-harness-book-title {
+      font-size: clamp(24px, 3vw, 40px);
+      line-height: 1.05;
+      font-weight: 700;
+      color: #1b2330;
+    }
+    .studio-harness-book-sub {
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #667085;
+    }
+    .studio-harness-cover {
+      flex: 1;
+      border-radius: 14px;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255, 214, 102, 0.55), transparent 30%),
+        radial-gradient(circle at 80% 30%, rgba(106, 171, 255, 0.38), transparent 28%),
+        linear-gradient(160deg, #0f172a, #243b53 52%, #4361ee);
+      position: relative;
+      overflow: hidden;
+    }
+    .studio-harness-cover::after {
+      content: "";
+      position: absolute;
+      inset: auto 12% 8% 12%;
+      height: 28%;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      filter: blur(28px);
+    }
+    .studio-harness-cover-copy {
+      position: absolute;
+      left: 28px;
+      right: 28px;
+      bottom: 28px;
+      color: rgba(255,255,255,0.92);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="studio-overlay" style="top:0;">
+    <div class="studio-header">
+      <button class="studio-icon-btn" title="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <span class="studio-artifact-name">The Last Light of Selene<span class="studio-dirty-dot"></span></span>
+      <span class="studio-format-badge" data-format="epub">EPUB</span>
+      <div class="studio-toolbar"></div>
+      <div class="studio-header-actions">
+        <button class="studio-preview-btn active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span>Overview</span>
+        </button>
+        <button class="studio-icon-btn" title="Ask AI">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="studio-body" id="studio-body" data-session-pane="artifact">
+      <div class="studio-session-layout">
+        <div class="studio-session-tabs">
+          <button type="button" class="studio-session-tab active" data-pane="artifact">Artifact</button>
+          <button type="button" class="studio-session-tab has-live" data-pane="build">Build</button>
+        </div>
+
+        <div class="studio-session-main">
+          <div class="studio-overview-frame">
+            <div class="studio-overview-header">
+              <div class="studio-overview-copy">
+                <span class="studio-overview-kicker">Overview</span>
+                <span class="studio-overview-name">Illustrated ebook preview</span>
+              </div>
+              <button type="button" class="studio-overview-edit">Open editor</button>
+            </div>
+            <div class="studio-overview-iframe studio-harness-stage">
+              <div class="studio-harness-preview">
+                <div class="studio-harness-book-sub">Five Chapters · Five Illustrations</div>
+                <div class="studio-harness-book-title">The Last Light of Selene</div>
+                <div class="studio-harness-cover">
+                  <div class="studio-harness-cover-copy">
+                    A drifting moon colony. A signal nobody can explain. A final expedition into the geometry of silence.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="studio-session-panel">
+          <div class="studio-session-scroll">
+            <section class="studio-session-hero is-live">
+              <div class="studio-session-kicker">Live Build Session</div>
+              <div class="studio-session-title">The Last Light of Selene</div>
+              <div class="studio-session-subtitle">4/4 · Create Book · 100%</div>
+              <div class="studio-session-chips">
+                <span class="studio-session-chip">EPUB</span>
+                <span class="studio-session-chip is-live">Ready</span>
+                <span class="studio-session-chip">4/4 steps</span>
+              </div>
+              <div class="studio-session-actions">
+                <button type="button" class="studio-session-action primary">Edit</button>
+                <button type="button" class="studio-session-action">Ask AI</button>
+                <button type="button" class="studio-session-action">Download</button>
+              </div>
+            </section>
+
+            <section class="studio-session-section">
+              <div class="studio-session-section-head">
+                <h3>Build Timeline</h3>
+                <span>Storybook flow</span>
+              </div>
+              <div class="studio-session-steps">
+                <details class="studio-session-step complete">
+                  <summary>
+                    <span class="studio-session-step-index">01</span>
+                    <span class="studio-session-step-copy">
+                      <span class="studio-session-step-label">Plan Story</span>
+                      <span class="studio-session-step-meta">Complete · 2.1s</span>
+                    </span>
+                  </summary>
+                  <pre class="studio-session-step-output">Built a four-step narrative pipeline with a moon-colony mystery arc, chapter beats, and illustration checkpoints.</pre>
+                </details>
+
+                <details class="studio-session-step complete" open>
+                  <summary>
+                    <span class="studio-session-step-index">02</span>
+                    <span class="studio-session-step-copy">
+                      <span class="studio-session-step-label">Write Story</span>
+                      <span class="studio-session-step-meta">Complete · 8.4s</span>
+                    </span>
+                  </summary>
+                  <pre class="studio-session-step-output">Chapter 1: The Geometry of Silence
+
+Selene Station kept its lights dim enough that every corridor felt like a held breath. Mara followed the failed beacon toward Dock Ring C, counting the pulses between blackouts and realizing they matched no ship she had ever seen.</pre>
+                </details>
+
+                <details class="studio-session-step complete">
+                  <summary>
+                    <span class="studio-session-step-index">03</span>
+                    <span class="studio-session-step-copy">
+                      <span class="studio-session-step-label">Illustrate</span>
+                      <span class="studio-session-step-meta">Complete · 16.2s</span>
+                    </span>
+                  </summary>
+                  <pre class="studio-session-step-output">Generated 5 portrait-layout chapter illustrations with a cinematic midnight palette and recurring moon-arch motif.</pre>
+                </details>
+
+                <details class="studio-session-step complete">
+                  <summary>
+                    <span class="studio-session-step-index">04</span>
+                    <span class="studio-session-step-copy">
+                      <span class="studio-session-step-label">Create Book</span>
+                      <span class="studio-session-step-meta">Complete · 5.3s</span>
+                    </span>
+                  </summary>
+                  <pre class="studio-session-step-output">Ebook ready — 5 chapters, 5 illustrations, cover image included. Routed directly into overview and editor workflow.</pre>
+                </details>
+              </div>
+            </section>
+
+            <section class="studio-session-section">
+              <div class="studio-session-section-head">
+                <h3>Outputs</h3>
+                <span>2 files</span>
+              </div>
+              <div class="studio-session-artifacts">
+                <button type="button" class="studio-session-artifact active">
+                  <span class="studio-session-artifact-title">The Last Light of Selene</span>
+                  <span class="studio-session-artifact-meta">EPUB · 8.7 MB</span>
+                </button>
+                <button type="button" class="studio-session-artifact">
+                  <span class="studio-session-artifact-title">Illustration Contact Sheet</span>
+                  <span class="studio-session-artifact-meta">PDF · 1.2 MB</span>
+                </button>
+              </div>
+            </section>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const pane = params.get('pane') === 'build' ? 'build' : 'artifact';
+    const body = document.getElementById('studio-body');
+    body.dataset.sessionPane = pane;
+    document.querySelectorAll('.studio-session-tab').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.pane === pane);
+    });
+  </script>
+</body>
+</html>

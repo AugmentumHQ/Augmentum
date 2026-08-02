@@ -1,0 +1,67 @@
+# ntfy — self-hosted UnifiedPush relay (no Google/FCM).
+#
+# WHY: the Android companion uses UnifiedPush so scheduled briefings/notifications
+# reach the phone even when backgrounded (the in-app WebSocket dies under
+# Android 15's 6h dataSync FGS cap). UnifiedPush needs a *distributor app* on the
+# phone (the ntfy Android app) talking to a push server. This overlay runs that
+# push server on YOUR box, so nothing transits ntfy.sh.
+#
+# (You don't strictly need this: because the server encrypts payloads end-to-end
+#  via Web Push/VAPID, even the public ntfy.sh can't read notification content.
+#  Self-hosting just keeps the relay yours too.)
+#
+# ENABLE: add `compose.ntfy.yaml` to your compose file list in `.augmentum.conf`,
+# then `start.bat` / `start.sh` (no rebuild — it's a separate image).
+#
+# PHONE SETUP (one-time):
+#   1. Install the "ntfy" app from F-Droid / Play / the APK.
+#   2. ntfy app → Settings → "Default server" → set to your server's URL below
+#      (use your Tailscale address so it works off home Wi-Fi), e.g.
+#      http://100.x.y.z:6810
+#   3. Open Augmentum on the phone — it auto-registers the push subscription.
+#
+# REACHABILITY: binds to AUGMENTUM_BIND_HOST (same as the main app — set to
+# 0.0.0.0 in .env for LAN/Tailscale access). Set AUGMENTUM_NTFY_BASE_URL to the
+# exact URL the phone uses (must match, or UnifiedPush endpoints are wrong).
+# Web Push payloads are already E2E-encrypted, so plain HTTP over your tailnet
+# (itself encrypted) is fine.
+
+services:
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    command: serve
+    restart: unless-stopped
+    ports:
+      - "${AUGMENTUM_BIND_HOST:-127.0.0.1}:6810:80"
+    environment:
+      # The base URL clients (and the Augmentum server) use to reach ntfy.
+      # MUST match how the phone's ntfy app addresses this server.
+      NTFY_BASE_URL: "${AUGMENTUM_NTFY_BASE_URL:-http://localhost:6810}"
+      NTFY_LISTEN_HTTP: ":80"
+      NTFY_BEHIND_PROXY: "true"
+      # Personal single-user relay: anyone with a topic URL can pub/sub. The
+      # topic ids are unguessable (the distributor mints random ones) and the
+      # payloads are E2E-encrypted, so this is safe for self-host. Tighten to
+      # "deny-all" + tokens if you expose ntfy to the public internet.
+      NTFY_AUTH_DEFAULT_ACCESS: "read-write"
+      NTFY_CACHE_FILE: "/var/lib/ntfy/cache.db"
+      NTFY_CACHE_DURATION: "12h"
+      NTFY_ATTACHMENT_CACHE_DIR: ""
+    volumes:
+      - ntfy_data:/var/lib/ntfy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:80/v1/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    logging:
+      options:
+        max-size: "20m"
+        max-file: "3"
+    # No mem_limit by default. This is third-party software whose appetite
+    # depends on how YOU use it, which we can't know — add one here only from
+    # a measurement of your own instance.
+
+volumes:
+  ntfy_data:

@@ -1,0 +1,18 @@
+[
+  {
+    "pub_hex": "2e6fcce36701dc791488e0d0b1745cc1e33a4c1c9fcc41c63bd343dbbe0970e6",
+    "did": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK"
+  },
+  {
+    "pub_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+    "did": "did:key:z6MkeTG3bFFSLYVU7VqhgZxqr6YzpaGrQtFMh1uvqGy1vDnP"
+  },
+  {
+    "pub_hex": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "did": "did:key:z6MkwgaR63138bEEgad7uk993KMX54vBA6KTB4sFhCPnSB2e"
+  },
+  {
+    "pub_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+    "did": "did:key:z6MkeTGwHmLmuCmgg4ABYhzWVh6ZX7hTwWt8gguAretUfc9c"
+  }
+]

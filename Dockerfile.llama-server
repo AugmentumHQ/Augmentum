@@ -1,0 +1,75 @@
+# llama-server build — standalone image, only rebuilds on version bump.
+# Used as a build stage by Dockerfile.gpu via COPY --from.
+#
+# Preferred way to bump:
+#   ./scripts/upgrade_llama_server.sh bXXXX     (Linux/Mac/WSL/git-bash)
+#   scripts\upgrade_llama_server.bat bXXXX      (Windows cmd)
+#   ./scripts/upgrade_llama_server.sh --latest  (fetch tip from GitHub)
+#
+# The script persists the chosen tag to LLAMA_SERVER_VERSION (repo root) so
+# git tracks which version is pinned. The ARG default below is a fallback for
+# bare `docker build` invocations.
+#
+# Manual invocation:
+#   docker build -t augmentum-llama-server --build-arg LLAMA_CPP_VERSION=b8733 -f Dockerfile.llama-server .
+
+# Base image pinned to digest — see Dockerfile header for the rotation
+# procedure (scripts/upgrade_base_images.sh).
+FROM nvidia/cuda:12.8.1-devel-ubuntu22.04@sha256:a99a1860ba8e2916e5c3e73b72ec4c4301653a84586e05bfc9a2aa2d58027e97
+
+# Default pin — keep in sync with LLAMA_SERVER_VERSION at the repo root.
+# Changing this without going through upgrade_llama_server.sh means the version
+# file and the ARG default can drift. Prefer the script.
+ARG LLAMA_CPP_VERSION=b9931
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        git cmake build-essential curl libcurl4-openssl-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN git clone --branch ${LLAMA_CPP_VERSION} --depth 1 \
+      https://github.com/ggml-org/llama.cpp.git /build/llama.cpp
+
+WORKDIR /build/llama.cpp
+# llama-lookup-create is bundled alongside llama-server so the
+# Observation Substrate can lazily emit per-model --lookup-cache-static
+# files from the tokenizer-agnostic L0 store on model swap. Build cost
+# is small (single C++ file, links against the same libllama.so) and
+# decoupling the binary from the substrate would either force us to
+# re-implement the cache file format (brittle to llama.cpp version
+# bumps) or run the build at every cache rebuild (slow + flaky).
+# Headless build — no embedded web UI. From b9181 llama.cpp embeds a web UI in
+# llama-server (the llama-ui target). Augmentum ships its own UI and never
+# serves llama.cpp's, so we build the engine headless.
+#
+# From ~b9931 the ui subdir is added unconditionally with the server
+# (tools/CMakeLists.txt: `if(LLAMA_BUILD_SERVER) add_subdirectory(ui)`), and the
+# provisioning script (scripts/ui-assets.cmake) has THREE asset sources, each its
+# own knob:
+#   1. pre-built assets in tools/ui/dist   (none here)
+#   2. npm build            -> LLAMA_BUILD_UI        (default OFF here)
+#   3. HF Bucket download   -> LLAMA_USE_PREBUILT_UI (defaults ON upstream!)
+# Disabling only LLAMA_BUILD_UI leaves path 3 live: it downloads dist.tar.gz,
+# and when the `latest` bucket is out of sync with this build (missing e.g.
+# loading.html) `llama-ui-embed` aborts the WHOLE build (the b9931 failure mode).
+# ALL of build+prebuilt must be OFF so `emit_files` generates an empty ui.cpp
+# stub. LLAMA_BUILD_WEBUI is deprecated (forwards to LLAMA_BUILD_UI); we set the
+# new names directly.
+RUN cmake -B build \
+      -DGGML_CUDA=ON \
+      -DGGML_CUDA_FA_ALL_QUANTS=ON \
+      -DLLAMA_BUILD_UI=OFF \
+      -DLLAMA_USE_PREBUILT_UI=OFF \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_EXE_LINKER_FLAGS="-Wl,--allow-shlib-undefined" \
+    && cmake --build build --target llama-server llama-lookup-create -j$(nproc)
+
+# Final stage — binary + shared libraries. This is a lean CARRIER image: only
+# the binaries and llama.cpp's own /usr/local/lib/*.so are COPY'd out of here by
+# Dockerfile.gpu into the real GPU image (cuda:*-cudnn-runtime), which supplies
+# libcublas/libcudnn/libgomp and the driver-injected libcuda. Do not add CUDA
+# runtime libs here — it would bloat the carrier and duplicate the GPU image.
+FROM nvidia/cuda:12.8.1-base-ubuntu22.04@sha256:001469ea0f3dec85a1ca929aeea3b58ae369d4c11228b10aec1f642bb6ca7a6f
+COPY --from=0 /build/llama.cpp/build/bin/llama-server /usr/local/bin/llama-server
+COPY --from=0 /build/llama.cpp/build/bin/llama-lookup-create /usr/local/bin/llama-lookup-create
+COPY --from=0 /build/llama.cpp/build/bin/*.so /usr/local/lib/
+RUN ldconfig

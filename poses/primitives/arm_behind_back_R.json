@@ -1,0 +1,31 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "arm_behind_back_R",
+  "tags": [
+    "single-arm",
+    "R",
+    "torso",
+    "formal"
+  ],
+  "description": "Single-arm primitive: right arm in 'behind_back_R' pose. Lands at region 'hip_R' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+  "family": "per_arm",
+  "anchors": {
+    "rightHand": {
+      "type": "region-contact",
+      "region": "hip_R",
+      "tolerance": 0.04,
+      "fingerStyle": "behind_back_R"
+    },
+    "leftHand": {
+      "type": "free-space"
+    }
+  },
+  "body": {},
+  "provenance": {
+    "source": "auto-generated",
+    "generator": "scripts/generate_per_arm_primitives.py",
+    "wrapsAffordance": "behind_back_R",
+    "consensusRegion": "hip_R",
+    "createdAt": "2026-05-14"
+  }
+}

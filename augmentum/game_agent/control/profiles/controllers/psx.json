@@ -1,0 +1,27 @@
+{
+  "schema": "control.controller.v1",
+  "id": "psx",
+  "description": "Sony PlayStation DualShock controller as exposed by libretro / pcsx_rearmed. 16 buttons: d-pad, four face buttons (X south, Circle east, Square west, Triangle north), L1/R1/L2/R2 shoulders+triggers, L3/R3 stick clicks, Start, Select. Analog sticks are not represented in v1 (they need an analog wire channel).",
+  "wire": {
+    "kind": "libretro_joypad",
+    "port": 0
+  },
+  "buttons": {
+    "face_south":   { "wire_code": 0,  "label": "X" },
+    "face_east":    { "wire_code": 8,  "label": "Circle" },
+    "face_west":    { "wire_code": 1,  "label": "Square" },
+    "face_north":   { "wire_code": 9,  "label": "Triangle" },
+    "dpad_up":      { "wire_code": 4,  "label": "Up" },
+    "dpad_down":    { "wire_code": 5,  "label": "Down" },
+    "dpad_left":    { "wire_code": 6,  "label": "Left" },
+    "dpad_right":   { "wire_code": 7,  "label": "Right" },
+    "start":        { "wire_code": 3,  "label": "Start" },
+    "select":       { "wire_code": 2,  "label": "Select" },
+    "shoulder_l":   { "wire_code": 10, "label": "L1" },
+    "shoulder_r":   { "wire_code": 11, "label": "R1" },
+    "trigger_l":    { "wire_code": 12, "label": "L2" },
+    "trigger_r":    { "wire_code": 13, "label": "R2" },
+    "stick_l_press": { "wire_code": 14, "label": "L3" },
+    "stick_r_press": { "wire_code": 15, "label": "R3" }
+  }
+}

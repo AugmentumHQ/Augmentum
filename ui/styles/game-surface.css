@@ -1,0 +1,506 @@
+/* Game Surface — sandboxed play container. Originally lived inside the
+ * legacy library DOM alongside #workspace; promoted to a top-level
+ * fixed overlay so the three-pane Library can dispatch into it without
+ * the surface inheriting display:none from a hidden ancestor. A thin
+ * header auto-hides on idle so games feel cinematic without losing the
+ * close affordance.
+ */
+
+.game-surface {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-tertiary);
+  z-index: 100;
+  /* Belt-and-braces: prevent pull-to-refresh / scroll chaining at the
+   * outer surface level too. The iframe wrap has its own touch-action
+   * lockdown for pinch/zoom. */
+  overscroll-behavior: contain;
+}
+@media (max-width: 767px) {
+  .game-surface { bottom: calc(var(--orb-bar-height) + env(safe-area-inset-bottom, 0px)); }
+}
+
+.game-surface.hidden { display: none; }
+
+.game-surface-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border-light);
+  transition: opacity 250ms ease;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.game-surface[data-idle="1"] .game-surface-header {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.game-surface-back {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.game-surface-back:hover { background: var(--surface-hover); color: var(--text-primary); }
+
+.game-surface-title {
+  flex: 1;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.game-surface-meta {
+  color: var(--text-tertiary);
+  font-size: 11px;
+  margin-right: 8px;
+}
+
+.game-surface-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.game-surface-source,
+.game-surface-fullscreen,
+.game-surface-fit {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-decoration: none;
+  line-height: 1;
+}
+.game-surface-source:hover,
+.game-surface-fullscreen:hover,
+.game-surface-fit:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+/* Gamepad-connected pill — appears in the header when a controller pairs.
+ * Small, unobtrusive; the point is confirmation, not celebration. */
+.game-surface-gamepad {
+  font-size: 11px;
+  color: var(--success);
+  background: var(--success-subtle);
+  border: 1px solid color-mix(in srgb, var(--success) 25%, transparent);
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+.game-surface-gamepad[hidden] { display: none; }
+
+/* Save-state pill — mirrors the gamepad pill's shape but colours it by
+ * state. `is-local` for embed games (informational, neutral); the
+ * syncing/saved/error variants show only for local-mode games where
+ * our bridge is actually talking to the server. */
+.game-surface-save {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+  border: 1px solid transparent;
+  cursor: default;
+}
+.game-surface-save[hidden] { display: none; }
+.game-surface-save.is-local {
+  color: var(--text-secondary);
+  background: var(--surface);
+  border-color: var(--border);
+}
+.game-surface-save.is-syncing {
+  color: var(--accent-text);
+  background: var(--accent-subtle);
+  border-color: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.game-surface-save.is-saved {
+  color: var(--success);
+  background: var(--success-subtle);
+  border-color: color-mix(in srgb, var(--success) 22%, transparent);
+}
+.game-surface-save.is-error {
+  color: var(--error);
+  background: var(--error-subtle);
+  border-color: color-mix(in srgb, var(--error) 25%, transparent);
+}
+
+/* Portrait rotate hint — pure CSS. Appears only when the viewport is
+ * portrait on narrow screens, so desktop users never see it. Positioned
+ * inside the iframe wrap; the iframe itself still renders behind it. */
+.game-surface-rotate-hint {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: color-mix(in srgb, var(--bg-tertiary) 78%, transparent);
+  color: var(--text-primary);
+  font-size: 13px;
+  text-align: center;
+  padding: 16px;
+  pointer-events: none;
+}
+.game-surface-rotate-icon {
+  font-size: 32px;
+  transform: rotate(90deg);
+  animation: game-surface-rotate-pulse 1.8s ease-in-out infinite;
+}
+@keyframes game-surface-rotate-pulse {
+  0%, 100% { transform: rotate(90deg); }
+  50% { transform: rotate(0deg); }
+}
+@media (orientation: portrait) and (max-width: 768px) {
+  .game-surface-rotate-hint { display: flex; }
+}
+
+.game-surface-iframe-wrap {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: #000;
+  /* Stop the browser from hijacking gameplay with pinch-zoom, double-
+   * tap-zoom, or pull-to-refresh. Touch events still fire to the iframe
+   * for game input. */
+  touch-action: none;
+  overscroll-behavior: contain;
+}
+
+.game-surface iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* Fit modes. Default (no attr, or data-fit="stretch") matches the
+ * existing behaviour — iframe fills the wrap. "fit" constrains the
+ * iframe to a 16:9 aspect ratio and centers it, letter/pillar-boxing
+ * on whichever axis the container is larger. Useful for games that
+ * render to a fixed internal resolution and dislike being stretched. */
+.game-surface-iframe-wrap[data-fit="fit"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.game-surface-iframe-wrap[data-fit="fit"] iframe {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
+}
+/* When the container is the wider axis, force height to 100% so the
+ * iframe fills vertically and auto width computes from aspect-ratio. */
+@media (min-aspect-ratio: 16 / 9) {
+  .game-surface-iframe-wrap[data-fit="fit"] iframe {
+    height: 100%;
+    width: auto;
+  }
+}
+/* When the container is the taller axis, force width to 100% so the
+ * iframe fills horizontally and auto height computes from aspect-ratio. */
+@media (max-aspect-ratio: 16 / 9) {
+  .game-surface-iframe-wrap[data-fit="fit"] iframe {
+    width: 100%;
+    height: auto;
+  }
+}
+
+/* Loading state — a quiet gradient + name rather than a spinner. Covers
+ * early frames while the external origin negotiates TLS + serves HTML. */
+.game-surface-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  background: radial-gradient(ellipse at center, var(--bg-secondary) 0%, var(--bg-tertiary) 70%);
+  pointer-events: none;
+  transition: opacity 400ms ease;
+}
+.game-surface-loading.hidden { opacity: 0; }
+
+.game-surface-loading-glyph {
+  font-size: 28px;
+  opacity: 0.85;
+}
+
+/* When a game can't be embedded (frame-ancestors / X-Frame-Options blocks),
+ * we surface a friendly fallback with a button that pops the source page. */
+.game-surface-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--text-primary);
+  padding: 24px;
+  text-align: center;
+}
+.game-surface-fallback.hidden { display: none; }
+
+.game-surface-fallback-btn {
+  background: var(--accent-subtle);
+  color: var(--accent-text);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+.game-surface-fallback-btn:hover {
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+/* Fullscreen: native API takes over the iframe itself. The header stays
+ * hidden in fullscreen — the escape gesture is standard browser-provided. */
+.game-surface:fullscreen,
+.game-surface-iframe-wrap:fullscreen {
+  background: #000;
+}
+
+/* Touch-first devices: bump touch targets to 44px, Apple HIG / Material
+ * guidance for comfortable thumb-tap. Desktop mouse targets stay compact
+ * for density. `pointer: coarse` matches touch + pens; mouse/trackpad
+ * report `pointer: fine`. */
+@media (pointer: coarse) {
+  .game-surface-back,
+  .game-surface-source,
+  .game-surface-fullscreen,
+  .game-surface-fit {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px 14px;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .game-surface-header {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+  .game-surface-title {
+    font-size: 14px;
+  }
+  /* Slower idle fade on touch — gives the tap-to-toggle pattern time to
+   * feel intentional rather than a race. */
+  .game-surface[data-idle="1"] .game-surface-header {
+    transition-duration: 350ms;
+  }
+}
+
+.library-card.is-browse .library-card-preview { position: relative; }
+
+.library-card.is-browse .library-card-body {
+  padding: 10px 12px;
+}
+.library-card.is-browse .library-card-title {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.3;
+  margin-bottom: 2px;
+}
+.library-card.is-browse .library-card-tagline {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  max-height: 2.8em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  margin-bottom: 8px;
+}
+
+/* Make every browse card a column so the body fills available height
+ * and the action block sits flush at the bottom regardless of how
+ * much/little body content this source provides. Without this, a
+ * tagline-less card (emulator) and a 2-line-tagline card (marketplace)
+ * end up with their primary buttons at different vertical positions
+ * across the same row. */
+.library-card.is-browse {
+  display: flex;
+  flex-direction: column;
+}
+.library-card.is-browse .library-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.library-card.is-browse .library-card-actions {
+  padding: 10px 12px 12px;
+  border-top: 1px solid var(--border-light);
+  margin-top: auto;
+}
+
+/* Source-specific tag row used by marketplace + streamed (multiplayer,
+ * saves, offline, moddable, ...). Lives inside the body, above the
+ * action block. Visual language matches input chips so a single grid
+ * doesn't read as four different design systems. */
+.library-card.is-browse .library-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+.library-card.is-browse .library-card-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.library-discover-action {
+  width: 100%;
+  background: var(--accent-subtle);
+  color: var(--accent-text);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  padding: 6px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+.library-discover-action:hover {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.library-discover-action.is-pinned {
+  background: transparent;
+  border-color: color-mix(in srgb, var(--success) 35%, transparent);
+  color: var(--success);
+  cursor: default;
+}
+
+
+
+/* ==========================================================================
+   Controller-remap modal — built by game-surface.js when the user opens the
+   "Controller bindings" dialog from the game surface.
+   ========================================================================== */
+
+.controller-remap-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, .55);
+}
+
+.controller-remap-card {
+  background: var(--bg-elevated, #161625);
+  color: var(--text, #ececf1);
+  border: 1px solid var(--border, #2d2d45);
+  border-radius: var(--radius-lg, 14px);
+  width: min(720px, 92vw);
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, .5);
+}
+
+.controller-remap-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border, #2d2d45);
+}
+
+.controller-remap-head h3 {
+  flex: 1;
+  font-size: var(--text-base, 15px);
+  font-weight: 600;
+  margin: 0;
+}
+
+.controller-remap-close {
+  background: none;
+  border: none;
+  color: var(--text-muted, #a1a1b5);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.controller-remap-close:hover {
+  background: var(--accent-soft, rgba(108, 138, 255, .12));
+  color: var(--text, #ececf1);
+}
+
+.controller-remap-body {
+  padding: 14px 18px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.controller-remap-systems {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.controller-remap-systems select {
+  flex: 1;
+  min-width: 140px;
+  background: var(--bg, #0f0f1a);
+  color: var(--text, #ececf1);
+  border: 1px solid var(--border, #2d2d45);
+  border-radius: var(--radius-sm, 8px);
+  padding: 6px 8px;
+  font: inherit;
+}

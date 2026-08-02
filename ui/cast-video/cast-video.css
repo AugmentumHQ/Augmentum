@@ -1,0 +1,167 @@
+/* cast-video — TV video player surface.
+ *
+ * Black canvas, video fills, transparent HUDs at top + bottom that
+ * fade out after a settle window. Phone is the transport.
+ */
+
+:root {
+  --ink:          #ede2cb;
+  --ink-soft:     #b8aa92;
+  --ink-mute:     #877a66;
+  --accent:       #d9a14e;
+  --accent-glow:  rgba(217, 161, 78, 0.45);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: #000;
+  color: var(--ink);
+  overflow: hidden;
+  font-family: "Fraunces", "Newsreader", Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The video itself */
+.player {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;   /* letterbox; never crop */
+  background: #000;
+  display: block;
+}
+
+/* Subtitle styling — clamp size so it's TV-legible regardless of
+ * upstream VTT ::cue rules. */
+.player::cue {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 2vw;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+}
+
+/* HUD shells — top + bottom. Fade out after 4s of inactivity, re-
+ * show on patch arrival via .on class. */
+.hud-top, .hud-bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  padding: 2.4vh 4vw;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.72) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+.hud-bottom {
+  top: auto;
+  bottom: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.78) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+.hud-top.on, .hud-bottom.on { opacity: 1; }
+.hud-top { top: 0; }
+
+.hud-overline {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.9vw;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-shadow: 0 0 10px var(--accent-glow);
+}
+.hud-title {
+  font-size: 2.4vw;
+  font-weight: 400;
+  font-variation-settings: "opsz" 144, "SOFT" 30;
+  letter-spacing: -0.005em;
+  margin-top: 0.4vh;
+  color: var(--ink);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+.hud-sub {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.85vw;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+  margin-top: 0.6vh;
+}
+
+/* Bottom HUD: time row + progress bar */
+.hud-time-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6ch;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.95vw;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+.hud-sep { color: var(--ink-mute); opacity: 0.5; }
+.hud-flags {
+  margin-left: auto;
+  display: inline-flex;
+  gap: 0.6vw;
+}
+.hud-flag {
+  padding: 0.4vh 1vw;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 0.75vw;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px var(--accent-glow);
+  background: rgba(0, 0, 0, 0.3);
+}
+.hud-bar {
+  margin-top: 1.6vh;
+  width: 100%;
+  height: 3px;
+  background: rgba(237, 226, 203, 0.18);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.hud-bar-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(to right, var(--accent), #ffe7a8);
+  box-shadow: 0 0 8px var(--accent-glow);
+  transition: width 0.4s linear;
+  border-radius: 999px;
+}
+
+/* State overlay (loading / error)
+ *
+ * The ``display: flex`` rule below has higher specificity than the
+ * UA default ``[hidden] { display: none }``, so a plain
+ * ``elState.hidden = true`` would leave the overlay visible. The
+ * explicit ``[hidden]`` rule restores the hide behavior — without
+ * it the loading scrim stays on top of playing content forever and
+ * every event-driven hide is silently a no-op. */
+.state-overlay {
+  position: fixed; inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 3;
+}
+.state-overlay[hidden] { display: none; }
+.state-msg {
+  font-style: italic;
+  font-size: 1.2vw;
+  color: var(--ink-soft);
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1&family=JetBrains+Mono:wght@300..600&display=swap");

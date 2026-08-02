@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Add-on cover art. Authored, not a screenshot: these add-ons have no
+     standalone UI to photograph (their surface is the Library), so the
+     card carries a designed mark in the same visual language as the
+     Discover kind glyphs rather than a misleading fake screenshot. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" width="480" height="300" role="img" aria-label="Console emulation">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1d2333"/>
+      <stop offset="1" stop-color="#0f1014"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7aa2f7"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="45%" r="55%">
+      <stop offset="0" stop-color="#7aa2f7" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#7aa2f7" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="480" height="300" fill="url(#bg)"/>
+  <rect width="480" height="300" fill="url(#glow)"/>
+  <g transform="translate(240 142)" fill="none" stroke="url(#accent)" stroke-width="7"
+     stroke-linecap="round" stroke-linejoin="round">
+    <rect x="-104" y="-42" width="208" height="84" rx="42"/>
+    <line x1="-64" y1="0" x2="-32" y2="0"/>
+    <line x1="-48" y1="-16" x2="-48" y2="16"/>
+    <circle cx="46" cy="-12" r="7" fill="url(#accent)" stroke="none"/>
+    <circle cx="70" cy="12" r="7" fill="url(#accent)" stroke="none"/>
+  </g>
+  <text x="240" y="248" text-anchor="middle" fill="#e7e7ea"
+        font-family="Instrument Sans, system-ui, sans-serif" font-size="26" font-weight="600"
+        letter-spacing="1.5">Console emulation</text>
+  <text x="240" y="274" text-anchor="middle" fill="#9aa0ae"
+        font-family="Instrument Sans, system-ui, sans-serif" font-size="15">GameCube · Wii · PS2, streamed</text>
+</svg>

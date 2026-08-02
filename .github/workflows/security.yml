@@ -1,0 +1,175 @@
+name: security
+
+# Supply-chain + dep-vuln scanning. Three jobs:
+#
+#   1. pip-audit     — Python deps via PyPI Advisory DB + OSV
+#   2. osv-scanner   — broader OSV coverage (GitHub Advisory DB included)
+#   3. trivy-image   — scan the freshly-built CPU image for OS-level
+#                      CVEs (Debian/Ubuntu packages, not just pip)
+#
+# Triggers:
+#   - push to main:           full run
+#   - PR:                     full run (catches regressions before merge)
+#   - schedule (weekly Mon):  catches newly-disclosed CVEs even when
+#                             nothing in the repo has changed
+#   - workflow_dispatch:      manual button in the Actions tab
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Mondays 14:00 UTC = 10:00 ET, a couple of hours after Dependabot's
+    # weekly run so any security PRs Dependabot opens land first.
+    - cron: '0 14 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write   # so trivy/osv can upload SARIF to the Security tab
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pip-audit:
+    name: pip-audit (Python deps)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pip-audit
+        run: pip install --no-cache-dir 'pip-audit>=2.7.0'
+
+      - name: Audit requirements.lock
+        # --strict treats yanked releases and resolution failures as
+        # errors. --ignore-vuln slots are left empty; if a CVE shows up
+        # we have no fix for yet, add it here with a justification.
+        run: |
+          pip-audit \
+            --strict \
+            --requirement requirements.lock \
+            --disable-pip \
+            --vulnerability-service osv \
+            --format columns
+
+  osv-scanner:
+    name: osv-scanner (OSV + GitHub Advisory DB)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      # Action wraps the Go binary so we don't need to install Go.
+      - name: Run osv-scanner
+        uses: google/osv-scanner-action/osv-scanner-action@v1.9.2
+        with:
+          # Scan both the lockfile and the pyproject manifest. OSV-Scanner
+          # follows transitive deps via the lockfile but the manifest
+          # gives it a name for direct-dep classification.
+          scan-args: |-
+            --lockfile=requirements.lock
+            --lockfile=uv.lock
+
+  trivy-image:
+    name: trivy (built CPU image)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read pinned llama.cpp version
+        id: llama_ver
+        run: echo "version=$(cat LLAMA_SERVER_VERSION | tr -d '[:space:]')" >> $GITHUB_OUTPUT
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Build the CPU image locally so we can scan it before publish.
+      # Use the same build-arg shape build-images.yml uses, but skip
+      # the heavyweight llama-server matrix — point at the latest
+      # already-published GHCR image instead.
+      - name: Build augmentum CPU image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: false
+          load: true
+          tags: augmentum:audit-${{ github.sha }}
+          build-args: |
+            LLAMA_SERVER_IMAGE=ghcr.io/augmentumhq/augmentum-llama-server-cpu:${{ steps.llama_ver.outputs.version }}
+
+      - name: Trivy scan (filesystem + OS + secrets)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: augmentum:audit-${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          # HIGH and CRITICAL only — MEDIUM/LOW are too noisy at the
+          # OS-package layer for a base-image we don't fully control.
+          severity: 'HIGH,CRITICAL'
+          # Don't fail the job on findings — uploading to the Security
+          # tab is more useful than blocking merges on a CVE upstream
+          # hasn't patched yet. Flip to true once the baseline is clean.
+          exit-code: '0'
+          ignore-unfixed: true
+
+      - name: Upload Trivy SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+          category: trivy
+
+      - name: Upload Trivy report as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report
+          path: trivy-results.sarif
+          retention-days: 30
+
+      # ──────────────────────────────────────────────────────────────
+      # SBOM (CycloneDX) for the built image — uploaded as an artifact
+      # on every run, attached to the GitHub Release on tagged builds.
+      # SPDX is the alternative; CycloneDX is what most downstream
+      # scanners (Snyk, Dependency-Track, Sonatype Lifecycle) prefer.
+      # ──────────────────────────────────────────────────────────────
+      - name: Generate CycloneDX SBOM (via trivy)
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "$PWD:/workdir" \
+            aquasec/trivy:0.58.0 \
+            image \
+            --format cyclonedx \
+            --output /workdir/sbom-cyclonedx.json \
+            augmentum:audit-${{ github.sha }}
+
+      - name: Upload SBOM as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-cyclonedx
+          path: sbom-cyclonedx.json
+          # 90 days so a downstream consumer who only checks quarterly
+          # can still pull the SBOM that matched a specific release.
+          retention-days: 90
+
+      - name: Attach SBOM to GitHub Release (tagged builds only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: sbom-cyclonedx.json
+          fail_on_unmatched_files: true

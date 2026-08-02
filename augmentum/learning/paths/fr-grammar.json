@@ -1,0 +1,521 @@
+{
+  "lang": "fr",
+  "version": "1.0.0",
+  "name": "French Grammar Drill",
+  "credits": "Pedagogically sequenced. Conjugation tables follow standard French textbook patterns (Bescherelle: La conjugaison pour tous). Common-error lists drawn from anglophone-learner corpora (Cambridge Learner Corpus error tagging, OPI French diagnostics).",
+  "license": "CC BY 4.0",
+  "units": [
+    {
+      "id": "fr-gram-01-er-present",
+      "title": "Present tense: regular -er verbs",
+      "level": "A1",
+      "goal": "Conjugate any regular -er verb in the present tense and recognise that three of the six forms are pronounced identically.",
+      "explanation": "About 90 percent of French verbs end in -er and follow one identical pattern in the present. Drop the -er to get the stem, then add the six endings. The je/tu/il/ils endings (-e, -es, -e, -ent) are all silent — you only hear the difference in nous and vous.",
+      "pattern": {
+        "stems": "parler → parl-, aimer → aim-, écouter → écout-, regarder → regard-, habiter → habit-",
+        "endings": {
+          "je": "-e",
+          "tu": "-es",
+          "il/elle/on": "-e",
+          "nous": "-ons",
+          "vous": "-ez",
+          "ils/elles": "-ent"
+        },
+        "full_table": {
+          "parler (to speak)": {
+            "je parle": "/paʁl/",
+            "tu parles": "/paʁl/",
+            "il parle": "/paʁl/",
+            "nous parlons": "/paʁ.lɔ̃/",
+            "vous parlez": "/paʁ.le/",
+            "ils parlent": "/paʁl/"
+          },
+          "aimer (to like/love)": {
+            "j'aime": "/ʒɛm/",
+            "tu aimes": "/ty ɛm/",
+            "il aime": "/i.lɛm/ (liaison)",
+            "nous aimons": "/nu.zɛ.mɔ̃/ (liaison)",
+            "vous aimez": "/vu.zɛ.me/ (liaison)",
+            "ils aiment": "/il.zɛm/ (liaison)"
+          }
+        },
+        "spelling_quirks": "Verbs ending in -ger keep the e before -ons (nous mangeons, nous voyageons) so the g stays soft. Verbs in -cer take a cedilla before -ons (nous commençons). Verbs in é-er like préférer change é to è in all but the nous/vous forms: je préfère, nous préférons."
+      },
+      "common_errors": [
+        "Pronouncing the silent -ent in 'ils parlent' as a syllable — it's identical to 'il parle'.",
+        "Writing 'je parle' as 'je parler' under English-infinitive influence.",
+        "Forgetting the elision before a vowel: 'je aime' is wrong — must be 'j'aime'. Same for 'je habite' → 'j'habite' (silent h).",
+        "Missing the liaison: 'nous aimons' is /nu.zɛ.mɔ̃/, with a z sound joining the words."
+      ],
+      "drill": [
+        {"q": "Je ___ français. (parler)", "a": "parle"},
+        {"q": "Nous ___ la musique. (écouter)", "a": "écoutons"},
+        {"q": "Vous ___ à Paris. (habiter)", "a": "habitez"},
+        {"q": "Tu ___ le café ? (aimer)", "a": "aimes"},
+        {"q": "Ils ___ la télé tous les soirs. (regarder)", "a": "regardent"},
+        {"q": "Elle ___ avec sa mère. (parler)", "a": "parle"},
+        {"q": "Nous ___ une pomme. (manger — note -ger spelling)", "a": "mangeons"},
+        {"q": "Je ___ un café. (préférer)", "a": "préfère"}
+      ]
+    },
+    {
+      "id": "fr-gram-02-ir-present",
+      "title": "Present tense: regular -ir verbs",
+      "level": "A1",
+      "goal": "Conjugate regular -ir verbs and distinguish them from the larger irregular -ir family (partir, sortir, dormir).",
+      "explanation": "Regular -ir verbs (the second group) insert -iss- in the plural. Finir, choisir, grandir, réussir, obéir all follow this pattern. Be careful: many common -ir verbs (partir, dormir, sortir, venir) are NOT in this group and conjugate differently.",
+      "pattern": {
+        "stems": "finir → fin-, choisir → chois-, réussir → réuss-",
+        "endings": {
+          "je": "-is",
+          "tu": "-is",
+          "il/elle/on": "-it",
+          "nous": "-issons",
+          "vous": "-issez",
+          "ils/elles": "-issent"
+        },
+        "full_table": {
+          "finir (to finish)": {
+            "je finis": "I finish",
+            "tu finis": "you finish",
+            "il finit": "he finishes",
+            "nous finissons": "we finish",
+            "vous finissez": "you finish (formal/pl)",
+            "ils finissent": "they finish"
+          }
+        },
+        "irregular_ir_warning": "partir, sortir, dormir, sentir conjugate WITHOUT -iss-: je pars, tu pars, il part, nous partons, vous partez, ils partent. They drop the final consonant of the stem in the singular."
+      },
+      "common_errors": [
+        "Conjugating partir/sortir like finir: 'je partis' is the literary passé simple, not the present. The present is 'je pars'.",
+        "Forgetting the -iss- in plural forms: 'nous finons' is wrong, must be 'nous finissons'.",
+        "Confusing the spelling: 'je finis' and 'tu finis' look identical — both are correct.",
+        "Pronouncing 'il finit' with a final t — that t is silent."
+      ],
+      "drill": [
+        {"q": "Je ___ mes devoirs. (finir)", "a": "finis"},
+        {"q": "Nous ___ un cadeau. (choisir)", "a": "choisissons"},
+        {"q": "Ils ___ leurs examens. (réussir)", "a": "réussissent"},
+        {"q": "Tu ___ à neuf heures. (partir — irregular!)", "a": "pars"},
+        {"q": "Vous ___ tôt le matin. (sortir — irregular!)", "a": "sortez"},
+        {"q": "Elle ___ huit heures par nuit. (dormir — irregular!)", "a": "dort"},
+        {"q": "Les enfants ___ vite. (grandir)", "a": "grandissent"}
+      ]
+    },
+    {
+      "id": "fr-gram-03-re-present",
+      "title": "Present tense: regular -re verbs",
+      "level": "A1",
+      "goal": "Conjugate the smaller -re verb family and recognise the silent third-person singular form.",
+      "explanation": "Regular -re verbs are fewer than -er or -ir, but include high-frequency ones: vendre (to sell), attendre (to wait), entendre (to hear), répondre (to answer), perdre (to lose), descendre (to go down). Drop the -re and add the endings. The 'il' form has no ending at all — just the stem.",
+      "pattern": {
+        "stems": "vendre → vend-, attendre → attend-, répondre → répond-",
+        "endings": {
+          "je": "-s",
+          "tu": "-s",
+          "il/elle/on": "-(silent)",
+          "nous": "-ons",
+          "vous": "-ez",
+          "ils/elles": "-ent"
+        },
+        "full_table": {
+          "attendre (to wait)": {
+            "j'attends": "I wait",
+            "tu attends": "you wait",
+            "il attend": "he waits",
+            "nous attendons": "we wait",
+            "vous attendez": "you wait (formal/pl)",
+            "ils attendent": "they wait"
+          },
+          "vendre (to sell)": {
+            "je vends": "I sell",
+            "tu vends": "you sell",
+            "il vend": "he sells",
+            "nous vendons": "we sell",
+            "vous vendez": "you sell",
+            "ils vendent": "they sell"
+          }
+        }
+      },
+      "common_errors": [
+        "Adding -t in 'il attend' — wrong, the stem alone is the form. 'il attendt' does not exist.",
+        "Pronouncing the final -d in 'il vend' or 'il attend' — silent.",
+        "Confusing prendre (irregular) with regular -re: 'nous prenons' (not 'prendons'), 'ils prennent' (not 'prendent').",
+        "Spelling 'répondre' as 'reponder' (English infinitive interference)."
+      ],
+      "drill": [
+        {"q": "Tu ___ le bus. (attendre)", "a": "attends"},
+        {"q": "Nous ___ des livres. (vendre)", "a": "vendons"},
+        {"q": "Elle ___ à la question. (répondre)", "a": "répond"},
+        {"q": "J' ___ la musique. (entendre)", "a": "entends"},
+        {"q": "Ils ___ leurs clés. (perdre)", "a": "perdent"},
+        {"q": "Vous ___ du train. (descendre)", "a": "descendez"}
+      ]
+    },
+    {
+      "id": "fr-gram-04-etre-avoir",
+      "title": "Être & avoir: the two essential irregulars",
+      "level": "A1",
+      "goal": "Conjugate être and avoir in the present and know which one to use for age, weather, and identity.",
+      "explanation": "Être (to be) and avoir (to have) are the two most important verbs in French. They are wildly irregular but absolutely high-frequency, used not just on their own but as the helping verbs in compound tenses (passé composé). Memorise them as full tables, no shortcuts.",
+      "pattern": {
+        "etre_table": {
+          "je suis": "I am",
+          "tu es": "you are",
+          "il/elle/on est": "he/she/one is",
+          "nous sommes": "we are",
+          "vous êtes": "you are (formal/pl)",
+          "ils/elles sont": "they are"
+        },
+        "avoir_table": {
+          "j'ai": "I have",
+          "tu as": "you have",
+          "il/elle/on a": "he/she/one has",
+          "nous avons": "we have",
+          "vous avez": "you have",
+          "ils/elles ont": "they have"
+        },
+        "avoir_idioms": "Avoir is used where English uses 'to be': avoir faim (to be hungry), avoir soif (to be thirsty), avoir froid (to be cold), avoir chaud (to be hot), avoir peur (to be afraid), avoir raison (to be right), avoir tort (to be wrong), avoir besoin de (to need), avoir envie de (to want). And for age: j'ai 25 ans.",
+        "etre_uses": "Être expresses identity (je suis professeur), state (je suis fatigué), location for permanent things (Paris est en France), and time (il est trois heures)."
+      },
+      "common_errors": [
+        "'Je suis 25 ans' is a textbook anglicism — must be 'j'ai 25 ans'.",
+        "'Je suis chaud' means 'I'm aroused', not 'I'm hot'. For body temperature use 'j'ai chaud'. For ambient weather: 'il fait chaud'.",
+        "'Vous êtes' has a circumflex on the ê. Easy to forget when typing.",
+        "Mixing up 'ils sont' (être) with 'ils ont' (avoir). They sound similar but spelling and meaning are completely different.",
+        "Liaison: 'nous avons', 'ils ont', 'vous avez' all have an obligatory z-liaison: /nu.za.vɔ̃/, /il.zɔ̃/, /vu.za.ve/."
+      ],
+      "drill": [
+        {"q": "Je ___ américaine. (être)", "a": "suis"},
+        {"q": "Nous ___ trois enfants. (avoir)", "a": "avons"},
+        {"q": "Tu ___ faim ? (avoir)", "a": "as"},
+        {"q": "Ils ___ français. (être)", "a": "sont"},
+        {"q": "Elle ___ 30 ans. (avoir)", "a": "a"},
+        {"q": "Vous ___ professeur ? (être)", "a": "êtes"},
+        {"q": "Il ___ peur. (avoir)", "a": "a"},
+        {"q": "Nous ___ contents. (être)", "a": "sommes"}
+      ]
+    },
+    {
+      "id": "fr-gram-05-gender-agreement",
+      "title": "Noun gender & adjective agreement",
+      "level": "A1",
+      "goal": "Predict gender from endings (where possible), agree adjectives in gender, and accept that gender is partly memorised vocab.",
+      "explanation": "Every French noun is masculine or feminine — there is no neuter. Unlike Spanish or Italian, French gender is poorly predictable: a noun ending in -e might be feminine OR masculine. There are tendencies, but anglophones must learn each noun WITH its article (le table is wrong; la table is right). Adjectives must agree with the noun they describe.",
+      "pattern": {
+        "tendencies_masculine": [
+          "-age (le voyage, le fromage, le garage) — but: la page, la plage, la cage, la rage",
+          "-ment (le moment, le gouvernement) — almost always",
+          "-eau (le bateau, le château) — almost always",
+          "-isme (le tourisme, le socialisme) — always",
+          "-oir (le soir, le tiroir)",
+          "Most metals and elements (le fer, l'or, l'argent)"
+        ],
+        "tendencies_feminine": [
+          "-tion / -sion (la nation, la décision) — always",
+          "-té (la liberté, la santé) — almost always; exceptions: l'été, le côté, le pâté",
+          "-ée (la journée, la matinée) — but: le musée, le lycée",
+          "-ette (la voiture, la fourchette)",
+          "-ance / -ence (la chance, la patience)"
+        ],
+        "adjective_agreement": "Most adjectives form the feminine by adding -e. Adjectives ending in -e in the masculine stay the same: 'rouge', 'jaune', 'rose' do not change. Plurals add -s (or stay the same if the masculine ends in -s or -x): un grand homme → des grands hommes; un gros chat → des gros chats."
+      },
+      "common_errors": [
+        "Assuming -e endings are always feminine: 'le musée', 'le lycée', 'le silence', 'le manège' are all masculine. The -e rule has too many exceptions to trust.",
+        "English-cognate gender trap: 'la voiture' (car), not 'le voiture'; 'le problème' (problem) — yes masculine despite the -e.",
+        "Forgetting agreement on the verb 'être': 'elle est petit' is wrong, must be 'elle est petite'.",
+        "Words borrowed from English are usually masculine: le week-end, le parking, le sandwich — though some are feminine: la pizza, la baguette (native)."
+      ],
+      "drill": [
+        {"q": "___ table (le/la)", "a": "la"},
+        {"q": "___ problème (le/la)", "a": "le"},
+        {"q": "___ liberté (le/la)", "a": "la"},
+        {"q": "___ musée (le/la)", "a": "le"},
+        {"q": "Une voiture _____ (rouge — agree)", "a": "rouge"},
+        {"q": "Une grande maison _____ (blanc — agree)", "a": "blanche"},
+        {"q": "Mes amis sont _____ (intelligent — agree m. pl.)", "a": "intelligents"},
+        {"q": "Ma sœur est très _____ (petit — agree f.)", "a": "petite"}
+      ]
+    },
+    {
+      "id": "fr-gram-06-plural-nouns",
+      "title": "Plural nouns & adjectives",
+      "level": "A1",
+      "goal": "Form plurals of regular nouns, handle the -al → -aux family, and pronounce silent plural endings correctly.",
+      "explanation": "Most French nouns and adjectives add a SILENT -s to form the plural. The final s is not pronounced — singular and plural usually sound identical, and you tell them apart only from the article (le chat / les chats — same pronunciation of 'chat', the article does the work).",
+      "pattern": {
+        "regular_pattern": "Add -s: un livre → des livres, une chaise → des chaises. Final -s is silent unless liaison applies before a vowel.",
+        "exceptions": {
+          "ends_in_s/x/z_unchanged": "Words already ending in -s, -x, or -z don't change: le bois → les bois, le nez → les nez, le prix → les prix.",
+          "ends_in_al_to_aux": "Most nouns and adjectives in -al change to -aux: un cheval → des chevaux, un journal → des journaux, un animal → des animaux. Exceptions kept regular: bal → bals, festival → festivals, carnaval → carnavals.",
+          "ends_in_au_eau_eu": "Add -x not -s: un bateau → des bateaux, un cheveu → des cheveux, un jeu → des jeux. (Exception: pneu → pneus.)",
+          "irregular": "un œil → des yeux (eye → eyes), monsieur → messieurs, madame → mesdames"
+        },
+        "adjective_plural": "Same rules: un grand homme → de grands hommes; un beau garçon → de beaux garçons; un cheval noir → des chevaux noirs (BOTH change)."
+      },
+      "common_errors": [
+        "Pronouncing the plural -s as a sound. 'Les livres' /le livʁ/, not /le livʁz/.",
+        "Saying 'des chevals' instead of 'des chevaux' — easy slip for -al words.",
+        "Forgetting both the noun and adjective need to agree: 'des chevaux noir' is wrong, must be 'des chevaux noirs'.",
+        "Liaison forgetting: 'les_amis' is /le.za.mi/ with a clear z-liaison; saying it without the z marks a beginner immediately."
+      ],
+      "drill": [
+        {"q": "un livre → des _____", "a": "livres"},
+        {"q": "un journal → des _____", "a": "journaux"},
+        {"q": "un cheveu → des _____", "a": "cheveux"},
+        {"q": "le prix → les _____", "a": "prix"},
+        {"q": "un œil → des _____", "a": "yeux"},
+        {"q": "un bateau → des _____", "a": "bateaux"},
+        {"q": "une grande maison → de grandes _____", "a": "maisons"},
+        {"q": "un animal sauvage → des _____ _____ ", "a": "animaux sauvages"}
+      ]
+    },
+    {
+      "id": "fr-gram-07-articles",
+      "title": "Definite & indefinite articles",
+      "level": "A1",
+      "goal": "Pick the right article (le/la/les/un/une/des/du/de la/de l') based on noun gender, number, definiteness, and partitive context.",
+      "explanation": "French has THREE article systems: definite (the), indefinite (a/an/some), and partitive (some, an unspecified quantity). English speakers often skip articles French requires — 'I like coffee' becomes 'j'aime LE café', with the article.",
+      "pattern": {
+        "definite": {
+          "le": "masculine singular before a consonant: le livre, le garçon",
+          "la": "feminine singular before a consonant: la table, la fille",
+          "l'": "either gender, singular, before a vowel or silent h: l'ami, l'homme, l'eau",
+          "les": "plural, both genders: les livres, les tables, les amis"
+        },
+        "indefinite": {
+          "un": "masculine singular: un livre, un homme",
+          "une": "feminine singular: une table, une amie",
+          "des": "plural, both genders: des livres, des tables"
+        },
+        "partitive": {
+          "du": "masculine + uncountable: du pain, du vin, du fromage",
+          "de la": "feminine + uncountable: de la viande, de la bière, de l'eau (before vowel)",
+          "des": "plural countable when 'some': je mange des frites"
+        },
+        "when_to_use_each": "Definite for general likes/dislikes ('j'aime LE café'), specific known things ('le livre sur la table'). Indefinite for unspecified countable items ('je vois un chat'). Partitive for some amount of an uncountable noun ('je mange du pain')."
+      },
+      "common_errors": [
+        "Saying 'j'aime café' — French requires the definite article for general preferences: 'j'aime LE café'.",
+        "Using 'un' for uncountable things: 'je mange un pain' would mean 'I eat ONE WHOLE loaf'. For 'some bread', use 'du pain'.",
+        "Forgetting elision: 'le ami' is wrong — must be 'l'ami'. Same for 'la eau' → 'l'eau'.",
+        "In NEGATIVE sentences, indefinite and partitive articles become 'de' or 'd'': 'je n'ai pas de pain' (not 'pas du pain'), 'je n'ai pas d'amis' (not 'pas des amis'). Definite articles do NOT change: 'je n'aime pas le café'."
+      ],
+      "drill": [
+        {"q": "Je vois ___ chat dans la rue. (un/le/du)", "a": "un"},
+        {"q": "J'aime beaucoup ___ chocolat. (un/le/du)", "a": "le"},
+        {"q": "Je voudrais ___ eau, s'il vous plaît. (un/le/de l')", "a": "de l'"},
+        {"q": "Tu manges ___ pain ? (un/le/du)", "a": "du"},
+        {"q": "___ amis de Paul sont sympas. (Les/Des)", "a": "Les"},
+        {"q": "Je n'ai pas ___ frères. (des/de)", "a": "de"},
+        {"q": "Je ne mange pas ___ viande. (la/de)", "a": "de"},
+        {"q": "Je n'aime pas ___ films d'horreur. (les/de)", "a": "les"}
+      ]
+    },
+    {
+      "id": "fr-gram-08-possessives",
+      "title": "Possessive adjectives",
+      "level": "A1",
+      "goal": "Pick mon/ma/mes (and the ton/son/notre/votre/leur series) based on the gender and number of the POSSESSED noun, not the owner.",
+      "explanation": "French possessives agree with the THING POSSESSED, not the owner. 'Sa mère' means 'his mother' or 'her mother' — mother is feminine, so 'sa'. There is no gender distinction between his and her in French. The owner's gender is determined by context.",
+      "pattern": {
+        "table": {
+          "my": {"m_sing": "mon", "f_sing": "ma", "plural": "mes"},
+          "your_informal": {"m_sing": "ton", "f_sing": "ta", "plural": "tes"},
+          "his/her/its": {"m_sing": "son", "f_sing": "sa", "plural": "ses"},
+          "our": {"m_sing": "notre", "f_sing": "notre", "plural": "nos"},
+          "your_formal_or_plural": {"m_sing": "votre", "f_sing": "votre", "plural": "vos"},
+          "their": {"m_sing": "leur", "f_sing": "leur", "plural": "leurs"}
+        },
+        "vowel_exception": "Before a feminine noun starting with a VOWEL or silent h, use the MASCULINE form for sound: 'mon amie' (not 'ma amie'), 'ton école' (not 'ta école'), 'son histoire' (not 'sa histoire')."
+      },
+      "common_errors": [
+        "Translating 'his mother' as 'son mère' because the owner is male — wrong. It's 'sa mère' because mother is feminine.",
+        "Saying 'ma amie' because the friend is female. Vowel rule overrides: 'mon amie'.",
+        "Confusing 'leur' (singular: their X) and 'leurs' (plural: their Xs). 'Leur livre' = their (one) book. 'Leurs livres' = their books.",
+        "Using 'votre' with a single friend in casual speech. If you'd address them as 'tu', use 'ton/ta/tes', not 'votre/vos'."
+      ],
+      "drill": [
+        {"q": "Voici ___ frère. (my)", "a": "mon"},
+        {"q": "C'est ___ sœur, Marie. (my)", "a": "ma"},
+        {"q": "Pierre adore ___ chien. (his)", "a": "son"},
+        {"q": "Marie aime ___ chien. (her — same word as Pierre's case?)", "a": "son"},
+        {"q": "Voilà ___ amie Anne. (my — vowel rule)", "a": "mon"},
+        {"q": "Vous avez ___ passeport ? (your formal)", "a": "votre"},
+        {"q": "Les enfants ont perdu ___ jouets. (their — plural noun)", "a": "leurs"},
+        {"q": "Anne et Paul ont ___ propre maison. (their — singular noun)", "a": "leur"}
+      ]
+    },
+    {
+      "id": "fr-gram-09-negation",
+      "title": "Negation: ne...pas, ne...jamais, ne...rien",
+      "level": "A1-A2",
+      "goal": "Form negative sentences with the ne...pas sandwich and pick the right second word for 'never', 'nothing', 'no one', etc.",
+      "explanation": "French negation requires TWO words sandwiching the verb: 'ne' before, and a negation word (pas, jamais, rien, personne, plus, que) after. In casual spoken French the 'ne' is often dropped — 'je sais pas' — but in writing both halves are mandatory.",
+      "pattern": {
+        "structure": "subject + ne + verb + [negator] + rest. 'Ne' elides to 'n'' before a vowel.",
+        "negators": {
+          "ne...pas": "not (basic negative): Je ne parle pas anglais.",
+          "ne...jamais": "never: Je ne mange jamais de viande.",
+          "ne...plus": "no more / not anymore: Il ne fume plus.",
+          "ne...rien": "nothing: Je ne vois rien.",
+          "ne...personne": "nobody: Je ne connais personne.",
+          "ne...que": "only (restrictive): Je n'ai que dix euros."
+        },
+        "with_compound_tenses": "In passé composé, both halves of ne...pas go around the AUXILIARY: 'je n'ai pas mangé', not 'je n'ai mangé pas'. But ne...personne, ne...que put the second half AFTER the past participle: 'je n'ai vu personne', 'je n'ai mangé qu'une pomme'.",
+        "article_change": "After negation, un/une/des/du/de la → de or d': 'j'ai un livre' → 'je n'ai pas DE livre'. But the definite articles (le, la, les) stay: 'je n'aime pas LE café'."
+      },
+      "common_errors": [
+        "Dropping the 'ne' in writing — fine in speech, wrong in any written register.",
+        "Forgetting elision: 'je ne ai pas' must be 'je n'ai pas'.",
+        "Saying 'je n'ai pas un livre' instead of 'je n'ai pas DE livre' — indefinite articles drop after negation.",
+        "Placing 'pas' after the past participle: 'je n'ai mangé pas' is wrong, must be 'je n'ai pas mangé'.",
+        "Using double negatives English-style: 'I don't see nothing' translates as 'je ne vois rien' (no extra 'pas')."
+      ],
+      "drill": [
+        {"q": "Je parle français. → negative", "a": "Je ne parle pas français."},
+        {"q": "Elle a un chien. → negative", "a": "Elle n'a pas de chien."},
+        {"q": "Il mange. → never", "a": "Il ne mange jamais."},
+        {"q": "Je vois quelqu'un. → nothing", "a": "Je ne vois rien."},
+        {"q": "Il fume encore. → no longer", "a": "Il ne fume plus."},
+        {"q": "Nous avons mangé. → negative passé composé", "a": "Nous n'avons pas mangé."},
+        {"q": "J'ai vingt euros. → only", "a": "Je n'ai que vingt euros."},
+        {"q": "Je connais tout le monde ici. → no one", "a": "Je ne connais personne ici."}
+      ]
+    },
+    {
+      "id": "fr-gram-10-passe-compose-avoir",
+      "title": "Passé composé with avoir",
+      "level": "A2",
+      "goal": "Form the most common past tense for completed actions, using avoir as the auxiliary, and handle past-participle agreement with preceding direct objects.",
+      "explanation": "Passé composé is the everyday past for completed actions ('I ate', 'I went', 'I saw'). It's compound: present-tense AUXILIARY (mostly avoir, some verbs use être — see next unit) + past participle of the main verb. About 80 percent of French verbs use avoir.",
+      "pattern": {
+        "structure": "subject + avoir-present + past_participle",
+        "past_participles": {
+          "-er verbs": "stem + é: parler → parlé, manger → mangé, aimer → aimé",
+          "-ir verbs (regular)": "stem + i: finir → fini, choisir → choisi",
+          "-re verbs (regular)": "stem + u: vendre → vendu, attendre → attendu, perdre → perdu",
+          "irregular_high_frequency": "avoir → eu, être → été, faire → fait, voir → vu, prendre → pris, dire → dit, écrire → écrit, lire → lu, mettre → mis, ouvrir → ouvert, pouvoir → pu, vouloir → voulu, devoir → dû, savoir → su, connaître → connu, boire → bu, recevoir → reçu"
+        },
+        "examples": {
+          "J'ai mangé une pomme": "I ate an apple.",
+          "Tu as vu ce film ?": "Have you seen this film?",
+          "Nous avons fini le travail": "We finished the work.",
+          "Ils ont pris le train": "They took the train."
+        },
+        "agreement_rule": "The past participle agrees IN GENDER AND NUMBER with a preceding DIRECT OBJECT (rare but important): 'Les pommes que j'ai mangées' (the apples I ate — mangées agrees with pommes). With no preceding direct object, no agreement: 'J'ai mangé des pommes' (no agreement)."
+      },
+      "common_errors": [
+        "Forgetting to use the auxiliary entirely: 'je mangé' is wrong, must be 'j'ai mangé'.",
+        "Using être with verbs that take avoir: 'je suis mangé' is wrong (and means something weird).",
+        "Forgetting irregular past participles: 'j'ai prendu' is wrong, must be 'j'ai pris'.",
+        "Spelling 'eu' (had) — three letters, pronounced as a single sound /y/. Easy to mis-write.",
+        "Forgetting the cedilla in 'reçu' (received) — required for the soft c sound.",
+        "Forcing agreement after a normal direct object: 'j'ai mangée une pomme' is wrong — agreement only kicks in when the object PRECEDES the verb."
+      ],
+      "drill": [
+        {"q": "Je ___ ___ une pomme. (manger, passé composé)", "a": "ai mangé"},
+        {"q": "Tu ___ ___ ce livre ? (lire)", "a": "as lu"},
+        {"q": "Nous ___ ___ le métro. (prendre)", "a": "avons pris"},
+        {"q": "Elle ___ ___ une lettre. (écrire)", "a": "a écrit"},
+        {"q": "Ils ___ ___ leurs devoirs. (finir)", "a": "ont fini"},
+        {"q": "Vous ___ ___ Paul hier ? (voir)", "a": "avez vu"},
+        {"q": "J' ___ ___ un café. (boire)", "a": "ai bu"},
+        {"q": "Les pommes que j'ai ___ (manger — agreement with preceding f.pl. object)", "a": "mangées"}
+      ]
+    },
+    {
+      "id": "fr-gram-11-passe-compose-etre",
+      "title": "Passé composé with être",
+      "level": "A2",
+      "goal": "Identify the ~16 verbs that take être as auxiliary, and apply the mandatory gender/number agreement on their past participles.",
+      "explanation": "A small set of verbs of motion or state-change use ÊTRE (not avoir) as auxiliary in the passé composé. With être, the past participle AGREES with the subject's gender and number — like an adjective. Also: all reflexive verbs (se laver, se lever, se coucher) use être.",
+      "pattern": {
+        "etre_verbs_mnemonic": "Use 'DR & MRS VANDERTRAMP' or the 'Maison d'être' image. The classic list: aller (to go) → allé, venir (to come) → venu, arriver (to arrive) → arrivé, partir (to leave) → parti, entrer → entré, sortir → sorti, monter → monté, descendre → descendu, naître → né, mourir → mort, rester → resté, tomber → tombé, retourner → retourné, passer → passé (when intransitive), devenir → devenu, revenir → revenu.",
+          "reflexive_always_etre": "All reflexive (pronominal) verbs use être: je me suis levé(e), tu t'es lavé(e), il s'est couché, elle s'est couchée, nous nous sommes habillé(e)s.",
+          "agreement_examples": {
+            "Je suis allé": "(m. speaker) I went",
+            "Je suis allée": "(f. speaker) I went",
+            "Nous sommes arrivés": "(m. or mixed group) we arrived",
+            "Nous sommes arrivées": "(all-f. group) we arrived",
+            "Marie est partie": "Marie left (f. agreement)",
+            "Les filles sont sorties": "The girls went out (f.pl. agreement)"
+          },
+          "compound_motion_quirk": "Monter, descendre, sortir, passer, retourner, rentrer take AVOIR when they're transitive (have a direct object): 'j'ai monté les valises' (I carried up the suitcases) vs 'je suis monté' (I went up)."
+      },
+      "common_errors": [
+        "Using avoir with aller, venir, arriver, partir — 'j'ai allé' is wrong, must be 'je suis allé(e)'.",
+        "Forgetting the agreement: a woman saying 'je suis allé au marché' is wrong — must write 'allée'. Spoken French often masks this since the e is silent.",
+        "Forgetting agreement on plural: 'les filles sont parti' is wrong, must be 'les filles sont parties'.",
+        "Reflexive agreement with reflexive being a direct object: 'elle s'est lavée' (she washed herself — agrees) vs 'elle s'est lavé les mains' (she washed her hands — no agreement on 'lavé' because 'les mains' is the direct object and follows the verb).",
+        "Forcing être with motion verbs that take avoir: 'courir' (to run) takes avoir — 'j'ai couru', not 'je suis couru'."
+      ],
+      "drill": [
+        {"q": "Je (femme) ___ ___ à Paris. (aller)", "a": "suis allée"},
+        {"q": "Marie ___ ___ tôt. (partir)", "a": "est partie"},
+        {"q": "Les enfants ___ ___ à l'école. (aller)", "a": "sont allés"},
+        {"q": "Nous (deux femmes) ___ ___ ensemble. (arriver)", "a": "sommes arrivées"},
+        {"q": "Tu ___ ___ avec qui ? (sortir, masc.)", "a": "es sorti"},
+        {"q": "Elle ___ ___ très tard. (rentrer)", "a": "est rentrée"},
+        {"q": "Je ___ ___ tôt ce matin. (se lever, fem.)", "a": "me suis levée"},
+        {"q": "Il ___ ___ les escaliers. (monter — transitive!)", "a": "a monté"}
+      ]
+    },
+    {
+      "id": "fr-gram-12-imparfait",
+      "title": "Imparfait: ongoing past & background",
+      "level": "A2",
+      "goal": "Conjugate the imparfait and choose between imparfait and passé composé based on aspect (background/habit vs completed event).",
+      "explanation": "The imparfait describes the PAST as ongoing, habitual, or background. Use it for 'used to do', 'was doing', descriptions of weather and feelings in the past, and setting the scene. Passé composé is for COMPLETED, specific events. Stories typically mix both: imparfait paints the canvas, passé composé adds the foreground events.",
+      "pattern": {
+        "formation": "Take the NOUS form of the present tense, drop -ons, add the imparfait endings: -ais, -ais, -ait, -ions, -iez, -aient.",
+        "endings": {
+          "je": "-ais",
+          "tu": "-ais",
+          "il/elle/on": "-ait",
+          "nous": "-ions",
+          "vous": "-iez",
+          "ils/elles": "-aient"
+        },
+        "parler_table": {
+          "je parlais": "I was speaking / used to speak",
+          "tu parlais": "you were speaking",
+          "il parlait": "he was speaking",
+          "nous parlions": "we were speaking",
+          "vous parliez": "you were speaking",
+          "ils parlaient": "they were speaking"
+        },
+        "etre_irregular": "Être is the only stem-irregular: ét- + standard endings. j'étais, tu étais, il était, nous étions, vous étiez, ils étaient.",
+        "when_imparfait": [
+          "Habitual past actions: 'Quand j'étais jeune, je jouais au foot.'",
+          "Ongoing actions in the past: 'Je lisais quand le téléphone a sonné.' (I was reading when the phone rang.)",
+          "Description / background: 'Il faisait beau, le soleil brillait, les oiseaux chantaient.'",
+          "Past states and feelings: 'Elle était fatiguée, elle avait faim.'",
+          "Polite requests: 'Je voulais juste vous demander...'"
+        ],
+        "when_passe_compose": [
+          "Specific completed event: 'Hier, j'ai mangé une pizza.'",
+          "Sequence of foreground events: 'Il est entré, il a vu Marie, il a souri.'",
+          "Action with a clear time-bound: 'J'ai vécu trois ans à Paris.' (a defined duration → passé composé)"
+        ]
+      },
+      "common_errors": [
+        "Using passé composé for habitual past: 'Quand j'étais petit, j'ai joué au foot' is wrong — habit needs imparfait: 'je jouais au foot'.",
+        "Using imparfait for completed events: 'Hier, je mangeais une pizza' suggests background or interruption; for a finished action say 'j'ai mangé une pizza'.",
+        "Forgetting that nous + imparfait makes a -ions ending that sometimes looks like the subjunctive: 'nous parlions' is imparfait OR subjunctive context-disambiguates.",
+        "Pronouncing the -aient ending as a separate syllable — it's just /ɛ/. 'Ils parlaient' = /il paʁ.lɛ/, two syllables only.",
+        "Mixing 'j'ai été' (I was — completed) with 'j'étais' (I was — ongoing). 'J'étais malade hier' = I was sick yesterday (state). 'J'ai été malade trois jours' = I was sick for three days (bounded duration)."
+      ],
+      "drill": [
+        {"q": "Quand j' ___ ___ petit, je ___ au foot. (être / jouer — imparfait)", "a": "étais / jouais"},
+        {"q": "Il ___ ___ beau et nous ___ ___ contents. (faire / être — imparfait)", "a": "faisait / étions"},
+        {"q": "Je ___ ___ quand tu ___ ___ . (lire — imparfait / arriver — passé composé)", "a": "lisais / es arrivé(e)"},
+        {"q": "Tous les étés, nous ___ ___ à la mer. (aller — imparfait)", "a": "allions"},
+        {"q": "Hier, j' ___ ___ une lettre. (écrire — passé composé, not imparfait!)", "a": "ai écrit"},
+        {"q": "Ma grand-mère ___ ___ très gentille. (être — imparfait)", "a": "était"},
+        {"q": "Vous ___ ___ souvent au cinéma ? (aller — imparfait)", "a": "alliez"},
+        {"q": "Ils ___ ___ quand la voiture est arrivée. (parler — imparfait)", "a": "parlaient"}
+      ]
+    }
+  ]
+}

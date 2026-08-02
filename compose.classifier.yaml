@@ -1,0 +1,106 @@
+# Local voice/intent classifier sidecar (built-in companion resource)
+# Default-on: setup.bat / setup.sh add this to .augmentum.conf so a fresh
+# install gets it without any extra step. Remove the line from the conf to
+# opt out — the classifier role then falls back to the primary chat model.
+#
+# A dedicated, always-resident CPU llama-server whose ONLY job is the
+# companion's classification verdicts (act / converse / clarify / idle /
+# drop) for the voice router and architect router. The callers schema-
+# constrain the output, so the model emits exactly the verdict JSON and
+# nothing else — no prose, no chain-of-thought, no truncated objects.
+#
+# Why a dedicated sidecar:
+#   * Always resident — never swapped against the chat model.
+#   * Runs on CPU (-ngl 0), so it never contends for the GPU/VRAM the
+#     chat + TTS models need. This hop fires <10x/min, so CPU is plenty.
+#   * Local — cannot 500, cannot time out on a network hop. Replaces both
+#     the brittle regex switchboard AND the flaky remote-LLM classifier
+#     (the deepseek-v4-pro fallback that 400'd on json_schema and dropped
+#     utterances — see provider_profiles.supports_response_format_json_schema).
+#
+# SCOPING: the role resolver only hands this backend to role=="classifier"
+# (provider_registry.resolve_model_for_role). primary_chat and utility
+# resolve through separate branches, so this small model can NEVER leak
+# into actual chat or heavier companion reasoning.
+#
+# Model / latency: the hard constraint is the 2.5s budget on BOTH the voice
+# router and the architect router (architect_router_timeout_ms). The
+# architect prompt carries the ~2400-token action catalog the router needs
+# to route to — that's a big prefill EVERY call, so the model must be small
+# enough to prefill it on CPU inside the budget. SmolLM2-135M does ~2400
+# tokens in ~1s with 8 threads; a 1.5B class model on CPU overruns and the
+# hop times out → the companion falls back / drops. So the CPU default is
+# 135M. Don't fix this by shrinking the catalog — it's functional context,
+# not waste.
+#
+# TUNING (all optional, via .env): to trade footprint/GPU for better
+# judgment, override —
+#   AUGMENTUM_CLASSIFIER_HF=bartowski/Qwen2.5-1.5B-Instruct-GGUF:Q4_K_M
+#   AUGMENTUM_CLASSIFIER_NGL=99      # offload to GPU so 1.5B makes the budget
+#   AUGMENTUM_CLASSIFIER_CTX=8192    # total ctx; --parallel 2 halves it/slot
+#   AUGMENTUM_CLASSIFIER_THREADS=8
+# NOTE: NGL>0 needs a GPU in this container — only set it if you add a GPU
+# reservation here too; the shipped default stays CPU-only for portability.
+#
+# The GGUF is pulled from HuggingFace on first start (cached in the
+# classifier_models volume). No API key, no other config — the augmentum
+# service auto-registers it as the "classifier" backend via
+# AUGMENTUM_CLASSIFIER_BASE_URL and the classifier role resolves to it
+# automatically (an explicit classifier_model setting still overrides).
+
+services:
+  augmentum:
+    environment:
+      - AUGMENTUM_CLASSIFIER_BASE_URL=http://classifier:8091/v1
+      # Classifier sampling — default greedy (correct for SmolLM/Qwen2.5).
+      # The GPU Gemma 4 option needs temp=1.0/top_p=0.95/top_k=64; set those
+      # in .env (they travel with AUGMENTUM_CLASSIFIER_HF) and they land on
+      # the voice + architect router requests.
+      - AUGMENTUM_CLASSIFIER_SAMPLING_TEMPERATURE=${AUGMENTUM_CLASSIFIER_SAMPLING_TEMPERATURE:-0.0}
+      - AUGMENTUM_CLASSIFIER_SAMPLING_TOP_P=${AUGMENTUM_CLASSIFIER_SAMPLING_TOP_P:-1.0}
+      - AUGMENTUM_CLASSIFIER_SAMPLING_TOP_K=${AUGMENTUM_CLASSIFIER_SAMPLING_TOP_K:-0}
+    depends_on:
+      classifier:
+        # service_started, NOT service_healthy: the classifier is a llama-server
+        # that loads a model with a 300s start_period, and on a cold cache pulls
+        # ~1GB from HF first. Gating augmentum's START on its HEALTH meant the app
+        # (and caddy, which depends on augmentum) sat in "Created" for minutes —
+        # and if the classifier ever failed to go healthy (OOM, missing model,
+        # mid-swap) augmentum NEVER started and the whole stack stayed dead. The
+        # app reaches the classifier (Slot C) over HTTP with graceful fallback;
+        # it does not need it healthy to boot. Same fix as caddy's augmentum dep.
+        condition: service_started
+        required: false
+
+  classifier:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    command: >
+      -hf ${AUGMENTUM_CLASSIFIER_HF:-bartowski/SmolLM2-135M-Instruct-GGUF:Q8_0}
+      --host 0.0.0.0 --port 8091
+      --ctx-size ${AUGMENTUM_CLASSIFIER_CTX:-8192} --n-gpu-layers ${AUGMENTUM_CLASSIFIER_NGL:-0}
+      --jinja --threads ${AUGMENTUM_CLASSIFIER_THREADS:-8} --parallel 2
+      ${AUGMENTUM_CLASSIFIER_VISION_ARGS:-}
+    volumes:
+      - classifier_models:/root/.cache/llama.cpp
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8091/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      # First start pulls ~1GB from HF before serving; generous so the
+      # container isn't marked unhealthy mid-download on a cold cache.
+      start_period: 300s
+    restart: unless-stopped
+    # NO host-RAM limit by default. Measured 2026-07-25 on the
+    # Gemma-4-E2B/ctx-96000 config: 3.3 GB anon + 4.0 GB page cache, which
+    # made 8g look like ~2x headroom. It isn't: on WSL2/WDDM a cudaMalloc
+    # for the weights buffer ALSO takes a host-memory backing allocation
+    # charged to this cgroup, on top of the mmap'd GGUF pages. The ceiling
+    # then surfaces as "cudaMalloc failed: out of memory" with the GPU
+    # sitting idle — see the augmentum service in compose.yaml, where a
+    # 32g limit blocked a 17.8 GB model on a 24 GB card.
+    # If you set AUGMENTUM_CLASSIFIER_MEM_LIMIT, size it at >= 2x the GGUF.
+    mem_limit: ${AUGMENTUM_CLASSIFIER_MEM_LIMIT:-0}
+
+volumes:
+  classifier_models:

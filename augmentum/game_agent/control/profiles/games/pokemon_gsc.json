@@ -1,0 +1,43 @@
+{
+  "schema": "control.game.v1",
+  "id": "pokemon_gsc",
+  "description": "Pokémon Gold / Silver / Crystal (Gen-2, GB/GBC). Shared engine; one game profile fits all three.",
+  "applies_to_controllers": ["gambatte"],
+  "applies_to_log_schema": "pokemon_gsc.v1",
+  "actions": {
+    "confirm": {
+      "binding": "face_east",
+      "hint": "Advance dialog one box. Talk to NPC facing you. Pick up the item on the tile in front. Confirm a menu choice. The single most-used button."
+    },
+    "cancel": {
+      "binding": "face_south",
+      "hint": "Cancel / back out / close menu. Hold while walking to run (after the Running Shoes are obtained in Cherrygrove, Crystal only)."
+    },
+    "menu": {
+      "binding": "start",
+      "hint": "Open the main menu: Pokédex, Pokémon, Pack, Player, Save, Option, Exit. Overworld only."
+    },
+    "registered": {
+      "binding": "select",
+      "hint": "Use the currently registered key item. Common registrations: Bicycle, Mystery Gift, ItemFinder."
+    },
+    "nav_up": {
+      "binding": "dpad_up",
+      "hint": "Walk one tile north. First press while facing another direction just turns you to face north. Held: continuous walking."
+    },
+    "nav_down": {
+      "binding": "dpad_down",
+      "hint": "Walk one tile south. First press while facing another direction just turns you to face south. Held: continuous walking."
+    },
+    "nav_left": {
+      "binding": "dpad_left",
+      "hint": "Walk one tile west. First press while facing another direction just turns you to face west. Held: continuous walking."
+    },
+    "nav_right": {
+      "binding": "dpad_right",
+      "hint": "Walk one tile east. First press while facing another direction just turns you to face east. Held: continuous walking."
+    }
+  },
+  "hardware_passthrough": [],
+  "notes": "GSC has no L/R shoulders (Game Boy / Game Boy Color hardware). Identical action set to pokemon_rby plus the Select-bound registered key item which Gen-1 lacks."
+}

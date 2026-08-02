@@ -1,0 +1,31 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "salute",
+  "tags": ["greeting", "formal", "respect", "gesture"],
+  "description": "Right hand salute to forehead — formal greeting or sign of respect.",
+  "family": "thinking",
+
+  "anchors": {
+    "rightHand": {
+      "type": "region-contact",
+      "region": "forehead",
+      "tolerance": 0.03,
+      "fingerStyle": "salute_R"
+    },
+    "leftHand": {
+      "type": "free-space"
+    }
+  },
+
+  "body": {
+    "head":  { "pitch": -1 },
+    "spine": { "forwardLean": -1 }
+  },
+
+  "provenance": {
+    "source": "manual",
+    "curatedBy": "maintainer",
+    "createdAt": "2026-05-14",
+    "notes": "salute_R consensus → head_top (100%). Slight upward chin + upright spine for formality."
+  }
+}

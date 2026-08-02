@@ -1,0 +1,19 @@
+{
+  "schema": "control.controller.v1",
+  "id": "genesis",
+  "description": "Sega Genesis / Mega Drive 3-button controller as exposed by libretro / genesis_plus_gx. 8 buttons: d-pad, three face buttons (A west, B south, C east), Start. No shoulders, no Select on a 3-button pad. Source for the libretro id mapping: genesis_plus_gx input descriptor (A=Y(1), B=B(0), C=A(8)).",
+  "wire": {
+    "kind": "libretro_joypad",
+    "port": 0
+  },
+  "buttons": {
+    "face_west":    { "wire_code": 1,  "label": "A" },
+    "face_south":   { "wire_code": 0,  "label": "B" },
+    "face_east":    { "wire_code": 8,  "label": "C" },
+    "dpad_up":      { "wire_code": 4,  "label": "Up" },
+    "dpad_down":    { "wire_code": 5,  "label": "Down" },
+    "dpad_left":    { "wire_code": 6,  "label": "Left" },
+    "dpad_right":   { "wire_code": 7,  "label": "Right" },
+    "start":        { "wire_code": 3,  "label": "Start" }
+  }
+}

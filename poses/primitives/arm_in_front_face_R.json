@@ -1,0 +1,31 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "arm_in_front_face_R",
+  "tags": [
+    "single-arm",
+    "R",
+    "face",
+    "gesture"
+  ],
+  "description": "Single-arm primitive: right arm in 'in_front_face_R' pose. Lands at region 'cheek_R' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+  "family": "per_arm",
+  "anchors": {
+    "rightHand": {
+      "type": "region-contact",
+      "region": "cheek_R",
+      "tolerance": 0.04,
+      "fingerStyle": "in_front_face_R"
+    },
+    "leftHand": {
+      "type": "free-space"
+    }
+  },
+  "body": {},
+  "provenance": {
+    "source": "auto-generated",
+    "generator": "scripts/generate_per_arm_primitives.py",
+    "wrapsAffordance": "in_front_face_R",
+    "consensusRegion": "cheek_R",
+    "createdAt": "2026-05-14"
+  }
+}

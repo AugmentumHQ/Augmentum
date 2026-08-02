@@ -1,0 +1,92 @@
+# Dependabot configuration for the Augmentum server repo.
+#
+# Three ecosystems are watched:
+#
+#   - pip         : Python deps in pyproject.toml + requirements.lock
+#   - docker      : base images pinned by digest across Dockerfile,
+#                   Dockerfile.gpu, Dockerfile.llama-server,
+#                   Dockerfile.llama-server-cpu, Dockerfile.workspace
+#   - github-actions : workflow actions referenced in .github/workflows/
+#
+# Weekly cadence so PRs don't pile up faster than the maintainer
+# (1-3 active per CLAUDE.md / OSS norms) can review them. Open PR cap
+# is 5 per ecosystem to keep the queue tractable.
+#
+# Python deps are auto-grouped by patch / minor / major so the maintainer
+# can review related bumps together — useful for transitively-related
+# updates (e.g. fastapi + starlette).
+#
+# Security updates are exempt from the open-PR cap and the schedule —
+# Dependabot opens a security-advisory PR the moment one lands.
+
+version: 2
+
+updates:
+  # ──────────────────────────────────────────────────────────────────
+  # Python dependencies (pyproject.toml + requirements.lock)
+  # ──────────────────────────────────────────────────────────────────
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - python
+    commit-message:
+      prefix: "deps(python)"
+      include: scope
+    groups:
+      python-patch:
+        patterns:
+          - "*"
+        update-types:
+          - patch
+      python-minor:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+
+  # ──────────────────────────────────────────────────────────────────
+  # Dockerfile base images (digest-pinned via scripts/upgrade_base_images.sh).
+  # Dependabot will propose a new digest when upstream publishes a new
+  # build under the same tag. Review carefully — base-image rotations
+  # can carry transitive package changes.
+  # ──────────────────────────────────────────────────────────────────
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:30"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - docker
+    commit-message:
+      prefix: "deps(docker)"
+      include: scope
+
+  # ──────────────────────────────────────────────────────────────────
+  # GitHub Actions referenced by workflows (actions/checkout, etc.).
+  # Pin to a specific version + Dependabot bumps when upstream tags.
+  # ──────────────────────────────────────────────────────────────────
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - github-actions
+    commit-message:
+      prefix: "deps(ci)"
+      include: scope

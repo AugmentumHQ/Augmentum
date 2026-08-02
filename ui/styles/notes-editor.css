@@ -1,0 +1,406 @@
+/* ===========================================================================
+   Augmentum Notes Editor — SOTA typography + Live Preview skin
+   Pairs with ui/scripts/notes-editor.js (CodeMirror 6 + custom decorations).
+   The goal: the page IS the editor. No toolbar chrome. Markdown renders
+   inline; marks fade on non-caret lines. Reads like Bear / Typora /
+   Obsidian Live Preview.
+   =========================================================================== */
+
+/* ---- Panel ---- */
+.notes-editor {
+  --notes-bg: transparent;
+  --notes-bg-elev: color-mix(in srgb, var(--surface) 72%, var(--bg));
+  --notes-ink: var(--text-primary);
+  --notes-ink-soft: color-mix(in srgb, var(--text-primary) 82%, var(--text-secondary));
+  --notes-ink-faint: var(--text-secondary);
+  --notes-ink-ghost: var(--text-muted);
+  --notes-mark: color-mix(in srgb, var(--text-muted) 72%, transparent);
+  --notes-rule: color-mix(in srgb, var(--border) 78%, transparent);
+  --notes-code-bg: color-mix(in srgb, var(--surface) 76%, var(--bg));
+  --notes-code-ink: var(--code-text, var(--text-primary));
+  --notes-accent: var(--accent, #6c8aff);
+  --notes-selection: color-mix(in srgb, var(--accent) 22%, transparent);
+
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--notes-bg);
+  color: var(--notes-ink);
+  font-family: var(--font-editorial), 'Crimson Pro', Georgia, serif;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* Hide EasyMDE/Milkdown leftover states if any render briefly */
+.notes-editor .browse-note-editor-loading { z-index: 3; }
+
+/* ---- Content typography ---- */
+.notes-editor .cm-editor { flex: 1; min-height: 0; min-width: 0; }
+.notes-editor > * { max-width: 100%; min-width: 0; }
+.notes-editor .cm-scroller { min-width: 0; }
+.notes-editor .cm-content {
+  padding: 0;
+  overflow-wrap: break-word;
+}
+.notes-editor .cm-line {
+  padding: 0;
+  margin: 0;           /* rely on line-height for rhythm, not margins */
+}
+
+/* (Intentionally no .cm-md-blank rule. Compressing blank-line heights
+   at CSS level makes CM6's virtual scroller's measurement estimates
+   diverge from actual rendered heights, producing "Measure loop
+   restarted more than 5 times" warnings on scroll/resize.) */
+
+/* ---- Headings (Live Preview: whole line gets the class) ---- */
+.notes-editor .cm-md-heading {
+  font-family: var(--font-editorial), 'Crimson Pro', Georgia, serif;
+  color: var(--notes-ink);
+  letter-spacing: 0;
+  margin: 0.7em 0 0.15em !important;
+  line-height: 1.25;
+}
+.notes-editor .cm-md-h1 { font-size: 2rem;    font-weight: 600; }
+.notes-editor .cm-md-h2 { font-size: 1.55rem; font-weight: 600; letter-spacing: 0; }
+.notes-editor .cm-md-h3 { font-size: 1.25rem; font-weight: 600; letter-spacing: 0; }
+.notes-editor .cm-md-h4 { font-size: 1.1rem;  font-weight: 600; }
+.notes-editor .cm-md-h5 { font-size: 1.02rem; font-weight: 600; }
+.notes-editor .cm-md-h6 { font-size: 0.95rem; font-weight: 600; color: var(--notes-ink-soft); }
+
+/* ---- Inline emphasis ---- */
+.notes-editor .cm-md-bold   { color: var(--notes-ink); font-weight: 700; }
+.notes-editor .cm-md-italic { color: var(--notes-ink-soft); font-style: italic; }
+.notes-editor .cm-md-strike { text-decoration: line-through; opacity: 0.6; }
+
+/* ---- Inline code ---- */
+.notes-editor .cm-md-code-inline {
+  font-family: 'Space Mono', 'Fira Code', Menlo, monospace;
+  font-size: 0.9em;
+  background: var(--notes-code-bg);
+  color: var(--notes-code-ink);
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid color-mix(in srgb, var(--notes-rule) 80%, transparent);
+}
+
+/* ---- Inline image embed (pasted/dropped photos render in place) ---- */
+.notes-editor .cm-md-image-embed {
+  display: inline-block;
+  max-width: 100%;
+  line-height: 0;          /* kill the inline-gap below the image */
+  vertical-align: top;
+}
+/* Reserve a placeholder box until the image decodes so scrolling one into
+   view (or first paint) doesn't shove the following text down — the image
+   CLS. The reserved box is a typical screenshot footprint; the one-time
+   settle to the real height is far smaller than a 0→full-height jump. */
+.notes-editor .cm-md-image-embed.is-loading {
+  min-width: 160px;
+  min-height: 200px;
+  border-radius: 8px;
+  background:
+    linear-gradient(110deg,
+      var(--notes-code-bg) 30%,
+      color-mix(in srgb, var(--notes-code-bg) 70%, var(--notes-ink) 8%) 50%,
+      var(--notes-code-bg) 70%);
+  background-size: 220% 100%;
+  animation: cm-md-img-shimmer 1.4s ease-in-out infinite;
+}
+.notes-editor .cm-md-image-embed.is-loading img { visibility: hidden; }
+@keyframes cm-md-img-shimmer {
+  from { background-position: 130% 0; }
+  to   { background-position: -30% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .notes-editor .cm-md-image-embed.is-loading { animation: none; }
+}
+.notes-editor .cm-md-image-embed img {
+  max-width: 100%;
+  max-height: 460px;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--notes-rule);
+  /* selected-image affordance: CM6 marks the atomic widget on caret-skip */
+  background: var(--notes-code-bg);
+}
+
+/* ---- Links ---- */
+.notes-editor .cm-md-link { color: var(--notes-accent); }
+.notes-editor .cm-md-url {
+  color: var(--notes-ink-ghost);
+  font-size: 0.82em;
+  font-family: 'Space Mono', monospace;
+  opacity: 0.55;
+}
+
+/* Cmd/Ctrl-click-to-open hint. When the modifier is held anywhere in
+   the window, the notes editor's link text flips to a pointer cursor
+   so users can see the link is about to become navigable. Plain
+   (unmodified) click continues to position the caret. */
+.notes-editor--mod-held .cm-md-link,
+.notes-editor--mod-held .cm-md-link *,
+.notes-editor--mod-held .cm-md-url {
+  cursor: pointer;
+}
+.notes-editor--mod-held .cm-md-link {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--notes-accent) 60%, transparent);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+}
+
+/* ---- Blockquote ---- */
+.notes-editor .cm-md-quote-line {
+  color: var(--notes-ink-faint);
+  font-style: italic;
+  padding-left: 18px !important;
+  position: relative;
+}
+.notes-editor .cm-md-quote-line::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(108, 138, 255, 0.38);
+  border-radius: 2px;
+}
+
+/* ---- Lists ---- */
+.notes-editor .cm-md-mark-list {
+  color: var(--notes-accent);
+  opacity: 0.75;
+}
+
+/* ---- Task list ---- */
+.notes-editor .cm-md-checkbox {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin: 0 6px 0 0;
+  vertical-align: -2px;
+  border: 1.5px solid var(--notes-ink-ghost);
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.notes-editor .cm-md-checkbox:hover { border-color: var(--notes-accent); }
+.notes-editor .cm-md-checkbox.checked {
+  background: var(--notes-accent);
+  border-color: var(--notes-accent);
+}
+.notes-editor .cm-md-checkbox.checked::after {
+  content: '';
+  position: absolute;
+  left: 3px; top: 0;
+  width: 4px; height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.notes-editor .cm-md-task-checked {
+  color: var(--notes-ink-ghost);
+  text-decoration: line-through;
+}
+
+/* ---- Fenced code block ---- */
+.notes-editor .cm-md-code-block {
+  font-family: 'Space Mono', 'Fira Code', Menlo, monospace;
+  font-size: 0.91rem;
+  /* Match the BODY line box (1.0625rem × 1.85 ≈ 1.97rem) as an ABSOLUTE
+     length so every line in the document — prose and code — has an
+     identical height. CM6 keeps a single height estimate for off-screen
+     lines; when code lines were shorter (0.91rem × 1.65 ≈ 1.5rem) than
+     prose, clicking around forced the height oracle to re-measure and
+     correct those estimates, shifting content below the viewport (the
+     code-block CLS) and burning layout time on each click (the INP).
+     Uniform line boxes make the estimate exact, so re-measures are no-ops.
+     Code reads a touch airier as a result; that's the stability trade. */
+  line-height: 1.97rem;
+  background: var(--notes-code-bg);
+  color: var(--notes-code-ink);
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+  margin: 0 !important;
+  border-left: 1px solid var(--notes-rule);
+  border-right: 1px solid var(--notes-rule);
+  overflow-wrap: anywhere;
+}
+.notes-editor .cm-md-code-block-first {
+  padding-top: 12px !important;
+  border-top: 1px solid var(--notes-rule);
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  margin-top: 0.8em !important;
+}
+.notes-editor .cm-md-code-block-last {
+  padding-bottom: 12px !important;
+  border-bottom: 1px solid var(--notes-rule);
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  margin-bottom: 0.8em !important;
+}
+.notes-editor .cm-md-code-info { color: var(--notes-ink-ghost); font-size: 0.85em; }
+
+/* ---- Horizontal rule ---- */
+.notes-editor .cm-md-hr-line {
+  position: relative;
+  color: transparent;
+  min-height: 1.85em;
+}
+.notes-editor .cm-md-hr-line::before {
+  content: '';
+  position: absolute;
+  left: 25%; right: 25%;
+  top: 50%;
+  border-top: 1px solid var(--notes-rule);
+}
+
+/* ---- Formatting marks ---- */
+/* Base state: marks are faded so the rendered content reads clean.
+   The cursor-line gets `.cm-md-cursor-line`; CSS below un-fades marks
+   only inside that line so the user sees the syntax they're editing. */
+.notes-editor .cm-md-mark {
+  color: var(--notes-mark);
+  opacity: 0.35;
+  transition: opacity 120ms ease;
+  font-weight: 400 !important;
+  font-style: normal !important;
+}
+.notes-editor .cm-md-cursor-line .cm-md-mark { opacity: 1; }
+
+/* URL becomes visible automatically on the caret line via buildDecorations */
+
+/* Heading marks (`#`) should always sit small regardless of the line size */
+.notes-editor .cm-md-heading .cm-md-mark-header {
+  font-size: 0.7em;
+  vertical-align: 0.25em;
+  margin-right: 0.25em;
+}
+
+/* ---- Selection + caret ---- */
+.notes-editor .cm-selectionBackground,
+.notes-editor.cm-focused .cm-selectionBackground,
+.notes-editor ::selection {
+  background: var(--notes-selection) !important;
+}
+.notes-editor .cm-cursor,
+.notes-editor .cm-dropCursor {
+  border-left: 2px solid var(--notes-accent);
+}
+
+/* ---- Active line treatment ---- */
+.notes-editor .cm-activeLine {
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+  border-radius: 4px;
+}
+
+/* ---- Focus mode: dim non-caret paragraphs ---- */
+.notes-editor.focus-mode .cm-line:not(.cm-md-cursor-line) {
+  opacity: 0.4;
+  transition: opacity 180ms ease;
+}
+.notes-editor.focus-mode .cm-line.cm-md-cursor-line { opacity: 1; }
+
+/* ---- Zen mode: hides surrounding notes chrome (toggled on panel) ---- */
+.browse-notes-view.zen .browse-notes-list,
+.browse-notes-view.zen .note-whisper-bar{
+  display: none !important;
+}
+
+/* =========================================================================
+   Bubble menu — floating selection toolbar
+   ========================================================================= */
+.notes-bubble {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
+  border: 1px solid var(--notes-rule);
+  border-radius: 8px;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.24),
+    0 2px 6px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 color-mix(in srgb, var(--text-primary) 5%, transparent);
+  opacity: 0;
+  transform: translateY(6px) scale(0.96);
+  transition: opacity 140ms ease, transform 140ms ease;
+  pointer-events: none;
+  z-index: 20;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-family: 'Inter', -apple-system, 'Segoe UI', system-ui, sans-serif;
+}
+.notes-bubble.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.notes-bubble button {
+  background: transparent;
+  border: none;
+  color: var(--notes-ink-faint);
+  padding: 6px 10px;
+  min-width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 120ms ease, color 120ms ease;
+}
+.notes-bubble button:hover {
+  background: color-mix(in srgb, var(--surface-hover) 82%, transparent);
+  color: var(--notes-ink);
+}
+.notes-bubble button:active {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--notes-ink);
+}
+.notes-bubble button[data-act="bold"] { font-family: inherit; font-weight: 700; }
+.notes-bubble button[data-act="italic"] { font-style: italic; }
+.notes-bubble button[data-act="ai"] {
+  color: var(--notes-accent);
+  font-weight: 600;
+  padding: 6px 12px;
+}
+.notes-bubble-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--notes-rule);
+  margin: 0 4px;
+}
+
+/* =========================================================================
+   Responsive — tighten padding on narrow viewports
+   ========================================================================= */
+@media (max-width: 767px) {
+  .notes-editor .cm-scroller {
+    padding: 4px 0 72px !important;
+  }
+  .notes-editor .cm-content {
+    max-width: 100%;
+  }
+}
+
+/* =========================================================================
+   Reduced motion
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  .notes-editor .cm-cursor,
+  .notes-editor .cm-dropCursor {
+    animation: none;
+  }
+  .notes-editor .cm-md-mark { transition: none; }
+  .notes-editor.focus-mode .cm-line:not(.cm-md-cursor-line) { transition: none; }
+  .notes-bubble { transition: opacity 0ms; }
+}

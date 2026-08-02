@@ -1,0 +1,29 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "arm_side_relaxed_L",
+  "tags": [
+    "single-arm",
+    "L"
+  ],
+  "description": "Single-arm primitive: left arm in 'side_relaxed_L' pose. Lands at region 'thigh_L' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+  "family": "per_arm",
+  "anchors": {
+    "leftHand": {
+      "type": "region-contact",
+      "region": "thigh_L",
+      "tolerance": 0.04,
+      "fingerStyle": "side_relaxed_L"
+    },
+    "rightHand": {
+      "type": "free-space"
+    }
+  },
+  "body": {},
+  "provenance": {
+    "source": "auto-generated",
+    "generator": "scripts/generate_per_arm_primitives.py",
+    "wrapsAffordance": "side_relaxed_L",
+    "consensusRegion": "thigh_L",
+    "createdAt": "2026-05-14"
+  }
+}

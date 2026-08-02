@@ -1,0 +1,35 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "hands_clasped_front",
+  "tags": ["formal", "attentive", "polite"],
+  "description": "Both hands clasped low in front (clasp_low_front affordances). Polite/formal listening pose.",
+  "family": "formal",
+  "transitionVia": ["idle_natural"],
+
+  "anchors": {
+    "leftHand": {
+      "type": "region-contact",
+      "region": "belly",
+      "tolerance": 0.025,
+      "fingerStyle": "clasp_low_front_L"
+    },
+    "rightHand": {
+      "type": "region-contact",
+      "region": "belly",
+      "tolerance": 0.025,
+      "fingerStyle": "clasp_low_front_R"
+    }
+  },
+
+  "body": {
+    "head":  { "pitch": 2 },
+    "spine": { "forwardLean": 1 }
+  },
+
+  "provenance": {
+    "source": "manual",
+    "curatedBy": "maintainer",
+    "createdAt": "2026-05-14",
+    "notes": "The clasp_low_front_L/R affordances were authored to meet at the navel/belly area on the bundled roster. Region 'belly' is metadata for the cross-VRM consensus tag from poses/affordance-region-tags.json."
+  }
+}

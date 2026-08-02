@@ -1,0 +1,35 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "idle_arms_crossed",
+  "tags": ["idle", "closed", "defensive", "thoughtful"],
+  "description": "Both arms crossed in front. Reads as closed/defensive in some contexts, contemplative in others.",
+  "family": "closed",
+  "transitionVia": ["idle_natural"],
+
+  "anchors": {
+    "leftHand": {
+      "type": "region-contact",
+      "region": "upper_arm_R",
+      "tolerance": 0.04,
+      "fingerStyle": "arms_crossed_L"
+    },
+    "rightHand": {
+      "type": "region-contact",
+      "region": "upper_arm_L",
+      "tolerance": 0.04,
+      "fingerStyle": "arms_crossed_R"
+    }
+  },
+
+  "body": {
+    "head":  { "pitch": -1, "yaw": 0 },
+    "spine": { "forwardLean": 0 }
+  },
+
+  "provenance": {
+    "source": "manual",
+    "curatedBy": "maintainer",
+    "createdAt": "2026-05-14",
+    "notes": "Mining showed arms_crossed_R lands in 'other' region with 50% consensus — cross-VRM portability is medium. Hands hold opposite upper arms by anatomy."
+  }
+}

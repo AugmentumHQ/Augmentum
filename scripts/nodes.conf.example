@@ -1,0 +1,10 @@
+# Fabric node list for scripts/deploy-nodes.sh — copy to scripts/nodes.conf
+# (which is gitignored). One node per line:
+#
+#   user@host                      # repo assumed at ~/augmentum
+#   user@host:/path/to/augmentum   # explicit repo path
+#
+# Lines starting with # and blank lines are ignored.
+
+# matt@192.168.1.21
+# matt@192.168.1.22:/opt/augmentum

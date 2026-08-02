@@ -1,0 +1,375 @@
+/* Cast receiver shell.
+
+   Five slot layers + a shell (pair/placeholder) layer on top until
+   surfaces start landing. The shell auto-hides once a main-slot
+   surface is mounted; reappears when main goes empty + disconnected.
+
+   "TV is dumb" — slot positioning is the only modality knowledge
+   baked in here. Per-surface rendering happens inside the slot's
+   element (img/video/iframe), driven by surface_kind in the cmd. */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  color: #ccc;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+#stage {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  overflow: hidden;
+}
+
+
+/* ── Slots ──────────────────────────────────────────────────── */
+
+
+.cr-slot {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.cr-slot:empty {
+  display: none;
+}
+
+/* All mounted children fill their slot by default. */
+.cr-slot > img,
+.cr-slot > video,
+.cr-slot > audio,
+.cr-slot > iframe {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: 0;
+}
+
+/* Images preserve aspect by default — fill but contain. */
+.cr-slot > img {
+  object-fit: contain;
+  background: #000;
+}
+
+/* Audio is invisible by default; expose controls only via the ticker
+   slot's transport surface when present. */
+.cr-slot[data-cr-slot="main"] > audio {
+  width: 100%;
+  height: auto;
+}
+
+
+.cr-slot[data-cr-slot="main"] {
+  inset: 0;
+  z-index: 1;
+}
+
+.cr-slot[data-cr-slot="pip"] {
+  bottom: 24px;
+  right: 24px;
+  width: 26vw;
+  aspect-ratio: 16 / 9;
+  z-index: 5;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+  background: #111;
+}
+
+.cr-slot[data-cr-slot="overlay"] {
+  inset: 0;
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  /* NOTE: do NOT set display here. The base .cr-slot rule already
+   * provides flex+center; declaring it again would have equal
+   * specificity to .cr-slot:empty and (being later in the file) win,
+   * leaving the dark backdrop visible even when the slot is empty.
+   * Let :empty hide it. */
+}
+
+/* Couch co-op invite QR card. The game continues streaming through
+   the semi-transparent overlay background; this card sits in the
+   center, big enough to scan from a couch's distance. */
+.cr-invite-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 28px 36px;
+  background: #1a1a1c;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  color: #fff;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  max-width: 520px;
+}
+.cr-invite-title {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.cr-invite-sub {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+}
+.cr-invite-qr {
+  background: #fff;
+  padding: 12px;
+  border-radius: 12px;
+}
+.cr-invite-qr img {
+  display: block;
+  width: 320px;
+  height: 320px;
+}
+.cr-invite-url {
+  font-size: 13px;
+  font-family: ui-monospace, "SF Mono", Consolas, monospace;
+  color: rgba(255, 255, 255, 0.55);
+  word-break: break-all;
+  text-align: center;
+}
+.cr-invite-slots {
+  font-size: 18px;
+  font-weight: 500;
+  color: #4ade80;
+}
+.cr-invite-countdown {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Couch co-op player roster strip. Sits at the very bottom edge,
+   above the system ticker, listing who's playing. P1 = host (always
+   present), P2..P4 are guests as they claim. */
+.cr-players-strip {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  display: flex;
+  gap: 10px;
+  padding: 8px 14px;
+  background: rgba(10, 10, 12, 0.85);
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.cr-player-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 13px;
+  color: #fff;
+}
+.cr-player-num {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+}
+.cr-player-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.cr-player-name {
+  font-weight: 500;
+}
+
+.cr-slot[data-cr-slot="ticker"] {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 96px;
+  z-index: 6;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+}
+.cr-slot[data-cr-slot="ticker"] > * {
+  pointer-events: auto;
+}
+
+.cr-slot[data-cr-slot="companion"] {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 30vw;
+  z-index: 4;
+  pointer-events: none;
+}
+.cr-slot[data-cr-slot="companion"] > * {
+  pointer-events: auto;
+}
+
+
+/* ── Shell (pair / placeholder / disconnected) ──────────────── */
+
+
+.cr-shell {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  transition: opacity 0.3s ease;
+}
+.cr-shell.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cr-shell-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+#placeholder {
+  color: #666;
+  font-size: 18px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+#placeholder.err { color: #c44; }
+
+#status {
+  position: fixed;
+  bottom: 12px;
+  right: 14px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.08);
+  color: #888;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 100;
+}
+#status.visible { opacity: 1; }
+
+
+/* ── Pair panel (lives inside the shell) ───────────────────── */
+
+
+.cr-pair {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 32px;
+  max-width: min(560px, 80vw);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+}
+
+.cr-pair-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #f0f0f0;
+  letter-spacing: 0.01em;
+}
+
+.cr-pair-sub {
+  font-size: 14px;
+  color: #888;
+  text-align: center;
+  max-width: 40ch;
+  line-height: 1.5;
+}
+
+.cr-pair-qr {
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  width: min(280px, 60vw);
+  height: min(280px, 60vw);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cr-pair-qr img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.cr-pair-code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: #f0f0f0;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.cr-pair-url {
+  font-size: 12px;
+  color: #6a6a6a;
+  word-break: break-all;
+  text-align: center;
+  max-width: 100%;
+}
+
+.cr-pair-expires {
+  font-size: 12px;
+  color: #888;
+}
+.cr-pair-expires span {
+  font-variant-numeric: tabular-nums;
+  color: #aaa;
+}
+
+/* ── D-pad / remote focus ring ──────────────────────────────────────────────
+   The receiver runs on a TV, driven by a remote's D-pad — focus is the ONLY
+   way to tell what's selected. Without a visible ring the pairing buttons are
+   unusable from the couch. Bright, thick, and offset so it reads at 10 feet.
+   :focus-visible keeps it off mouse/touch (Chromecast-with-Google-TV touch
+   remotes) while always showing for keyboard/D-pad. */
+:focus-visible {
+  outline: 3px solid #8cef8c;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+:focus:not(:focus-visible) { outline: none; }
+button:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid #8cef8c;
+  outline-offset: 3px;
+  /* A faint scale so the focused control also reads via motion, not just color
+     (color-blind-safe) — disabled under reduced-motion below. */
+  transform: scale(1.04);
+  transition: transform 0.12s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  button:focus-visible,
+  a:focus-visible,
+  [tabindex]:focus-visible { transform: none; transition: none; }
+}
+

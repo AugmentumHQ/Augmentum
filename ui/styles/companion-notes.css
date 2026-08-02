@@ -1,0 +1,1892 @@
+/* companion-notes.css — Sprint 3 Piece 13.
+ *
+ * The note pip + drawer + cards. The pip is a SOFT DOT, not a badge
+ * — relational register matters. The drawer is a PLACE you go, not
+ * a notification. Cards have three actions, equally weighted.
+ *
+ * Affect-tinted borders read from data-affect attribute on each
+ * card. Sprint 6's PAD layer will populate richer affect colors;
+ * this file defines a default palette.
+ */
+
+/* ── Pip / dot ──────────────────────────────────────────────────── */
+
+.companion-note-dot {
+  position: fixed;
+  bottom: 90px;             /* clear of typical chat input area */
+  right: 28px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 245, 220, 0.95), rgba(220, 200, 160, 0.6));
+  box-shadow: 0 0 8px 1px rgba(255, 235, 200, 0.55),
+              0 0 18px 4px rgba(255, 220, 170, 0.25);
+  cursor: pointer;
+  z-index: 100;
+  transition: transform 240ms ease, box-shadow 240ms ease, opacity 240ms ease;
+  opacity: 0.85;
+}
+
+.companion-note-dot:hover,
+.companion-note-dot:focus-visible {
+  transform: scale(1.15);
+  opacity: 1;
+  outline: none;
+  box-shadow: 0 0 12px 3px rgba(255, 235, 200, 0.7),
+              0 0 24px 6px rgba(255, 220, 170, 0.35);
+}
+
+.companion-note-dot.hidden {
+  display: none;
+}
+
+/* In-widget variant — when the dot lives inside .becca-presence it
+ * stops being a fixed chat-chrome floater and becomes an ambient
+ * indicator on her presence. Sits near the dismiss × (top:6px right:6px,
+ * 22×22) without competing with it: tucked in next to it, smaller, and
+ * lower opacity until hover. The widget itself has contain:layout paint
+ * so absolute positioning is bounded by the widget's box. */
+.becca-presence > .companion-note-dot {
+  position: absolute;
+  top: 12px;
+  right: 34px;
+  bottom: auto;
+  left: auto;
+  width: 7px;
+  height: 7px;
+  opacity: 0.55;
+  z-index: 2147483641;  /* match the dock layer so the dot stays clickable */
+  /* The widget root has pointer-events: none — interactive chrome must
+   * opt back in individually (matches the dock / dismiss / timeline
+   * pattern in becca-presence.css). Without this, clicks on the dot
+   * pass through to whatever is behind the widget and the drawer
+   * never opens. */
+  pointer-events: auto;
+}
+
+.becca-presence > .companion-note-dot:hover,
+.becca-presence > .companion-note-dot:focus-visible {
+  transform: scale(1.25);
+  opacity: 1;
+}
+
+/* Dot only renders when it's a child of the companion widget. The
+ * MutationObserver in companion-notes.js reparents it on widget
+ * mount/unmount; in the brief window where the widget hasn't mounted
+ * yet OR has been dismissed, the dot sits directly under <body> and
+ * this rule keeps it invisible. The drawer still works for direct
+ * programmatic opens — only the ambient affordance is gated. */
+body > .companion-note-dot {
+  display: none;
+}
+
+/* Affect tinting — softer ambient hue around the dot */
+.companion-note-dot[data-affect="curious"] {
+  box-shadow: 0 0 8px 1px rgba(255, 235, 180, 0.6),
+              0 0 18px 4px rgba(255, 215, 140, 0.28);
+}
+
+.companion-note-dot[data-affect="patient"] {
+  box-shadow: 0 0 8px 1px rgba(200, 220, 235, 0.55),
+              0 0 18px 4px rgba(180, 200, 220, 0.25);
+}
+
+.companion-note-dot[data-affect="settled"] {
+  box-shadow: 0 0 8px 1px rgba(220, 225, 220, 0.55),
+              0 0 18px 4px rgba(200, 205, 200, 0.25);
+}
+
+/* ── Drawer ─────────────────────────────────────────────────────── */
+
+.companion-note-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  transform: translateX(100%);
+  width: min(380px, calc(100vw - 32px));
+  background: var(--bg-elevated, rgba(28, 28, 32, 0.96));
+  color: var(--text-primary, #eaeae8);
+  border-radius: 14px 0 0 14px;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.38);
+  z-index: 110;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+}
+
+.companion-note-drawer.hidden {
+  pointer-events: none;
+}
+
+.companion-note-drawer.open {
+  transform: translateX(0);
+}
+
+.companion-note-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.companion-note-drawer-titlewrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.companion-note-drawer-title {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  opacity: 0.65;
+}
+
+.companion-note-drawer-subtitle {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.42);
+  font-style: italic;
+}
+
+.companion-note-drawer-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.companion-note-drawer-close,
+.companion-note-drawer-history,
+.companion-note-drawer-topics {
+  background: none;
+  border: 0;
+  color: inherit;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  opacity: 0.55;
+  transition: opacity 160ms ease, background 160ms ease;
+}
+
+.companion-note-drawer-close:hover,
+.companion-note-drawer-history:hover,
+.companion-note-drawer-topics:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.companion-note-drawer-topics {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+}
+
+.companion-note-drawer-history {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+}
+
+.companion-note-drawer-history[aria-pressed="true"] {
+  opacity: 0.95;
+  background: rgba(255, 215, 140, 0.10);
+  color: rgba(255, 235, 200, 0.95);
+}
+
+.companion-note-drawer-history-icon {
+  display: inline-block;
+  transition: transform 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.companion-note-drawer-history[aria-pressed="true"] .companion-note-drawer-history-icon {
+  transform: rotate(180deg);
+}
+
+/* ── Slide-over history panel ───────────────────────────────────── */
+
+.companion-note-history {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  background: var(--bg-elevated, rgba(28, 28, 32, 0.98));
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  pointer-events: none;
+  /* No border-radius — history fills the drawer's clipped interior,
+   * whose corners are already rounded by the drawer itself. */
+}
+
+.companion-note-drawer.history-open .companion-note-history {
+  transform: translateX(0);
+  pointer-events: auto;
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.28);
+}
+
+.companion-note-history-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 14px 20px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  gap: 8px;
+}
+
+.companion-note-history-title {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  opacity: 0.65;
+  text-align: center;
+  justify-self: center;
+}
+
+/* Back button sits on the LEFT of the header, full standard pattern:
+ * arrow + word. Has a visible default background + border so it reads
+ * as a tappable button even on first glance — earlier iteration was
+ * just text and people missed it entirely. */
+.companion-note-history-back {
+  background: rgba(255, 215, 140, 0.08);
+  border: 1px solid rgba(255, 215, 140, 0.22);
+  color: rgba(255, 235, 200, 0.92);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  padding: 8px 14px 8px 10px;
+  border-radius: 18px;
+  transition: opacity 160ms ease, background 160ms ease,
+              border-color 160ms ease, color 160ms ease, transform 160ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: start;
+  letter-spacing: 0.02em;
+}
+
+.companion-note-history-back:hover,
+.companion-note-history-back:focus-visible {
+  background: rgba(255, 215, 140, 0.18);
+  border-color: rgba(255, 215, 140, 0.42);
+  color: rgba(255, 245, 220, 1);
+  transform: translateX(-1px);
+  outline: none;
+}
+
+.companion-note-history-back-icon {
+  font-size: 16px;
+  line-height: 1;
+  display: inline-block;
+}
+
+.companion-note-history-back-text {
+  font-size: 12px;
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
+}
+
+.companion-note-history-spacer {
+  /* Empty cell on the right — keeps the title visually centered in
+   * the grid even though only the back button has content on the
+   * left. */
+}
+
+.companion-note-history-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 14px 20px 22px;
+}
+
+.companion-note-history-empty {
+  font-size: 13px;
+  opacity: 0.5;
+  text-align: center;
+  padding: 28px 0;
+  font-style: italic;
+}
+
+.companion-note-history-card {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-left-width: 2px;
+  border-radius: 7px;
+  padding: 11px 13px;
+  margin-bottom: 9px;
+  opacity: 0.92;
+}
+
+.companion-note-history-card[data-affect="curious"] {
+  border-left-color: rgba(255, 215, 140, 0.4);
+}
+.companion-note-history-card[data-affect="patient"] {
+  border-left-color: rgba(180, 200, 220, 0.35);
+}
+.companion-note-history-card[data-affect="settled"] {
+  border-left-color: rgba(200, 205, 200, 0.35);
+}
+
+.companion-note-history-card[data-outcome="muted"] {
+  opacity: 0.55;
+}
+
+.companion-note-history-card-body {
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(232, 232, 230, 0.78);
+  white-space: pre-wrap;
+  margin-bottom: 6px;
+}
+
+.companion-note-history-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: rgba(232, 232, 230, 0.42);
+  font-variant-numeric: tabular-nums;
+}
+
+.companion-note-history-outcome {
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.companion-note-history-card[data-outcome="muted"] .companion-note-history-outcome {
+  color: rgba(255, 180, 180, 0.55);
+}
+
+/* ── Per-type history variants ────────────────────────────────────── */
+
+.companion-history-pick {
+  border-color: rgba(120, 170, 220, 0.16);
+}
+
+.companion-history-pick-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.companion-history-pick-domain {
+  font-size: 10px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  color: rgba(180, 220, 255, 0.6);
+  background: rgba(120, 170, 220, 0.06);
+  border: 1px solid rgba(120, 170, 220, 0.14);
+  padding: 1px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.02em;
+  flex: 0 0 auto;
+}
+
+a.companion-history-pick-title {
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: rgba(232, 232, 230, 0.85);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+a.companion-history-pick-title:hover,
+a.companion-history-pick-title:focus-visible {
+  color: rgba(255, 215, 140, 0.95);
+  border-bottom-color: rgba(255, 215, 140, 0.4);
+  outline: none;
+}
+
+span.companion-history-pick-title {
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: rgba(232, 232, 230, 0.75);
+}
+
+.companion-history-wondering {
+  border-left-color: rgba(190, 175, 230, 0.4);
+}
+
+.companion-history-wondering .companion-note-history-card-body::before {
+  content: "? ";
+  color: rgba(190, 175, 230, 0.55);
+  font-weight: 300;
+}
+
+.companion-history-observation .companion-note-history-card-body {
+  font-style: italic;
+  color: rgba(232, 232, 230, 0.68);
+}
+
+.companion-note-drawer-body {
+  padding: 16px 20px 24px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+
+.companion-note-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 16px 28px;
+  gap: 12px;
+}
+
+.companion-note-empty-prose {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0;
+}
+
+.companion-note-empty-hint {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+  max-width: 340px;
+}
+
+.companion-note-empty-cta {
+  margin-top: 6px;
+  background: rgba(255, 215, 140, 0.1);
+  color: inherit;
+  border: 1px solid rgba(255, 215, 140, 0.28);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.companion-note-empty-cta:hover {
+  background: rgba(255, 215, 140, 0.2);
+  border-color: rgba(255, 215, 140, 0.44);
+}
+
+/* ── First-open coachmark ───────────────────────────────────────── */
+
+.companion-note-coachmark {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 16px 14px;
+  margin: 0 16px 8px;
+  background: rgba(255, 215, 140, 0.06);
+  border: 1px solid rgba(255, 215, 140, 0.18);
+  border-radius: 8px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.companion-note-coachmark[hidden] {
+  display: none;
+}
+
+.companion-note-coachmark-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.companion-note-coachmark-body p {
+  margin: 0 0 6px;
+}
+
+.companion-note-coachmark-body p:last-child {
+  margin-bottom: 0;
+}
+
+.companion-note-coachmark-body strong {
+  color: rgba(255, 215, 140, 0.95);
+  font-weight: 600;
+}
+
+.companion-note-coachmark-dismiss {
+  flex: 0 0 auto;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+.companion-note-coachmark-dismiss:hover {
+  color: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+/* ── Cards ──────────────────────────────────────────────────────── */
+
+.companion-note-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left-width: 3px;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  transition: opacity 280ms ease, transform 280ms ease;
+}
+
+.companion-note-card:last-child {
+  margin-bottom: 0;
+}
+
+.companion-note-card.dismissing {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+/* Affect-tinted left edge */
+.companion-note-card[data-affect="curious"] {
+  border-left-color: rgba(255, 215, 140, 0.6);
+}
+.companion-note-card[data-affect="patient"] {
+  border-left-color: rgba(180, 200, 220, 0.5);
+}
+.companion-note-card[data-affect="settled"] {
+  border-left-color: rgba(200, 205, 200, 0.5);
+}
+
+.companion-note-card-meta {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 11px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: lowercase;
+  letter-spacing: 0.02em;
+  margin-bottom: 8px;
+}
+
+.companion-note-card-when {
+  color: rgba(255, 240, 215, 0.65);
+}
+
+.companion-note-card-affect {
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+}
+
+/* Provenance chip — "why am I seeing this" in the card header.
+   Quiet by design: same register as the rest of the meta row, a thin
+   pill so the eye can find it when it asks the question and skip it
+   when it doesn't. Hover/long-press shows origin detail via title. */
+.companion-note-card-origin {
+  color: rgba(255, 255, 255, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 1px 8px;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.companion-note-card-body {
+  font-size: 14px;
+  line-height: 1.55;
+  margin-bottom: 10px;
+  white-space: pre-wrap;
+}
+
+.companion-note-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.companion-note-action {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.05);
+  color: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.companion-note-action:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.companion-note-action.primary {
+  background: rgba(255, 215, 140, 0.12);
+  border-color: rgba(255, 215, 140, 0.32);
+}
+
+.companion-note-action.primary:hover {
+  background: rgba(255, 215, 140, 0.22);
+  border-color: rgba(255, 215, 140, 0.48);
+}
+
+.companion-note-action.danger {
+  color: rgba(255, 200, 200, 0.85);
+}
+
+.companion-note-action.danger:hover {
+  background: rgba(255, 130, 130, 0.12);
+  border-color: rgba(255, 130, 130, 0.32);
+}
+
+/* Anchor "Open ↗" button sits in the same row as <button> actions —
+ * normalize the look so it doesn't read as a stray link. */
+a.companion-note-action {
+  text-decoration: none;
+  text-align: center;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Type: curator pick (article preview) ───────────────────────── */
+
+.companion-pick-card .companion-pick-topic {
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  color: rgba(255, 215, 140, 0.72);
+  margin: 0 0 6px;
+  text-transform: lowercase;
+  font-style: italic;
+}
+
+.companion-pick-domain {
+  font-size: 10.5px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  color: rgba(180, 220, 255, 0.72);
+  background: rgba(120, 170, 220, 0.08);
+  border: 1px solid rgba(120, 170, 220, 0.18);
+  padding: 1px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.02em;
+}
+
+.companion-pick-body {
+  margin-bottom: 12px;
+}
+
+a.companion-pick-title {
+  display: inline-block;
+  font-size: 14.5px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: rgba(232, 232, 230, 0.95);
+  text-decoration: none;
+  margin-bottom: 6px;
+  border-bottom: 1px solid transparent;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+a.companion-pick-title:hover,
+a.companion-pick-title:focus-visible {
+  color: rgba(255, 215, 140, 0.95);
+  border-bottom-color: rgba(255, 215, 140, 0.45);
+  outline: none;
+}
+
+span.companion-pick-title {
+  display: inline-block;
+  font-size: 14.5px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: rgba(232, 232, 230, 0.85);
+  margin-bottom: 6px;
+}
+
+.companion-pick-snippet {
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(232, 232, 230, 0.65);
+  margin: 0;
+}
+
+/* ── Type: wondering ─────────────────────────────────────────────── */
+
+.companion-wondering-card {
+  /* Soft purple left edge so wonderings visually stand apart from
+   * curator picks (warm) and observations (neutral). */
+  border-left-color: rgba(190, 175, 230, 0.55);
+}
+
+.companion-wondering-badge,
+.companion-observation-badge {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+  padding: 1px 6px;
+}
+
+.companion-wondering-badge {
+  color: rgba(190, 175, 230, 0.85);
+  background: rgba(190, 175, 230, 0.08);
+}
+
+.companion-wondering-body {
+  /* Leading question-mark gutter via ::before — reads as "she's asking
+   * herself this" before the user even parses the prose. */
+  position: relative;
+  padding-left: 22px;
+}
+
+.companion-wondering-body::before {
+  content: "?";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  font-size: 18px;
+  font-weight: 300;
+  color: rgba(190, 175, 230, 0.55);
+  line-height: 1;
+}
+
+/* ── Type: observation (default — noticing, conversation_moment, …) */
+
+.companion-observation-card .companion-note-card-body {
+  font-style: italic;
+  color: rgba(232, 232, 230, 0.78);
+}
+
+/* ── Passthrough mode: take over the inspector slot ─────────────────
+ * In passthrough mode on desktop, the inspector slot on the right
+ * (320px under the header) already exists as a "dashboard" rail.
+ * The notes drawer slides into that same slot, covering the inspector
+ * — relational register: "her notes ARE today's dashboard view."
+ * Other modes keep the floating right-side panel (above).
+ * .app and the drawer are both children of <body>; sibling combinator
+ * keys off the app's data-mode without needing JS to tag the drawer. */
+@media (min-width: 1024px) {
+  .app[data-mode="passthrough"] ~ .companion-note-drawer {
+    top: var(--header-height);
+    width: var(--inspector-width);
+    border-radius: 0;
+    /* No outer shadow — drawer IS the rail, not a floater over it.
+     * Inset highlight mirrors the inspector's own inner glow. */
+    box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.02);
+    border-left: 1px solid color-mix(in srgb, var(--mode-passthrough) 14%, var(--border));
+    /* Match the inspector slot's surface so the drawer reads as the
+     * SAME rail, not a different floating thing covering it. */
+    background: var(--bg-elevated);
+  }
+  /* At the inspector-slot width (320px), 3 action buttons can't sit on
+   * one row without truncating "Mute this topic". Stack them — same
+   * treatment used for narrow phones below. */
+  .app[data-mode="passthrough"] ~ .companion-note-drawer .companion-note-card-actions {
+    flex-direction: column;
+  }
+}
+
+/* ── Mobile / narrow layouts ────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .companion-note-drawer {
+    width: 100vw;
+    border-radius: 0;
+  }
+  .companion-note-card-actions {
+    flex-direction: column;
+  }
+}
+
+/* ── Today zone ─────────────────────────────────────────────────────
+   Pinned to the top of the notes drawer. Shows the daily in-her-voice
+   reflection with clickable [kind:N] citations rewritten to spans.
+   Three visual states via data-state: pending / ready / silent /
+   quarantined. Quiet days get explicit prose, not a blank zone. */
+
+.companion-today-zone {
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(180deg,
+    rgba(28, 26, 36, 0.45) 0%,
+    rgba(20, 18, 24, 0.0) 100%);
+}
+.companion-today-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+.companion-today-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(232, 220, 200, 0.62);
+}
+.companion-today-meta {
+  font-size: 11px;
+  color: rgba(232, 220, 200, 0.42);
+  font-variant-numeric: tabular-nums;
+}
+.companion-today-prose p {
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(232, 220, 200, 0.92);
+  margin: 0 0 6px;
+}
+.companion-today-empty {
+  font-size: 12px;
+  color: rgba(232, 220, 200, 0.55);
+  font-style: italic;
+  margin: 4px 0;
+}
+.companion-today-zone[data-state="silent"] .companion-today-prose,
+.companion-today-zone[data-state="pending"] .companion-today-prose,
+.companion-today-zone[data-state="quarantined"] .companion-today-prose {
+  opacity: 0.78;
+}
+.companion-today-footer {
+  margin-top: 6px;
+  font-size: 11px;
+}
+.companion-today-archive-link {
+  color: rgba(184, 210, 255, 0.72);
+  text-decoration: none;
+  cursor: pointer;
+}
+.companion-today-archive-link:hover {
+  color: rgba(184, 210, 255, 0.95);
+  text-decoration: underline;
+}
+
+/* Citation span — clickable [kind:N] inside the reflection prose.
+   Subtle underline indicates affordance; popover opens on click. */
+.companion-today-citation {
+  display: inline;
+  color: rgba(184, 210, 255, 0.82);
+  border-bottom: 1px dashed rgba(184, 210, 255, 0.35);
+  cursor: pointer;
+  padding: 0 1px;
+  border-radius: 2px;
+  transition: background 120ms ease-out, color 120ms ease-out;
+}
+.companion-today-citation:hover {
+  color: rgba(220, 232, 255, 1.0);
+  background: rgba(168, 200, 240, 0.12);
+}
+.companion-today-citation:focus-visible {
+  outline: 2px solid rgba(184, 210, 255, 0.6);
+  outline-offset: 1px;
+}
+
+/* Citation action popover — Ask / Mute / Forget. */
+.companion-today-popover {
+  z-index: 10010;
+  display: flex;
+  flex-direction: column;
+  min-width: 168px;
+  background: rgba(20, 18, 24, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  padding: 4px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.companion-today-popover button {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 8px 10px;
+  font-size: 12px;
+  text-align: left;
+  color: rgba(232, 220, 200, 0.92);
+  border-radius: 5px;
+  cursor: pointer;
+}
+.companion-today-popover button:hover {
+  background: rgba(184, 210, 255, 0.1);
+  color: rgba(220, 232, 255, 1);
+}
+.companion-today-popover button[data-pop-action="forget"]:hover {
+  background: rgba(232, 100, 100, 0.18);
+  color: rgba(255, 200, 200, 1);
+}
+
+/* ── Archive modal ──────────────────────────────────────────────────
+   Reflection archive — full-screen modal listing prior days. */
+
+.companion-today-archive-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10005;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.companion-today-archive-modal.hidden { display: none; }
+.companion-today-archive-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.companion-today-archive-panel {
+  position: relative;
+  width: min(720px, 92vw);
+  max-height: 84vh;
+  display: flex;
+  flex-direction: column;
+  background: rgba(20, 18, 24, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+.companion-today-archive-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.companion-today-archive-title {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(232, 220, 200, 0.78);
+}
+.companion-today-archive-close {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: rgba(232, 220, 200, 0.6);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.companion-today-archive-close:hover {
+  color: rgba(255, 240, 200, 1);
+  background: rgba(255, 255, 255, 0.06);
+}
+.companion-today-archive-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 12px 16px 20px;
+}
+.companion-today-archive-loading,
+.companion-today-archive-empty {
+  font-size: 12px;
+  color: rgba(232, 220, 200, 0.55);
+  font-style: italic;
+  text-align: center;
+  padding: 24px 0;
+}
+.companion-today-archive-entry {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.companion-today-archive-entry:last-child { border-bottom: 0; }
+.companion-today-archive-date {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(184, 210, 255, 0.7);
+}
+.companion-today-archive-prose {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(232, 220, 200, 0.9);
+}
+.companion-today-archive-quiet {
+  color: rgba(232, 220, 200, 0.55);
+}
+.companion-today-citation.archive {
+  cursor: default;
+  border-bottom-style: dotted;
+}
+
+/* ── Topics modal (curator config) ──────────────────────────────────
+   Pinned topics + RSS subscriptions, unified surface. Opened from the
+   gear button in the notes drawer header. */
+
+/* ── Schedule surface (briefings, tasks, watches) ───────────────────
+ * Rewritten 2026-06-13: professional, grouped-by-purpose manager.
+ * Replaces the old .companion-topics-* / .companion-task-* modal.
+ * Warm-dark palette consistent with the notes drawer; amber = primary,
+ * blue = kind badge, green/amber/red = status. */
+
+.sched-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10006;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sched-modal.hidden { display: none; }
+
+.sched-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.sched-panel {
+  position: relative;
+  width: min(660px, 94vw);
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  background: rgba(20, 18, 24, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 14px;
+  box-shadow: 0 18px 56px rgba(0, 0, 0, 0.62);
+  overflow: hidden;
+  color: rgba(232, 230, 228, 0.92);
+}
+
+.sched-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  flex: 0 0 auto;
+}
+.sched-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: rgba(245, 238, 226, 0.95);
+}
+.sched-close {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: rgba(232, 220, 200, 0.6);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 9px;
+  border-radius: 6px;
+  transition: color 160ms ease, background 160ms ease;
+}
+.sched-close:hover { color: rgba(255, 240, 210, 1); background: rgba(255, 255, 255, 0.07); }
+
+.sched-list-view, .sched-form-view {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* Toolbar */
+.sched-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px 10px;
+}
+.sched-toolbar-sub {
+  font-size: 12.5px;
+  color: rgba(232, 220, 200, 0.5);
+  line-height: 1.4;
+}
+
+/* Buttons */
+.sched-btn {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.045);
+  color: rgba(235, 232, 228, 0.9);
+  border-radius: 7px;
+  padding: 7px 13px;
+  font-size: 12.5px;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease, opacity 150ms ease;
+}
+.sched-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.sched-btn:disabled { opacity: 0.55; cursor: progress; }
+.sched-btn-primary {
+  background: rgba(255, 215, 140, 0.14);
+  border-color: rgba(255, 215, 140, 0.36);
+  color: rgba(255, 236, 200, 0.96);
+  font-weight: 500;
+}
+.sched-btn-primary:hover:not(:disabled) {
+  background: rgba(255, 215, 140, 0.24);
+  border-color: rgba(255, 215, 140, 0.5);
+}
+.sched-btn-danger:hover:not(:disabled) {
+  color: rgba(255, 200, 200, 0.96);
+  background: rgba(255, 110, 110, 0.13);
+  border-color: rgba(255, 110, 110, 0.34);
+}
+.sched-btn-history { margin-left: auto; }
+
+/* Groups + cards */
+.sched-list { padding: 6px 16px 4px; }
+.sched-group { margin-bottom: 14px; }
+.sched-group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(232, 220, 200, 0.5);
+  margin: 8px 4px 8px;
+}
+.sched-group-count {
+  font-size: 10px;
+  color: rgba(184, 210, 255, 0.8);
+  background: rgba(184, 210, 255, 0.12);
+  border-radius: 9px;
+  padding: 1px 7px;
+  font-weight: 600;
+}
+
+.sched-card {
+  background: rgba(255, 255, 255, 0.028);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  padding: 13px 14px;
+  margin-bottom: 9px;
+  transition: opacity 240ms ease, transform 240ms ease, border-color 160ms ease;
+}
+.sched-card:hover { border-color: rgba(255, 255, 255, 0.12); }
+.sched-card.removing { opacity: 0; transform: translateX(10px); }
+.sched-card-paused { opacity: 0.62; }
+
+.sched-card-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 7px;
+}
+.sched-card-icon { font-size: 15px; line-height: 1; flex: 0 0 auto; }
+.sched-card-title {
+  flex: 1 1 auto;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(244, 240, 234, 0.94);
+  word-break: break-word;
+}
+.sched-card-kind {
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: rgba(184, 210, 255, 0.12);
+  color: rgba(184, 210, 255, 0.85);
+  padding: 2px 7px;
+  border-radius: 5px;
+  flex: 0 0 auto;
+}
+.sched-status {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.03);
+}
+.sched-status-ok { background: rgba(120, 220, 150, 0.9); }
+.sched-status-warn { background: rgba(255, 190, 90, 0.95); }
+.sched-status-error { background: rgba(255, 110, 110, 0.95); }
+.sched-status-paused { background: rgba(170, 170, 175, 0.6); }
+
+.sched-card-sched {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.sched-card-clock {
+  font-size: 12.5px;
+  color: rgba(245, 236, 218, 0.82);
+  font-weight: 500;
+}
+.sched-delivery {
+  font-size: 10.5px;
+  padding: 2px 8px;
+  border-radius: 11px;
+  letter-spacing: 0.01em;
+}
+.sched-delivery-loud {
+  color: rgba(255, 224, 178, 0.9);
+  background: rgba(255, 200, 120, 0.12);
+  border: 1px solid rgba(255, 200, 120, 0.22);
+}
+.sched-delivery-quiet {
+  color: rgba(200, 206, 218, 0.78);
+  background: rgba(180, 195, 220, 0.08);
+  border: 1px solid rgba(180, 195, 220, 0.16);
+}
+
+.sched-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  font-size: 11px;
+  color: rgba(232, 220, 200, 0.5);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  margin-bottom: 7px;
+}
+.sched-card-summary {
+  font-size: 12.5px;
+  color: rgba(232, 224, 210, 0.74);
+  line-height: 1.45;
+  margin-bottom: 8px;
+  padding: 7px 10px;
+  background: rgba(255, 255, 255, 0.025);
+  border-radius: 7px;
+  border-left: 2px solid rgba(255, 215, 140, 0.3);
+}
+.sched-card-error {
+  font-size: 11.5px;
+  color: rgba(255, 170, 130, 0.85);
+  margin-bottom: 8px;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sched-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.sched-card-actions .sched-btn { padding: 5px 11px; font-size: 11.5px; }
+
+/* Run history */
+.sched-history {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sched-history-loading, .sched-history-empty {
+  font-size: 11.5px;
+  color: rgba(232, 220, 200, 0.5);
+  font-style: italic;
+  padding: 4px 2px;
+}
+.sched-run {
+  display: flex;
+  gap: 9px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.02);
+}
+.sched-run-icon { flex: 0 0 auto; font-size: 12px; width: 16px; text-align: center; }
+.sched-run-body { flex: 1 1 auto; min-width: 0; }
+.sched-run-top {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 11px;
+}
+.sched-run-status {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  font-size: 9.5px;
+  color: rgba(232, 220, 200, 0.6);
+}
+.sched-run-error .sched-run-status { color: rgba(255, 130, 130, 0.85); }
+.sched-run-fired .sched-run-status { color: rgba(120, 220, 150, 0.85); }
+.sched-run-when { color: rgba(232, 220, 200, 0.45); font-family: var(--font-mono, monospace); }
+.sched-run-elapsed { margin-left: auto; color: rgba(232, 220, 200, 0.35); font-family: var(--font-mono, monospace); font-size: 10px; }
+.sched-run-summary { font-size: 12px; color: rgba(232, 224, 210, 0.72); line-height: 1.4; margin-top: 2px; }
+.sched-run-judge { font-size: 11px; color: rgba(184, 210, 255, 0.62); font-style: italic; margin-top: 2px; }
+
+/* Empty state */
+.sched-empty { padding: 26px 18px; text-align: center; }
+.sched-empty p { margin: 0 0 6px; font-size: 13.5px; color: rgba(232, 224, 210, 0.78); }
+.sched-empty-sub { font-size: 12px; color: rgba(232, 220, 200, 0.5); line-height: 1.5; max-width: 380px; margin: 0 auto; }
+
+/* One-tap starter briefings (empty state). */
+.sched-starters { margin: 22px auto 0; max-width: 520px; }
+.sched-starters-title {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(232, 220, 200, 0.42);
+  margin: 0 0 10px;
+}
+.sched-starters-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.sched-starter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(184, 210, 255, 0.14);
+  background: rgba(184, 210, 255, 0.05);
+  color: rgba(232, 232, 230, 0.9);
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, transform 80ms ease;
+}
+.sched-starter:hover {
+  background: rgba(184, 210, 255, 0.11);
+  border-color: rgba(184, 210, 255, 0.3);
+}
+.sched-starter:active { transform: translateY(1px); }
+.sched-starter-pending { opacity: 0.55; cursor: default; }
+.sched-starter-icon { font-size: 16px; line-height: 1; }
+.sched-starter-label { font-size: 12.5px; font-weight: 600; }
+.sched-starter-blurb { font-size: 11px; color: rgba(232, 220, 200, 0.55); line-height: 1.35; }
+@media (max-width: 520px) {
+  .sched-starters-grid { grid-template-columns: 1fr; }
+}
+
+/* Topics watch-list */
+.sched-topics {
+  margin: 6px 16px 18px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.018);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.sched-topics-head { margin-bottom: 8px; }
+.sched-topics-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(232, 220, 200, 0.5);
+}
+.sched-topics-form { display: flex; gap: 8px; }
+.sched-topics-input { flex: 1 1 auto; min-width: 0; }
+.sched-topics-hint {
+  font-size: 11px;
+  color: rgba(232, 220, 200, 0.42);
+  font-style: italic;
+  margin: 8px 0;
+  line-height: 1.45;
+}
+.sched-topics-list { display: flex; flex-wrap: wrap; gap: 7px; }
+.sched-topic {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 6px 5px 11px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+.sched-topic.removing { opacity: 0; transform: scale(0.9); }
+.sched-topic-name { font-size: 12.5px; color: rgba(232, 230, 226, 0.86); }
+.sched-topic-badge {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(184, 210, 255, 0.14);
+  color: rgba(184, 210, 255, 0.85);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: var(--font-mono, monospace);
+}
+.sched-topic-x {
+  appearance: none; background: transparent; border: 0;
+  color: rgba(232, 220, 200, 0.45);
+  font-size: 16px; line-height: 1; cursor: pointer;
+  padding: 0 5px; border-radius: 50%;
+}
+.sched-topic-x:hover { color: rgba(255, 190, 190, 0.95); background: rgba(255, 120, 120, 0.14); }
+.sched-topics-empty { font-size: 12px; color: rgba(232, 220, 200, 0.5); font-style: italic; }
+
+/* Form inputs (shared) */
+.sched-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 7px;
+  color: inherit;
+  padding: 8px 11px;
+  font-size: 13px;
+  font-family: inherit;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+.sched-input:focus {
+  outline: none;
+  border-color: rgba(255, 215, 140, 0.45);
+  background: rgba(255, 255, 255, 0.07);
+}
+.sched-input.shake {
+  animation: sched-shake 360ms cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  border-color: rgba(255, 130, 130, 0.5);
+}
+@keyframes sched-shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-3px); }
+  40%, 60% { transform: translateX(3px); }
+}
+.sched-textarea { resize: vertical; min-height: 60px; line-height: 1.45; }
+
+/* Form layout */
+.sched-form-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.sched-back {
+  appearance: none; background: transparent; border: 0;
+  color: rgba(255, 215, 140, 0.8);
+  font-size: 13px; cursor: pointer; padding: 4px 2px;
+}
+.sched-back:hover { color: rgba(255, 230, 180, 1); }
+.sched-form-title { font-size: 14px; font-weight: 600; color: rgba(245, 238, 226, 0.92); text-transform: capitalize; }
+
+.sched-form-body { padding: 14px 20px 4px; }
+.sched-form-blurb {
+  font-size: 12.5px;
+  color: rgba(232, 224, 210, 0.6);
+  line-height: 1.5;
+  margin-bottom: 14px;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.025);
+  border-radius: 8px;
+}
+
+.sched-field { margin-bottom: 14px; }
+.sched-field-label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: rgba(232, 224, 208, 0.72);
+  margin-bottom: 6px;
+}
+.sched-field .sched-input,
+.sched-field .sched-textarea { width: 100%; box-sizing: border-box; }
+.sched-field-hint { font-size: 11px; color: rgba(232, 220, 200, 0.42); margin-top: 5px; line-height: 1.4; font-style: italic; }
+.sched-req { color: rgba(255, 180, 130, 0.85); }
+.sched-field-bool { display: flex; flex-direction: column; gap: 4px; }
+.sched-check { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(232, 226, 214, 0.85); cursor: pointer; }
+.sched-check input { accent-color: rgba(255, 215, 140, 0.9); }
+.sched-number { width: 110px !important; }
+
+/* Chips field */
+.sched-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+}
+.sched-chip-list { display: contents; }
+.sched-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 6px 4px 10px;
+  border-radius: 14px;
+  background: rgba(255, 215, 140, 0.13);
+  border: 1px solid rgba(255, 215, 140, 0.26);
+  color: rgba(255, 236, 204, 0.92);
+  font-size: 12px;
+}
+.sched-chip-x {
+  appearance: none; background: transparent; border: 0;
+  color: rgba(255, 236, 204, 0.65);
+  font-size: 14px; line-height: 1; cursor: pointer; padding: 0 2px;
+}
+.sched-chip-x:hover { color: rgba(255, 200, 180, 1); }
+.sched-chip-input {
+  flex: 1 1 120px;
+  min-width: 120px;
+  border: 0 !important;
+  background: transparent !important;
+  padding: 4px 6px !important;
+}
+.sched-chip-input:focus { background: transparent !important; }
+
+/* Toggle set */
+.sched-toggleset { display: flex; flex-wrap: wrap; gap: 7px; }
+.sched-toggle {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(232, 226, 214, 0.75);
+  border-radius: 16px;
+  padding: 6px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.sched-toggle.on {
+  background: rgba(255, 215, 140, 0.16);
+  border-color: rgba(255, 215, 140, 0.4);
+  color: rgba(255, 236, 204, 0.95);
+}
+
+/* Condition + key-value */
+.sched-condition { display: flex; gap: 8px; }
+.sched-cond-op { width: 70px !important; flex: 0 0 auto; }
+.sched-cond-val { width: 110px !important; flex: 0 0 auto; }
+.sched-cond-unit { flex: 1 1 auto; min-width: 0; }
+.sched-kv { display: flex; flex-direction: column; gap: 7px; }
+.sched-kv-rows { display: flex; flex-direction: column; gap: 7px; }
+.sched-kv-row { display: flex; gap: 8px; align-items: center; }
+.sched-kv-k { width: 38%; flex: 0 0 auto; }
+.sched-kv-v { flex: 1 1 auto; min-width: 0; }
+.sched-kv-x {
+  appearance: none; background: transparent; border: 0;
+  color: rgba(232, 220, 200, 0.45); font-size: 16px; cursor: pointer;
+  padding: 0 6px; border-radius: 4px;
+}
+.sched-kv-x:hover { color: rgba(255, 190, 190, 0.95); background: rgba(255, 120, 120, 0.12); }
+.sched-kv-add {
+  appearance: none; align-self: flex-start;
+  background: transparent; border: 1px dashed rgba(255, 255, 255, 0.18);
+  color: rgba(232, 224, 210, 0.65); border-radius: 6px;
+  padding: 5px 11px; font-size: 11.5px; cursor: pointer;
+}
+.sched-kv-add:hover { border-color: rgba(255, 215, 140, 0.4); color: rgba(255, 236, 204, 0.9); }
+
+/* Scheduling block */
+.sched-schedule {
+  margin: 6px 0 14px;
+  padding: 13px 14px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 9px;
+}
+.sched-sched-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.sched-mode { flex: 0 0 auto; min-width: 160px; }
+.sched-time, .sched-date { flex: 0 0 auto; }
+.sched-interval { flex: 1 1 auto; min-width: 140px; }
+.sched-days { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.sched-day {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(232, 226, 214, 0.72);
+  border-radius: 7px;
+  padding: 6px 11px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.sched-day.on {
+  background: rgba(255, 215, 140, 0.16);
+  border-color: rgba(255, 215, 140, 0.4);
+  color: rgba(255, 236, 204, 0.95);
+}
+.sched-sched-summary {
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: rgba(255, 224, 178, 0.78);
+  font-weight: 500;
+}
+.sched-cron {
+  flex: 1 1 auto;
+  min-width: 170px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.04em;
+}
+.sched-cron-preview {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(178, 226, 188, 0.85);
+}
+.sched-cron-preview.bad { color: rgba(255, 168, 150, 0.9); }
+.sched-select {
+  width: 100%;
+  max-width: 420px;
+}
+.sched-delivery-field { margin-top: 14px; }
+.sched-delivery-seg { display: flex; gap: 8px; }
+.sched-delivery-seg .sched-seg {
+  flex: 0 1 auto;
+  padding: 7px 14px;
+  font-size: 12.5px;
+}
+.sched-delivery-seg .sched-seg.on {
+  background: rgba(255, 215, 140, 0.16);
+  border-color: rgba(255, 215, 140, 0.4);
+  color: rgba(255, 236, 204, 0.95);
+}
+.sched-delivery-note { margin-top: 7px; }
+
+/* Delivery note + error + footer */
+.sched-form-delivery {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 6px 0 12px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.022);
+  border-radius: 8px;
+}
+.sched-form-delivery-note { font-size: 11.5px; color: rgba(232, 224, 210, 0.6); line-height: 1.4; flex: 1 1 200px; }
+.sched-form-error {
+  font-size: 12.5px;
+  color: rgba(255, 160, 150, 0.92);
+  padding: 9px 12px;
+  background: rgba(255, 110, 110, 0.1);
+  border: 1px solid rgba(255, 110, 110, 0.24);
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.sched-form-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  padding: 14px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* New-task purpose picker */
+.sched-pick-wrap { padding: 14px 20px 18px; }
+.sched-pick-group { margin-bottom: 16px; }
+.sched-pick-group-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(232, 220, 200, 0.5);
+  margin: 0 2px 9px;
+}
+.sched-pick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 9px;
+}
+.sched-pick {
+  appearance: none;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 13px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: inherit;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+.sched-pick:hover {
+  background: rgba(255, 215, 140, 0.08);
+  border-color: rgba(255, 215, 140, 0.32);
+  transform: translateY(-1px);
+}
+.sched-pick-icon { font-size: 20px; line-height: 1; }
+.sched-pick-label { font-size: 13.5px; font-weight: 600; color: rgba(245, 240, 232, 0.94); }
+.sched-pick-blurb { font-size: 11.5px; color: rgba(232, 224, 210, 0.58); line-height: 1.4; }
+
+/* Responsive */
+@media (max-width: 560px) {
+  .sched-panel { width: 96vw; max-height: 92vh; border-radius: 12px; }
+  .sched-toolbar { flex-direction: column; align-items: stretch; gap: 8px; }
+  .sched-sched-row { flex-direction: column; align-items: stretch; }
+  .sched-mode, .sched-interval { min-width: 0; width: 100%; }
+  .sched-pick-grid { grid-template-columns: 1fr; }
+  .sched-condition { flex-wrap: wrap; }
+}
+
+/* Source links on task-result / observation cards (prompt_fire citations). */
+.companion-note-sources {
+  margin-top: 8px;
+  font-size: 11px;
+  color: rgba(232, 220, 200, 0.5);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: baseline;
+}
+.companion-note-source {
+  color: rgba(184, 210, 255, 0.82);
+  text-decoration: none;
+  border-bottom: 1px dotted rgba(184, 210, 255, 0.4);
+}
+.companion-note-source:hover {
+  color: rgba(200, 222, 255, 1);
+  border-bottom-color: rgba(184, 210, 255, 0.8);
+}
+
+/* Rich media a briefing gathered — hero image + video link. Previously
+   fetched, synthesized over, then dropped before render. */
+.companion-note-hero {
+  display: block;
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin: 2px 0 10px;
+  background: rgba(255, 255, 255, 0.04);
+}
+.companion-note-hero-sm {
+  max-height: 96px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+.companion-note-video {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 7px 10px;
+  border-radius: 9px;
+  background: rgba(184, 210, 255, 0.07);
+  border: 1px solid rgba(184, 210, 255, 0.14);
+  text-decoration: none;
+  color: rgba(232, 232, 230, 0.85);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.companion-note-video:hover {
+  background: rgba(184, 210, 255, 0.12);
+}
+.companion-note-video-play {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(184, 210, 255, 0.85);
+  color: #0c1220;
+  font-size: 10px;
+}
+.companion-note-video-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.companion-note-hero-link {
+  display: block;
+  cursor: zoom-in;
+}
+
+/* Task results read as professional deliverables, not italic asides. */
+.companion-task-card .companion-note-card-body {
+  font-style: normal;
+  color: rgba(234, 234, 232, 0.92);
+  font-size: 14px;
+  line-height: 1.62;
+}
+
+/* Sources block — a scannable, titled, numbered list for fast research
+   access (model-curated citations preferred; gathered urls as fallback). */
+.companion-note-sources-label {
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(232, 220, 200, 0.42);
+  margin-bottom: 5px;
+}
+.companion-note-sources-list {
+  list-style: decimal;
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.companion-note-sources-list li::marker {
+  color: rgba(184, 210, 255, 0.4);
+  font-size: 11px;
+}
+.companion-note-sources-list .companion-note-source {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  border-bottom: none;
+}
+.companion-note-source-title {
+  color: rgba(196, 216, 255, 0.92);
+  border-bottom: 1px solid rgba(184, 210, 255, 0.28);
+  line-height: 1.4;
+}
+.companion-note-sources-list .companion-note-source:hover .companion-note-source-title {
+  border-bottom-color: rgba(184, 210, 255, 0.75);
+}
+.companion-note-source-dom {
+  font-size: 10.5px;
+  color: rgba(232, 220, 200, 0.4);
+}
+
+/* Read-aloud (Listen) button on task-result notes. `.is-auto` marks a
+   briefing with the per-briefing read_aloud toggle on; `.playing` is set
+   by read-aloud.js while the TTS session is active. */
+.companion-note-readaloud {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.companion-note-readaloud .companion-readaloud-icon {
+  font-size: 9px;
+  line-height: 1;
+}
+.companion-note-readaloud.is-auto {
+  border-color: rgba(184, 210, 255, 0.5);
+  color: rgba(200, 222, 255, 0.95);
+}
+.companion-note-readaloud.playing {
+  background: rgba(184, 210, 255, 0.16);
+  border-color: rgba(184, 210, 255, 0.6);
+}
+.companion-note-readaloud.playing .companion-readaloud-icon {
+  font-size: 0;
+}
+.companion-note-readaloud.playing .companion-readaloud-icon::before {
+  content: '■';
+  font-size: 9px;
+}

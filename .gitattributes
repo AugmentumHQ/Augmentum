@@ -1,0 +1,38 @@
+# Force LF on files that must run on Linux containers / Unix shells.
+# Windows editors otherwise re-introduce CRLF and break shebangs on first
+# `exec`. We hit this in production once already (entrypoint.sh, 2026-04-28).
+*.sh           text eol=lf
+*.bash         text eol=lf
+Dockerfile     text eol=lf
+Dockerfile.*   text eol=lf
+entrypoint*    text eol=lf
+*.yaml         text eol=lf
+*.yml          text eol=lf
+
+# Windows-only batch scripts must keep CRLF.
+*.bat          text eol=crlf
+*.cmd          text eol=crlf
+*.ps1          text eol=crlf
+
+# Treat as text with platform-default endings.
+*.py           text
+*.md           text
+*.json         text
+*.toml         text
+*.html         text
+*.css          text
+*.js           text
+
+# Binaries.
+*.png          binary
+*.jpg          binary
+*.jpeg         binary
+*.gif          binary
+*.ico          binary
+*.woff         binary
+*.woff2        binary
+*.onnx         binary
+*.bin          binary
+*.pt           binary
+*.safetensors  binary
+*.gguf         binary

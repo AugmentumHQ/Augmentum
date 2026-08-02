@@ -1,0 +1,218 @@
+/* notifications.css — banner styling for the notification substrate.
+ *
+ * Toasts (transient, importance 0-2) use the existing toast-container
+ * stack in components.css. This file owns the BANNER stack — persistent
+ * notifications for importance 3+ that need explicit dismiss / action.
+ *
+ * Banners stack top-right, below the existing toast stack on small
+ * screens (toasts are auxiliary so banners take priority on mobile).
+ * On wider viewports they sit side by side.
+ */
+
+#notification-banner-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: min(360px, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  pointer-events: none;
+}
+
+.notification-banner {
+  pointer-events: auto;
+  background: var(--surface, #1d1d1d);
+  color: var(--text-1, #f1f1f1);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.1));
+  border-radius: 12px;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.32),
+    0 2px 6px rgba(0, 0, 0, 0.18);
+  padding: 0.75rem 0.875rem;
+  font-family: var(--font-ui, system-ui, sans-serif);
+  font-size: 0.9rem;
+  line-height: 1.35;
+  animation: notif-banner-enter 200ms ease-out;
+}
+
+.notification-banner.importance-4 {
+  /* CRITICAL — incoming call, system alert. Border + accent ring +
+     slight pulse so it doesn't get lost in a busy UI. */
+  border-color: var(--accent-warn, #ffb454);
+  box-shadow:
+    0 0 0 1px var(--accent-warn, #ffb454),
+    0 12px 32px rgba(255, 180, 84, 0.18),
+    0 4px 10px rgba(0, 0, 0, 0.28);
+  animation:
+    notif-banner-enter 220ms ease-out,
+    notif-banner-pulse 1.6s ease-in-out 220ms infinite;
+}
+
+.notification-banner-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+}
+
+.notification-banner-icon {
+  flex: 0 0 auto;
+  width: 1.25rem;
+  height: 1.25rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+}
+
+.notification-banner-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.notification-banner-title {
+  font-weight: 600;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+.notification-banner-body {
+  margin-top: 0.125rem;
+  opacity: 0.85;
+  font-size: 0.85rem;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+.notification-banner-channel {
+  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+.notification-banner-dismiss {
+  flex: 0 0 auto;
+  background: transparent;
+  border: none;
+  color: inherit;
+  opacity: 0.55;
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1;
+  padding: 0.125rem 0.25rem;
+  border-radius: 4px;
+  transition: opacity 120ms, background-color 120ms;
+}
+
+.notification-banner-dismiss:hover {
+  opacity: 1;
+  background: var(--surface-hover, rgba(255, 255, 255, 0.08));
+}
+
+.notification-banner-actions {
+  margin-top: 0.625rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.notification-banner-action {
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.15));
+  background: var(--surface-2, rgba(255, 255, 255, 0.06));
+  color: inherit;
+  padding: 0.375rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 120ms, transform 80ms;
+  font-family: inherit;
+}
+
+.notification-banner-action:hover {
+  background: var(--surface-hover, rgba(255, 255, 255, 0.12));
+}
+
+.notification-banner-action:active {
+  transform: scale(0.98);
+}
+
+.notification-banner-action.style-primary {
+  background: var(--accent-primary, #5a8dee);
+  border-color: var(--accent-primary, #5a8dee);
+  color: #fff;
+}
+
+.notification-banner-action.style-primary:hover {
+  background: var(--accent-primary-hover, #6b9eff);
+}
+
+.notification-banner-action.style-danger {
+  background: var(--accent-danger, #d9534f);
+  border-color: var(--accent-danger, #d9534f);
+  color: #fff;
+}
+
+.notification-banner-action.style-danger:hover {
+  background: var(--accent-danger-hover, #e26562);
+}
+
+.notification-banner-action.pending {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.notification-banner-action:disabled {
+  cursor: not-allowed;
+}
+
+@keyframes notif-banner-enter {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes notif-banner-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px var(--accent-warn, #ffb454),
+      0 12px 32px rgba(255, 180, 84, 0.18),
+      0 4px 10px rgba(0, 0, 0, 0.28);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px var(--accent-warn, #ffb454),
+      0 16px 38px rgba(255, 180, 84, 0.28),
+      0 4px 10px rgba(0, 0, 0, 0.28);
+  }
+}
+
+/* prefers-reduced-motion: disable both entry + pulse animations so
+ * vestibular-sensitive users don't get a flashing ring. */
+@media (prefers-reduced-motion: reduce) {
+  .notification-banner,
+  .notification-banner.importance-4 {
+    animation: none;
+  }
+}
+
+@media (max-width: 600px) {
+  #notification-banner-container {
+    top: 0.5rem;
+    right: 0.5rem;
+    left: 0.5rem;
+    width: auto;
+  }
+}

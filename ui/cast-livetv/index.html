@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Augmentum · Live TV</title>
+  <link rel="stylesheet" href="cast-livetv.css">
+</head>
+<body>
+  <!-- Player. Sized via CSS so the video fills the TV. Native controls
+       hidden — phone is the controller for play/pause/volume. -->
+  <video class="cl-video" data-cl-video playsinline autoplay></video>
+
+  <!-- HUD overlay. Reveals on transport patches (pause / volume) and
+       fades after a short timeout, mirroring cast-audio's pattern.
+       Channel logo + name on the left, live-now caption underneath. -->
+  <div class="cl-hud" data-cl-hud>
+    <div class="cl-hud-channel">
+      <div class="cl-hud-logo-frame">
+        <img class="cl-hud-logo" data-cl-logo alt="" />
+        <span class="cl-hud-fallback" data-cl-fallback hidden>?</span>
+      </div>
+      <div class="cl-hud-text">
+        <div class="cl-hud-number" data-cl-number>—</div>
+        <div class="cl-hud-name"   data-cl-name>Loading…</div>
+        <div class="cl-hud-now"    data-cl-now hidden></div>
+      </div>
+    </div>
+    <div class="cl-hud-live">
+      <span class="cl-hud-live-dot" aria-hidden="true"></span>
+      LIVE
+    </div>
+  </div>
+
+  <!-- Status / error layer. Hidden once first frame paints. -->
+  <div class="cl-status" data-cl-status>Starting Live TV…</div>
+
+  <script src="/ui/lib/hls.js/hls.min.js"></script>
+  <script type="module" src="cast-livetv.js"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+# GPU + Image Generation overlay
+# Usage: docker compose -f compose.yaml -f compose.gpu.yaml up
+#
+# Adds GPU passthrough + image generation runtime config. The variant
+# image (ghcr.io/augmentumhq/augmentum:gpu-latest) is selected via
+# AUGMENTUM_VARIANT=gpu in your .env — set that before running compose.
+# For dev builds of the GPU variant, also include compose.dev.yaml and
+# set AUGMENTUM_DOCKERFILE=Dockerfile.gpu.
+
+services:
+  augmentum:
+    # IPC_LOCK + unlimited memlock let llama-server's --mlock actually
+    # succeed when MTP self-speculation is enabled. Without these the
+    # mlock syscall returns EPERM (default container rlimit is 64KB),
+    # weights stay mmap-backed, and a long first message can evict them
+    # from page cache as KV grows -- generation drops to ~2 tok/s. See
+    # llama_server_manager.py:3411 where --mlock is attached on MTP loads.
+    cap_add:
+      - IPC_LOCK
+    ulimits:
+      memlock: -1
+    volumes:
+      - image_models:/data/image_models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      - AUGMENTUM_IMAGE_ENABLED=true
+      - AUGMENTUM_HUGGINGFACE_TOKEN=${AUGMENTUM_HUGGINGFACE_TOKEN:-}
+      # Opt agsp (game-stream) containers into GPU passthrough so
+      # streamed games (Minetest, etc.) get hardware-accelerated
+      # OpenGL instead of llvmpipe software rasterization. Without
+      # this Minetest's chunk generation pegs CPU and never finishes
+      # loading the visible map. Requires nvidia-container-toolkit
+      # on the host (same prerequisite as the augmentum service's
+      # own GPU access above).
+      - AUGMENTUM_GAME_STREAM_GPU=1
+      # WSL2 GPU memory reclamation — without these, PyTorch's freed VRAM
+      # gets trapped in the WSL2 GPU-PV layer and never returns to Windows.
+      # expandable_segments uses CUDA VMM APIs for cleaner deallocation.
+      # garbage_collection_threshold triggers cleanup at 60% inactive cache.
+      # max_split_size_mb reduces fragmentation (safe for 12GB+ GPUs;
+      #   remove this value if you hit OOM on smaller GPUs).
+      # See: https://pytorch.org/docs/stable/notes/cuda.html#memory-management
+      - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True,garbage_collection_threshold:0.6
+      - CUDA_MODULE_LOADING=LAZY

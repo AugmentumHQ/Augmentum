@@ -1,0 +1,281 @@
+# Structured form: merge upstream defaults but REMOVE these engines
+# entirely (prevents module load at boot — `disabled: true` only hides
+# an engine from queries, the loader still imports it):
+#   * torch — upstream searxng:latest (2026.3.29) removed
+#     engines/torch.py but still lists the engine in default settings,
+#     so every boot hits FileNotFoundError. Remove until upstream
+#     fixes the packaging.
+#   * ahmia — Tor-only engine; fails init without a Tor proxy.
+#   * wikidata — init does a live SPARQL query at boot which 403s
+#     (rate-limited) and can KeyError on rows without a `name` field.
+#     Re-enable by deleting it from this list after a searxng bump
+#     guards that access. Wikipedia covers knowledge queries.
+use_default_settings:
+  engines:
+    remove:
+      - torch
+      - ahmia
+      - wikidata
+
+general:
+  instance_name: "Augmentum Search"
+  enable_metrics: false
+
+search:
+  safe_search: 0
+  autocomplete: ""
+  formats:
+    - json
+    - html
+
+server:
+  secret_key: "change-me-in-production"
+  limiter: false
+  image_proxy: false
+  port: 8080
+  bind_address: "0.0.0.0"
+
+ui:
+  static_use_hash: true
+
+outgoing:
+  request_timeout: 15.0       # per-engine timeout (Tor egress adds latency)
+  max_request_timeout: 25.0   # hard ceiling — must allow per-engine overrides below
+  # Tor egress (compose.tor.yaml): route ALL upstream engine requests
+  # through the Tor SOCKS proxy so a rotating exit IP replaces our
+  # fingerprinted datacenter IP — the keyless root-cause fix for the
+  # Google/Bing/Brave "suspended: too many requests" bans (2026-08-01).
+  # ``socks5h`` resolves DNS through Tor too (no leak). Comment this block
+  # out (and drop compose.tor.yaml) to revert to direct egress.
+  proxies:
+    all://:
+      - socks5h://tor:9050
+  # Identifies our traffic to upstream engines. Some engines (Wikipedia,
+  # OSM) deprioritize generic-looking traffic; a contactable suffix is
+  # treated more leniently than a bare browser UA.
+  useragent_suffix: "Augmentum (self-hosted, contact via github)"
+  # Pool defaults (10 keep-alive, 5s expiry) churn connections on every
+  # fan-out. Bumping reuses sockets across the 10+ engine round-trips a
+  # single search now triggers, which lowers TLS-handshake overhead and
+  # is friendlier to upstream rate-limiters that key on connection-per-IP
+  # rather than request-per-IP.
+  pool_connections: 200
+  pool_maxsize: 40
+  keepalive_expiry: 30.0
+  enable_http2: true          # explicit — some upstreams gate behind h2
+  retries: 1                  # one retry on transient HTTP failures
+  max_redirects: 10           # tighter than default 30 — block redirect chains
+  # Browser-class Accept-Language and Sec-Fetch-* headers reduce the
+  # "Python httpx" signal that some engines fingerprint on. Doesn't
+  # forge TLS (would need a curl_cffi swap, not in scope), but cheap.
+  headers:
+    Accept-Language: "en-US,en;q=0.9"
+    Sec-Fetch-Dest: "document"
+    Sec-Fetch-Mode: "navigate"
+    Sec-Fetch-Site: "none"
+    Sec-Fetch-User: "?1"
+    Upgrade-Insecure-Requests: "1"
+
+engines:
+  # --- Primary web search (multiple engines = resilience) ---
+  - name: google
+    engine: google
+    shortcut: g
+    disabled: false
+    weight: 1.5                # prefer Google results
+
+  # DuckDuckGo is disabled — its anti-scraping (VQD-missed → timeout)
+  # was failing on essentially every request and burning the full 12s
+  # search budget per attempt. Re-enable if upstream searxng adds a
+  # workaround or DDG eases its bot detection. Google + Bing + Brave +
+  # Mojeek + Qwant + Startpage already cover the index-diversity story.
+  - name: duckduckgo
+    engine: duckduckgo
+    shortcut: ddg
+    disabled: true
+    weight: 0.8
+
+  - name: bing
+    engine: bing
+    shortcut: b
+    disabled: false
+    weight: 1.0
+
+  - name: brave
+    engine: brave
+    shortcut: br
+    disabled: false
+    weight: 1.2                # good fallback, rarely rate-limits
+
+  - name: mojeek
+    engine: mojeek
+    shortcut: mj
+    disabled: false
+    weight: 0.5                # independent index, good diversity
+
+  - name: qwant
+    engine: qwant
+    shortcut: qw
+    disabled: false
+    weight: 0.8
+
+  # Startpage proxies Google's index but uses Startpage's own outbound
+  # IP pool, so we get Google-quality results without burning our own
+  # IP on Google's CAPTCHA wall. Enabled by default upstream — was
+  # missing from this config, which left a lot of relevance on the table.
+  - name: startpage
+    engine: startpage
+    shortcut: sp
+    startpage_categ: web
+    categories: [general, web]
+    disabled: false
+    weight: 1.3
+
+  # Yep is disabled — the api.yep.com/fs/2/search endpoint has been
+  # returning HTTP 501 Not Implemented on every request. Yep's hosted
+  # API appears to be discontinued / paused. Re-enable if upstream
+  # status changes; nothing else in the engine list depends on it.
+  - name: yep
+    engine: yep
+    shortcut: yep
+    categories: general
+    disabled: true
+    weight: 0.6
+
+  # Presearch is a distributed search network. Independent index,
+  # smallest weight because relevance is variable per query.
+  - name: presearch
+    engine: presearch
+    search_type: search
+    categories: [general, web]
+    shortcut: ps
+    timeout: 4.0
+    disabled: false
+    weight: 0.4
+
+  # Startpage News mirrors Google News through Startpage's IP pool —
+  # same rationale as the web variant above, applied to fresh news.
+  - name: startpage news
+    engine: startpage
+    startpage_categ: news
+    categories: [news, web]
+    shortcut: spn
+    disabled: false
+    weight: 1.1
+
+  # --- Knowledge sources ---
+  - name: wikipedia
+    engine: wikipedia
+    shortcut: wp
+    disabled: false
+    timeout: 10.0              # Wikipedia is slow; per-engine override per SearXNG docs
+
+  # wikidata / ahmia / torch are removed from the merged defaults via
+  # the use_default_settings.engines.remove list at the top of this
+  # file — re-listing them here (even disabled) would re-add them and
+  # bring back the boot-time load errors.
+
+  # AOL (3 variants) is enabled in upstream's default engines list and
+  # consistently fails with httpx.RemoteProtocolError "Server
+  # disconnected" on its HTTP/2 endpoint. Disable all three — we
+  # already have stronger general/image/video engines. Override by
+  # name because use_default_settings: true merges upstream entries.
+  - name: aol
+    engine: aol
+    shortcut: aol
+    disabled: true
+  - name: aol images
+    engine: aol
+    shortcut: aoli
+    disabled: true
+  - name: aol videos
+    engine: aol
+    shortcut: aolv
+    disabled: true
+
+  # --- News (good for "what's happening" queries) ---
+  - name: google news
+    engine: google_news
+    shortcut: gn
+    disabled: false
+    weight: 1.3                # boost for current events
+
+  - name: bing news
+    engine: bing_news
+    shortcut: bn
+    disabled: false
+
+  # --- Technical ---
+  - name: arxiv
+    engine: arxiv
+    shortcut: arx
+    disabled: false
+
+  - name: github
+    engine: github
+    shortcut: gh
+    disabled: false
+
+  # Stack Overflow is back — the standalone `stackoverflow` engine was
+  # retired upstream, but the same site is accessible via the generic
+  # `stackexchange` engine with `api_site: stackoverflow`. Critical
+  # signal for any "how do I X" technical query.
+  - name: stackoverflow
+    engine: stackexchange
+    shortcut: st
+    api_site: 'stackoverflow'
+    categories: [it, q&a]
+    disabled: false
+    weight: 1.0
+
+  # MDN is the authoritative reference for web platform APIs. JSON
+  # engine — talks to Mozilla's documented search API directly, no
+  # scraping. High weight when category is `it`.
+  - name: mdn
+    shortcut: mdn
+    engine: json_engine
+    categories: [it]
+    paging: true
+    search_url: https://developer.mozilla.org/api/v1/search?q={query}&page={pageno}
+    results_query: documents
+    url_query: mdn_url
+    url_prefix: https://developer.mozilla.org
+    title_query: title
+    content_query: summary
+    disabled: false
+    weight: 0.9
+
+  # Hacker News (Algolia-backed). Useful for finding the original
+  # discussion threads behind any news/tech event. Low weight — the
+  # results are link-aggregator entries, not standalone content.
+  - name: hackernews
+    engine: hackernews
+    shortcut: hn
+    disabled: false
+    weight: 0.7
+
+  # Reddit's own search. The model often wants "what do real people
+  # think about X" or "is this a known issue with Y" — Reddit threads
+  # carry that signal in a way the web index doesn't. Modest weight
+  # because thread quality is wildly variable.
+  - name: reddit
+    engine: reddit
+    shortcut: re
+    page_size: 25
+    disabled: false
+    weight: 0.7
+
+  # lobste.rs — niche but curated tech link aggregator. Comes through
+  # via SearXNG's xpath scraper.
+  - name: lobste.rs
+    engine: xpath
+    search_url: https://lobste.rs/search?q={query}&what=stories&order=relevance
+    results_xpath: //li[contains(@class, "story")]
+    url_xpath: .//a[@class="u-url"]/@href
+    title_xpath: .//a[@class="u-url"]
+    content_xpath: .//a[@class="domain"]
+    categories: it
+    shortcut: lo
+    timeout: 5.0
+    disabled: false
+    weight: 0.4

@@ -1,0 +1,8 @@
+{
+  "fixture_id": "fp-pickle-trusted-cache",
+  "language": "python",
+  "kind": "fp_bait",
+  "expected_findings": [],
+  "max_extra_findings": 0,
+  "notes": "FP-bait. pickle.loads is a classic RCE sink — BUT only when the input is attacker-controlled. Here the same module writes and reads. A correct threat-model-aware detector recognizes the missing trust-boundary crossing. This tests whether the threat-model prefix wiring is doing its job."
+}

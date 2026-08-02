@@ -1,0 +1,16 @@
+# Tor egress overlay — routes SearXNG's upstream engine requests through a
+# Tor SOCKS proxy so a rotating exit IP replaces our fingerprinted one.
+# Enable by adding compose.tor.yaml to .augmentum.conf AND adding the
+# ``outgoing.proxies`` block to config/searxng/settings.yml. Keyless.
+services:
+  tor:
+    build:
+      context: .
+      dockerfile: Dockerfile.tor
+    container_name: augmentum-tor-1
+    restart: unless-stopped
+    mem_limit: 256m
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "2"

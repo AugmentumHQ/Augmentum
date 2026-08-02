@@ -1,0 +1,27 @@
+name: research_basic_delivery
+# Built from a synthetic minimal flow (plan + deliver) via test fixture.
+# Full builtin-flow cases are tracked as a follow-up; this validates the
+# harness contract + the deliver-step prompt quality without pulling in
+# chain-replan machinery.
+flow: _eval_minimal_deliver_flow
+query: "What are the health effects of blue light exposure from screens?"
+
+responses:
+  - content: |
+      1. Research blue light health effects
+      2. Deliver summary
+  - content: |
+      Blue light from screens is associated with digital eye strain and
+      sleep disruption [1][2]. The full report is available for download
+      at /api/artifacts/abc123/download.
+
+# Assertions run against the FINAL deliver output (response #4)
+assertions:
+  - property: length_between
+    min_chars: 40
+    max_chars: 1500
+  - property: cites_sources
+    min_citations: 1
+  - property: is_conversational
+  - property: does_not_mention
+    forbidden: ["VERDICT", "work_notes", "step 1", "## plan"]

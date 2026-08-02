@@ -1,0 +1,31 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "arm_thumb_up_L",
+  "tags": [
+    "single-arm",
+    "L",
+    "greeting",
+    "attention"
+  ],
+  "description": "Single-arm primitive: left arm in 'thumb_up_L' pose. Lands at region 'other' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+  "family": "per_arm",
+  "anchors": {
+    "leftHand": {
+      "type": "region-contact",
+      "region": "other",
+      "tolerance": 0.04,
+      "fingerStyle": "thumb_up_L"
+    },
+    "rightHand": {
+      "type": "free-space"
+    }
+  },
+  "body": {},
+  "provenance": {
+    "source": "auto-generated",
+    "generator": "scripts/generate_per_arm_primitives.py",
+    "wrapsAffordance": "thumb_up_L",
+    "consensusRegion": "other",
+    "createdAt": "2026-05-14"
+  }
+}

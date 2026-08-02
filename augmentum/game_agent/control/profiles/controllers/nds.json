@@ -1,0 +1,23 @@
+{
+  "schema": "control.controller.v1",
+  "id": "nds",
+  "description": "Nintendo DS controller as exposed by libretro / desmume. 12 buttons: d-pad, four face buttons (A east, B south, Y west, X north), L/R shoulders, Start, Select. The touch screen / stylus is a separate pointer device and is not represented in v1.",
+  "wire": {
+    "kind": "libretro_joypad",
+    "port": 0
+  },
+  "buttons": {
+    "face_east":    { "wire_code": 8,  "label": "A" },
+    "face_south":   { "wire_code": 0,  "label": "B" },
+    "face_west":    { "wire_code": 1,  "label": "Y" },
+    "face_north":   { "wire_code": 9,  "label": "X" },
+    "dpad_up":      { "wire_code": 4,  "label": "Up" },
+    "dpad_down":    { "wire_code": 5,  "label": "Down" },
+    "dpad_left":    { "wire_code": 6,  "label": "Left" },
+    "dpad_right":   { "wire_code": 7,  "label": "Right" },
+    "start":        { "wire_code": 3,  "label": "Start" },
+    "select":       { "wire_code": 2,  "label": "Select" },
+    "shoulder_l":   { "wire_code": 10, "label": "L" },
+    "shoulder_r":   { "wire_code": 11, "label": "R" }
+  }
+}

@@ -1,0 +1,180 @@
+:root {
+  --cj-bg: #0d0f14;
+  --cj-card: #161922;
+  --cj-card-2: #1d212c;
+  --cj-line: #2a2f3c;
+  --cj-text: #e8ebf2;
+  --cj-dim: #9aa3b2;
+  --cj-accent: #6ea8fe;
+  --cj-ok: #4ade80;
+  --cj-err: #f87171;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: radial-gradient(120% 80% at 50% 0%, #1a1f2b 0%, var(--cj-bg) 60%);
+  color: var(--cj-text);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.cj-wrap {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 48px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.cj-header { text-align: center; }
+.cj-brand {
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+}
+.cj-tagline {
+  color: var(--cj-dim);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  margin-top: 2px;
+}
+
+.cj-card {
+  background: var(--cj-card);
+  border: 1px solid var(--cj-line);
+  border-radius: 16px;
+  padding: 28px 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+}
+
+.cj-title { font-size: 19px; font-weight: 650; }
+.cj-sub { color: var(--cj-dim); font-size: 14px; }
+.cj-sub strong { color: var(--cj-text); }
+
+.cj-status-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  align-self: center;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.04);
+}
+.cj-ok { background: var(--cj-ok); }
+.cj-err { background: var(--cj-err); }
+
+.cj-spinner {
+  width: 28px; height: 28px;
+  border: 3px solid var(--cj-line);
+  border-top-color: var(--cj-accent);
+  border-radius: 50%;
+  align-self: center;
+  animation: cj-spin 0.8s linear infinite;
+}
+@keyframes cj-spin { to { transform: rotate(360deg); } }
+
+.cj-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+  margin-top: 6px;
+}
+.cj-field { display: flex; flex-direction: column; gap: 5px; }
+.cj-field > span { font-size: 13px; color: var(--cj-dim); font-weight: 550; }
+.cj-field em { color: #6b7280; font-style: normal; }
+
+.cj-field input {
+  background: var(--cj-card-2);
+  border: 1px solid var(--cj-line);
+  border-radius: 10px;
+  padding: 11px 13px;
+  color: var(--cj-text);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.cj-field input:focus {
+  border-color: var(--cj-accent);
+  box-shadow: 0 0 0 3px rgba(110, 168, 254, 0.18);
+}
+
+.cj-submit {
+  margin-top: 6px;
+  background: var(--cj-accent);
+  color: #0b1020;
+  border: none;
+  border-radius: 11px;
+  padding: 13px;
+  font-size: 15px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: filter 0.15s, opacity 0.15s;
+}
+.cj-submit:hover { filter: brightness(1.06); }
+.cj-submit:disabled { opacity: 0.55; cursor: progress; }
+
+.cj-error {
+  color: var(--cj-err);
+  font-size: 13px;
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: 9px;
+  padding: 9px 11px;
+  text-align: left;
+}
+
+/* Live username availability hint under the username field. */
+.cj-username-status {
+  font-size: 12px;
+  font-weight: 550;
+  margin-top: 1px;
+}
+.cj-username-status.cj-ok { background: none; color: var(--cj-ok); }
+.cj-username-status.cj-ok::before { content: "✓ "; }
+.cj-username-status.cj-err { background: none; color: var(--cj-err); }
+
+/* "Who can find you?" visibility choice. */
+.cj-visibility {
+  border: 1px solid var(--cj-line);
+  border-radius: 11px;
+  padding: 12px 13px;
+  gap: 10px;
+  margin: 2px 0;
+}
+.cj-visibility legend {
+  font-size: 13px;
+  color: var(--cj-dim);
+  font-weight: 550;
+  padding: 0 4px;
+}
+.cj-radio {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+/* Undo the global text-input styling for the radios themselves. */
+.cj-radio input[type="radio"] {
+  width: 16px; height: 16px;
+  margin: 2px 0 0;
+  padding: 0;
+  accent-color: var(--cj-accent);
+  flex: none;
+  background: none;
+  border: none;
+}
+.cj-radio-text { display: flex; flex-direction: column; gap: 2px; }
+.cj-radio-text strong { font-size: 14px; font-weight: 600; color: var(--cj-text); }
+.cj-radio-text em {
+  font-style: normal;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--cj-dim);
+}
+
+[hidden] { display: none !important; }

@@ -1,0 +1,444 @@
+{
+ "_comment": "Known security findings that are intentional by design. The security scanner reads this file and suppresses these findings. Each exception documents WHY it exists so future auditors understand the decision. Remove an exception to re-enable scanning for that pattern.",
+ "exceptions": [
+  {
+   "id": "path-traversal",
+   "pattern": "uploaded.filename into server-generated path",
+   "files": [
+    "augmentum/proxy/avatar_routes.py"
+   ],
+   "finding": "check_path_traversal FP: VRM/portrait upload handlers reference file.filename but write to a SERVER-GENERATED avatar_id path (avatar_dir / avatar_id / f'portrait{ext}'), and ext is validated against a fixed image-extension allowlist before use.",
+   "reason": "The on-disk path derives from the server-minted avatar id, never the client filename; the extension is allowlisted to .png/.jpg/.jpeg/.webp. No attacker-controlled component reaches the path. The scanner doesn't recognise the 'ext not in (...)' allowlist as a sanitiser.",
+   "risk": "none",
+   "reviewed": "2026-07-07"
+  },
+  {
+   "id": "unsafe-content-serving",
+   "pattern": "HTMLResponse(content) of builder/tool HTML",
+   "files": [
+    "augmentum/proxy/artifact_routes.py"
+   ],
+   "finding": "check_unsafe_content_serving flags HTMLResponse(content) in preview_artifact. Imported (untrusted) HTML is served as an attachment+nosniff and never reaches this render; the remaining HTMLResponse(content) serves app-builder / tool-generated HTML the platform itself produced.",
+   "reason": "The only untrusted-HTML path (metadata.imported) is downloaded, not rendered, since the 2026-07 hardening. Builder/tool HTML is trusted by construction. Re-audit if a new raw-content HTMLResponse is added here.",
+   "risk": "acceptable",
+   "reviewed": "2026-07-07"
+  },
+  {
+   "id": "shell-injection-bug-finder-rule-descriptions",
+   "pattern": "shell=True|shell injection|shell wildcard",
+   "files": [
+    "augmentum/bug_finder/agnostic_stage.py",
+    "augmentum/bug_finder/auto_suppression.py"
+   ],
+   "finding": "Scanner literal-match FP on documentation: these files describe Bandit/Ruff shell-injection rules (B602/B604/B605/B609) inside _RULE_SIGNATURE_MAP and _DANGEROUS_RULES, not invoke subprocess with shell=True.",
+   "reason": "Bug-finder substrate documents the rule taxonomy it consumes. Comment text like 'subprocess shell=True' and 'shell wildcard injection' is *describing* what each Bandit rule catches; no shell subprocess is actually invoked. Removing the comments would make the rule mapping harder to read.",
+   "risk": "none",
+   "reviewed": "2026-06-04"
+  },
+  {
+   "id": "cors-wildcard",
+   "pattern": "cors.*\\*|allow_origins.*\\*",
+   "files": [
+    "augmentum/proxy/server.py",
+    "augmentum/config.py"
+   ],
+   "finding": "CORS allows wildcard (*) origin",
+   "reason": "Multi-frontend support — Open WebUI, SillyTavern, and custom UIs all connect to the proxy. Credential guard (allow_credentials=false when origin is *) prevents the worst case.",
+   "risk": "acceptable",
+   "reviewed": "2026-03-23"
+  },
+  {
+   "id": "csp-unsafe-inline",
+   "pattern": "unsafe-inline|unsafe-eval",
+   "files": [
+    "augmentum/proxy/server.py"
+   ],
+   "finding": "CSP script-src includes 'unsafe-inline' and 'unsafe-eval'",
+   "reason": "Required for: Milkdown markdown editor (eval for plugins), dynamic CSS theming (inline styles), mermaid diagram rendering, syntax highlighting. Cannot use nonce-based CSP without framework support.",
+   "risk": "acceptable",
+   "reviewed": "2026-03-23"
+  },
+  {
+   "id": "no-auth",
+   "pattern": "no.auth|unauthenticated",
+   "files": [
+    "*"
+   ],
+   "finding": "No authentication or authorization on any endpoint",
+   "reason": "Single-user local proxy by design. Auth would require every frontend (Open WebUI, SillyTavern, curl, etc.) to manage tokens. Documentation warns against exposing to untrusted networks.",
+   "risk": "acceptable-for-local",
+   "reviewed": "2026-03-23"
+  },
+  {
+   "id": "no-hsts",
+   "pattern": "strict-transport|hsts",
+   "files": [
+    "augmentum/proxy/server.py"
+   ],
+   "finding": "No Strict-Transport-Security header",
+   "reason": "Runs over HTTP on Docker internal network. HSTS would break local HTTP access. TLS termination is handled by user's reverse proxy if desired.",
+   "risk": "acceptable",
+   "reviewed": "2026-03-23"
+  },
+  {
+   "id": "data-uri-img",
+   "pattern": "data:.*img-src|img-src.*data:",
+   "files": [
+    "augmentum/proxy/server.py"
+   ],
+   "finding": "CSP img-src allows data: URIs",
+   "reason": "Character card avatars are stored as base64 data URIs (resized to 256px via canvas). Blocking data: would remove all character avatars from the UI.",
+   "risk": "acceptable",
+   "reviewed": "2026-03-23"
+  },
+  {
+   "id": "http-image-urls",
+   "pattern": "http://.*img|img.*http://",
+   "files": [
+    "augmentum/proxy/server.py",
+    "ui/scripts/chat.js"
+   ],
+   "finding": "CSP img-src and _sanitizeMediaUrl allow http:// (non-TLS) image URLs",
+   "reason": "Character cards from legacy platforms (older Chub, Pygmalion) embed images via plain HTTP imgur/catbox links. Blocking would hide card artwork.",
+   "risk": "acceptable",
+   "reviewed": "2026-03-23"
+  },
+  {
+   "id": "article-raw-html",
+   "pattern": "innerHTML.*bodyHtml|innerHTML.*data\\.html",
+   "files": [
+    "ui/scripts/browse.js"
+   ],
+   "finding": "Article reader inserts server-extracted HTML via innerHTML without client-side sanitization",
+   "reason": "Trafilatura extracts clean article HTML server-side. Images are proxied through /api/browse/image (SSRF-safe). CSP blocks inline scripts as defense-in-depth. DOMPurify would add 30KB bundle for marginal benefit.",
+   "risk": "acceptable-with-csp",
+   "reviewed": "2026-03-23"
+  },
+  {
+   "id": "provider-url-no-ssrf",
+   "pattern": "base_url.*provider|provider.*base_url",
+   "files": [
+    "augmentum/proxy/audio_routes.py",
+    "augmentum/proxy/openai_routes.py",
+    "augmentum/proxy/provider_routes.py",
+    "augmentum/proxy/media_routes.py"
+   ],
+   "finding": "TTS/STT/LLM/media provider base_url values not SSRF-checked",
+   "reason": "Provider URLs are admin-configured (stored in DB, set via settings UI). They are equivalent to environment variables — the admin is trusted. SSRF protection is for per-request user-supplied URLs, not persistent config. Includes media servers (Audiobookshelf, Emby, Jellyfin, Komga, Suwayomi).",
+   "risk": "acceptable",
+   "reviewed": "2026-04-28"
+  },
+  {
+   "id": "avatar-data-uri-unescaped",
+   "pattern": "resized.*innerHTML|avatar.*innerHTML",
+   "files": [
+    "ui/scripts/narrative/index.js"
+   ],
+   "finding": "Avatar data URIs from resizeAvatar() interpolated in innerHTML without escapeHtml",
+   "reason": "resizeAvatar() returns canvas.toDataURL('image/jpeg', 0.85) which is safe by construction — always a data:image/jpeg;base64,... string from browser canvas API. Cannot contain HTML. escapeHtml added for defense-in-depth where practical.",
+   "risk": "acceptable",
+   "reviewed": "2026-03-23"
+  },
+  {
+   "id": "coder-ui-numeric-and-constant-interpolation",
+   "pattern": "innerHTML.*\\$\\{",
+   "files": [
+    "ui/scripts/coder-conversation.js",
+    "ui/scripts/coder-inspector.js",
+    "ui/scripts/coder-subagents-panel.js"
+   ],
+   "finding": "innerHTML template literals interpolating values flagged as unescaped",
+   "reason": "Four flagged locations, all verified safe by audit 2026-05-31 — coder-conversation.js:1272 interpolates `lineCount` (numeric, from `array.length`); coder-inspector.js:683 + :1354 interpolate `msg` (hardcoded string literals selected from a small enum, with any dynamic part already wrapped in `escapeHtml()`); coder-subagents-panel.js:204 interpolates `filterChip` (an HTML chunk built with `escapeHtml(_state.parentRunId)` upstream, where parentRunId is a server-generated UUID passed via UI handlers, never LLM output).",
+   "risk": "false-positive",
+   "reviewed": "2026-05-31"
+  },
+  {
+   "id": "browse-save-url-metadata",
+   "pattern": "body\\.get.*url",
+   "files": [
+    "augmentum/proxy/browse_routes.py",
+    "augmentum/proxy/discovery_routes.py",
+    "augmentum/proxy/media_routes.py"
+   ],
+   "finding": "Endpoints accept URL in request body as metadata only",
+   "reason": "URLs are stored as attribution/display metadata (browse_save: saved document source; discovery: signal source_url for clustering/reputation hostname-only; media: librivox cover_url rendered via <img>). They are never fetched server-side — content/streams come through other channels. No SSRF risk.",
+   "risk": "acceptable",
+   "reviewed": "2026-04-28"
+  },
+  {
+   "id": "cloud-image-key-internal",
+   "pattern": "SELECT.*api_key|sensitive.*column",
+   "files": [
+    "augmentum/proxy/cloud_image_routes.py",
+    "augmentum/proxy/image_routes.py"
+   ],
+   "finding": "Cloud image provider endpoint SELECT includes api_key column",
+   "reason": "The api_key is read from DB to make authenticated requests to cloud image APIs (OpenAI, Stability, etc.) on behalf of the user. It is decrypted in-memory (decrypt_api_key), used to construct the provider dict that goes to _fetch_cloud_models, then cleared from scope. Never returned in GET responses. image_routes.py:1084 list_models has the same pattern — SELECT api_key, decrypt, use to query the cloud provider's catalog.",
+   "risk": "acceptable",
+   "reviewed": "2026-05-22"
+  },
+  {
+   "id": "sql-fstring-hardcoded-tables",
+   "pattern": "f-string.*DB execute",
+   "files": [
+    "augmentum/proxy/chat_routes.py"
+   ],
+   "finding": "f-string in DELETE FROM {table} WHERE session_id = ?",
+   "reason": "Table names from hardcoded frozenset literal. No user input reaches the interpolation. Session ID is parameterized.",
+   "risk": "false-positive",
+   "reviewed": "2026-04-04"
+  },
+  {
+   "id": "sql-fstring-vec-dimension",
+   "pattern": "f-string.*DB execute",
+   "files": [
+    "augmentum/coder/indexer.py",
+    "augmentum/knowledge/convert_worker.py",
+    "augmentum/knowledge/importer.py"
+   ],
+   "finding": "f-string in CREATE VIRTUAL TABLE ... FLOAT32[{dim}]",
+   "reason": "dim is an integer from len(embedding_model.embed_one('test')). sqlite-vec requires the dimension in the DDL and does not support a parameterized CREATE TABLE. No user input. (Dropped the stale path augmentum/knowledge/converter.py — superseded by convert_worker.py.)",
+   "risk": "false-positive",
+   "reviewed": "2026-05-13"
+  },
+  {
+   "id": "sql-fstring-backup-vacuum-into",
+   "pattern": "f-string.*DB execute",
+   "files": [
+    "augmentum/state/backup.py"
+   ],
+   "finding": "f-string in `VACUUM INTO '{sql_path}'`",
+   "reason": "SQLite has no parameter binding for VACUUM INTO's destination — it must be a string literal. The path is machine-generated (`{db_path.stem}_{YYYYmmdd_HHMMSS}{suffix}` under the configured backup dir), and single quotes are escaped (`\"'\" -> \"''\"`) before interpolation. No user input reaches it. This is the recommended hardened backup path (replaced an unsafe shutil.copy2 of the live DB).",
+   "risk": "false-positive",
+   "reviewed": "2026-05-13"
+  },
+  {
+   "id": "sql-fstring-lang-pack-vocab-cols",
+   "pattern": "f-string.*DB execute",
+   "files": [
+    "augmentum/learning/lang_packs.py"
+   ],
+   "finding": "f-string SELECTs over the vocab/vocab_fts pack tables",
+   "reason": "Every f-string in this module interpolates only hardcoded identifiers: the column-list constants `_SELECT`/`_SELECT_V` (built once at import from the `_COLS` tuple) and the literal column names `\"surface\"`/`\"reading\"` (iterated from a hardcoded tuple in lookup_at). All user-supplied values are bound as `?` parameters, and free-text queries go through `_fts_phrase()` which escapes them as FTS5 literal phrases. No user input is concatenated into SQL.",
+   "risk": "false-positive",
+   "reviewed": "2026-05-13"
+  },
+  {
+   "id": "sql-fstring-sqlite-analyzer-introspection",
+   "pattern": "f-string.*DB execute",
+   "files": [
+    "augmentum/coder/analyzers/builtin/sqlite_analyzer.py"
+   ],
+   "finding": "f-string in PRAGMA table_info() / SELECT COUNT(*) against tables enumerated from sqlite_master",
+   "reason": "SQLite has no parameter binding for identifiers (table/column names). The table names come from a prior `SELECT name FROM sqlite_master` against the user's own DB file, then pass through `_quote_ident()` which applies the SQL identifier escape (wrap in double-quotes, replace embedded `\"` with `\"\"`). The DB itself is opened read-only via `?mode=ro`. No user input from the chat layer reaches this code path — the analyzer runs against files in the coder workspace container only.",
+   "risk": "false-positive",
+   "reviewed": "2026-05-31"
+  },
+  {
+   "id": "weak-random-non-crypto-use",
+   "pattern": "Non-cryptographic random",
+   "files": [
+    "augmentum/image/pipeline.py",
+    "augmentum/jobs/handlers/gguf_download.py",
+    "augmentum/models/load_balancer.py",
+    "augmentum/modes/narrative/group_manager.py",
+    "augmentum/modes/narrative/lore_engine.py",
+    "augmentum/modes/narrative/macro_expander.py",
+    "augmentum/proxy/grove_routes.py",
+    "augmentum/companion_runtime/affordances.py",
+    "augmentum/companion_runtime/behavior/activity_selector.py",
+    "augmentum/proxy/cast_routes.py",
+    "augmentum/proxy/learning_routes.py",
+    "augmentum/voice/wake_word/training.py",
+    "augmentum/voice/wake_word/negatives_corpus.py",
+    "augmentum/discovery/recommender.py"
+   ],
+   "finding": "`import random` in a file that also mentions key/token/session — flagged as a possible crypto-grade-randomness gap",
+   "reason": "In all of these `random` is used for non-security purposes — generation seeds / retry jitter (image pipeline, gguf download), weighted backend selection (load balancer), choosing which character speaks / which lore entry / a {{random:a,b,c}} macro variant (narrative), ambient-content shuffle (grove + cast comic gallery), templated voice-line rotation (companion affordances), softmax activity sampling (companion behavior), vocab-pool sampling (learning routes), noise augmentation for ML training (wake word + negatives corpus), and content-recommendation variety (SearXNG page rotation, seeded cluster shuffles in recommender). None generate tokens, IDs, keys, or session material; the 'key'/'token'/'session' words the heuristic keyed on are unrelated dict keys, API tokens passed through, or session IDs that come from elsewhere. No crypto strength required.",
+   "risk": "false-positive",
+   "reviewed": "2026-06-08"
+  },
+  {
+   "id": "dream-routes-metadata",
+   "pattern": "sensitive.*column",
+   "files": [
+    "augmentum/proxy/dream_routes.py"
+   ],
+   "finding": "GET endpoint SELECT includes model_used, tokens_used, error columns",
+   "reason": "Dream cycle metadata (which model, how many tokens, any errors) is user-facing diagnostic data shown in the dream journal UI. Not credentials or secrets.",
+   "risk": "false-positive",
+   "reviewed": "2026-04-04"
+  },
+  {
+   "id": "coder-routes-ssrf",
+   "pattern": "SSRF.*SafeHttpClient",
+   "files": [
+    "augmentum/proxy/coder_routes.py"
+   ],
+   "finding": "Git clone/push/pull endpoints accept URLs without SSRF protection",
+   "reason": "Coder mode git operations (clone, push, pull) execute inside Docker workspace containers, not on the host. URLs are admin-configured git repos. Container network isolation prevents SSRF to host services.",
+   "risk": "acceptable",
+   "reviewed": "2026-04-04"
+  },
+  {
+   "id": "community-install-audit-url",
+   "pattern": "SSRF.*SafeHttpClient",
+   "files": [
+    "augmentum/proxy/community_routes.py"
+   ],
+   "finding": "Endpoint accepts URL input without SSRF protection (no SafeHttpClient)",
+   "reason": "False positive — community_routes.py uses SafeHttpClient for BOTH outbound fetches (manifest at line ~250, artifact at line ~280). The scanner is flagging line 402 (manifest_url=body.manifest_url) which is just writing the URL to the community_installs audit table, not fetching it. The actual fetches are SSRF-protected via SafeHttpClient and double-gated by the trusted-origin allowlist (_BUILTIN_TRUSTED_ORIGINS + admin-configurable community_trusted_origins setting).",
+   "risk": "acceptable",
+   "reviewed": "2026-06-04"
+  },
+  {
+   "id": "knowledge-notes-url",
+   "pattern": "SSRF.*SafeHttpClient",
+   "files": [
+    "augmentum/proxy/knowledge_routes.py",
+    "augmentum/proxy/notes_routes.py"
+   ],
+   "finding": "Knowledge import and notes endpoints accept URLs",
+   "reason": "Knowledge pack import and note creation accept URLs for content fetching. These are admin-initiated actions (not exposed to untrusted users). Rate-limited by default.",
+   "risk": "acceptable",
+   "reviewed": "2026-04-04"
+  },
+  {
+   "id": "sql-fstring-internal-identifier",
+   "pattern": "f-string.*DB execute",
+   "files": [
+    "augmentum/state/backends/sqlite.py",
+    "augmentum/vfs/populate.py"
+   ],
+   "finding": "f-string in DROP TRIGGER {trigger} / SELECT {col} FROM {table}",
+   "reason": "Identifier values come from internal sources only — sqlite_master schema introspection (sqlite.py) or a hardcoded _SOURCE_TABLES dict (populate.py). No user input reaches the interpolation.",
+   "risk": "false-positive",
+   "reviewed": "2026-04-27"
+  },
+  {
+   "id": "sql-fstring-docstring-example",
+   "pattern": "f-string.*DB execute",
+   "files": [
+    "augmentum/auth/scoping.py"
+   ],
+   "finding": "f-string in execute() inside a docstring example",
+   "reason": "The flagged f-string is a usage example inside the function's docstring, not actual code. The function itself returns a parameterized clause + tuple of params; callers use it via standard ?-binding.",
+   "risk": "false-positive",
+   "reviewed": "2026-04-27"
+  },
+  {
+   "id": "shell-injection-blocklist-regex",
+   "pattern": "os\\.system\\(",
+   "files": [
+    "augmentum/tools/python_exec.py"
+   ],
+   "finding": "os.system() — always vulnerable to injection",
+   "reason": "The flagged literal is inside a regex pattern that BLOCKS os.system() calls in user-submitted code (defense-in-depth before the executor container). It is not an actual os.system invocation — the file imports neither os nor subprocess.",
+   "risk": "false-positive",
+   "reviewed": "2026-04-28"
+  },
+  {
+   "id": "cardsmith-routes-ssrf-via-safe-fetcher",
+   "pattern": "SSRF.*SafeHttpClient",
+   "files": [
+    "augmentum/proxy/cardsmith_routes.py"
+   ],
+   "finding": "Cardsmith /start and /wiki-preview accept URL input without explicit SafeHttpClient wrapping at the route handler",
+   "reason": "URLs flow through fetch_content_doc() in augmentum/knowledge/content_extractor.py, which uses SafeHttpClient internally for every outbound HTTP request (see _fetch_mediawiki and _fetch_generic). The route handler is a thin pass-through; adding a redundant SafeHttpClient wrapper at the route layer would only mask the underlying contract that the extractor owns SSRF protection.",
+   "risk": "false-positive",
+   "reviewed": "2026-05-10"
+  },
+  {
+   "id": "xr-browser-panel-local-only",
+   "pattern": "SSRF.*SafeHttpClient",
+   "files": [
+    "augmentum/proxy/xr_routes.py"
+   ],
+   "finding": "POST /api/xr/browser-panels accepts URL input without explicit SafeHttpClient wrapping",
+   "reason": "URL flows through _resolve_local_browser_url() (xr_routes.py:72-86) which is a strict local-origin SSRF *prevention* helper — rejects non-http(s) schemes, rejects any non-private host via _is_local_host (RFC1918 + loopback + link-local check). The headless browser only renders pages on the user's own origin/private network. This is the inverse of an SSRF surface — it explicitly cannot reach external hosts.",
+   "risk": "false-positive",
+   "reviewed": "2026-05-17"
+  },
+  {
+   "id": "cast-routes-receiver-url-broker",
+   "pattern": "SSRF.*SafeHttpClient",
+   "files": [
+    "augmentum/proxy/cast_routes.py"
+   ],
+   "finding": "POST /api/cast/send accepts surface_url without SSRF protection; surface_url also recorded in cast_event_store",
+   "reason": "The Augmentum server never fetches surface_url. It brokers a cast event to a paired/trusted receiver (registry.get(receiver_id) requires receiver.user_id == user.id) over the cast WebSocket; the receiver is the one that loads the URL in its own browser context. The audit write (event_store.record_start) stores the URL as display metadata, not for outbound fetching. This is structurally identical to xr-browser-panel-local-only and browse-save-url-metadata: URL flows to a device, not to a server-side HTTP client.",
+   "risk": "false-positive",
+   "reviewed": "2026-05-21"
+  },
+  {
+   "id": "fetch-response-status-integer-interp",
+   "pattern": "\\$\\{r?e?s?p?\\.?status\\}.*innerHTML|innerHTML.*\\$\\{r?e?s?p?\\.?status\\}",
+   "files": [
+    "ui/scripts/game-surface.js",
+    "ui/scripts/library-game-sources.js",
+    "ui/scripts/settings.js"
+   ],
+   "finding": "${r.status} / ${resp.status} interpolated in innerHTML without escapeHtml",
+   "reason": "Response.status is an HTTP status code — a Number (e.g. 404, 500) per the fetch spec, never a string. JavaScript template literal coercion produces decimal digits only. No escapable characters exist in the value space, so escapeHtml is a no-op here. The 'Failed (status N)' fragments are user-visible error messages, not attacker-controllable.",
+   "risk": "false-positive",
+   "reviewed": "2026-05-21"
+  },
+  {
+   "id": "learning-game-companion-dialogue-escaped",
+   "pattern": "\\$\\{bubble\\}|\\$\\{speak\\}",
+   "files": [
+    "ui/scripts/learning_games/companion_dialogue.js"
+   ],
+   "finding": "${bubble} and ${speak} in innerHTML without escapeHtml at addMessage()",
+   "reason": "`bubble` is the return value of renderClickable(text, …) which either calls escapeHtml(text) directly (line 397) or splits text on word boundaries and per-token escapes (line 403-onward) before re-assembling. `speak` is either an empty string or a fixed-template literal `<button type=\"button\" class=\"lg-co-speak\" aria-label=\"Speak\">🔊</button>` with no interpolation. Neither value contains attacker-controllable unescaped substrings.",
+   "risk": "false-positive",
+   "reviewed": "2026-05-21"
+  },
+  {
+   "id": "sql-fstring-db-probe-subprocess",
+   "pattern": "f-string.*DB execute",
+   "files": [
+    "augmentum/coder/db_probe.py"
+   ],
+   "finding": "f-string in SELECT inside generated subprocess script",
+   "reason": "db_probe builds a Python script as a string that runs INSIDE the workspace container (cm.run_command) against the workspace SQLite. Two defenses: (1) the connection opens with mode=ro URI (line 104) so even malicious SQL is read-only; (2) caller-supplied table name is validated against sqlite_master (line 135) before the f-string SELECT runs. The COUNT(*) at line 127 interpolates only sqlite_master rows. Same internal-identifier pattern as sqlite.py.",
+   "risk": "false-positive",
+   "reviewed": "2026-05-29"
+  },
+  {
+   "id": "powers-renderpowerrow-escaped",
+   "pattern": "powers.map.*_renderPowerRow.*innerHTML",
+   "files": [
+    "ui/scripts/powers.js"
+   ],
+   "finding": "powers.map(_renderPowerRow).join() interpolated in innerHTML without explicit escapeHtml",
+   "reason": "_renderPowerRow internally escapeHtml()s every user-facing field (power.id, display_name, description, meta, requirements, blocked_reasons). The returned string is already HTML-safe; wrapping the join in another escapeHtml would double-escape and break the markup.",
+   "risk": "false-positive",
+   "reviewed": "2026-05-29"
+  },
+  {
+   "id": "youtube-panel-mountid-generated",
+   "pattern": "mountId.*innerHTML",
+   "files": [
+    "ui/scripts/youtube-panel.js"
+   ],
+   "finding": "mountId interpolated in innerHTML without escapeHtml",
+   "reason": "mountId = 'fv-yt-mount-${Date.now().toString(36)}' — a fully server-generated string with no user input. Cannot contain HTML metacharacters.",
+   "risk": "false-positive",
+   "reviewed": "2026-05-29"
+  },
+  {
+   "id": "weak-random-variety-picks",
+   "pattern": "Non-cryptographic random module",
+   "files": [
+    "augmentum/architect/primitives/grove_match.py",
+    "augmentum/tools/web_search.py",
+    "augmentum/voice/ack_clips.py"
+   ],
+   "finding": "Non-cryptographic random module in security-sensitive file",
+   "reason": "random is used for UX variety, not secrets: grove_match picks a genre/track from a candidate pool so repeat 'play something' asks vary; web_search adds retry jitter; ack_clips shuffles the latency-mask ack pool so it doesn't repeat in a session. No tokens, session ids, or auth material derive from these calls.",
+   "risk": "none",
+   "reviewed": "2026-06-13"
+  }
+ ]
+}

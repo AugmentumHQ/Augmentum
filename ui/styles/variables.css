@@ -1,0 +1,208 @@
+/* ==========================================================================
+   Design Tokens
+   ========================================================================== */
+
+/* --- Self-hosted reading face (Source Sans 3) ---
+   Bundled locally (ui/fonts/, OFL — see ui/fonts/OFL.txt) rather than
+   pulled from a font CDN, so the default chat/body typeface is a real
+   designed face WITHOUT an external request — keeping the offline /
+   privacy-first posture intact. One variable woff2 per style covers the
+   200-900 weight axis (latin). This is what the default 'Augmentum'
+   typography preset resolves to (see app.js TYPO_PRESETS.default); the
+   opt-in 'system' preset still falls back to OS fonts. */
+@font-face {
+  font-family: "Source Sans 3";
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url("../fonts/source-sans-3-latin-wght-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Source Sans 3";
+  font-style: italic;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url("../fonts/source-sans-3-latin-wght-italic.woff2") format("woff2");
+}
+
+:root {
+  /* --- Layout --- */
+  --panel-width: 280px;
+  --inspector-width: 320px;
+  --app-toolbar-height: 48px;
+  --app-safe-area-top: 0px;
+  --app-viewport-height: 100dvh;
+  --app-viewport-width: 100vw;
+  --header-height: var(--app-toolbar-height);
+  --input-area-height: 64px;
+  /* Bottom orb-nav bar height (mobile only). Lives here on :root so every
+     surface that needs to clear the bar references var(--orb-bar-height)
+     instead of hardcoding the value. The bar's full footprint is this plus
+     env(safe-area-inset-bottom), so content offsets should be
+     calc(var(--orb-bar-height) + env(safe-area-inset-bottom, 0px)). */
+  --orb-bar-height: 64px;
+  --chat-max-width: 800px;
+  /* Optimal reading measure for assistant prose. ~36rem ≈ 72 characters
+     at base size — inside the 60-75 comfort band — and scales with the
+     user's text-size setting so the character count stays stable. A rem
+     measure (not ch) keeps paragraphs and headings capped to the same
+     visual width. Code blocks and tables opt out and use the full
+     column. Applied in chat.css. */
+  --measure: calc(36rem * var(--text-size-scale));
+
+  /* --- Spacing Scale --- */
+  --space-xxs: 2px;
+  --space-xs: 4px;
+  --space-1: 6px;
+  --space-sm: 8px;
+  --space-1h: 10px;
+  --space-2h: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* --- Typography --- */
+  --font-sans: "Source Sans 3", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", "Fira Code", Consolas, monospace;
+  --font-editorial: 'Crimson Pro', Georgia, serif;
+  --text-size-scale: 1;
+  --text-2xs: calc(0.625rem * var(--text-size-scale));
+  --text-xs: calc(0.8125rem * var(--text-size-scale));
+  --text-sm: calc(0.875rem * var(--text-size-scale));
+  --text-base: calc(1rem * var(--text-size-scale));
+  --text-lg: calc(1.125rem * var(--text-size-scale));
+  --text-xl: calc(1.25rem * var(--text-size-scale));
+  --text-2xl: calc(1.5rem * var(--text-size-scale));
+  --line-height: 1.6;
+  --line-height-tight: 1.3;
+  --line-height-relaxed: 1.5;
+  --line-height-loose: 1.75;
+
+  /* --- Radius --- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-full: 9999px;
+
+  /* --- Shadows --- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.25);
+  --shadow-card: 0 10px 28px color-mix(in srgb, var(--bg) 34%, transparent);
+  --shadow-card-hover: 0 16px 42px color-mix(in srgb, var(--bg) 42%, transparent);
+  --shadow-popover: 0 18px 48px color-mix(in srgb, var(--bg) 54%, transparent);
+  --shadow-control: 0 1px 2px color-mix(in srgb, var(--bg) 35%, transparent);
+  --shadow-control-hover: 0 8px 20px color-mix(in srgb, var(--bg) 26%, transparent);
+  --shadow-accent-soft: 0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent),
+                        0 12px 30px color-mix(in srgb, var(--accent) 9%, transparent);
+
+  /* --- Surface Refinement --- */
+  --surface-raised: color-mix(in srgb, var(--surface) 82%, var(--bg-elevated));
+  --surface-soft: color-mix(in srgb, var(--surface) 72%, transparent);
+  --surface-glass: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
+  --surface-wash: color-mix(in srgb, var(--accent) 5%, var(--bg));
+  --surface-selected: color-mix(in srgb, var(--accent) 13%, var(--surface));
+  --surface-hover-strong: color-mix(in srgb, var(--surface-hover) 82%, var(--accent) 7%);
+  --edge-subtle: color-mix(in srgb, var(--border) 62%, transparent);
+  --edge-strong: color-mix(in srgb, var(--border) 84%, var(--text-primary) 6%);
+  --edge-highlight: color-mix(in srgb, #ffffff 6%, transparent);
+  --panel-wash: linear-gradient(180deg,
+    color-mix(in srgb, var(--accent) 3%, transparent) 0%,
+    transparent 28%);
+  --control-gradient: linear-gradient(180deg,
+    color-mix(in srgb, #ffffff 4%, transparent) 0%,
+    color-mix(in srgb, #000000 3%, transparent) 100%);
+
+  /* --- Interactive States --- */
+  --opacity-disabled: 0.4;
+  --opacity-secondary: 0.6;
+  --opacity-hover: 0.8;
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+  --focus-glow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+
+  /* --- Scrollbar --- */
+  --scrollbar-width: 6px;
+
+  /* --- Animation --- */
+  --duration-fast: 150ms;
+  --duration-200: 200ms;
+  --duration-normal: 250ms;
+  --duration-slow: 350ms;
+  --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-in: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  --ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+
+  /* --- Scrollbar --- */
+  --scrollbar-thumb-hover: color-mix(in srgb, var(--text-primary) 28%, transparent);
+
+  /* --- Touch --- */
+  --min-tap-target: 48px;
+
+  /* --- Z-index Scale --- */
+  --z-panel: 10;
+  --z-overlay: 30;
+  --z-drawer: 40;
+  --z-header: 45;     /* above overlays/drawers so header actions stay clickable */
+  --z-modal: 50;
+  --z-command-palette: 70;
+  --z-voice: 100;
+  --z-fullscreen: 9000;
+  --z-system: 9500;
+  --z-system-above: 10000;    /* counters/chrome that layer above fullscreen */
+  /* Toasts sit above EVERYTHING. They were 60 — below the modal-and-up tier —
+     which meant every fullscreen surface (voice, comic reader, cast, XR) hid
+     them, and each one got its own local override as somebody noticed. A
+     buried toast isn't just unread: choice toasts block the flow that opened
+     them, so the button that raised it stays disabled until a refresh. If a
+     surface needs to cover a toast, it needs a reason, not a bigger number.
+     Set above the companion-presence layer (max 2147483645), which is the
+     highest thing in the app. */
+  --z-toast: 2147483646;
+
+  /* --- Semantic Colors (base values; themes override --warning/--success/--error) --- */
+  --color-amber: #f59e0b;
+
+  /* --- Mode Colors --- */
+  --mode-passthrough: #4caf50;
+  --mode-analytical: #2196f3;
+  --mode-narrative: #9c27b0;
+  --mode-agentic: #ff9800;
+  --mode-coder: #06b6d4;
+  /* Connect (peer-to-peer). Sits between the chat / coder cyans
+     and the agentic warm tones so it reads as "human room" not
+     "AI room" — green-leaning teal that pairs with the success
+     status colour family without colliding. */
+  --mode-connect: #14b8a6;
+
+  /* --- Narrative Typography (defaults, overridden by typography presets) --- */
+  --font-narrative-display: 'Cormorant Garamond', Georgia, 'Palatino Linotype', serif;
+  --font-narrative-body: var(--font-sans);
+
+  /* --- Narrative accent glow (used in box-shadow / drop-shadow) --- */
+  --narrative-glow-sm: 0 0 6px color-mix(in srgb, var(--mode-narrative) 15%, transparent);
+  --narrative-glow-md: 0 0 12px color-mix(in srgb, var(--mode-narrative) 25%, transparent);
+  --narrative-glow-lg: 0 0 20px color-mix(in srgb, var(--mode-narrative) 35%, transparent);
+
+  /* --- Mode Glows (used in header, input, mode selector) --- */
+  --mode-glow-sm: 0 0 8px color-mix(in srgb, var(--mode-current, var(--accent)) 20%, transparent);
+  --mode-glow-md: 0 0 16px color-mix(in srgb, var(--mode-current, var(--accent)) 30%, transparent);
+}
+
+/* --- Reduced-motion: zero out design-token durations ---
+   Components with explicit reduced-motion handling (skeleton, toast-spin)
+   keep their custom behaviour; everything using token durations goes instant. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-200: 0ms;
+    --duration-normal: 0ms;
+    --duration-slow: 0ms;
+    scroll-behavior: auto;
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "control.game.v1",
+  "id": "generic_gg",
+  "description": "Generic Sega Game Gear game profile. Same control surface as SMS plus the handheld Start button.",
+  "applies_to_controllers": ["gg"],
+  "applies_to_log_schema": "gg_vision.v1",
+  "actions": {
+    "confirm": {
+      "binding": "face_east",
+      "hint": "Press 2. Primary action in most Game Gear titles; advance menus."
+    },
+    "cancel": {
+      "binding": "face_south",
+      "hint": "Press 1. Secondary action (jump, alternate attack)."
+    },
+    "menu": {
+      "binding": "start",
+      "hint": "Press Start. Title screen / soft pause; few Game Gear titles have a true pause menu."
+    },
+    "nav_up": {
+      "binding": "dpad_up",
+      "hint": "Walk / move up. In menus: cursor up."
+    },
+    "nav_down": {
+      "binding": "dpad_down",
+      "hint": "Walk / move down. In menus: cursor down."
+    },
+    "nav_left": {
+      "binding": "dpad_left",
+      "hint": "Walk / move left. In menus: cursor left."
+    },
+    "nav_right": {
+      "binding": "dpad_right",
+      "hint": "Walk / move right. In menus: cursor right."
+    }
+  },
+  "hardware_passthrough": [],
+  "notes": "Game Gear is essentially a portable SMS; many titles share the same control conventions. Per-game profiles are a good idea when a title has unusual button uses."
+}

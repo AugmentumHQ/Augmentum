@@ -1,0 +1,43 @@
+{
+  "schema": "control.game.v1",
+  "id": "zelda_links_awakening_dx",
+  "description": "The Legend of Zelda: Link's Awakening DX (GBC). Action-adventure; A/B items are equipped from the menu and the agent's confirm/cancel verbs map to whichever items are currently in slots A and B.",
+  "applies_to_controllers": ["gambatte"],
+  "applies_to_log_schema": "zelda_links_awakening_dx.v1",
+  "actions": {
+    "confirm": {
+      "binding": "face_east",
+      "hint": "Use the item currently equipped to the A button (sword in default loadout). Also confirms menu choices and advances dialog."
+    },
+    "cancel": {
+      "binding": "face_south",
+      "hint": "Use the item currently equipped to the B button (shield in default loadout; varies by inventory selection). In menus: back out / close."
+    },
+    "menu": {
+      "binding": "start",
+      "hint": "Open the inventory subscreen: items, dungeon items, photos, save. Pauses time."
+    },
+    "map": {
+      "binding": "select",
+      "hint": "Open the world map (overworld) or dungeon map (inside dungeons). Briefly transparent overlay; does not pause."
+    },
+    "nav_up": {
+      "binding": "dpad_up",
+      "hint": "Walk one tile north. Hold to keep walking. In menus: cursor up."
+    },
+    "nav_down": {
+      "binding": "dpad_down",
+      "hint": "Walk one tile south. Hold to keep walking. In menus: cursor down."
+    },
+    "nav_left": {
+      "binding": "dpad_left",
+      "hint": "Walk one tile west. Hold to keep walking. In menus: cursor left."
+    },
+    "nav_right": {
+      "binding": "dpad_right",
+      "hint": "Walk one tile east. Hold to keep walking. In menus: cursor right."
+    }
+  },
+  "hardware_passthrough": [],
+  "notes": "Link's Awakening repurposes A/B based on which items are equipped from the inventory; the universal confirm/cancel verbs are still the right abstraction because they describe the player's intent, not the item type. The slow path can read item_slot_a / item_slot_b from the probe overlay to know what each button will actually do this frame."
+}

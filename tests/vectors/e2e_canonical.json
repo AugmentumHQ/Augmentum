@@ -1,0 +1,112 @@
+[
+  {
+    "obj": {},
+    "canonical_hex": "7b7d"
+  },
+  {
+    "obj": [],
+    "canonical_hex": "5b5d"
+  },
+  {
+    "obj": {
+      "b": 1,
+      "a": 2,
+      "c": 3
+    },
+    "canonical_hex": "7b2261223a322c2262223a312c2263223a337d"
+  },
+  {
+    "obj": {
+      "z": {
+        "y": {
+          "x": 1
+        }
+      },
+      "a": [
+        3,
+        2,
+        1
+      ]
+    },
+    "canonical_hex": "7b2261223a5b332c322c315d2c227a223a7b2279223a7b2278223a317d7d7d"
+  },
+  {
+    "obj": {
+      "nested": {
+        "keys": {
+          "out": "of",
+          "order": true
+        }
+      },
+      "alpha": null
+    },
+    "canonical_hex": "7b22616c706861223a6e756c6c2c226e6573746564223a7b226b657973223a7b226f72646572223a747275652c226f7574223a226f66227d7d7d"
+  },
+  {
+    "obj": {
+      "unicode": "caf\u00e9 r\u00e9sum\u00e9 na\u00efve",
+      "emoji": "\ud83c\udf3f\ud83d\udd12\u2713"
+    },
+    "canonical_hex": "7b22656d6f6a69223a22f09f8cbff09f9492e29c93222c22756e69636f6465223a22636166c3a92072c3a973756dc3a9206e61c3af7665227d"
+  },
+  {
+    "obj": {
+      "escapes": "quote \" backslash \\ slash / tab \t newline \n"
+    },
+    "canonical_hex": "7b2265736361706573223a2271756f7465205c22206261636b736c617368205c5c20736c617368202f20746162205c74206e65776c696e65205c6e227d"
+  },
+  {
+    "obj": {
+      "control": "\b\f\u0001\u001f end"
+    },
+    "canonical_hex": "7b22636f6e74726f6c223a225c625c665c75303030315c753030316620656e64227d"
+  },
+  {
+    "obj": {
+      "ints": [
+        0,
+        1,
+        -1,
+        9007199254740991
+      ],
+      "bool": [
+        true,
+        false
+      ],
+      "null": null
+    },
+    "canonical_hex": "7b22626f6f6c223a5b747275652c66616c73655d2c22696e7473223a5b302c312c2d312c393030373139393235343734303939315d2c226e756c6c223a6e756c6c7d"
+  },
+  {
+    "obj": {
+      "empty_str": "",
+      "empty_obj": {},
+      "empty_arr": []
+    },
+    "canonical_hex": "7b22656d7074795f617272223a5b5d2c22656d7074795f6f626a223a7b7d2c22656d7074795f737472223a22227d"
+  },
+  {
+    "obj": {
+      "ctx": "augmentum-fabric-relay-seal-v1",
+      "source_did": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+      "recipient_seal": "AAAA",
+      "seq": 1,
+      "ts": 1718000000,
+      "payload": {
+        "text": "hello over the relay"
+      }
+    },
+    "canonical_hex": "7b22637478223a226175676d656e74756d2d6661627269632d72656c61792d7365616c2d7631222c227061796c6f6164223a7b2274657874223a2268656c6c6f206f766572207468652072656c6179227d2c22726563697069656e745f7365616c223a2241414141222c22736571223a312c22736f757263655f646964223a226469643a6b65793a7a364d6b68615867425a44766f74446b4c353235376661697a74694769433251744b4c4770626e6e4547746132646f4b222c227473223a313731383030303030307d"
+  },
+  {
+    "obj": {
+      "ctx": "augmentum-fabric-author-binding-v1",
+      "v": 1,
+      "master_did": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+      "subkey_did": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+      "purpose": "device",
+      "issued_at": 1
+    },
+    "canonical_hex": "7b22637478223a226175676d656e74756d2d6661627269632d617574686f722d62696e64696e672d7631222c226973737565645f6174223a312c226d61737465725f646964223a226469643a6b65793a7a364d6b68615867425a44766f74446b4c353235376661697a74694769433251744b4c4770626e6e4547746132646f4b222c22707572706f7365223a22646576696365222c227375626b65795f646964223a226469643a6b65793a7a364d6b68615867425a44766f74446b4c353235376661697a74694769433251744b4c4770626e6e4547746132646f4b222c2276223a317d"
+  }
+]

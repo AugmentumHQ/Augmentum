@@ -1,0 +1,18 @@
+{
+  "fixture_id": "auth-bypass-missing-user-id",
+  "language": "python",
+  "kind": "true_positive",
+  "expected_findings": [
+    {
+      "signature": "auth_bypass",
+      "file": "bug.py",
+      "line_start": 14,
+      "line_end": 22,
+      "min_severity": "high",
+      "min_status": "confirmed",
+      "must_build_poc": true
+    }
+  ],
+  "max_extra_findings": 1,
+  "notes": "Cross-tenant data leak — multi-tenant invariant violation. The fixture's threat model should reference user_id scoping. PoC = two users insert notes, User A fetches User B's note successfully. Augmentum-specific bug class — important the detector recognizes the missing AND user_id = ? clause."
+}

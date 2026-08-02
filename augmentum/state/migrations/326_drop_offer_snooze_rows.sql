@@ -1,0 +1,28 @@
+-- Retire offer "snooze" suppressions — "Not now" now means not now.
+--
+-- Migration 224 gave every offer chip three buttons: Install / Not now /
+-- Never. "Not now" wrote a suppression row with `suppressed_until = NOW +
+-- 30 days`, so a single tap muted that (kind, target_id) for the whole
+-- user, on every device and in every chat, for a month.
+--
+-- That combination was a silent dead end. Once suppressed, the passthrough
+-- gated-capability path got `ok=False` back from `propose_offer` and fell
+-- through to "I could write that up if you'd like — just say the word" —
+-- a line that invites a retry which cannot ever succeed, with no chip and
+-- no log line explaining why. Observed in the wild: a `create_document`
+-- offer declined on a phone mid-narrative (the gate had been raised by an
+-- unrelated automated benchmark run against the same account) disabled
+-- document creation for 30 days across every surface.
+--
+-- The button now dismisses only the chip it belongs to and writes nothing.
+-- `never` is unchanged: it is explicit, permanent by request, and undoable
+-- from Settings → Offers.
+--
+-- This migration clears the rows the old behaviour left behind. Nothing
+-- creates `reason='snooze'` rows any more, so this is a one-time cleanup
+-- rather than a recurring sweep — `sweep_expired_suppressions` continues
+-- to handle any that a future explicit-duration control might add.
+--
+-- `reason='never'` rows are preserved. Those the user asked for.
+
+DELETE FROM offer_suppressions WHERE reason = 'snooze';

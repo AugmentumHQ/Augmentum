@@ -1,0 +1,52 @@
+# Chatterbox Turbo TTS — Lightweight 350M voice cloning with paralinguistic tags
+# ~2 GB VRAM.  English-only.  Supports [laugh], [cough], [chuckle] tags.
+# Voice cloning from seconds of reference audio.
+# API: http://localhost:6450
+
+services:
+  augmentum:
+    environment:
+      - AUGMENTUM_TTS_CHATTERBOX_TURBO_URL=http://chatterbox-turbo:8890
+    volumes:
+      - ./data/voices:/voices
+
+  chatterbox-turbo:
+    build:
+      context: ./services/chatterbox-turbo
+      dockerfile: Dockerfile
+    ports:
+      - "6450:8890"
+    volumes:
+      - chatterbox_turbo_models:/root/.cache
+      - ./data/voices:/voices
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "8890"
+      DEVICE: "${AUGMENTUM_CHATTERBOX_TURBO_DEVICE:-cuda}"
+      VOICE_LIBRARY_DIR: "/voices"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://0.0.0.0:8890/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 300s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    logging:
+      options:
+        max-size: "50m"
+        max-file: "3"
+    # Host-RAM backstop. The 350M weights land in VRAM (DEVICE=cuda), but
+    # torch/CUDA host allocations, the HF load staging copy and reference-audio
+    # buffers all live here. Unverified estimate — never measured. Raise it if
+    # you set AUGMENTUM_CHATTERBOX_TURBO_DEVICE=cpu, which puts the weights and
+    # all inference activations in host RAM instead.
+    mem_limit: ${AUGMENTUM_CHATTERBOX_TURBO_MEM_LIMIT:-8g}
+
+volumes:
+  chatterbox_turbo_models:

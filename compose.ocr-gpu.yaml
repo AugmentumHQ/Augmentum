@@ -1,0 +1,23 @@
+# OCR GPU overlay — switch the docling-serve sidecar to CUDA for heavy batch
+# OCR (large PDFs, bulk comic narration). Layer it AFTER compose.ocr.yaml:
+#   ... compose.ocr.yaml compose.ocr-gpu.yaml ...
+# in .augmentum.conf. Only useful if the host has an NVIDIA GPU + the
+# container toolkit; otherwise stick with the CPU image (compose.ocr.yaml).
+#
+# Trade-off: the GPU image is larger and competes for the same VRAM as the
+# chat + image + TTS models. On a single-GPU box, prefer CPU OCR (it's a
+# background job) unless OCR throughput is the bottleneck.
+
+services:
+  ocr:
+    image: ghcr.io/docling-project/docling-serve-cu124:latest
+    environment:
+      - DOCLING_SERVE_ENABLE_UI=0
+      - DOCLING_DEVICE=cuda
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

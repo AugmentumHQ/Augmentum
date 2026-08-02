@@ -1,0 +1,5766 @@
+{
+  "schema": "augmentum.affordance-candidates.v1",
+  "generatedFromMotionClips": "motion-clips-all.json",
+  "referenceVRM": "unknown",
+  "totalCandidates": 48,
+  "novelCandidates": 46,
+  "tunables": {
+    "MIN_WINDOW_SECS": 0.4,
+    "MAX_H_DRIFT": 0.08,
+    "MAX_DR_DRIFT": 0.015,
+    "CLUSTER_THRESH": 0.5,
+    "DUPE_THRESH": 0.4,
+    "MIN_VOTES": 6,
+    "DR_FAR_FILTER": 0.3
+  },
+  "candidates": [
+    {
+      "rank": 1,
+      "side": "L",
+      "votes": 450,
+      "memberCount": 1,
+      "capsule": "torso/upper",
+      "h": 0.0,
+      "dr": 0.0273,
+      "dir": [
+        0.698,
+        -0.352,
+        0.624
+      ],
+      "nameHint": "torso_upper_low_L",
+      "source": {
+        "clip": "Reading (Loop).vrma",
+        "t": 14.933
+      },
+      "nearestExisting": "hip_L",
+      "similarTo": null,
+      "similarity": 1.589,
+      "bones": {
+        "leftUpperArm": [
+          -0.1129,
+          0.1731,
+          -1.3149
+        ],
+        "leftLowerArm": [
+          1.0793,
+          -1.4913,
+          -0.2645
+        ],
+        "leftHand": [
+          0.0263,
+          -0.0434,
+          0.1749
+        ],
+        "leftThumbDistal": [
+          0.0048,
+          0.0305,
+          -0.31
+        ],
+        "leftIndexProximal": [
+          0.1461,
+          -0.0553,
+          -0.341
+        ],
+        "leftIndexIntermediate": [
+          0.1382,
+          0.0229,
+          -0.0473
+        ],
+        "leftIndexDistal": [
+          0.178,
+          0.0604,
+          -0.0859
+        ],
+        "leftMiddleProximal": [
+          0.1134,
+          -0.0567,
+          -0.4251
+        ],
+        "leftMiddleIntermediate": [
+          0.1151,
+          -0.0121,
+          -0.1498
+        ],
+        "leftMiddleDistal": [
+          0.1667,
+          0.0527,
+          -0.1581
+        ],
+        "leftRingProximal": [
+          -0.061,
+          -0.0289,
+          -0.5131
+        ],
+        "leftRingIntermediate": [
+          -0.0431,
+          -0.1371,
+          -0.2767
+        ],
+        "leftRingDistal": [
+          0.107,
+          -0.0168,
+          -0.2506
+        ],
+        "leftLittleProximal": [
+          -0.1343,
+          -0.0104,
+          -0.5771
+        ],
+        "leftLittleIntermediate": [
+          -0.1091,
+          -0.173,
+          -0.3847
+        ],
+        "leftLittleDistal": [
+          0.0783,
+          -0.0187,
+          -0.3274
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "Reading (Loop).vrma",
+          "t": 14.933,
+          "length": 450
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "side": "R",
+      "votes": 450,
+      "memberCount": 17,
+      "capsule": "torso/upper",
+      "h": 0.438,
+      "dr": 0.1117,
+      "dir": [
+        -0.807,
+        0.08,
+        0.585
+      ],
+      "nameHint": "torso_upper_mid_R",
+      "source": {
+        "clip": "Reading (Loop).vrma",
+        "t": 27.867
+      },
+      "nearestExisting": "hip_R",
+      "similarTo": null,
+      "similarity": 1.065,
+      "bones": {
+        "rightUpperArm": [
+          -0.1694,
+          0.1161,
+          1.3718
+        ],
+        "rightLowerArm": [
+          -0.2694,
+          1.7759,
+          -0.2345
+        ],
+        "rightThumbDistal": [
+          -0.0041,
+          0.0285,
+          0.2889
+        ],
+        "rightIndexProximal": [
+          0.1316,
+          0.0304,
+          0.4527
+        ],
+        "rightIndexIntermediate": [
+          0.1654,
+          0.0496,
+          0.5811
+        ],
+        "rightIndexDistal": [
+          0.1138,
+          0.0224,
+          0.3883
+        ],
+        "rightMiddleProximal": [
+          0.1013,
+          0.0275,
+          0.5303
+        ],
+        "rightMiddleIntermediate": [
+          0.1263,
+          0.0448,
+          0.6812
+        ],
+        "rightMiddleDistal": [
+          0.088,
+          0.0204,
+          0.4548
+        ],
+        "rightRingProximal": [
+          -0.057,
+          -0.0178,
+          0.6061
+        ],
+        "rightRingIntermediate": [
+          -0.0703,
+          -0.0289,
+          0.7791
+        ],
+        "rightRingDistal": [
+          -0.0497,
+          -0.0132,
+          0.5196
+        ],
+        "rightLittleProximal": [
+          -0.1233,
+          -0.0425,
+          0.6624
+        ],
+        "rightLittleIntermediate": [
+          -0.1509,
+          -0.0685,
+          0.8506
+        ],
+        "rightLittleDistal": [
+          -0.1078,
+          -0.0315,
+          0.5681
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "Reading (Loop).vrma",
+          "t": 13.333,
+          "length": 40
+        },
+        {
+          "clip": "Reading (Loop).vrma",
+          "t": 25.8,
+          "length": 40
+        },
+        {
+          "clip": "Reading (Loop).vrma",
+          "t": 1.067,
+          "length": 33
+        },
+        {
+          "clip": "Reading (Loop).vrma",
+          "t": 10.933,
+          "length": 33
+        },
+        {
+          "clip": "Reading (Loop).vrma",
+          "t": 23.4,
+          "length": 32
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "side": "R",
+      "votes": 155,
+      "memberCount": 5,
+      "capsule": "rightLeg/upper",
+      "h": 0.059,
+      "dr": 0.1881,
+      "dir": [
+        -0.969,
+        -0.005,
+        0.246
+      ],
+      "nameHint": "rightLeg_upper_low_R",
+      "source": {
+        "clip": "airi_idle_loop.vrma",
+        "t": 7
+      },
+      "nearestExisting": "side_relaxed_R",
+      "similarTo": "side_relaxed_R",
+      "similarity": 0.388,
+      "bones": {
+        "rightShoulder": [
+          0.0625,
+          0.0324,
+          0.0865
+        ],
+        "rightUpperArm": [
+          0.0653,
+          0.1406,
+          1.2933
+        ],
+        "rightLowerArm": [
+          0.0042,
+          0.1151,
+          -0.0235
+        ],
+        "rightHand": [
+          -0.2603,
+          0.0394,
+          -0.0263
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "airi_idle_loop.vrma",
+          "t": 1.4,
+          "length": 43
+        },
+        {
+          "clip": "airi_idle_loop.vrma",
+          "t": 8.867,
+          "length": 42
+        },
+        {
+          "clip": "airi_idle_loop.vrma",
+          "t": 5.333,
+          "length": 37
+        },
+        {
+          "clip": "airi_idle_loop.vrma",
+          "t": 3.467,
+          "length": 19
+        },
+        {
+          "clip": "airi_idle_loop.vrma",
+          "t": 7,
+          "length": 14
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "side": "L",
+      "votes": 140,
+      "memberCount": 11,
+      "capsule": "leftLeg/upper",
+      "h": 0.187,
+      "dr": -0.0139,
+      "dir": [
+        0.916,
+        -0.008,
+        0.402
+      ],
+      "nameHint": "leftLeg_upper_low_L",
+      "source": {
+        "clip": "VRMA_04.vrma",
+        "t": 7.467
+      },
+      "nearestExisting": "side_relaxed_L",
+      "similarTo": null,
+      "similarity": 0.443,
+      "bones": {
+        "leftShoulder": [
+          0.0002,
+          0.0123,
+          -0.0027
+        ],
+        "leftUpperArm": [
+          0.124,
+          0.0745,
+          -1.3915
+        ],
+        "leftLowerArm": [
+          0.3921,
+          -0.1877,
+          0
+        ],
+        "leftHand": [
+          -0.0148,
+          0.0645,
+          0.2251
+        ],
+        "leftThumbProximal": [
+          -0.1644,
+          0.0522,
+          0.1481
+        ],
+        "leftThumbDistal": [
+          0,
+          0.2265,
+          0
+        ],
+        "leftIndexProximal": [
+          -0.0084,
+          -0.0119,
+          -0.6921
+        ],
+        "leftIndexIntermediate": [
+          0,
+          0,
+          -0.6919
+        ],
+        "leftIndexDistal": [
+          0,
+          0,
+          -0.3188
+        ],
+        "leftMiddleProximal": [
+          -0.1003,
+          -0.0675,
+          -0.9796
+        ],
+        "leftMiddleIntermediate": [
+          0,
+          0,
+          -0.5921
+        ],
+        "leftMiddleDistal": [
+          0,
+          0,
+          -0.5638
+        ],
+        "leftRingProximal": [
+          -0.2438,
+          0.1223,
+          -1.0479
+        ],
+        "leftRingIntermediate": [
+          0,
+          0,
+          -0.8361
+        ],
+        "leftRingDistal": [
+          0,
+          0,
+          -0.5025
+        ],
+        "leftLittleProximal": [
+          -0.3294,
+          0.2958,
+          -0.7067
+        ],
+        "leftLittleIntermediate": [
+          0,
+          0,
+          -0.6689
+        ],
+        "leftLittleDistal": [
+          0,
+          0,
+          -0.364
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_04.vrma",
+          "t": 6.067,
+          "length": 26
+        },
+        {
+          "clip": "VRMA_04.vrma",
+          "t": 3.067,
+          "length": 20
+        },
+        {
+          "clip": "VRMA_04.vrma",
+          "t": 8.933,
+          "length": 18
+        },
+        {
+          "clip": "VRMA_04.vrma",
+          "t": 7.467,
+          "length": 16
+        },
+        {
+          "clip": "VRMA_04.vrma",
+          "t": 4.8,
+          "length": 12
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "side": "R",
+      "votes": 137,
+      "memberCount": 9,
+      "capsule": "rightLeg/upper",
+      "h": 0.124,
+      "dr": 0.0474,
+      "dir": [
+        -0.985,
+        -0.004,
+        0.172
+      ],
+      "nameHint": "rightLeg_upper_low_R",
+      "source": {
+        "clip": "VRMA_06.vrma",
+        "t": 6.667
+      },
+      "nearestExisting": "side_relaxed_R",
+      "similarTo": null,
+      "similarity": 0.806,
+      "bones": {
+        "rightShoulder": [
+          0.0004,
+          0.0385,
+          0.2564
+        ],
+        "rightUpperArm": [
+          0.3253,
+          -0.2128,
+          1.167
+        ],
+        "rightLowerArm": [
+          0.004,
+          0.4122,
+          -0.0892
+        ],
+        "rightHand": [
+          -0.0926,
+          -0.4098,
+          0.1973
+        ],
+        "rightThumbProximal": [
+          0.0933,
+          -0.0703,
+          0.094
+        ],
+        "rightThumbDistal": [
+          -0.0018,
+          0.0083,
+          -0.0042
+        ],
+        "rightIndexProximal": [
+          0.097,
+          0.0889,
+          0.1433
+        ],
+        "rightIndexIntermediate": [
+          -0.0119,
+          -0.0171,
+          -0.0143
+        ],
+        "rightIndexDistal": [
+          0.0088,
+          0.0064,
+          0.0363
+        ],
+        "rightMiddleProximal": [
+          0.1224,
+          0.1517,
+          0.4133
+        ],
+        "rightMiddleIntermediate": [
+          -0.0237,
+          -0.0094,
+          -0.023
+        ],
+        "rightMiddleDistal": [
+          0.0141,
+          0.0052,
+          0.0532
+        ],
+        "rightRingProximal": [
+          0.0785,
+          0.1467,
+          0.486
+        ],
+        "rightRingIntermediate": [
+          -0.0415,
+          -0.0313,
+          -0.0427
+        ],
+        "rightRingDistal": [
+          0.006,
+          0.0059,
+          0.0208
+        ],
+        "rightLittleProximal": [
+          0.034,
+          0.2042,
+          0.3513
+        ],
+        "rightLittleIntermediate": [
+          -0.0394,
+          -0.0632,
+          0.0398
+        ],
+        "rightLittleDistal": [
+          -0.0162,
+          -0.0574,
+          -0.1118
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_07.vrma",
+          "t": 10.533,
+          "length": 27
+        },
+        {
+          "clip": "VRMA_06.vrma",
+          "t": 6.667,
+          "length": 22
+        },
+        {
+          "clip": "VRMA_06.vrma",
+          "t": 2.333,
+          "length": 21
+        },
+        {
+          "clip": "VRMA_05.vrma",
+          "t": 8.667,
+          "length": 16
+        },
+        {
+          "clip": "VRMA_05.vrma",
+          "t": 0.333,
+          "length": 12
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "side": "R",
+      "votes": 123,
+      "memberCount": 4,
+      "capsule": "rightArm/upper",
+      "h": 0.611,
+      "dr": 0.0774,
+      "dir": [
+        0.0,
+        -0.321,
+        0.947
+      ],
+      "nameHint": "rightArm_upper_mid_R",
+      "source": {
+        "clip": "VRMA_03.vrma",
+        "t": 4.4
+      },
+      "nearestExisting": "hip_R",
+      "similarTo": null,
+      "similarity": 2.165,
+      "bones": {
+        "rightShoulder": [
+          -0.0018,
+          -0.0456,
+          0.0347
+        ],
+        "rightUpperArm": [
+          -0.3068,
+          0.4013,
+          1.1524
+        ],
+        "rightLowerArm": [
+          1.3261,
+          2.37,
+          0.001
+        ],
+        "rightHand": [
+          -0.0567,
+          -0.097,
+          -0.5298
+        ],
+        "rightThumbProximal": [
+          -0.0004,
+          -0.3961,
+          -0.0004
+        ],
+        "rightThumbDistal": [
+          0,
+          -0.2856,
+          0
+        ],
+        "rightIndexProximal": [
+          -0.0025,
+          0.0863,
+          0.1695
+        ],
+        "rightIndexIntermediate": [
+          0,
+          0,
+          0.2424
+        ],
+        "rightIndexDistal": [
+          0,
+          0,
+          -0.0474
+        ],
+        "rightMiddleProximal": [
+          0.0327,
+          -0.1143,
+          0.2805
+        ],
+        "rightMiddleIntermediate": [
+          0,
+          0,
+          0.2942
+        ],
+        "rightMiddleDistal": [
+          0,
+          0,
+          0.2397
+        ],
+        "rightRingProximal": [
+          -0.1372,
+          -0.1869,
+          0.624
+        ],
+        "rightRingIntermediate": [
+          0,
+          0,
+          1.1025
+        ],
+        "rightRingDistal": [
+          0,
+          0,
+          0.5403
+        ],
+        "rightLittleProximal": [
+          -0.3069,
+          -0.3647,
+          0.6881
+        ],
+        "rightLittleIntermediate": [
+          0,
+          0,
+          1.0363
+        ],
+        "rightLittleDistal": [
+          0,
+          0,
+          0.6089
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_03.vrma",
+          "t": 4.4,
+          "length": 50
+        },
+        {
+          "clip": "VRMA_03.vrma",
+          "t": 7.2,
+          "length": 34
+        },
+        {
+          "clip": "VRMA_03.vrma",
+          "t": 9.067,
+          "length": 22
+        },
+        {
+          "clip": "VRMA_03.vrma",
+          "t": 2.2,
+          "length": 17
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "side": "L",
+      "votes": 119,
+      "memberCount": 3,
+      "capsule": "leftLeg/upper",
+      "h": 0.131,
+      "dr": 0.0552,
+      "dir": [
+        0.927,
+        -0.008,
+        0.374
+      ],
+      "nameHint": "leftLeg_upper_low_L",
+      "source": {
+        "clip": "VRMA_03.vrma",
+        "t": 8.4
+      },
+      "nearestExisting": "side_relaxed_L",
+      "similarTo": null,
+      "similarity": 1.202,
+      "bones": {
+        "leftShoulder": [
+          0.0072,
+          0.0665,
+          0.0653
+        ],
+        "leftUpperArm": [
+          -0.3193,
+          -0.0159,
+          -1.3089
+        ],
+        "leftLowerArm": [
+          0.3185,
+          0.0024,
+          0
+        ],
+        "leftHand": [
+          -0.1373,
+          0.0668,
+          1.1208
+        ],
+        "leftThumbProximal": [
+          -0.0255,
+          -0.0421,
+          0.0201
+        ],
+        "leftThumbDistal": [
+          0,
+          -0.1336,
+          0
+        ],
+        "leftIndexProximal": [
+          -0.0115,
+          0.1701,
+          -0.2988
+        ],
+        "leftIndexIntermediate": [
+          0,
+          0,
+          -0.2024
+        ],
+        "leftIndexDistal": [
+          0,
+          0,
+          0.125
+        ],
+        "leftMiddleProximal": [
+          0.0509,
+          0.1285,
+          -0.3785
+        ],
+        "leftMiddleIntermediate": [
+          0,
+          0,
+          -0.1151
+        ],
+        "leftMiddleDistal": [
+          0,
+          0,
+          -0.0139
+        ],
+        "leftRingProximal": [
+          -0.1151,
+          0.1959,
+          -0.3656
+        ],
+        "leftRingIntermediate": [
+          0,
+          0,
+          -0.2674
+        ],
+        "leftRingDistal": [
+          0,
+          0,
+          -0.0228
+        ],
+        "leftLittleProximal": [
+          -0.2316,
+          0.3224,
+          -0.1932
+        ],
+        "leftLittleIntermediate": [
+          0,
+          0,
+          -0.2851
+        ],
+        "leftLittleDistal": [
+          0,
+          0,
+          -0.1541
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_03.vrma",
+          "t": 4.667,
+          "length": 99
+        },
+        {
+          "clip": "VRMA_03.vrma",
+          "t": 8.4,
+          "length": 14
+        },
+        {
+          "clip": "VRMA_03.vrma",
+          "t": 9.067,
+          "length": 6
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "side": "L",
+      "votes": 104,
+      "memberCount": 6,
+      "capsule": "leftLeg/upper",
+      "h": 0.033,
+      "dr": 0.0764,
+      "dir": [
+        1.0,
+        -0.0,
+        0.015
+      ],
+      "nameHint": "leftLeg_upper_low_L",
+      "source": {
+        "clip": "VRMA_07.vrma",
+        "t": 10.467
+      },
+      "nearestExisting": "side_relaxed_L",
+      "similarTo": null,
+      "similarity": 0.952,
+      "bones": {
+        "leftShoulder": [
+          0.0019,
+          -0.0578,
+          -0.1899
+        ],
+        "leftUpperArm": [
+          0.7387,
+          0.1458,
+          -1.1221
+        ],
+        "leftLowerArm": [
+          -0.2297,
+          -0.3261,
+          0.112
+        ],
+        "leftHand": [
+          -0.0106,
+          0.0603,
+          -0.1162
+        ],
+        "leftThumbProximal": [
+          0.0192,
+          0.0083,
+          -0.0289
+        ],
+        "leftThumbDistal": [
+          -0.007,
+          -0.0347,
+          0.0239
+        ],
+        "leftIndexProximal": [
+          0.1882,
+          -0.3573,
+          -0.4689
+        ],
+        "leftIndexIntermediate": [
+          -0.0164,
+          -0.2649,
+          -0.6362
+        ],
+        "leftIndexDistal": [
+          0.0139,
+          -0.1205,
+          -0.2837
+        ],
+        "leftMiddleProximal": [
+          -0.0053,
+          -0.3973,
+          -0.654
+        ],
+        "leftMiddleIntermediate": [
+          0.0129,
+          -0.2118,
+          -0.5825
+        ],
+        "leftMiddleDistal": [
+          0.0229,
+          -0.1283,
+          -0.3529
+        ],
+        "leftRingProximal": [
+          -0.0437,
+          -0.3149,
+          -0.6524
+        ],
+        "leftRingIntermediate": [
+          -0.0108,
+          -0.3641,
+          -0.7283
+        ],
+        "leftRingDistal": [
+          0.0275,
+          -0.1309,
+          -0.2573
+        ],
+        "leftLittleProximal": [
+          -0.0795,
+          -0.3072,
+          -0.5798
+        ],
+        "leftLittleIntermediate": [
+          -0.0269,
+          -0.215,
+          -0.2971
+        ],
+        "leftLittleDistal": [
+          -0.0094,
+          -0.1362,
+          -0.1852
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_07.vrma",
+          "t": 10.467,
+          "length": 28
+        },
+        {
+          "clip": "VRMA_05.vrma",
+          "t": 8.4,
+          "length": 25
+        },
+        {
+          "clip": "VRMA_06.vrma",
+          "t": 6.667,
+          "length": 23
+        },
+        {
+          "clip": "VRMA_05.vrma",
+          "t": 0.4,
+          "length": 14
+        },
+        {
+          "clip": "VRMA_07.vrma",
+          "t": 0.2,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "side": "L",
+      "votes": 84,
+      "memberCount": 3,
+      "capsule": "torso/mid",
+      "h": 0.0,
+      "dr": -0.006,
+      "dir": [
+        0.077,
+        -0.988,
+        0.134
+      ],
+      "nameHint": "torso_mid_low_L",
+      "source": {
+        "clip": "airi_idle_loop.vrma",
+        "t": 0.2
+      },
+      "nearestExisting": "side_relaxed_L",
+      "similarTo": null,
+      "similarity": 0.424,
+      "bones": {
+        "leftShoulder": [
+          0.0378,
+          -0.0546,
+          -0.0971
+        ],
+        "leftUpperArm": [
+          0.0679,
+          -0.0767,
+          -1.3268
+        ],
+        "leftLowerArm": [
+          0.0033,
+          -0.1012,
+          0.0207
+        ],
+        "leftHand": [
+          -0.3489,
+          -0.0287,
+          0.0096
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "airi_idle_loop.vrma",
+          "t": 4.933,
+          "length": 66
+        },
+        {
+          "clip": "airi_idle_loop.vrma",
+          "t": 9.933,
+          "length": 11
+        },
+        {
+          "clip": "airi_idle_loop.vrma",
+          "t": 0.2,
+          "length": 7
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "side": "L",
+      "votes": 72,
+      "memberCount": 4,
+      "capsule": "leftLeg/upper",
+      "h": 0.264,
+      "dr": 0.0404,
+      "dir": [
+        0.914,
+        -0.008,
+        0.406
+      ],
+      "nameHint": "leftLeg_upper_low_L",
+      "source": {
+        "clip": "greeting2.vrma",
+        "t": 4.067
+      },
+      "nearestExisting": "side_relaxed_L",
+      "similarTo": null,
+      "similarity": 0.692,
+      "bones": {
+        "leftShoulder": [
+          -0.0159,
+          0.116,
+          -0.2127
+        ],
+        "leftUpperArm": [
+          0.318,
+          0.033,
+          -1.122
+        ],
+        "leftLowerArm": [
+          -0.0213,
+          -0.2946,
+          0.0032
+        ],
+        "leftHand": [
+          -0.2723,
+          0.2699,
+          0.1239
+        ],
+        "leftThumbProximal": [
+          0.1327,
+          0.269,
+          0.0404
+        ],
+        "leftThumbDistal": [
+          0.0119,
+          0.1789,
+          0.0598
+        ],
+        "leftIndexProximal": [
+          0.0003,
+          0.0081,
+          -0.0681
+        ],
+        "leftIndexIntermediate": [
+          0.0012,
+          0.0167,
+          -0.1374
+        ],
+        "leftIndexDistal": [
+          0.0006,
+          0.0118,
+          -0.099
+        ],
+        "leftMiddleProximal": [
+          0.0019,
+          0.0215,
+          -0.18
+        ],
+        "leftMiddleIntermediate": [
+          0.0025,
+          0.0244,
+          -0.2031
+        ],
+        "leftMiddleDistal": [
+          0.0018,
+          0.0209,
+          -0.1741
+        ],
+        "leftRingProximal": [
+          0.0102,
+          0.0473,
+          -0.3282
+        ],
+        "leftRingIntermediate": [
+          0.0039,
+          0.0303,
+          -0.2536
+        ],
+        "leftRingDistal": [
+          0.0007,
+          0.013,
+          -0.1077
+        ],
+        "leftLittleProximal": [
+          0.0479,
+          0.1253,
+          -0.4426
+        ],
+        "leftLittleIntermediate": [
+          0.0065,
+          -0.0359,
+          -0.3072
+        ],
+        "leftLittleDistal": [
+          0.0025,
+          0.0209,
+          -0.1756
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "greeting2.vrma",
+          "t": 0.933,
+          "length": 29
+        },
+        {
+          "clip": "greeting2.vrma",
+          "t": 3.067,
+          "length": 25
+        },
+        {
+          "clip": "greeting2.vrma",
+          "t": 4.667,
+          "length": 12
+        },
+        {
+          "clip": "greeting2.vrma",
+          "t": 4.067,
+          "length": 6
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "side": "L",
+      "votes": 71,
+      "memberCount": 2,
+      "capsule": "rightLeg/upper",
+      "h": 0.089,
+      "dr": 0.0022,
+      "dir": [
+        0.959,
+        -0.006,
+        0.285
+      ],
+      "nameHint": "rightLeg_upper_low_L",
+      "source": {
+        "clip": "airi_idle_loop.vrma",
+        "t": 1.6
+      },
+      "nearestExisting": "side_relaxed_L",
+      "similarTo": "side_relaxed_L",
+      "similarity": 0.393,
+      "bones": {
+        "leftShoulder": [
+          0.0342,
+          -0.0512,
+          -0.0917
+        ],
+        "leftUpperArm": [
+          0.0584,
+          -0.0681,
+          -1.3366
+        ],
+        "leftLowerArm": [
+          0.0032,
+          -0.0996,
+          0.0204
+        ],
+        "leftHand": [
+          -0.3198,
+          -0.0253,
+          0.0133
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "airi_idle_loop.vrma",
+          "t": 8.333,
+          "length": 36
+        },
+        {
+          "clip": "airi_idle_loop.vrma",
+          "t": 1.6,
+          "length": 35
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "side": "L",
+      "votes": 45,
+      "memberCount": 1,
+      "capsule": "head/sphere",
+      "h": 0.0,
+      "dr": 0.0932,
+      "dir": [
+        0.59,
+        0.731,
+        0.344
+      ],
+      "nameHint": "head_sphere_low_L",
+      "source": {
+        "clip": "pose_world_sparkle.vrma",
+        "t": 1.467
+      },
+      "nearestExisting": "side_relaxed_L",
+      "similarTo": null,
+      "similarity": 3.242,
+      "bones": {
+        "leftShoulder": [
+          0.0331,
+          0.165,
+          -0.0665
+        ],
+        "leftUpperArm": [
+          -0.5987,
+          0.082,
+          1.5014
+        ],
+        "leftLowerArm": [
+          -0.564,
+          -0.1169,
+          0.0381
+        ],
+        "leftHand": [
+          -0.534,
+          -0.3111,
+          1.0696
+        ],
+        "leftThumbProximal": [
+          0.778,
+          0.1633,
+          -1.4512
+        ],
+        "leftThumbDistal": [
+          -1.476,
+          1.4231,
+          1.5649
+        ],
+        "leftIndexProximal": [
+          -0.0194,
+          0.0194,
+          -1.5702
+        ],
+        "leftIndexIntermediate": [
+          -0.0306,
+          0.0158,
+          -0.9265
+        ],
+        "leftIndexDistal": [
+          -0.0323,
+          0.0264,
+          -1.3485
+        ],
+        "leftMiddleProximal": [
+          0,
+          0,
+          -1.5706
+        ],
+        "leftMiddleIntermediate": [
+          0,
+          0,
+          -1.0808
+        ],
+        "leftMiddleDistal": [
+          0,
+          0,
+          -1.2215
+        ],
+        "leftRingProximal": [
+          0,
+          0,
+          -1.5706
+        ],
+        "leftRingIntermediate": [
+          0,
+          0,
+          -0.9273
+        ],
+        "leftRingDistal": [
+          -0.0214,
+          0.0152,
+          -1.221
+        ],
+        "leftLittleProximal": [
+          0,
+          0,
+          -1.4654
+        ],
+        "leftLittleIntermediate": [
+          0,
+          0,
+          -1.2215
+        ],
+        "leftLittleDistal": [
+          0.0182,
+          -0.0125,
+          -1.2212
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "pose_world_sparkle.vrma",
+          "t": 1.467,
+          "length": 45
+        }
+      ]
+    },
+    {
+      "rank": 13,
+      "side": "L",
+      "votes": 45,
+      "memberCount": 1,
+      "capsule": "leftArm/lower",
+      "h": 0.652,
+      "dr": 0.2459,
+      "dir": [
+        -0.0,
+        -0.201,
+        0.98
+      ],
+      "nameHint": "leftArm_lower_mid_L",
+      "source": {
+        "clip": "pose_world_connected.vrma",
+        "t": 1.467
+      },
+      "nearestExisting": "side_relaxed_L",
+      "similarTo": null,
+      "similarity": 2.079,
+      "bones": {
+        "leftShoulder": [
+          -0.1041,
+          -0.1731,
+          0.0727
+        ],
+        "leftUpperArm": [
+          -0.5972,
+          -0.0464,
+          -0.2709
+        ],
+        "leftLowerArm": [
+          -0.5459,
+          0.0008,
+          0.007
+        ],
+        "leftHand": [
+          -0.9029,
+          0.1642,
+          1.2194
+        ],
+        "leftThumbProximal": [
+          -0.0154,
+          0.0578,
+          -0.0978
+        ],
+        "leftThumbDistal": [
+          -0.0424,
+          0.5773,
+          0.0833
+        ],
+        "leftIndexProximal": [
+          0.0113,
+          -0.1016,
+          -0.074
+        ],
+        "leftIndexIntermediate": [
+          -0.0497,
+          0.0169,
+          -0.6942
+        ],
+        "leftIndexDistal": [
+          -0.0687,
+          -0.0012,
+          -0.7784
+        ],
+        "leftMiddleProximal": [
+          0.0207,
+          -0.0852,
+          -0.0151
+        ],
+        "leftMiddleIntermediate": [
+          -0.0514,
+          0.0368,
+          -0.7376
+        ],
+        "leftMiddleDistal": [
+          -0.0806,
+          0.0049,
+          -0.5935
+        ],
+        "leftRingProximal": [
+          -0.0154,
+          0.0501,
+          -0.0757
+        ],
+        "leftRingIntermediate": [
+          -0.046,
+          0.0353,
+          -0.597
+        ],
+        "leftRingDistal": [
+          -0.0839,
+          0.0275,
+          -0.6721
+        ],
+        "leftLittleProximal": [
+          -0.0183,
+          0.2564,
+          -0.0872
+        ],
+        "leftLittleIntermediate": [
+          -0.2186,
+          0.1133,
+          -0.6408
+        ],
+        "leftLittleDistal": [
+          -0.0359,
+          0.05,
+          -0.5825
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "pose_world_connected.vrma",
+          "t": 1.467,
+          "length": 45
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "side": "L",
+      "votes": 45,
+      "memberCount": 1,
+      "capsule": "leftArm/upper",
+      "h": 0.353,
+      "dr": 0.0015,
+      "dir": [
+        -0.0,
+        -0.209,
+        0.978
+      ],
+      "nameHint": "leftArm_upper_mid_L",
+      "source": {
+        "clip": "pose_world_smiles.vrma",
+        "t": 1.467
+      },
+      "nearestExisting": "stomach_L",
+      "similarTo": null,
+      "similarity": 2.02,
+      "bones": {
+        "leftShoulder": [
+          -0.03,
+          0.004,
+          0.0658
+        ],
+        "leftUpperArm": [
+          -0.0275,
+          -0.1601,
+          -1.2805
+        ],
+        "leftLowerArm": [
+          -1.1238,
+          -2.5984,
+          0.2203
+        ],
+        "leftThumbProximal": [
+          0.285,
+          0.0486,
+          -0.284
+        ],
+        "leftThumbDistal": [
+          0.9415,
+          0.8693,
+          -0.6661
+        ],
+        "leftIndexProximal": [
+          -0.0171,
+          0.0103,
+          -1.0806
+        ],
+        "leftIndexIntermediate": [
+          -0.0337,
+          0.0209,
+          -1.0798
+        ],
+        "leftIndexDistal": [
+          -0.0323,
+          0.0264,
+          -1.3485
+        ],
+        "leftMiddleProximal": [
+          0,
+          0,
+          -1.0808
+        ],
+        "leftMiddleIntermediate": [
+          0,
+          0,
+          -1.3495
+        ],
+        "leftMiddleDistal": [
+          0,
+          0,
+          -1.4656
+        ],
+        "leftRingProximal": [
+          0,
+          0,
+          -1.0808
+        ],
+        "leftRingIntermediate": [
+          0,
+          0,
+          -1.3495
+        ],
+        "leftRingDistal": [
+          -0.0201,
+          0.0122,
+          -1.0805
+        ],
+        "leftLittleProximal": [
+          0,
+          0,
+          -0.9273
+        ],
+        "leftLittleIntermediate": [
+          0,
+          0,
+          -1.5708
+        ],
+        "leftLittleDistal": [
+          0.017,
+          -0.01,
+          -1.0806
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "pose_world_smiles.vrma",
+          "t": 1.467,
+          "length": 45
+        }
+      ]
+    },
+    {
+      "rank": 15,
+      "side": "L",
+      "votes": 45,
+      "memberCount": 3,
+      "capsule": "torso/upper",
+      "h": 1.0,
+      "dr": 0.0608,
+      "dir": [
+        0.458,
+        0.864,
+        0.211
+      ],
+      "nameHint": "torso_upper_high_L",
+      "source": {
+        "clip": "pose_world_lovely.vrma",
+        "t": 0.4
+      },
+      "nearestExisting": "stomach_L",
+      "similarTo": null,
+      "similarity": 2.434,
+      "bones": {
+        "leftUpperArm": [
+          0.0602,
+          0.0444,
+          -0.9138
+        ],
+        "leftLowerArm": [
+          0.2661,
+          -2.9511,
+          0.6508
+        ],
+        "leftHand": [
+          1.541,
+          -0.4396,
+          -0.2151
+        ],
+        "leftThumbProximal": [
+          -0.3537,
+          0.8712,
+          -0.0469
+        ],
+        "leftThumbDistal": [
+          -0.4445,
+          1.0117,
+          -0.0055
+        ],
+        "leftIndexProximal": [
+          -0.0183,
+          0.0128,
+          -1.2212
+        ],
+        "leftIndexIntermediate": [
+          -0.0378,
+          0.035,
+          -1.4642
+        ],
+        "leftIndexDistal": [
+          -0.0311,
+          0.0223,
+          -1.2206
+        ],
+        "leftMiddleProximal": [
+          0,
+          0,
+          -1.2215
+        ],
+        "leftMiddleIntermediate": [
+          0,
+          0,
+          -1.4656
+        ],
+        "leftMiddleDistal": [
+          0,
+          0,
+          -1.0808
+        ],
+        "leftRingProximal": [
+          0,
+          0,
+          -1.2215
+        ],
+        "leftRingIntermediate": [
+          0,
+          0,
+          -1.2215
+        ],
+        "leftRingDistal": [
+          -0.0214,
+          0.0152,
+          -1.221
+        ],
+        "leftLittleProximal": [
+          0,
+          0,
+          -1.2215
+        ],
+        "leftLittleIntermediate": [
+          0,
+          0,
+          -1.2215
+        ],
+        "leftLittleDistal": [
+          0.0182,
+          -0.0125,
+          -1.2212
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "pose_world_lovely.vrma",
+          "t": 1.6,
+          "length": 23
+        },
+        {
+          "clip": "pose_world_lovely.vrma",
+          "t": 0.4,
+          "length": 13
+        },
+        {
+          "clip": "pose_world_lovely.vrma",
+          "t": 2.667,
+          "length": 9
+        }
+      ]
+    },
+    {
+      "rank": 16,
+      "side": "R",
+      "votes": 45,
+      "memberCount": 1,
+      "capsule": "rightArm/upper",
+      "h": 0.978,
+      "dr": 0.0998,
+      "dir": [
+        0.0,
+        -0.721,
+        0.693
+      ],
+      "nameHint": "rightArm_upper_high_R",
+      "source": {
+        "clip": "pose_world_lovely.vrma",
+        "t": 1.467
+      },
+      "nearestExisting": "stomach_R",
+      "similarTo": null,
+      "similarity": 2.318,
+      "bones": {
+        "rightUpperArm": [
+          0.0658,
+          -0.0399,
+          0.9873
+        ],
+        "rightLowerArm": [
+          0.2857,
+          2.9561,
+          -0.6005
+        ],
+        "rightHand": [
+          1.4421,
+          0.4434,
+          0.5072
+        ],
+        "rightThumbProximal": [
+          -0.3537,
+          -0.8712,
+          0.0469
+        ],
+        "rightThumbDistal": [
+          -0.4445,
+          -1.0117,
+          0.0055
+        ],
+        "rightIndexProximal": [
+          -0.0183,
+          -0.0128,
+          1.2212
+        ],
+        "rightIndexIntermediate": [
+          -0.0378,
+          -0.035,
+          1.4642
+        ],
+        "rightIndexDistal": [
+          -0.0311,
+          -0.0223,
+          1.2206
+        ],
+        "rightMiddleProximal": [
+          0,
+          0,
+          1.2215
+        ],
+        "rightMiddleIntermediate": [
+          0,
+          0,
+          1.4656
+        ],
+        "rightMiddleDistal": [
+          0,
+          0,
+          1.0808
+        ],
+        "rightRingProximal": [
+          0,
+          0,
+          1.2215
+        ],
+        "rightRingIntermediate": [
+          0,
+          0,
+          1.2215
+        ],
+        "rightRingDistal": [
+          -0.0214,
+          -0.0152,
+          1.221
+        ],
+        "rightLittleProximal": [
+          0,
+          0,
+          1.2215
+        ],
+        "rightLittleIntermediate": [
+          0,
+          0,
+          1.2215
+        ],
+        "rightLittleDistal": [
+          0.0182,
+          0.0125,
+          1.2212
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "pose_world_lovely.vrma",
+          "t": 1.467,
+          "length": 45
+        }
+      ]
+    },
+    {
+      "rank": 17,
+      "side": "R",
+      "votes": 45,
+      "memberCount": 1,
+      "capsule": "torso/upper",
+      "h": 1.0,
+      "dr": 0.0602,
+      "dir": [
+        -0.679,
+        0.109,
+        0.726
+      ],
+      "nameHint": "torso_upper_high_R",
+      "source": {
+        "clip": "pose_world_connected.vrma",
+        "t": 1.467
+      },
+      "nearestExisting": "stomach_R",
+      "similarTo": null,
+      "similarity": 3.083,
+      "bones": {
+        "rightUpperArm": [
+          -0.5213,
+          0.4946,
+          1.3125
+        ],
+        "rightLowerArm": [
+          -2.3614,
+          2.3196,
+          0.5608
+        ],
+        "rightHand": [
+          1.2767,
+          -0.2059,
+          0.7441
+        ],
+        "rightIndexProximal": [
+          0.2259,
+          0.3924,
+          0.1839
+        ],
+        "rightIndexIntermediate": [
+          -0.0148,
+          -0.0032,
+          0.3945
+        ],
+        "rightIndexDistal": [
+          -0.0128,
+          -0.0027,
+          0.3946
+        ],
+        "rightMiddleProximal": [
+          0.0339,
+          -0.0667,
+          0.1757
+        ],
+        "rightMiddleIntermediate": [
+          0,
+          0,
+          0.5829
+        ],
+        "rightMiddleDistal": [
+          0,
+          0,
+          0.3948
+        ],
+        "rightRingProximal": [
+          -0.0297,
+          -0.4118,
+          0.1266
+        ],
+        "rightRingIntermediate": [
+          0,
+          0,
+          0.3948
+        ],
+        "rightRingDistal": [
+          -0.0088,
+          -0.0018,
+          0.3947
+        ],
+        "rightLittleProximal": [
+          -0.0199,
+          -0.6208,
+          0.1042
+        ],
+        "rightLittleIntermediate": [
+          0,
+          0,
+          0.1993
+        ],
+        "rightLittleDistal": [
+          0.0038,
+          0.0004,
+          0.1993
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "pose_world_connected.vrma",
+          "t": 1.467,
+          "length": 45
+        }
+      ]
+    },
+    {
+      "rank": 18,
+      "side": "R",
+      "votes": 41,
+      "memberCount": 2,
+      "capsule": "head/sphere",
+      "h": 0.0,
+      "dr": -0.0504,
+      "dir": [
+        0.986,
+        0.154,
+        -0.066
+      ],
+      "nameHint": "head_sphere_low_R",
+      "source": {
+        "clip": "pose_world_sparkle.vrma",
+        "t": 0.6
+      },
+      "nearestExisting": "chin_R",
+      "similarTo": null,
+      "similarity": 2.822,
+      "bones": {
+        "rightShoulder": [
+          -0.0195,
+          -0.1837,
+          -0.3084
+        ],
+        "rightUpperArm": [
+          -0.4879,
+          -0.2079,
+          -1.1159
+        ],
+        "rightLowerArm": [
+          0.0929,
+          2.1757,
+          -1.1954
+        ],
+        "rightHand": [
+          0.0049,
+          -0.0302,
+          0.1631
+        ],
+        "rightThumbProximal": [
+          -0.3665,
+          -0.0952,
+          0.2638
+        ],
+        "rightThumbDistal": [
+          -0.0424,
+          -0.5773,
+          -0.0833
+        ],
+        "rightIndexProximal": [
+          -0.0075,
+          -0.0015,
+          0.3947
+        ],
+        "rightIndexIntermediate": [
+          -0.0148,
+          -0.0032,
+          0.3945
+        ],
+        "rightIndexDistal": [
+          -0.0128,
+          -0.0027,
+          0.3946
+        ],
+        "rightMiddleProximal": [
+          0,
+          0,
+          0.3948
+        ],
+        "rightMiddleIntermediate": [
+          0,
+          0,
+          0.3948
+        ],
+        "rightMiddleDistal": [
+          0,
+          0,
+          0.1993
+        ],
+        "rightRingProximal": [
+          0,
+          0,
+          0.3948
+        ],
+        "rightRingIntermediate": [
+          0,
+          0,
+          0.1993
+        ],
+        "rightRingDistal": [
+          -0.0088,
+          -0.0018,
+          0.3947
+        ],
+        "rightLittleProximal": [
+          0,
+          0,
+          0.3948
+        ],
+        "rightLittleIntermediate": [
+          0,
+          0,
+          0.3948
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "pose_world_sparkle.vrma",
+          "t": 1.933,
+          "length": 22
+        },
+        {
+          "clip": "pose_world_sparkle.vrma",
+          "t": 0.6,
+          "length": 19
+        }
+      ]
+    },
+    {
+      "rank": 19,
+      "side": "R",
+      "votes": 36,
+      "memberCount": 4,
+      "capsule": "rightLeg/upper",
+      "h": 0.144,
+      "dr": 0.066,
+      "dir": [
+        -0.999,
+        -0.001,
+        0.054
+      ],
+      "nameHint": "rightLeg_upper_low_R",
+      "source": {
+        "clip": "VRMA_04.vrma",
+        "t": 9.133
+      },
+      "nearestExisting": "side_relaxed_R",
+      "similarTo": null,
+      "similarity": 0.499,
+      "bones": {
+        "rightShoulder": [
+          0.0014,
+          0.0053,
+          0.0425
+        ],
+        "rightUpperArm": [
+          -0.3171,
+          0.0543,
+          1.2623
+        ],
+        "rightLowerArm": [
+          0.3787,
+          -0.0052,
+          0.0089
+        ],
+        "rightHand": [
+          -0.0164,
+          -0.0771,
+          -0.2103
+        ],
+        "rightThumbProximal": [
+          -0.1337,
+          -0.0815,
+          -0.1236
+        ],
+        "rightThumbDistal": [
+          0,
+          -0.2566,
+          0
+        ],
+        "rightIndexProximal": [
+          0.0074,
+          -0.1639,
+          0.4435
+        ],
+        "rightIndexIntermediate": [
+          0,
+          0,
+          0.132
+        ],
+        "rightIndexDistal": [
+          0,
+          0,
+          -0.1104
+        ],
+        "rightMiddleProximal": [
+          0.0448,
+          -0.0824,
+          0.4991
+        ],
+        "rightMiddleDistal": [
+          0,
+          0,
+          -0.1208
+        ],
+        "rightRingProximal": [
+          -0.1135,
+          -0.1098,
+          0.4735
+        ],
+        "rightRingDistal": [
+          0,
+          0,
+          -0.1046
+        ],
+        "rightLittleProximal": [
+          -0.2602,
+          -0.2544,
+          0.2621
+        ],
+        "rightLittleIntermediate": [
+          0,
+          0,
+          0.1169
+        ],
+        "rightLittleDistal": [
+          0,
+          0,
+          0.0525
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_04.vrma",
+          "t": 9.133,
+          "length": 13
+        },
+        {
+          "clip": "VRMA_03.vrma",
+          "t": 11.333,
+          "length": 9
+        },
+        {
+          "clip": "VRMA_01.vrma",
+          "t": 0.2,
+          "length": 8
+        },
+        {
+          "clip": "VRMA_01.vrma",
+          "t": 11.333,
+          "length": 6
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "side": "L",
+      "votes": 35,
+      "memberCount": 3,
+      "capsule": "torso/lower",
+      "h": 0.734,
+      "dr": 0.2283,
+      "dir": [
+        0.774,
+        -0.148,
+        0.615
+      ],
+      "nameHint": "torso_lower_high_L",
+      "source": {
+        "clip": "VRMA_02.vrma",
+        "t": 5.867
+      },
+      "nearestExisting": "side_relaxed_L",
+      "similarTo": null,
+      "similarity": 1.036,
+      "bones": {
+        "leftShoulder": [
+          0.0041,
+          0.0477,
+          0.0459
+        ],
+        "leftUpperArm": [
+          -0.1984,
+          -0.0321,
+          -1.3919
+        ],
+        "leftLowerArm": [
+          0.0748,
+          0.0041,
+          -0.0009
+        ],
+        "leftHand": [
+          -0.2115,
+          0.1456,
+          0.9764
+        ],
+        "leftThumbProximal": [
+          0.0068,
+          -0.043,
+          0.0081
+        ],
+        "leftThumbDistal": [
+          0,
+          -0.3542,
+          0
+        ],
+        "leftIndexProximal": [
+          -0.0217,
+          0.167,
+          -0.27
+        ],
+        "leftIndexIntermediate": [
+          0,
+          0,
+          -0.0756
+        ],
+        "leftIndexDistal": [
+          0,
+          0,
+          0.1923
+        ],
+        "leftMiddleProximal": [
+          0.0618,
+          0.164,
+          -0.3624
+        ],
+        "leftMiddleDistal": [
+          0,
+          0,
+          0.1625
+        ],
+        "leftRingProximal": [
+          -0.127,
+          0.2233,
+          -0.3744
+        ],
+        "leftRingIntermediate": [
+          0,
+          0,
+          -0.0732
+        ],
+        "leftRingDistal": [
+          0,
+          0,
+          0.142
+        ],
+        "leftLittleProximal": [
+          -0.2347,
+          0.3803,
+          -0.2438
+        ],
+        "leftLittleIntermediate": [
+          0,
+          0,
+          -0.1508
+        ],
+        "leftLittleDistal": [
+          0,
+          0,
+          -0.0173
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_02.vrma",
+          "t": 6.667,
+          "length": 17
+        },
+        {
+          "clip": "VRMA_02.vrma",
+          "t": 4.933,
+          "length": 11
+        },
+        {
+          "clip": "VRMA_02.vrma",
+          "t": 5.867,
+          "length": 7
+        }
+      ]
+    },
+    {
+      "rank": 21,
+      "side": "R",
+      "votes": 32,
+      "memberCount": 2,
+      "capsule": "rightLeg/upper",
+      "h": 0.278,
+      "dr": 0.017,
+      "dir": [
+        -0.995,
+        -0.002,
+        0.101
+      ],
+      "nameHint": "rightLeg_upper_low_R",
+      "source": {
+        "clip": "greeting2.vrma",
+        "t": 0.733
+      },
+      "nearestExisting": "side_relaxed_R",
+      "similarTo": null,
+      "similarity": 1.063,
+      "bones": {
+        "rightShoulder": [
+          0.0197,
+          -0.0425,
+          0.3488
+        ],
+        "rightUpperArm": [
+          0.5515,
+          -0.0115,
+          1.0051
+        ],
+        "rightLowerArm": [
+          -0.0182,
+          0.2508,
+          -0.0023
+        ],
+        "rightHand": [
+          -0.6539,
+          -0.262,
+          -0.0748
+        ],
+        "rightThumbProximal": [
+          0.1886,
+          -0.3663,
+          -0.0428
+        ],
+        "rightThumbDistal": [
+          0.0954,
+          -0.2723,
+          -0.1028
+        ],
+        "rightIndexProximal": [
+          0.0015,
+          -0.019,
+          0.1535
+        ],
+        "rightIndexIntermediate": [
+          0.0106,
+          -0.0494,
+          0.4224
+        ],
+        "rightIndexDistal": [
+          0.0019,
+          -0.0218,
+          0.1787
+        ],
+        "rightMiddleProximal": [
+          0.0028,
+          -0.0262,
+          0.2086
+        ],
+        "rightMiddleIntermediate": [
+          0.0073,
+          -0.0405,
+          0.3538
+        ],
+        "rightMiddleDistal": [
+          0.004,
+          -0.0316,
+          0.257
+        ],
+        "rightRingProximal": [
+          0.0067,
+          -0.04,
+          0.3368
+        ],
+        "rightRingIntermediate": [
+          0.0075,
+          -0.0424,
+          0.3516
+        ],
+        "rightRingDistal": [
+          0.0034,
+          -0.0283,
+          0.2326
+        ],
+        "rightLittleProximal": [
+          0.0108,
+          -0.0501,
+          0.4324
+        ],
+        "rightLittleIntermediate": [
+          0.0025,
+          -0.0256,
+          0.2249
+        ],
+        "rightLittleDistal": [
+          0.0107,
+          -0.0527,
+          0.4372
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "greeting2.vrma",
+          "t": 0.733,
+          "length": 23
+        },
+        {
+          "clip": "greeting2.vrma",
+          "t": 4.8,
+          "length": 9
+        }
+      ]
+    },
+    {
+      "rank": 22,
+      "side": "R",
+      "votes": 27,
+      "memberCount": 1,
+      "capsule": "rightArm/upper",
+      "h": 0.669,
+      "dr": -0.0345,
+      "dir": [
+        -0.0,
+        0.782,
+        0.624
+      ],
+      "nameHint": "rightArm_upper_mid_R",
+      "source": {
+        "clip": "VRMA_04.vrma",
+        "t": 5.467
+      },
+      "nearestExisting": "hip_R",
+      "similarTo": null,
+      "similarity": 1.826,
+      "bones": {
+        "rightShoulder": [
+          -0.0018,
+          -0.0456,
+          0.0405
+        ],
+        "rightUpperArm": [
+          -0.7819,
+          0.2652,
+          0.9244
+        ],
+        "rightLowerArm": [
+          0.368,
+          2.296,
+          0.0081
+        ],
+        "rightHand": [
+          0.0632,
+          0.1735,
+          -0.3512
+        ],
+        "rightThumbProximal": [
+          -0.1609,
+          0.039,
+          -0.0731
+        ],
+        "rightThumbDistal": [
+          0,
+          0.2291,
+          0
+        ],
+        "rightIndexProximal": [
+          -0.1456,
+          -0.1383,
+          0.0844
+        ],
+        "rightIndexIntermediate": [
+          0,
+          0,
+          0.4046
+        ],
+        "rightIndexDistal": [
+          0,
+          0,
+          0.0681
+        ],
+        "rightMiddleProximal": [
+          -0.0334,
+          0.0272,
+          0.8874
+        ],
+        "rightMiddleIntermediate": [
+          0,
+          0,
+          1.04
+        ],
+        "rightMiddleDistal": [
+          0,
+          0,
+          0.8704
+        ],
+        "rightRingProximal": [
+          -0.1943,
+          -0.1308,
+          0.9644
+        ],
+        "rightRingIntermediate": [
+          0,
+          0,
+          1.337
+        ],
+        "rightRingDistal": [
+          0,
+          0,
+          0.8316
+        ],
+        "rightLittleProximal": [
+          -0.3404,
+          -0.3002,
+          0.8197
+        ],
+        "rightLittleIntermediate": [
+          0,
+          0,
+          1.3204
+        ],
+        "rightLittleDistal": [
+          0,
+          0,
+          0.8961
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_04.vrma",
+          "t": 5.467,
+          "length": 27
+        }
+      ]
+    },
+    {
+      "rank": 23,
+      "side": "R",
+      "votes": 26,
+      "memberCount": 2,
+      "capsule": "rightArm/upper",
+      "h": 0.657,
+      "dr": 0.0925,
+      "dir": [
+        0.0,
+        -0.208,
+        0.978
+      ],
+      "nameHint": "rightArm_upper_mid_R",
+      "source": {
+        "clip": "greeting2.vrma",
+        "t": 2.2
+      },
+      "nearestExisting": "hip_R",
+      "similarTo": null,
+      "similarity": 1.922,
+      "bones": {
+        "rightShoulder": [
+          -0.0187,
+          -0.1492,
+          0.1044
+        ],
+        "rightUpperArm": [
+          -0.4103,
+          0.1134,
+          0.5008
+        ],
+        "rightLowerArm": [
+          -0.0604,
+          2.1777,
+          -0.1153
+        ],
+        "rightHand": [
+          0.4417,
+          0.1414,
+          -0.7145
+        ],
+        "rightThumbProximal": [
+          -0.0189,
+          -0.0652,
+          -0.0989
+        ],
+        "rightThumbDistal": [
+          -0.0647,
+          0.0931,
+          -0.0083
+        ],
+        "rightIndexProximal": [
+          -0.0108,
+          0.2107,
+          0.0036
+        ],
+        "rightIndexIntermediate": [
+          0.0013,
+          -0.0176,
+          0.1489
+        ],
+        "rightIndexDistal": [
+          0.0003,
+          0.0084,
+          -0.0703
+        ],
+        "rightMiddleProximal": [
+          -0.0026,
+          0.0189,
+          0.0483
+        ],
+        "rightMiddleIntermediate": [
+          0.0046,
+          -0.0321,
+          0.2812
+        ],
+        "rightMiddleDistal": [
+          0,
+          -0.0016,
+          0.008
+        ],
+        "rightRingProximal": [
+          0.0225,
+          -0.1076,
+          0.1663
+        ],
+        "rightRingIntermediate": [
+          0.0049,
+          -0.0344,
+          0.2821
+        ],
+        "rightRingDistal": [
+          -0.0117,
+          0.0013,
+          -0.0165
+        ],
+        "rightLittleProximal": [
+          0.1014,
+          -0.2751,
+          0.3049
+        ],
+        "rightLittleIntermediate": [
+          0.0001,
+          -0.0074,
+          0.0746
+        ],
+        "rightLittleDistal": [
+          0.0018,
+          -0.0238,
+          0.1883
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "greeting2.vrma",
+          "t": 3.067,
+          "length": 20
+        },
+        {
+          "clip": "greeting2.vrma",
+          "t": 2.2,
+          "length": 6
+        }
+      ]
+    },
+    {
+      "rank": 24,
+      "side": "R",
+      "votes": 26,
+      "memberCount": 1,
+      "capsule": "rightLeg/lower",
+      "h": 0.744,
+      "dr": 0.0921,
+      "dir": [
+        -0.751,
+        -0.04,
+        0.659
+      ],
+      "nameHint": "rightLeg_lower_high_R",
+      "source": {
+        "clip": "VRMA_02.vrma",
+        "t": 0.8
+      },
+      "nearestExisting": "side_relaxed_R",
+      "similarTo": null,
+      "similarity": 1.308,
+      "bones": {
+        "rightShoulder": [
+          0.0018,
+          0.1665,
+          -0.0031
+        ],
+        "rightUpperArm": [
+          0.0987,
+          0.692,
+          1.0704
+        ],
+        "rightLowerArm": [
+          0.3972,
+          0.1168,
+          -0.0014
+        ],
+        "rightHand": [
+          -0.0944,
+          -0.0648,
+          -0.9706
+        ],
+        "rightThumbProximal": [
+          -0.2099,
+          0.0395,
+          -0.1073
+        ],
+        "rightThumbDistal": [
+          0,
+          0.2575,
+          0
+        ],
+        "rightIndexProximal": [
+          -0.1054,
+          -0.1535,
+          0.0368
+        ],
+        "rightIndexIntermediate": [
+          0.0005,
+          0,
+          0.001
+        ],
+        "rightIndexDistal": [
+          0,
+          0,
+          -0.2172
+        ],
+        "rightMiddleProximal": [
+          0.0123,
+          -0.1915,
+          0.0646
+        ],
+        "rightMiddleDistal": [
+          0,
+          0,
+          -0.1704
+        ],
+        "rightRingProximal": [
+          -0.1574,
+          -0.2372,
+          0.1024
+        ],
+        "rightRingIntermediate": [
+          0,
+          0,
+          0.1392
+        ],
+        "rightRingDistal": [
+          0,
+          0,
+          -0.1652
+        ],
+        "rightLittleProximal": [
+          -0.2646,
+          -0.431,
+          0.0903
+        ],
+        "rightLittleIntermediate": [
+          0,
+          0,
+          0.2368
+        ],
+        "rightLittleDistal": [
+          0,
+          0,
+          0.1564
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_02.vrma",
+          "t": 0.8,
+          "length": 26
+        }
+      ]
+    },
+    {
+      "rank": 25,
+      "side": "L",
+      "votes": 25,
+      "memberCount": 1,
+      "capsule": "leftLeg/lower",
+      "h": 0.74,
+      "dr": 0.0693,
+      "dir": [
+        0.765,
+        -0.039,
+        0.643
+      ],
+      "nameHint": "leftLeg_lower_high_L",
+      "source": {
+        "clip": "VRMA_02.vrma",
+        "t": 0.8
+      },
+      "nearestExisting": "side_relaxed_L",
+      "similarTo": null,
+      "similarity": 1.194,
+      "bones": {
+        "leftShoulder": [
+          -0.0123,
+          -0.1931,
+          0.0354
+        ],
+        "leftUpperArm": [
+          0.2423,
+          -0.682,
+          -1.0536
+        ],
+        "leftLowerArm": [
+          0.1539,
+          -0.0009,
+          -0.0017
+        ],
+        "leftHand": [
+          -0.1226,
+          0.1134,
+          0.8281
+        ],
+        "leftThumbProximal": [
+          -0.0971,
+          -0.041,
+          0.0502
+        ],
+        "leftThumbDistal": [
+          0,
+          -0.3615,
+          0
+        ],
+        "leftIndexProximal": [
+          -0.1271,
+          0.2436,
+          -0.0708
+        ],
+        "leftIndexIntermediate": [
+          -0.0016,
+          0,
+          0.0281
+        ],
+        "leftIndexDistal": [
+          0,
+          0,
+          0.3439
+        ],
+        "leftMiddleProximal": [
+          0.041,
+          0.2237,
+          -0.183
+        ],
+        "leftMiddleIntermediate": [
+          0,
+          0,
+          0.0006
+        ],
+        "leftMiddleDistal": [
+          0,
+          0,
+          0.3037
+        ],
+        "leftRingProximal": [
+          -0.1586,
+          0.2248,
+          -0.2794
+        ],
+        "leftRingIntermediate": [
+          0,
+          0,
+          -0.0303
+        ],
+        "leftRingDistal": [
+          0,
+          0,
+          0.2518
+        ],
+        "leftLittleProximal": [
+          -0.2465,
+          0.312,
+          -0.2698
+        ],
+        "leftLittleIntermediate": [
+          0,
+          0,
+          -0.1412
+        ],
+        "leftLittleDistal": [
+          0,
+          0,
+          -0.0312
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_02.vrma",
+          "t": 0.8,
+          "length": 25
+        }
+      ]
+    },
+    {
+      "rank": 26,
+      "side": "L",
+      "votes": 25,
+      "memberCount": 1,
+      "capsule": "torso/upper",
+      "h": 0.0,
+      "dr": 0.1927,
+      "dir": [
+        0.938,
+        -0.255,
+        0.234
+      ],
+      "nameHint": "torso_upper_low_L",
+      "source": {
+        "clip": "dance_kebab.vrma",
+        "t": 18.4
+      },
+      "nearestExisting": "stomach_L",
+      "similarTo": null,
+      "similarity": 1.784,
+      "bones": {
+        "leftShoulder": [
+          0.0012,
+          0.0377,
+          0.0645
+        ],
+        "leftUpperArm": [
+          0.7059,
+          0.243,
+          -0.7096
+        ],
+        "leftLowerArm": [
+          0.062,
+          -1.8233,
+          -0.5481
+        ],
+        "leftHand": [
+          0.2681,
+          -0.3391,
+          0.431
+        ],
+        "leftThumbProximal": [
+          0.0403,
+          0.1943,
+          0.0347
+        ],
+        "leftThumbDistal": [
+          -0.0041,
+          0.0307,
+          0.002
+        ],
+        "leftIndexProximal": [
+          0.1398,
+          0.1505,
+          -0.5575
+        ],
+        "leftIndexIntermediate": [
+          0.0066,
+          -0.0171,
+          -1.3634
+        ],
+        "leftIndexDistal": [
+          0.0039,
+          -0.0124,
+          -1.3079
+        ],
+        "leftMiddleProximal": [
+          0.0488,
+          0.0004,
+          -0.9688
+        ],
+        "leftMiddleIntermediate": [
+          -0.0356,
+          0.0418,
+          -1.3321
+        ],
+        "leftMiddleDistal": [
+          -0.0525,
+          0.0359,
+          -1.2914
+        ],
+        "leftRingProximal": [
+          -0.2517,
+          -0.0242,
+          -1.1642
+        ],
+        "leftRingIntermediate": [
+          -0.1533,
+          0.1433,
+          -1.369
+        ],
+        "leftRingDistal": [
+          -0.1533,
+          0.1433,
+          -1.369
+        ],
+        "leftLittleProximal": [
+          -0.4704,
+          -0.1195,
+          -1.0382
+        ],
+        "leftLittleIntermediate": [
+          -0.2471,
+          0.282,
+          -1.283
+        ],
+        "leftLittleDistal": [
+          -0.2471,
+          0.282,
+          -1.283
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "dance_kebab.vrma",
+          "t": 18.4,
+          "length": 25
+        }
+      ]
+    },
+    {
+      "rank": 27,
+      "side": "R",
+      "votes": 25,
+      "memberCount": 2,
+      "capsule": "head/sphere",
+      "h": 0.0,
+      "dr": 0.0544,
+      "dir": [
+        -0.013,
+        -0.268,
+        0.963
+      ],
+      "nameHint": "head_sphere_low_R",
+      "source": {
+        "clip": "dance_kebab.vrma",
+        "t": 18.4
+      },
+      "nearestExisting": "chin_R",
+      "similarTo": null,
+      "similarity": 1.486,
+      "bones": {
+        "rightShoulder": [
+          -0.0041,
+          0.0333,
+          -0.2479
+        ],
+        "rightUpperArm": [
+          -0.5772,
+          0.333,
+          0.1191
+        ],
+        "rightLowerArm": [
+          -0.3799,
+          2.2025,
+          -0.3937
+        ],
+        "rightHand": [
+          -0.654,
+          0.045,
+          0.2035
+        ],
+        "rightThumbProximal": [
+          0.0575,
+          -0.2614,
+          -0.0458
+        ],
+        "rightThumbDistal": [
+          0.1194,
+          -0.5105,
+          -0.0796
+        ],
+        "rightIndexProximal": [
+          0.0216,
+          0.049,
+          0.5898
+        ],
+        "rightIndexIntermediate": [
+          -0.0169,
+          -0.0012,
+          -0.0292
+        ],
+        "rightIndexDistal": [
+          -0.0183,
+          -0.006,
+          -0.0848
+        ],
+        "rightMiddleProximal": [
+          0.0511,
+          0.0055,
+          1.157
+        ],
+        "rightMiddleIntermediate": [
+          -0.034,
+          -0.0348,
+          1.2138
+        ],
+        "rightMiddleDistal": [
+          -0.0345,
+          -0.0321,
+          1.1738
+        ],
+        "rightRingProximal": [
+          -0.2338,
+          0.0722,
+          0.9728
+        ],
+        "rightRingIntermediate": [
+          -0.1472,
+          -0.1158,
+          1.1942
+        ],
+        "rightRingDistal": [
+          -0.1472,
+          -0.1158,
+          1.1942
+        ],
+        "rightLittleProximal": [
+          -0.4432,
+          0.1863,
+          0.8881
+        ],
+        "rightLittleIntermediate": [
+          -0.2382,
+          -0.2333,
+          1.1455
+        ],
+        "rightLittleDistal": [
+          -0.2382,
+          -0.2333,
+          1.1455
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "dance_kebab.vrma",
+          "t": 18.4,
+          "length": 18
+        },
+        {
+          "clip": "dance_kebab.vrma",
+          "t": 19.8,
+          "length": 7
+        }
+      ]
+    },
+    {
+      "rank": 28,
+      "side": "R",
+      "votes": 25,
+      "memberCount": 3,
+      "capsule": "head/sphere",
+      "h": 0.0,
+      "dr": 0.0001,
+      "dir": [
+        -0.735,
+        -0.152,
+        0.661
+      ],
+      "nameHint": "head_sphere_low_R",
+      "source": {
+        "clip": "VRMA_04.vrma",
+        "t": 2.933
+      },
+      "nearestExisting": "chin_R",
+      "similarTo": null,
+      "similarity": 1.998,
+      "bones": {
+        "rightShoulder": [
+          -0.003,
+          0.0568,
+          -0.0512
+        ],
+        "rightUpperArm": [
+          -0.7606,
+          1.3549,
+          1.4681
+        ],
+        "rightLowerArm": [
+          -0.0252,
+          1.9673,
+          0.002
+        ],
+        "rightHand": [
+          -0.0039,
+          -0.0091,
+          -0.4075
+        ],
+        "rightThumbProximal": [
+          -0.2183,
+          0.0359,
+          -0.09
+        ],
+        "rightThumbDistal": [
+          0,
+          0.2234,
+          0
+        ],
+        "rightIndexProximal": [
+          -0.0992,
+          -0.146,
+          0.2482
+        ],
+        "rightIndexIntermediate": [
+          0,
+          0,
+          0.4331
+        ],
+        "rightIndexDistal": [
+          0,
+          0,
+          0.0289
+        ],
+        "rightMiddleProximal": [
+          -0.0742,
+          0.0361,
+          1.1182
+        ],
+        "rightMiddleIntermediate": [
+          0,
+          0,
+          1.0427
+        ],
+        "rightMiddleDistal": [
+          0,
+          0,
+          0.9016
+        ],
+        "rightRingProximal": [
+          -0.2143,
+          -0.1142,
+          1.1757
+        ],
+        "rightRingIntermediate": [
+          0,
+          0,
+          1.3654
+        ],
+        "rightRingDistal": [
+          0,
+          0,
+          0.8358
+        ],
+        "rightLittleProximal": [
+          -0.3486,
+          -0.268,
+          0.981
+        ],
+        "rightLittleIntermediate": [
+          0,
+          0,
+          1.3498
+        ],
+        "rightLittleDistal": [
+          0,
+          0,
+          0.9379
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_04.vrma",
+          "t": 2.933,
+          "length": 10
+        },
+        {
+          "clip": "VRMA_04.vrma",
+          "t": 3.6,
+          "length": 9
+        },
+        {
+          "clip": "VRMA_04.vrma",
+          "t": 2.4,
+          "length": 6
+        }
+      ]
+    },
+    {
+      "rank": 29,
+      "side": "L",
+      "votes": 20,
+      "memberCount": 1,
+      "capsule": "torso/lower",
+      "h": 0.0,
+      "dr": 0.1968,
+      "dir": [
+        0.702,
+        0.007,
+        -0.712
+      ],
+      "nameHint": "torso_lower_low_L",
+      "source": {
+        "clip": "VRMA_06.vrma",
+        "t": 2.133
+      },
+      "nearestExisting": "hip_L",
+      "similarTo": null,
+      "similarity": 2.233,
+      "bones": {
+        "leftShoulder": [
+          -0.0039,
+          -0.0089,
+          -0.1208
+        ],
+        "leftUpperArm": [
+          1.4045,
+          1.4209,
+          -1.9788
+        ],
+        "leftLowerArm": [
+          0.7416,
+          -1.2331,
+          0.4873
+        ],
+        "leftHand": [
+          0.3631,
+          -0.0726,
+          0.8926
+        ],
+        "leftThumbProximal": [
+          0.0316,
+          -0.0282,
+          0.0724
+        ],
+        "leftThumbDistal": [
+          -0.02,
+          -0.5032,
+          0.3464
+        ],
+        "leftIndexProximal": [
+          -0.0679,
+          -0.016,
+          0.068
+        ],
+        "leftIndexIntermediate": [
+          -0.0002,
+          0.0872,
+          0.0156
+        ],
+        "leftIndexDistal": [
+          -0.0206,
+          0.0599,
+          0.1487
+        ],
+        "leftMiddleProximal": [
+          0.0376,
+          -0.1273,
+          -0.183
+        ],
+        "leftMiddleIntermediate": [
+          -0.0041,
+          0.0203,
+          0.0242
+        ],
+        "leftMiddleDistal": [
+          -0.001,
+          0.0027,
+          0.0079
+        ],
+        "leftRingProximal": [
+          -0.1099,
+          -0.1565,
+          -0.4008
+        ],
+        "leftRingIntermediate": [
+          0.0217,
+          -0.0843,
+          -0.1673
+        ],
+        "leftRingDistal": [
+          0.0087,
+          -0.0275,
+          -0.0555
+        ],
+        "leftLittleProximal": [
+          -0.1496,
+          -0.2851,
+          -0.4415
+        ],
+        "leftLittleIntermediate": [
+          -0.0027,
+          -0.0837,
+          -0.1131
+        ],
+        "leftLittleDistal": [
+          -0.0024,
+          0.0445,
+          0.0601
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_06.vrma",
+          "t": 2.133,
+          "length": 20
+        }
+      ]
+    },
+    {
+      "rank": 30,
+      "side": "L",
+      "votes": 18,
+      "memberCount": 2,
+      "capsule": "leftLeg/upper",
+      "h": 0.0,
+      "dr": 0.1715,
+      "dir": [
+        0.977,
+        0.178,
+        0.114
+      ],
+      "nameHint": "leftLeg_upper_low_L",
+      "source": {
+        "clip": "VRMA_01.vrma",
+        "t": 9.133
+      },
+      "nearestExisting": "side_relaxed_L",
+      "similarTo": null,
+      "similarity": 1.269,
+      "bones": {
+        "leftShoulder": [
+          0.0064,
+          0.0821,
+          0.0462
+        ],
+        "leftUpperArm": [
+          -0.1645,
+          0.0592,
+          -0.8397
+        ],
+        "leftLowerArm": [
+          0.4498,
+          0.0044,
+          -0.0067
+        ],
+        "leftHand": [
+          -0.1763,
+          0.0973,
+          1.0714
+        ],
+        "leftThumbProximal": [
+          -0.0274,
+          -0.0349,
+          0.022
+        ],
+        "leftThumbDistal": [
+          0,
+          0.0111,
+          0
+        ],
+        "leftIndexProximal": [
+          0.0115,
+          0.1845,
+          -0.3403
+        ],
+        "leftIndexIntermediate": [
+          0,
+          0,
+          -0.2146
+        ],
+        "leftIndexDistal": [
+          0,
+          0,
+          0.1337
+        ],
+        "leftMiddleProximal": [
+          0.0552,
+          0.1337,
+          -0.3929
+        ],
+        "leftMiddleIntermediate": [
+          0,
+          0,
+          -0.0811
+        ],
+        "leftMiddleDistal": [
+          0,
+          0,
+          0.0407
+        ],
+        "leftRingProximal": [
+          -0.0942,
+          0.1762,
+          -0.3854
+        ],
+        "leftRingIntermediate": [
+          0,
+          0,
+          -0.1951
+        ],
+        "leftRingDistal": [
+          0,
+          0,
+          0.0386
+        ],
+        "leftLittleProximal": [
+          -0.2162,
+          0.2862,
+          -0.212
+        ],
+        "leftLittleIntermediate": [
+          0,
+          0,
+          -0.2318
+        ],
+        "leftLittleDistal": [
+          0,
+          0,
+          -0.1303
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_01.vrma",
+          "t": 9.133,
+          "length": 11
+        },
+        {
+          "clip": "VRMA_01.vrma",
+          "t": 9.733,
+          "length": 7
+        }
+      ]
+    },
+    {
+      "rank": 31,
+      "side": "R",
+      "votes": 18,
+      "memberCount": 1,
+      "capsule": "rightArm/lower",
+      "h": 0.0,
+      "dr": 0.0338,
+      "dir": [
+        0.99,
+        0.089,
+        0.105
+      ],
+      "nameHint": "rightArm_lower_low_R",
+      "source": {
+        "clip": "VRMA_04.vrma",
+        "t": 6.933
+      },
+      "nearestExisting": "hip_R",
+      "similarTo": null,
+      "similarity": 1.807,
+      "bones": {
+        "rightShoulder": [
+          -0.0009,
+          -0.0333,
+          0.0382
+        ],
+        "rightUpperArm": [
+          -0.7793,
+          0.2514,
+          0.9188
+        ],
+        "rightLowerArm": [
+          0.3599,
+          2.2785,
+          0.0103
+        ],
+        "rightHand": [
+          0.0601,
+          0.1682,
+          -0.3446
+        ],
+        "rightThumbProximal": [
+          -0.1603,
+          0.0389,
+          -0.0731
+        ],
+        "rightThumbDistal": [
+          0,
+          0.2254,
+          0
+        ],
+        "rightIndexProximal": [
+          -0.1424,
+          -0.1441,
+          0.0971
+        ],
+        "rightIndexIntermediate": [
+          0,
+          0,
+          0.4106
+        ],
+        "rightIndexDistal": [
+          0,
+          0,
+          0.0629
+        ],
+        "rightMiddleProximal": [
+          -0.0342,
+          0.0272,
+          0.8973
+        ],
+        "rightMiddleIntermediate": [
+          0,
+          0,
+          1.038
+        ],
+        "rightMiddleDistal": [
+          0,
+          0,
+          0.8717
+        ],
+        "rightRingProximal": [
+          -0.1948,
+          -0.1292,
+          0.9734
+        ],
+        "rightRingIntermediate": [
+          0,
+          0,
+          1.3336
+        ],
+        "rightRingDistal": [
+          0,
+          0,
+          0.83
+        ],
+        "rightLittleProximal": [
+          -0.343,
+          -0.296,
+          0.8314
+        ],
+        "rightLittleIntermediate": [
+          0,
+          0,
+          1.3246
+        ],
+        "rightLittleDistal": [
+          0,
+          0,
+          0.9004
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_04.vrma",
+          "t": 6.933,
+          "length": 18
+        }
+      ]
+    },
+    {
+      "rank": 32,
+      "side": "R",
+      "votes": 13,
+      "memberCount": 2,
+      "capsule": "torso/lower",
+      "h": 0.899,
+      "dr": 0.21,
+      "dir": [
+        -0.806,
+        -0.138,
+        0.576
+      ],
+      "nameHint": "torso_lower_high_R",
+      "source": {
+        "clip": "VRMA_01.vrma",
+        "t": 3.267
+      },
+      "nearestExisting": "side_relaxed_R",
+      "similarTo": null,
+      "similarity": 1.367,
+      "bones": {
+        "rightShoulder": [
+          -0.0014,
+          -0.0498,
+          0.0058
+        ],
+        "rightUpperArm": [
+          -0.7353,
+          -0.0691,
+          0.6559
+        ],
+        "rightLowerArm": [
+          0.4785,
+          0.0148,
+          0
+        ],
+        "rightHand": [
+          -0.1533,
+          -0.1484,
+          -0.8073
+        ],
+        "rightThumbProximal": [
+          -0.0555,
+          -0.0542,
+          -0.0495
+        ],
+        "rightThumbDistal": [
+          0,
+          -0.1818,
+          0
+        ],
+        "rightIndexProximal": [
+          0.0238,
+          -0.1678,
+          0.3612
+        ],
+        "rightIndexIntermediate": [
+          0,
+          0,
+          0.3396
+        ],
+        "rightIndexDistal": [
+          0,
+          0,
+          0.0524
+        ],
+        "rightMiddleProximal": [
+          0.0466,
+          -0.1109,
+          0.3986
+        ],
+        "rightMiddleIntermediate": [
+          0,
+          0,
+          0.1698
+        ],
+        "rightMiddleDistal": [
+          0,
+          0,
+          0.0772
+        ],
+        "rightRingProximal": [
+          -0.0619,
+          -0.1189,
+          0.3675
+        ],
+        "rightRingIntermediate": [
+          0,
+          0,
+          0.19
+        ],
+        "rightRingDistal": [
+          0,
+          0,
+          0.004
+        ],
+        "rightLittleProximal": [
+          -0.2118,
+          -0.3113,
+          0.1396
+        ],
+        "rightLittleIntermediate": [
+          0,
+          0,
+          0.2302
+        ],
+        "rightLittleDistal": [
+          0,
+          0,
+          0.1756
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_01.vrma",
+          "t": 3.733,
+          "length": 7
+        },
+        {
+          "clip": "VRMA_01.vrma",
+          "t": 3.267,
+          "length": 6
+        }
+      ]
+    },
+    {
+      "rank": 33,
+      "side": "L",
+      "votes": 12,
+      "memberCount": 1,
+      "capsule": "torso/lower",
+      "h": 1.0,
+      "dr": 0.1899,
+      "dir": [
+        0.916,
+        -0.07,
+        0.394
+      ],
+      "nameHint": "torso_lower_high_L",
+      "source": {
+        "clip": "dance_kebab.vrma",
+        "t": 19.6
+      },
+      "nearestExisting": "stomach_L",
+      "similarTo": null,
+      "similarity": 2.053,
+      "bones": {
+        "leftShoulder": [
+          0.0046,
+          0.1012,
+          0.0912
+        ],
+        "leftUpperArm": [
+          0.7992,
+          -0.0305,
+          -0.675
+        ],
+        "leftLowerArm": [
+          0.2081,
+          -1.4784,
+          -0.6236
+        ],
+        "leftHand": [
+          0.339,
+          -0.4402,
+          0.8129
+        ],
+        "leftThumbProximal": [
+          0.0403,
+          0.1943,
+          0.0347
+        ],
+        "leftThumbDistal": [
+          -0.0041,
+          0.0307,
+          0.002
+        ],
+        "leftIndexProximal": [
+          0.1398,
+          0.1505,
+          -0.5575
+        ],
+        "leftIndexIntermediate": [
+          0.0066,
+          -0.0171,
+          -1.3634
+        ],
+        "leftIndexDistal": [
+          0.0039,
+          -0.0124,
+          -1.3079
+        ],
+        "leftMiddleProximal": [
+          0.0487,
+          0.0004,
+          -0.9688
+        ],
+        "leftMiddleIntermediate": [
+          -0.0356,
+          0.0418,
+          -1.3321
+        ],
+        "leftMiddleDistal": [
+          -0.0525,
+          0.0359,
+          -1.2914
+        ],
+        "leftRingProximal": [
+          -0.2517,
+          -0.0242,
+          -1.1641
+        ],
+        "leftRingIntermediate": [
+          -0.1533,
+          0.1433,
+          -1.369
+        ],
+        "leftRingDistal": [
+          -0.1533,
+          0.1433,
+          -1.369
+        ],
+        "leftLittleProximal": [
+          -0.4704,
+          -0.1195,
+          -1.0382
+        ],
+        "leftLittleIntermediate": [
+          -0.2471,
+          0.282,
+          -1.283
+        ],
+        "leftLittleDistal": [
+          -0.2471,
+          0.282,
+          -1.283
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "dance_kebab.vrma",
+          "t": 19.6,
+          "length": 12
+        }
+      ]
+    },
+    {
+      "rank": 34,
+      "side": "R",
+      "votes": 11,
+      "memberCount": 1,
+      "capsule": "torso/upper",
+      "h": 1.0,
+      "dr": 0.1235,
+      "dir": [
+        -0.436,
+        0.275,
+        0.857
+      ],
+      "nameHint": "torso_upper_high_R",
+      "source": {
+        "clip": "dance_kebab.vrma",
+        "t": 0.533
+      },
+      "nearestExisting": "hip_R",
+      "similarTo": null,
+      "similarity": 1.805,
+      "bones": {
+        "rightShoulder": [
+          0.0016,
+          -0.0341,
+          -0.091
+        ],
+        "rightUpperArm": [
+          0.2143,
+          0.4183,
+          1.1587
+        ],
+        "rightLowerArm": [
+          0.1777,
+          2.2709,
+          -0.132
+        ],
+        "rightHand": [
+          0.1957,
+          0.2731,
+          -0.8544
+        ],
+        "rightThumbProximal": [
+          0.0399,
+          -0.1945,
+          -0.0343
+        ],
+        "rightThumbDistal": [
+          -0.0058,
+          -0.0313,
+          -0.0016
+        ],
+        "rightIndexProximal": [
+          0.1398,
+          -0.1505,
+          0.5575
+        ],
+        "rightIndexIntermediate": [
+          0.0066,
+          0.0171,
+          1.3634
+        ],
+        "rightIndexDistal": [
+          0.007,
+          0.0116,
+          1.3079
+        ],
+        "rightMiddleProximal": [
+          0.0487,
+          -0.0004,
+          0.9688
+        ],
+        "rightMiddleIntermediate": [
+          -0.0356,
+          -0.0418,
+          1.3321
+        ],
+        "rightMiddleDistal": [
+          -0.0364,
+          -0.0392,
+          1.2921
+        ],
+        "rightRingProximal": [
+          -0.2517,
+          0.0242,
+          1.1642
+        ],
+        "rightRingIntermediate": [
+          -0.1533,
+          -0.1433,
+          1.369
+        ],
+        "rightRingDistal": [
+          -0.1533,
+          -0.1433,
+          1.369
+        ],
+        "rightLittleProximal": [
+          -0.4704,
+          0.1194,
+          1.0382
+        ],
+        "rightLittleIntermediate": [
+          -0.247,
+          -0.282,
+          1.283
+        ],
+        "rightLittleDistal": [
+          -0.247,
+          -0.282,
+          1.283
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "dance_kebab.vrma",
+          "t": 0.533,
+          "length": 11
+        }
+      ]
+    },
+    {
+      "rank": 35,
+      "side": "L",
+      "votes": 10,
+      "memberCount": 1,
+      "capsule": "leftLeg/upper",
+      "h": 0.04,
+      "dr": 0.061,
+      "dir": [
+        0.98,
+        -0.004,
+        0.197
+      ],
+      "nameHint": "leftLeg_upper_low_L",
+      "source": {
+        "clip": "VRMA_06.vrma",
+        "t": 5.267
+      },
+      "nearestExisting": "side_relaxed_L",
+      "similarTo": null,
+      "similarity": 1.102,
+      "bones": {
+        "leftShoulder": [
+          -0.0061,
+          -0.0026,
+          -0.1793
+        ],
+        "leftUpperArm": [
+          0.4112,
+          0.2907,
+          -1.1987
+        ],
+        "leftLowerArm": [
+          -0.6205,
+          -0.5912,
+          0.1602
+        ],
+        "leftHand": [
+          0.0124,
+          -0.0363,
+          -0.1143
+        ],
+        "leftThumbProximal": [
+          0.009,
+          -0.0221,
+          -0.0085
+        ],
+        "leftThumbDistal": [
+          -0.0265,
+          -0.1697,
+          0.1148
+        ],
+        "leftIndexProximal": [
+          0.1148,
+          -0.2555,
+          -0.2565
+        ],
+        "leftIndexIntermediate": [
+          0.0014,
+          0.062,
+          0.0147
+        ],
+        "leftIndexDistal": [
+          -0.0037,
+          0.0131,
+          0.0317
+        ],
+        "leftMiddleProximal": [
+          0.0043,
+          -0.3763,
+          -0.5848
+        ],
+        "leftMiddleIntermediate": [
+          -0.0038,
+          0.0165,
+          0.0243
+        ],
+        "leftMiddleDistal": [
+          0.0062,
+          -0.0183,
+          -0.0522
+        ],
+        "leftRingProximal": [
+          -0.0681,
+          -0.3367,
+          -0.6888
+        ],
+        "leftRingIntermediate": [
+          0.0289,
+          -0.1584,
+          -0.3103
+        ],
+        "leftRingDistal": [
+          0.0113,
+          -0.0367,
+          -0.0739
+        ],
+        "leftLittleProximal": [
+          -0.147,
+          -0.362,
+          -0.5818
+        ],
+        "leftLittleIntermediate": [
+          -0.0063,
+          -0.1159,
+          -0.157
+        ],
+        "leftLittleDistal": [
+          0.0002,
+          -0.0167,
+          -0.0225
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_06.vrma",
+          "t": 5.267,
+          "length": 10
+        }
+      ]
+    },
+    {
+      "rank": 36,
+      "side": "R",
+      "votes": 10,
+      "memberCount": 1,
+      "capsule": "head/sphere",
+      "h": 0.0,
+      "dr": 0.1137,
+      "dir": [
+        -0.285,
+        0.638,
+        0.715
+      ],
+      "nameHint": "head_sphere_low_R",
+      "source": {
+        "clip": "dance_25.vrma",
+        "t": 20.067
+      },
+      "nearestExisting": "side_relaxed_R",
+      "similarTo": null,
+      "similarity": 2.807,
+      "bones": {
+        "rightShoulder": [
+          -0.2503,
+          -0.0729,
+          -0.4504
+        ],
+        "rightUpperArm": [
+          -1.028,
+          1.0055,
+          0.1618
+        ],
+        "rightLowerArm": [
+          -1.9043,
+          0.0003,
+          -0.106
+        ],
+        "rightHand": [
+          0.0097,
+          -0.05,
+          0.054
+        ],
+        "rightThumbProximal": [
+          -0.2268,
+          -0.1104,
+          0.0354
+        ],
+        "rightThumbDistal": [
+          0.0417,
+          -0.0761,
+          -0.1615
+        ],
+        "rightIndexProximal": [
+          0.0023,
+          0.0968,
+          -0.048
+        ],
+        "rightIndexIntermediate": [
+          0.014,
+          0.0091,
+          0.4564
+        ],
+        "rightIndexDistal": [
+          0.0148,
+          0.0067,
+          0.1596
+        ],
+        "rightMiddleProximal": [
+          0.0062,
+          -0.097,
+          -0.0478
+        ],
+        "rightMiddleIntermediate": [
+          0,
+          0,
+          0.4333
+        ],
+        "rightMiddleDistal": [
+          0,
+          0,
+          0.2127
+        ],
+        "rightRingProximal": [
+          0.0062,
+          -0.097,
+          -0.0478
+        ],
+        "rightRingIntermediate": [
+          0,
+          0,
+          0.4341
+        ],
+        "rightRingDistal": [
+          0,
+          0,
+          0.2264
+        ],
+        "rightLittleProximal": [
+          0.0062,
+          -0.097,
+          -0.0478
+        ],
+        "rightLittleIntermediate": [
+          0,
+          0,
+          0.4066
+        ],
+        "rightLittleDistal": [
+          0,
+          0,
+          0.1625
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "dance_25.vrma",
+          "t": 20.067,
+          "length": 10
+        }
+      ]
+    },
+    {
+      "rank": 37,
+      "side": "L",
+      "votes": 9,
+      "memberCount": 1,
+      "capsule": "torso/upper",
+      "h": 1.0,
+      "dr": 0.0072,
+      "dir": [
+        0.144,
+        0.445,
+        0.884
+      ],
+      "nameHint": "torso_upper_high_L",
+      "source": {
+        "clip": "dance_25.vrma",
+        "t": 4.8
+      },
+      "nearestExisting": "stomach_L",
+      "similarTo": null,
+      "similarity": 1.428,
+      "bones": {
+        "leftShoulder": [
+          -0.2506,
+          0.2364,
+          0.2228
+        ],
+        "leftUpperArm": [
+          0.6472,
+          -0.249,
+          -1.4037
+        ],
+        "leftLowerArm": [
+          -0.2796,
+          -2.2045,
+          0.1784
+        ],
+        "leftHand": [
+          -0.1492,
+          0.2409,
+          -0.7035
+        ],
+        "leftThumbProximal": [
+          0.3432,
+          0.2757,
+          0.5265
+        ],
+        "leftThumbDistal": [
+          -0.2072,
+          0.169,
+          -0.0256
+        ],
+        "leftIndexProximal": [
+          0.0007,
+          0.0368,
+          0.1435
+        ],
+        "leftIndexIntermediate": [
+          0.001,
+          -0.0005,
+          -0.1806
+        ],
+        "leftIndexDistal": [
+          0.001,
+          -0.0004,
+          -0.0924
+        ],
+        "leftMiddleProximal": [
+          0.0001,
+          0.056,
+          0.0471
+        ],
+        "leftMiddleIntermediate": [
+          0,
+          0,
+          -0.1429
+        ],
+        "leftMiddleDistal": [
+          0,
+          0,
+          -0.0756
+        ],
+        "leftRingProximal": [
+          0.0004,
+          0.2314,
+          0.0694
+        ],
+        "leftRingIntermediate": [
+          0,
+          0,
+          -0.1942
+        ],
+        "leftRingDistal": [
+          0,
+          0,
+          -0.0576
+        ],
+        "leftLittleProximal": [
+          0.0005,
+          0.3317,
+          0.0507
+        ],
+        "leftLittleIntermediate": [
+          0,
+          0,
+          -0.0586
+        ],
+        "leftLittleDistal": [
+          0,
+          0,
+          -0.0276
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "dance_25.vrma",
+          "t": 4.8,
+          "length": 9
+        }
+      ]
+    },
+    {
+      "rank": 38,
+      "side": "L",
+      "votes": 9,
+      "memberCount": 1,
+      "capsule": "torso/upper",
+      "h": 0.0,
+      "dr": 0.2356,
+      "dir": [
+        -0.053,
+        -0.202,
+        0.978
+      ],
+      "nameHint": "torso_upper_low_L",
+      "source": {
+        "clip": "dance_28.vrma",
+        "t": 26.467
+      },
+      "nearestExisting": "stomach_L",
+      "similarTo": null,
+      "similarity": 1.787,
+      "bones": {
+        "leftShoulder": [
+          -0.2898,
+          0.2465,
+          0.3449
+        ],
+        "leftUpperArm": [
+          0.2658,
+          0.0841,
+          -1.267
+        ],
+        "leftLowerArm": [
+          -0.1029,
+          -1.363,
+          -0.816
+        ],
+        "leftHand": [
+          0.0333,
+          1.085,
+          -0.3194
+        ],
+        "leftThumbProximal": [
+          -0.0206,
+          0.2257,
+          0.0723
+        ],
+        "leftThumbDistal": [
+          -0.3952,
+          0.4886,
+          0.0906
+        ],
+        "leftIndexProximal": [
+          0.0093,
+          0.2572,
+          0.1266
+        ],
+        "leftIndexIntermediate": [
+          0.005,
+          -0.0032,
+          -0.4522
+        ],
+        "leftIndexDistal": [
+          0.0054,
+          -0.0023,
+          -0.1212
+        ],
+        "leftMiddleProximal": [
+          0.0061,
+          0.257,
+          0.1271
+        ],
+        "leftMiddleIntermediate": [
+          0,
+          0,
+          -0.5333
+        ],
+        "leftMiddleDistal": [
+          0,
+          0,
+          -0.0918
+        ],
+        "leftRingProximal": [
+          0.0061,
+          0.257,
+          0.1271
+        ],
+        "leftRingIntermediate": [
+          0,
+          0,
+          -0.3426
+        ],
+        "leftRingDistal": [
+          0,
+          0,
+          -0.122
+        ],
+        "leftLittleProximal": [
+          0.0061,
+          0.257,
+          0.1271
+        ],
+        "leftLittleIntermediate": [
+          0,
+          0,
+          -0.2608
+        ],
+        "leftLittleDistal": [
+          0,
+          0,
+          -0.1961
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "dance_28.vrma",
+          "t": 26.467,
+          "length": 9
+        }
+      ]
+    },
+    {
+      "rank": 39,
+      "side": "R",
+      "votes": 9,
+      "memberCount": 1,
+      "capsule": "head/sphere",
+      "h": 0.0,
+      "dr": 0.0265,
+      "dir": [
+        0.229,
+        -0.456,
+        0.86
+      ],
+      "nameHint": "head_sphere_low_R",
+      "source": {
+        "clip": "dance_kebab.vrma",
+        "t": 16.067
+      },
+      "nearestExisting": "chin_R",
+      "similarTo": null,
+      "similarity": 1.806,
+      "bones": {
+        "rightShoulder": [
+          -0.0013,
+          0.0134,
+          -0.1962
+        ],
+        "rightUpperArm": [
+          -0.3246,
+          0.5376,
+          0.3122
+        ],
+        "rightLowerArm": [
+          0.3506,
+          2.2903,
+          -0.2003
+        ],
+        "rightHand": [
+          0.1881,
+          0.0211,
+          -0.2417
+        ],
+        "rightThumbProximal": [
+          -0.0804,
+          0.1954,
+          0.058
+        ],
+        "rightThumbDistal": [
+          -0.0804,
+          0.1954,
+          0.058
+        ],
+        "rightIndexProximal": [
+          -0.1946,
+          0.444,
+          -0.2376
+        ],
+        "rightIndexIntermediate": [
+          -0.0198,
+          -0.0009,
+          -0.1536
+        ],
+        "rightIndexDistal": [
+          -0.0212,
+          -0.0055,
+          -0.2092
+        ],
+        "rightMiddleProximal": [
+          -0.0173,
+          0.0922,
+          -0.0011
+        ],
+        "rightMiddleIntermediate": [
+          0.0288,
+          0.0087,
+          -0.1469
+        ],
+        "rightMiddleDistal": [
+          0.0313,
+          0.0097,
+          -0.1869
+        ],
+        "rightRingProximal": [
+          0.0746,
+          -0.0191,
+          -0.0318
+        ],
+        "rightRingIntermediate": [
+          0.0185,
+          -0.0032,
+          -0.1468
+        ],
+        "rightRingDistal": [
+          0.0185,
+          -0.0032,
+          -0.1468
+        ],
+        "rightLittleProximal": [
+          0.1507,
+          -0.1976,
+          0.2265
+        ],
+        "rightLittleIntermediate": [
+          0.0889,
+          0.0397,
+          -0.1281
+        ],
+        "rightLittleDistal": [
+          0.0889,
+          0.0397,
+          -0.1281
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "dance_kebab.vrma",
+          "t": 16.067,
+          "length": 9
+        }
+      ]
+    },
+    {
+      "rank": 40,
+      "side": "L",
+      "votes": 8,
+      "memberCount": 1,
+      "capsule": "torso/mid",
+      "h": 0.0,
+      "dr": 0.0008,
+      "dir": [
+        0.487,
+        -0.628,
+        0.608
+      ],
+      "nameHint": "torso_mid_low_L",
+      "source": {
+        "clip": "dance_25.vrma",
+        "t": 1.067
+      },
+      "nearestExisting": "side_relaxed_L",
+      "similarTo": null,
+      "similarity": 1.368,
+      "bones": {
+        "leftShoulder": [
+          -0.2588,
+          0.1105,
+          -0.0391
+        ],
+        "leftUpperArm": [
+          0.8786,
+          -0.4012,
+          -1.1961
+        ],
+        "leftLowerArm": [
+          0.9068,
+          -0.0297,
+          -0.2052
+        ],
+        "leftHand": [
+          0.066,
+          0.2355,
+          -0.2541
+        ],
+        "leftThumbProximal": [
+          0.0321,
+          0.1057,
+          0.1396
+        ],
+        "leftThumbDistal": [
+          0.231,
+          -0.1086,
+          0.0476
+        ],
+        "leftIndexProximal": [
+          0,
+          -0.137,
+          0.1745
+        ],
+        "leftIndexIntermediate": [
+          0,
+          0,
+          -0.9082
+        ],
+        "leftIndexDistal": [
+          0,
+          0,
+          -0.8469
+        ],
+        "leftMiddleProximal": [
+          0,
+          0.0252,
+          0.1745
+        ],
+        "leftMiddleIntermediate": [
+          0,
+          0,
+          -1.1432
+        ],
+        "leftMiddleDistal": [
+          0,
+          0,
+          -1.3467
+        ],
+        "leftRingProximal": [
+          0,
+          0.0911,
+          0.1146
+        ],
+        "leftRingIntermediate": [
+          0,
+          0,
+          -1.3659
+        ],
+        "leftRingDistal": [
+          0,
+          0,
+          -1.2023
+        ],
+        "leftLittleProximal": [
+          0,
+          0.2074,
+          -0.0766
+        ],
+        "leftLittleIntermediate": [
+          0,
+          0,
+          -1.5708
+        ],
+        "leftLittleDistal": [
+          0,
+          0,
+          -0.5773
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "dance_25.vrma",
+          "t": 1.067,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "rank": 41,
+      "side": "R",
+      "votes": 8,
+      "memberCount": 1,
+      "capsule": "torso/upper",
+      "h": 0.271,
+      "dr": 0.2582,
+      "dir": [
+        -0.28,
+        0.129,
+        0.951
+      ],
+      "nameHint": "torso_upper_low_R",
+      "source": {
+        "clip": "VRMA_04.vrma",
+        "t": 1.6
+      },
+      "nearestExisting": "side_relaxed_R",
+      "similarTo": null,
+      "similarity": 1.316,
+      "bones": {
+        "rightShoulder": [
+          -0.0043,
+          0.1409,
+          -0.0412
+        ],
+        "rightUpperArm": [
+          -0.364,
+          1.1462,
+          1.276
+        ],
+        "rightLowerArm": [
+          -0.1983,
+          0.0733,
+          -0.0007
+        ],
+        "rightHand": [
+          -0.0328,
+          -0.1956,
+          -0.167
+        ],
+        "rightThumbProximal": [
+          -0.2813,
+          0.0277,
+          -0.0887
+        ],
+        "rightThumbDistal": [
+          0,
+          0.2907,
+          0
+        ],
+        "rightIndexProximal": [
+          -0.1511,
+          -0.1725,
+          0.1568
+        ],
+        "rightIndexIntermediate": [
+          0,
+          0,
+          0.3365
+        ],
+        "rightIndexDistal": [
+          0,
+          0,
+          -0.0366
+        ],
+        "rightMiddleProximal": [
+          -0.0805,
+          0.0387,
+          1.1228
+        ],
+        "rightMiddleIntermediate": [
+          0,
+          0,
+          0.9772
+        ],
+        "rightMiddleDistal": [
+          0,
+          0,
+          0.8999
+        ],
+        "rightRingProximal": [
+          -0.2248,
+          -0.1102,
+          1.1905
+        ],
+        "rightRingIntermediate": [
+          0,
+          0,
+          1.3224
+        ],
+        "rightRingDistal": [
+          0,
+          0,
+          0.81
+        ],
+        "rightLittleProximal": [
+          -0.3499,
+          -0.258,
+          0.9934
+        ],
+        "rightLittleIntermediate": [
+          0,
+          0,
+          1.3033
+        ],
+        "rightLittleDistal": [
+          0,
+          0,
+          0.9011
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_04.vrma",
+          "t": 1.6,
+          "length": 8
+        }
+      ]
+    },
+    {
+      "rank": 42,
+      "side": "L",
+      "votes": 7,
+      "memberCount": 1,
+      "capsule": "torso/upper",
+      "h": 1.0,
+      "dr": 0.1144,
+      "dir": [
+        0.218,
+        0.239,
+        0.946
+      ],
+      "nameHint": "torso_upper_high_L",
+      "source": {
+        "clip": "dance_kebab.vrma",
+        "t": 0.667
+      },
+      "nearestExisting": "chin_L",
+      "similarTo": null,
+      "similarity": 1.765,
+      "bones": {
+        "leftShoulder": [
+          0.0027,
+          0.1555,
+          0.0341
+        ],
+        "leftUpperArm": [
+          0.3772,
+          -0.5291,
+          -1.2045
+        ],
+        "leftLowerArm": [
+          -0.1204,
+          -2.1912,
+          0.0587
+        ],
+        "leftHand": [
+          -0.15,
+          -0.0275,
+          0.4813
+        ],
+        "leftThumbProximal": [
+          0.0403,
+          0.1943,
+          0.0347
+        ],
+        "leftThumbDistal": [
+          -0.0041,
+          0.0307,
+          0.002
+        ],
+        "leftIndexProximal": [
+          0.1398,
+          0.1505,
+          -0.5575
+        ],
+        "leftIndexIntermediate": [
+          0.0066,
+          -0.0171,
+          -1.3634
+        ],
+        "leftIndexDistal": [
+          0.0039,
+          -0.0124,
+          -1.3079
+        ],
+        "leftMiddleProximal": [
+          0.0487,
+          0.0004,
+          -0.9688
+        ],
+        "leftMiddleIntermediate": [
+          -0.0356,
+          0.0418,
+          -1.3321
+        ],
+        "leftMiddleDistal": [
+          -0.0525,
+          0.0359,
+          -1.2914
+        ],
+        "leftRingProximal": [
+          -0.2517,
+          -0.0242,
+          -1.1642
+        ],
+        "leftRingIntermediate": [
+          -0.1533,
+          0.1433,
+          -1.369
+        ],
+        "leftRingDistal": [
+          -0.1533,
+          0.1433,
+          -1.369
+        ],
+        "leftLittleProximal": [
+          -0.4704,
+          -0.1195,
+          -1.0382
+        ],
+        "leftLittleIntermediate": [
+          -0.2471,
+          0.282,
+          -1.283
+        ],
+        "leftLittleDistal": [
+          -0.2471,
+          0.282,
+          -1.283
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "dance_kebab.vrma",
+          "t": 0.667,
+          "length": 7
+        }
+      ]
+    },
+    {
+      "rank": 43,
+      "side": "R",
+      "votes": 7,
+      "memberCount": 1,
+      "capsule": "rightLeg/upper",
+      "h": 0.0,
+      "dr": 0.0874,
+      "dir": [
+        -0.96,
+        0.262,
+        0.095
+      ],
+      "nameHint": "rightLeg_upper_low_R",
+      "source": {
+        "clip": "dance_25.vrma",
+        "t": 2.267
+      },
+      "nearestExisting": "side_relaxed_R",
+      "similarTo": null,
+      "similarity": 0.863,
+      "bones": {
+        "rightShoulder": [
+          -0.255,
+          -0.1296,
+          -0.2621
+        ],
+        "rightUpperArm": [
+          0.3018,
+          0.0043,
+          1.404
+        ],
+        "rightLowerArm": [
+          -0.1423,
+          0.1679,
+          0.0243
+        ],
+        "rightHand": [
+          -0.0701,
+          -0.4355,
+          -0.4656
+        ],
+        "rightThumbProximal": [
+          0.1936,
+          -0.0511,
+          -0.2971
+        ],
+        "rightThumbDistal": [
+          -0.5631,
+          -0.3409,
+          0.3246
+        ],
+        "rightIndexProximal": [
+          0.0074,
+          0.3331,
+          0.7613
+        ],
+        "rightIndexIntermediate": [
+          0.0006,
+          0.0009,
+          1.2266
+        ],
+        "rightIndexDistal": [
+          0.0008,
+          0.0008,
+          0.8961
+        ],
+        "rightMiddleProximal": [
+          0.0054,
+          0.2216,
+          0.93
+        ],
+        "rightMiddleIntermediate": [
+          0,
+          0,
+          1.2631
+        ],
+        "rightMiddleDistal": [
+          0,
+          0,
+          0.6416
+        ],
+        "rightRingProximal": [
+          0.0044,
+          0.1849,
+          0.9311
+        ],
+        "rightRingIntermediate": [
+          0,
+          0,
+          1.4338
+        ],
+        "rightRingDistal": [
+          0,
+          0,
+          0.9301
+        ],
+        "rightLittleProximal": [
+          0.0028,
+          0.1211,
+          0.9156
+        ],
+        "rightLittleIntermediate": [
+          0,
+          0,
+          1.4991
+        ],
+        "rightLittleDistal": [
+          0,
+          0,
+          0.8672
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "dance_25.vrma",
+          "t": 2.267,
+          "length": 7
+        }
+      ]
+    },
+    {
+      "rank": 44,
+      "side": "L",
+      "votes": 6,
+      "memberCount": 1,
+      "capsule": "rightLeg/upper",
+      "h": 0.964,
+      "dr": 0.2873,
+      "dir": [
+        0.191,
+        0.021,
+        -0.981
+      ],
+      "nameHint": "rightLeg_upper_high_L",
+      "source": {
+        "clip": "dance_25.vrma",
+        "t": 22.6
+      },
+      "nearestExisting": "side_relaxed_L",
+      "similarTo": null,
+      "similarity": 5.132,
+      "bones": {
+        "leftShoulder": [
+          -0.0586,
+          0.1518,
+          2.1528
+        ],
+        "leftUpperArm": [
+          -1.3863,
+          1.5381,
+          -2.0864
+        ],
+        "leftLowerArm": [
+          -3.0615,
+          2.5862,
+          -0.5859
+        ],
+        "leftHand": [
+          0.0018,
+          -0.0066,
+          -0.0007
+        ],
+        "leftThumbProximal": [
+          -0.0088,
+          0.0021,
+          -0.0033
+        ],
+        "leftThumbDistal": [
+          -0.013,
+          0.0018,
+          -0.0063
+        ],
+        "leftIndexProximal": [
+          0.0091,
+          0.0036,
+          -0.0141
+        ],
+        "leftIndexIntermediate": [
+          0.0207,
+          -0.0076,
+          -0.0156
+        ],
+        "leftIndexDistal": [
+          0.0208,
+          -0.0075,
+          -0.0064
+        ],
+        "leftMiddleProximal": [
+          -0.0029,
+          0.0035,
+          -0.0166
+        ],
+        "leftMiddleIntermediate": [
+          0,
+          0,
+          -0.014
+        ],
+        "leftMiddleDistal": [
+          0,
+          0,
+          -0.0067
+        ],
+        "leftRingProximal": [
+          -0.0029,
+          0.0035,
+          -0.0166
+        ],
+        "leftRingIntermediate": [
+          0,
+          0,
+          -0.0174
+        ],
+        "leftRingDistal": [
+          0,
+          0,
+          -0.007
+        ],
+        "leftLittleProximal": [
+          -0.0029,
+          0.0035,
+          -0.0166
+        ],
+        "leftLittleIntermediate": [
+          0,
+          0,
+          -0.0187
+        ],
+        "leftLittleDistal": [
+          0,
+          0,
+          -0.0057
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "dance_25.vrma",
+          "t": 22.6,
+          "length": 6
+        }
+      ]
+    },
+    {
+      "rank": 45,
+      "side": "L",
+      "votes": 6,
+      "memberCount": 1,
+      "capsule": "torso/upper",
+      "h": 0.0,
+      "dr": 0.1988,
+      "dir": [
+        0.231,
+        -0.129,
+        0.964
+      ],
+      "nameHint": "torso_upper_low_L",
+      "source": {
+        "clip": "dance_28.vrma",
+        "t": 6.933
+      },
+      "nearestExisting": "stomach_L",
+      "similarTo": null,
+      "similarity": 2.078,
+      "bones": {
+        "leftShoulder": [
+          -0.2744,
+          0.0132,
+          -0.169
+        ],
+        "leftUpperArm": [
+          0.3928,
+          -0.4319,
+          -0.448
+        ],
+        "leftLowerArm": [
+          0.0725,
+          -1.7777,
+          -0.9377
+        ],
+        "leftHand": [
+          1.0746,
+          -0.174,
+          -0.6202
+        ],
+        "leftThumbProximal": [
+          -0.1836,
+          0.0694,
+          -0.1476
+        ],
+        "leftThumbDistal": [
+          -0.0146,
+          0.0038,
+          -0.0074
+        ],
+        "leftIndexProximal": [
+          -0.0213,
+          0.1892,
+          -0.3226
+        ],
+        "leftIndexIntermediate": [
+          0.0089,
+          -0.0054,
+          -0.4004
+        ],
+        "leftIndexDistal": [
+          0.0093,
+          -0.0043,
+          -0.182
+        ],
+        "leftMiddleProximal": [
+          -0.0428,
+          0.1918,
+          -0.5136
+        ],
+        "leftMiddleIntermediate": [
+          0,
+          0,
+          -0.4889
+        ],
+        "leftMiddleDistal": [
+          0,
+          0,
+          -0.1982
+        ],
+        "leftRingProximal": [
+          -0.0459,
+          0.1922,
+          -0.5497
+        ],
+        "leftRingIntermediate": [
+          0,
+          0,
+          -0.3702
+        ],
+        "leftRingDistal": [
+          0,
+          0,
+          -0.6691
+        ],
+        "leftLittleProximal": [
+          -0.0539,
+          0.1934,
+          -0.6443
+        ],
+        "leftLittleIntermediate": [
+          0,
+          0,
+          -0.5874
+        ],
+        "leftLittleDistal": [
+          0,
+          0,
+          -0.472
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "dance_28.vrma",
+          "t": 6.933,
+          "length": 6
+        }
+      ]
+    },
+    {
+      "rank": 46,
+      "side": "L",
+      "votes": 6,
+      "memberCount": 1,
+      "capsule": "torso/upper",
+      "h": 0.0,
+      "dr": 0.2439,
+      "dir": [
+        0.011,
+        -0.121,
+        0.993
+      ],
+      "nameHint": "torso_upper_low_L",
+      "source": {
+        "clip": "dance_28.vrma",
+        "t": 27.133
+      },
+      "nearestExisting": "stomach_L",
+      "similarTo": null,
+      "similarity": 1.592,
+      "bones": {
+        "leftShoulder": [
+          -0.3051,
+          0.1584,
+          0.1995
+        ],
+        "leftUpperArm": [
+          0.3295,
+          -0.1045,
+          -1.0704
+        ],
+        "leftLowerArm": [
+          0.1683,
+          -1.5518,
+          -0.936
+        ],
+        "leftHand": [
+          1.0046,
+          -0.6743,
+          -0.812
+        ],
+        "leftThumbProximal": [
+          0.0368,
+          0.0245,
+          0.0489
+        ],
+        "leftThumbDistal": [
+          -0.111,
+          -0.0773,
+          -0.146
+        ],
+        "leftIndexProximal": [
+          0.0037,
+          0.0333,
+          -0.107
+        ],
+        "leftIndexIntermediate": [
+          0.0085,
+          -0.0047,
+          -0.3195
+        ],
+        "leftIndexDistal": [
+          0.0088,
+          -0.0038,
+          -0.1292
+        ],
+        "leftMiddleProximal": [
+          0.0005,
+          -0.03,
+          -0.0465
+        ],
+        "leftMiddleIntermediate": [
+          0,
+          0,
+          -0.4023
+        ],
+        "leftMiddleDistal": [
+          0,
+          0,
+          -0.1284
+        ],
+        "leftRingProximal": [
+          0.0008,
+          -0.0602,
+          -0.0338
+        ],
+        "leftRingIntermediate": [
+          0,
+          0,
+          -0.3162
+        ],
+        "leftRingDistal": [
+          0,
+          0,
+          -0.1621
+        ],
+        "leftLittleProximal": [
+          0.0002,
+          -0.1204,
+          -0.0047
+        ],
+        "leftLittleIntermediate": [
+          0,
+          0,
+          -0.2986
+        ],
+        "leftLittleDistal": [
+          0,
+          0,
+          -0.1621
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "dance_28.vrma",
+          "t": 27.133,
+          "length": 6
+        }
+      ]
+    },
+    {
+      "rank": 47,
+      "side": "R",
+      "votes": 6,
+      "memberCount": 1,
+      "capsule": "torso/upper",
+      "h": 1.0,
+      "dr": 0.0898,
+      "dir": [
+        -0.888,
+        0.192,
+        0.418
+      ],
+      "nameHint": "torso_upper_high_R",
+      "source": {
+        "clip": "VRMA_03.vrma",
+        "t": 1.4
+      },
+      "nearestExisting": "hip_R",
+      "similarTo": null,
+      "similarity": 2.217,
+      "bones": {
+        "rightShoulder": [
+          -0.0025,
+          -0.0527,
+          0.0462
+        ],
+        "rightUpperArm": [
+          -0.2993,
+          0.4252,
+          1.1749
+        ],
+        "rightLowerArm": [
+          1.3885,
+          2.3666,
+          0.0001
+        ],
+        "rightHand": [
+          -0.0791,
+          -0.1286,
+          -0.5536
+        ],
+        "rightThumbProximal": [
+          0.0074,
+          -0.4016,
+          0.0086
+        ],
+        "rightThumbDistal": [
+          0,
+          -0.288,
+          0
+        ],
+        "rightIndexProximal": [
+          0.0088,
+          0.0859,
+          0.1429
+        ],
+        "rightIndexIntermediate": [
+          0,
+          0,
+          0.2249
+        ],
+        "rightIndexDistal": [
+          0,
+          0,
+          -0.0457
+        ],
+        "rightMiddleProximal": [
+          0.0373,
+          -0.1505,
+          0.243
+        ],
+        "rightMiddleIntermediate": [
+          0,
+          0,
+          0.2931
+        ],
+        "rightMiddleDistal": [
+          0,
+          0,
+          0.1792
+        ],
+        "rightRingProximal": [
+          -0.1287,
+          -0.1938,
+          0.607
+        ],
+        "rightRingIntermediate": [
+          0,
+          0,
+          1.1151
+        ],
+        "rightRingDistal": [
+          0,
+          0,
+          0.5242
+        ],
+        "rightLittleProximal": [
+          -0.3003,
+          -0.3667,
+          0.6883
+        ],
+        "rightLittleIntermediate": [
+          0,
+          0,
+          1.0319
+        ],
+        "rightLittleDistal": [
+          0,
+          0,
+          0.602
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_03.vrma",
+          "t": 1.4,
+          "length": 6
+        }
+      ]
+    },
+    {
+      "rank": 48,
+      "side": "R",
+      "votes": 6,
+      "memberCount": 1,
+      "capsule": "torso/upper",
+      "h": 0.0,
+      "dr": 0.2328,
+      "dir": [
+        -0.845,
+        -0.153,
+        -0.512
+      ],
+      "nameHint": "torso_upper_low_R",
+      "source": {
+        "clip": "VRMA_05.vrma",
+        "t": 4.667
+      },
+      "nearestExisting": "side_relaxed_R",
+      "similarTo": null,
+      "similarity": 1.16,
+      "bones": {
+        "rightShoulder": [
+          -0.0146,
+          -0.0218,
+          0.2009
+        ],
+        "rightUpperArm": [
+          0.0661,
+          0.0077,
+          0.5034
+        ],
+        "rightLowerArm": [
+          0.0838,
+          0.5457,
+          -0.112
+        ],
+        "rightHand": [
+          -0.0333,
+          -0.3542,
+          0.3609
+        ],
+        "rightThumbProximal": [
+          0.057,
+          -0.0001,
+          0.0521
+        ],
+        "rightThumbDistal": [
+          -0.0113,
+          0.0698,
+          -0.0356
+        ],
+        "rightIndexProximal": [
+          0.1401,
+          0.1311,
+          0.1784
+        ],
+        "rightIndexIntermediate": [
+          -0.0104,
+          -0.0149,
+          -0.0138
+        ],
+        "rightIndexDistal": [
+          0.0171,
+          0.0132,
+          0.0733
+        ],
+        "rightMiddleProximal": [
+          0.1071,
+          0.103,
+          0.324
+        ],
+        "rightMiddleIntermediate": [
+          -0.0267,
+          -0.0103,
+          -0.0225
+        ],
+        "rightMiddleDistal": [
+          -0.0001,
+          0,
+          -0.0005
+        ],
+        "rightRingProximal": [
+          0.0547,
+          0.0772,
+          0.3635
+        ],
+        "rightRingIntermediate": [
+          -0.0605,
+          -0.0429,
+          -0.0437
+        ],
+        "rightRingDistal": [
+          -0.0041,
+          -0.0032,
+          -0.0139
+        ],
+        "rightLittleProximal": [
+          0.0422,
+          0.1386,
+          0.2595
+        ],
+        "rightLittleIntermediate": [
+          -0.0421,
+          -0.0672,
+          0.0394
+        ],
+        "rightLittleDistal": [
+          -0.0158,
+          -0.0563,
+          -0.1097
+        ]
+      },
+      "memberSources": [
+        {
+          "clip": "VRMA_05.vrma",
+          "t": 4.667,
+          "length": 6
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2724 @@
+/* ==========================================================================
+   Model Manager
+   ========================================================================== */
+
+/* --- Modal Size --- */
+
+.mm-modal-size {
+  width: min(1080px, 96vw);
+}
+
+/* Dual-pane scroll layout. Previously this was a single scroll container
+   with a sticky sidebar — but sticky positioning is bounded by its
+   parent's containing block (.mm-workspace), so when the active pane
+   was tall (e.g. Advanced with KV/multi-slot/dirs sections), the
+   sidebar would stay pinned for ~95% of the scroll and then suddenly
+   slide off at the very bottom as sticky released. Visually disjointed.
+
+   New approach: body is a fixed-height flex column with overflow:hidden.
+   The right pane (.mm-main) owns its own scroll. Sidebar sits in a
+   stable grid cell and never moves at all, no sticky needed. Mobile
+   keeps the original single-scroll behavior (overridden below). */
+.mm-body {
+  position: relative;
+  max-height: 70vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.mm-workspace {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  /* Pin the row to fill the workspace. Without this, the row auto-
+     sizes to its tallest content (the main pane), making main's
+     cell as tall as its own content — overflow-y: auto then has
+     nothing to overflow against and never triggers a scrollbar. */
+  grid-template-rows: minmax(0, 1fr);
+  gap: var(--space-lg);
+  align-items: start;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.mm-sidebar {
+  align-self: start;
+  /* Cap to the actual cell height (= workspace height after body
+     padding) so the sidebar internally scrolls when content exceeds
+     visible space. This now resolves correctly because workspace
+     has grid-template-rows: minmax(0, 1fr) — without that, 100%
+     would resolve to the auto-sized row (= main's tall content),
+     which is no cap at all. */
+  max-height: 100%;
+  overflow-y: auto;
+  padding: var(--space-md);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 94%, white 6%), color-mix(in srgb, var(--surface) 98%, var(--bg) 2%));
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.08);
+}
+
+.mm-sidebar-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.mm-sidebar-title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.mm-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mm-nav-btn {
+  width: 100%;
+  display: grid;
+  gap: 3px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--text-secondary);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard);
+}
+
+.mm-nav-btn:hover {
+  background: color-mix(in srgb, var(--surface) 80%, white 20%);
+  border-color: var(--border-light);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.mm-nav-btn.active {
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--border-light));
+  color: var(--text-primary);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.mm-nav-label {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: inherit;
+}
+
+.mm-nav-copy {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.mm-nav-btn.active .mm-nav-copy {
+  color: var(--text-secondary);
+}
+
+.mm-nav-badge {
+  justify-self: start;
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.mm-main {
+  min-width: 0;
+  min-height: 0;
+  /* Override the workspace's align-items: start so main stretches to
+     fill the (now row-height-constrained) cell. Without this, main's
+     box would be content-sized, giving overflow-y: auto nothing to
+     constrain against — the scrollbar would never appear. */
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  /* Right pane owns the scroll. Sidebar stays put. */
+  overflow-y: auto;
+  /* Breathing room so content doesn't kiss the scrollbar. */
+  padding-right: var(--space-xs);
+}
+
+.mm-pane {
+  min-width: 0;
+}
+
+.mm-pane.hidden {
+  display: none;
+}
+
+.mm-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+
+.mm-overview-hero-card {
+  display: grid;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border-radius: var(--radius-xl);
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border-light));
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--accent) 10%, transparent), transparent 42%),
+    linear-gradient(160deg, color-mix(in srgb, var(--surface) 96%, white 4%), color-mix(in srgb, var(--surface) 92%, var(--bg) 8%));
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.1);
+}
+
+.mm-overview-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.mm-overview-hero-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.mm-overview-hero-title {
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+.mm-overview-hero-text {
+  margin-top: 8px;
+  max-width: 60ch;
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.mm-overview-state {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.mm-overview-state.good {
+  color: var(--success);
+  background: rgba(76, 175, 80, 0.12);
+}
+
+.mm-overview-state.busy {
+  color: var(--warning);
+  background: rgba(255, 152, 0, 0.14);
+}
+
+.mm-overview-state.muted {
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--surface) 72%, var(--bg));
+}
+
+.mm-overview-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+
+.mm-overview-stat {
+  display: grid;
+  gap: 6px;
+  padding: var(--space-md);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface) 92%, white 8%);
+}
+
+.mm-overview-stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.mm-overview-stat-value {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.35;
+}
+
+.mm-overview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.mm-rec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-sm);
+}
+
+.mm-rec-card {
+  display: grid;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 96%, white 4%), var(--surface));
+}
+
+.mm-rec-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.mm-rec-title {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.mm-rec-copy {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.mm-rec-fit {
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.mm-rec-tags,
+.mm-overview-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mm-rec-tag,
+.mm-overview-chip {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--surface) 84%, white 16%);
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.mm-overview-chip.muted {
+  color: var(--text-muted);
+}
+
+.mm-overview-card-copy {
+  margin-bottom: var(--space-sm);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.mm-overview-empty {
+  display: grid;
+  gap: 10px;
+  padding: var(--space-lg);
+  border: 1px dashed color-mix(in srgb, var(--border-light) 80%, transparent);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface) 84%, transparent);
+}
+
+.mm-overview-empty-title {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.mm-overview-empty-copy {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.mm-overview-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+
+.mm-overview-mini-card {
+  display: grid;
+  gap: 6px;
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  background: color-mix(in srgb, var(--surface) 94%, var(--bg) 6%);
+}
+
+.mm-overview-mini-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.mm-overview-mini-value {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.mm-overview-activity-list {
+  display: grid;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.mm-overview-activity-item {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  background: color-mix(in srgb, var(--surface) 94%, var(--bg) 6%);
+}
+
+.mm-overview-activity-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.mm-overview-activity-meta {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.mm-section-copy {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.mm-load-sheet {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 92%, white 8%) 0%, color-mix(in srgb, var(--bg) 88%, transparent) 100%);
+}
+
+.mm-load-sheet-panel {
+  padding: var(--space-lg);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border-light));
+  border-radius: var(--radius-xl);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--surface) 92%, white 8%), color-mix(in srgb, var(--surface) 96%, var(--bg) 4%));
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
+}
+
+.mm-load-sheet-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.mm-load-sheet-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.mm-load-sheet-title {
+  font-size: clamp(18px, 2vw, 22px);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.mm-load-sheet-copy {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  max-width: 64ch;
+}
+
+.mm-load-sheet-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.mm-load-sheet-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+
+.mm-load-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  background: color-mix(in srgb, var(--surface) 96%, var(--bg) 4%);
+}
+
+.mm-load-label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.mm-load-hint {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.mm-load-plan {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+
+.mm-load-plan-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface) 94%, var(--accent) 6%);
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border-light));
+}
+
+.mm-load-plan-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.mm-load-plan-value {
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.mm-load-plan-note {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.mm-load-plan-warnings {
+  display: grid;
+  gap: 6px;
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 152, 0, 0.12);
+  border: 1px solid rgba(255, 152, 0, 0.22);
+  color: color-mix(in srgb, var(--warning) 78%, var(--text-primary));
+  font-size: var(--text-sm);
+  line-height: 1.45;
+}
+
+.mm-load-default-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.mm-load-sheet-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+/* --- Sections --- */
+
+.mm-section {
+  margin-bottom: var(--space-lg);
+}
+
+.mm-section:last-child {
+  margin-bottom: 0;
+}
+
+.mm-section-title {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+/* Inline tag for experimental / opt-in features. Used on the multi-slot
+   KV routing section — signals the feature is safe to enable but
+   hasn't been validated across the hardware matrix OSS users run on. */
+/* Per-row status pill in the Advanced settings panel. Tells the user
+   at a glance whether a setting applies live (no reload), needs a
+   model reload (next subprocess start), or needs a container restart.
+   Each pill has a tooltip with the full explanation; the abbreviated
+   on-pill label keeps visual noise low. */
+.mm-status-pill {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 6px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  vertical-align: middle;
+  cursor: help;
+  user-select: none;
+}
+
+.mm-status-pill.mm-status-live {
+  color: var(--success, #4caf50);
+  background: color-mix(in oklab, var(--success, #4caf50) 12%, transparent);
+  border-color: color-mix(in oklab, var(--success, #4caf50) 35%, transparent);
+}
+
+.mm-status-pill.mm-status-reload {
+  color: var(--warning, #ff9800);
+  background: color-mix(in oklab, var(--warning, #ff9800) 12%, transparent);
+  border-color: color-mix(in oklab, var(--warning, #ff9800) 35%, transparent);
+}
+
+.mm-status-pill.mm-status-restart {
+  color: var(--error, #f44336);
+  background: color-mix(in oklab, var(--error, #f44336) 12%, transparent);
+  border-color: color-mix(in oklab, var(--error, #f44336) 35%, transparent);
+}
+
+.mm-section-header-stack {
+  align-items: flex-start;
+}
+
+.mm-selection-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border-light));
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mm-target-note {
+  margin-bottom: var(--space-sm);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.mm-device-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: var(--space-sm);
+}
+
+.mm-device-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-height: 168px;
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 88%, white 12%), var(--surface));
+  border: 1px solid var(--border-light);
+  transition: border-color var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard),
+              box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.mm-device-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 26%, var(--border));
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Selected-device emphasis. Now that the device cards are the
+   *primary* backend selector (the dropdown is hidden), this state
+   needs to read clearly across themes. Stronger border + accent
+   ring + subtle background tint. */
+.mm-device-card.selected {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--accent) 28%, transparent),
+    0 10px 24px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--accent) 5%, var(--surface)),
+    color-mix(in srgb, var(--accent) 2%, var(--surface)));
+}
+
+.mm-device-card-detected {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 92%, var(--bg) 8%), var(--surface));
+}
+
+.mm-device-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.mm-device-name {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.mm-device-copy {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.mm-device-state {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 8px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.mm-device-state.good {
+  color: var(--success);
+  background: rgba(76, 175, 80, 0.12);
+}
+
+.mm-device-state.busy {
+  color: var(--warning);
+  background: rgba(255, 152, 0, 0.12);
+}
+
+.mm-device-state.muted {
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--surface) 70%, var(--bg));
+}
+
+.mm-device-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.mm-device-metric {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+.mm-device-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+
+.mm-role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-sm);
+}
+
+.mm-role-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  background: color-mix(in srgb, var(--surface) 95%, var(--bg) 5%);
+}
+
+.mm-role-label {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.mm-role-copy {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.mm-role-select {
+  width: 100%;
+}
+
+/* --- Download Row --- */
+
+.mm-download-row {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xs);
+}
+
+.mm-download-input {
+  flex: 1;
+}
+
+.mm-download-btn {
+  white-space: nowrap;
+}
+
+/* Search-styled input wrapper. The magnifier icon signals that the
+   field accepts free-text search, not just exact model names. The
+   icon is decorative — the input still supports paste-and-Download
+   for known names via the Download button next to it. */
+.mm-search-input-wrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.mm-search-input-wrap .mm-search-input-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--text-muted);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.mm-search-input-wrap .field-input {
+  width: 100%;
+  padding-left: 32px;
+}
+
+/* Inline meta row below the input — combines "Adding to X" pill,
+   the per-backend selection note, and the external browse link.
+   Sitting one row under the input keeps the action context
+   tight; previously these floated in the section header, far
+   from where the user was actually typing. */
+.mm-search-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.mm-search-meta .mm-target-note {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.mm-search-meta .mm-browse-link {
+  margin: 0;
+}
+
+/* --- Backend Select (now a hidden state holder; device cards drive it) --- */
+
+/* --- Suggestion Chips --- */
+
+.mm-chips {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+  margin-bottom: 2px;
+}
+
+.mm-chip {
+  padding: 4px var(--space-sm);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+}
+
+.mm-chip:hover {
+  background: var(--surface-hover);
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+/* "Already installed" treatment — softens chip color + adds a small
+   green check. Visually demotes without disabling: the chip remains
+   clickable in case the user wants to redownload, but signals that
+   they don't need to. */
+.mm-chip-check {
+  color: var(--success, #4caf50);
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+/* --- Search Results (HuggingFace) --- */
+/* Rendered into #mm-search-results which sits between the input row
+   and the chips strip. Only visible when the user has typed a query;
+   chips reappear when results are cleared (see hideSearchResults).
+   Previously this whole tree was inline-styled in the JS — extracted
+   here so the rows are theme-able and the row hover is cheap. */
+.mm-search-results {
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-xs);
+  background: var(--surface);
+}
+
+.mm-search-results.hidden {
+  display: none;
+}
+
+.mm-search-item {
+  padding: var(--space-xs) var(--space-sm);
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.mm-search-item:last-child {
+  border-bottom: none;
+}
+
+.mm-search-item:hover {
+  background: var(--surface-hover);
+}
+
+/* Already-installed dimming — same intent as the chip variant. */
+.mm-search-item-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+}
+
+.mm-search-repo {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.mm-search-installed {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--success, #4caf50);
+  background: color-mix(in oklab, var(--success, #4caf50) 14%, transparent);
+  padding: 1px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.mm-search-counter {
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.mm-search-quants {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: 3px;
+}
+
+.mm-search-quant {
+  font-size: 10px;
+  padding: 1px 6px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color var(--duration-fast) var(--ease-standard),
+              background var(--duration-fast) var(--ease-standard);
+}
+
+.mm-search-quant:hover {
+  border-color: var(--accent);
+  background: var(--surface-hover);
+}
+
+.mm-search-quant-size {
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+.mm-search-more {
+  font-size: 10px;
+  padding: 1px 6px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text-link, var(--accent));
+  cursor: pointer;
+}
+
+.mm-search-no-files {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* --- Browse Link --- */
+
+.mm-browse-link {
+  margin-top: var(--space-sm);
+  font-size: var(--text-xs);
+}
+
+.mm-browse-link a {
+  color: var(--text-muted);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.mm-browse-link a:hover {
+  color: var(--accent);
+}
+
+/* --- GGUF File Picker --- */
+
+.mm-gguf-picker {
+  margin-top: var(--space-md);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  border: 1px solid var(--border-light);
+  animation: mm-fade-in var(--duration-fast) var(--ease-standard);
+}
+
+.mm-gguf-dest-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin: var(--space-xs) 0;
+  font-size: var(--text-xs);
+}
+
+.mm-gguf-dest-row label {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.mm-gguf-dest-row select.field-input {
+  flex: 1;
+  font-size: var(--text-xs);
+  padding: 4px 6px;
+}
+
+@keyframes mm-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mm-gguf-picker.hidden {
+  display: none;
+}
+
+.mm-gguf-picker .mm-section-title {
+  margin-bottom: var(--space-sm);
+}
+
+.mm-gguf-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.mm-gguf-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  transition: border-color var(--duration-fast) var(--ease-standard),
+              background var(--duration-fast) var(--ease-standard);
+}
+
+.mm-gguf-item:hover {
+  border-color: var(--accent);
+  background: var(--surface-hover);
+}
+
+/* Flex container for the middle-truncated filename. The prefix child
+   ellipsizes; the suffix child holds the last ~14 chars (which always
+   includes the quant tag + .gguf) and never shrinks. End-truncate would
+   hide exactly the info the user is choosing on half-screen displays. */
+.mm-gguf-name {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  font-size: var(--text-sm);
+  font-family: var(--font-mono);
+  line-height: 1.4;
+}
+
+/* Short filenames render as a single span — keep the old end-ellipsis
+   semantics so behavior stays consistent for trivial names like
+   ``mmproj-F16.gguf``. */
+.mm-gguf-name-short {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mm-gguf-name-prefix {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mm-gguf-name-suffix {
+  flex-shrink: 0;
+  white-space: nowrap;
+  color: var(--text-primary);
+}
+
+.mm-gguf-size {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.mm-gguf-dl-btn {
+  font-size: var(--text-xs);
+  padding: 4px var(--space-sm);
+  white-space: nowrap;
+}
+
+/* --- Progress --- */
+
+.mm-progress-area {
+  margin-bottom: var(--space-sm);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-light);
+  /* Sticky to the top of the Find Models section so an active download
+     stays visible no matter how far the user scrolls through chips,
+     search results, or the GGUF picker. The .mm-find-models container
+     scopes the sticky context — outside of that, the rule is harmless
+     (any other usage of .mm-progress-area falls back to flow). */
+}
+
+.mm-find-models .mm-progress-area:not(.hidden) {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.mm-progress-area.hidden {
+  display: none;
+}
+
+.mm-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.mm-progress-model {
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+
+.mm-cancel-btn {
+  font-size: var(--text-xs);
+  color: var(--error);
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-sm);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.mm-cancel-btn:hover {
+  background: rgba(244, 67, 54, 0.15);
+}
+
+.mm-progress-bar {
+  height: 8px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: var(--space-xs);
+}
+
+.mm-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: var(--radius-sm);
+  width: 0%;
+  transition: width 300ms var(--ease-standard);
+}
+
+.mm-progress-fill.mm-indeterminate {
+  animation: mm-progress-indeterminate 1.2s var(--ease-standard) infinite;
+}
+
+@keyframes mm-progress-indeterminate {
+  0% {
+    transform: translateX(-120%);
+  }
+
+  50% {
+    transform: translateX(10%);
+  }
+
+  100% {
+    transform: translateX(220%);
+  }
+}
+
+.mm-progress-status {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+.mm-advanced {
+  margin-bottom: var(--space-lg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface) 92%, var(--bg) 8%);
+  overflow: hidden;
+}
+
+.mm-advanced.hidden {
+  display: none;
+}
+
+.mm-advanced summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  cursor: pointer;
+  list-style: none;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.mm-advanced summary::-webkit-details-marker {
+  display: none;
+}
+
+.mm-advanced-copy {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.mm-advanced-body {
+  padding: 0 var(--space-md) var(--space-md);
+}
+
+.mm-advanced-note {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  padding: var(--space-xs) 0;
+}
+
+.mm-advanced-section {
+  margin-top: var(--space-sm);
+}
+
+/* Model Directories — list rows, banners, empty state.
+   Visual goal: distinguish active dirs from pending host mounts at a
+   glance, surface per-row health (slow/missing/GGUF count), and make
+   the platform-specific perf advice visible without forcing the user
+   to read a docs page. */
+.mm-dir-group {
+  margin-top: var(--space-sm);
+}
+
+.mm-dir-group-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.mm-dir-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--text-xs);
+}
+
+.mm-dir-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--surface, #1a1a1a) 60%, transparent);
+}
+
+.mm-dir-row:hover {
+  background: var(--surface);
+}
+
+.mm-dir-row-pending {
+  background: color-mix(in oklab, var(--warning, #ff9800) 6%, var(--surface));
+  border: 1px dashed color-mix(in oklab, var(--warning, #ff9800) 40%, transparent);
+}
+
+.mm-dir-path {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono, monospace);
+}
+
+.mm-dir-host-source {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono, monospace);
+  white-space: nowrap;
+}
+
+.mm-dir-meta {
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  padding: 1px 5px;
+  background: color-mix(in oklab, var(--text-muted, #888) 12%, transparent);
+  border-radius: 3px;
+}
+
+.mm-dir-meta-target {
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-mono, monospace);
+}
+
+.mm-dir-remove {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--text-muted);
+  padding: 2px 6px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+
+.mm-dir-remove:hover {
+  background: color-mix(in oklab, var(--error, #f44336) 15%, transparent);
+  color: var(--error, #f44336);
+}
+
+.mm-dir-empty {
+  padding: var(--space-md);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.mm-dir-empty-hint {
+  margin-top: 4px;
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+/* Slow-mount pill — bind mount through 9p/osxfs that loads ~10×
+   slower than native. Yellow/orange gives "warning, but functional",
+   distinct from the red mm-status-restart used for missing dirs. */
+.mm-status-pill.mm-status-slow {
+  color: var(--warning, #ff9800);
+  background: color-mix(in oklab, var(--warning, #ff9800) 12%, transparent);
+  border-color: color-mix(in oklab, var(--warning, #ff9800) 35%, transparent);
+}
+
+/* Platform banner — shows the detected host environment + the perf
+   guidance specific to that platform. Hidden on native Linux where
+   bind mounts have no penalty. */
+.mm-platform-banner {
+  margin-top: var(--space-sm);
+  padding: var(--space-sm);
+  background: color-mix(in oklab, var(--info, #2196f3) 8%, var(--surface));
+  border-left: 3px solid color-mix(in oklab, var(--info, #2196f3) 60%, transparent);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+}
+
+.mm-platform-banner-label {
+  font-weight: 600;
+  font-size: 11px;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+
+.mm-platform-banner-body {
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Restart banner — shown only when there are pending host mounts
+   the user needs to wire up in compose.yaml. */
+.mm-restart-banner {
+  margin-top: var(--space-sm);
+  padding: var(--space-sm);
+  background: color-mix(in oklab, var(--warning, #ff9800) 10%, transparent);
+  border: 1px solid color-mix(in oklab, var(--warning, #ff9800) 40%, transparent);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  color: var(--text);
+}
+
+.mm-restart-banner code {
+  background: var(--bg);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+/* Host-mount registration instructions — replaces the old inline-
+   styled block. Same visual family as mm-restart-banner but stacks
+   the compose.yaml + restart command snippets clearly. */
+.mm-mount-instr-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: var(--text-xs);
+}
+
+.mm-mount-instr-body {
+  margin: 6px 0 4px;
+  font-size: var(--text-xs);
+  color: var(--text);
+}
+
+.mm-mount-instr-snippet {
+  display: block;
+  padding: 4px 6px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  word-break: break-all;
+  user-select: all;
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+
+.mm-kv-section {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.mm-kv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-top: var(--space-sm);
+}
+
+@media (max-width: 720px) {
+  .mm-kv-grid { grid-template-columns: 1fr; }
+}
+
+.mm-kv-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-sm);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.mm-kv-field:hover {
+  border-color: var(--border-strong, var(--border));
+}
+
+.mm-kv-field-toggle {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.mm-kv-field-toggle input[type="checkbox"] {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.mm-kv-label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.mm-kv-unit {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.mm-kv-help {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.mm-kv-help strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.mm-kv-field input[type="number"] {
+  font-size: var(--text-sm);
+  padding: 4px 6px;
+}
+
+.mm-kv-status {
+  font-size: var(--text-xs);
+  margin-top: var(--space-sm);
+  min-height: 1em;
+}
+
+.mm-kv-status-ok { color: var(--success); }
+.mm-kv-status-err { color: var(--error); }
+
+.mm-inline-actions {
+  display: flex;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+.mm-inline-actions .field-input {
+  flex: 1;
+  font-size: var(--text-xs);
+  padding: 4px 6px;
+}
+
+.mm-inline-note {
+  margin-top: var(--space-xs);
+  padding: var(--space-sm);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+}
+
+.mm-file-browser {
+  margin-top: var(--space-sm);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  max-height: 300px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.mm-file-browser-breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: var(--space-xs);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-light);
+  font-size: var(--text-xs);
+}
+
+.mm-file-browser-contents {
+  overflow-y: auto;
+  flex: 1;
+  padding: var(--space-xs);
+}
+
+/* --- Model List --- */
+
+.mm-model-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.mm-model-group {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface) 94%, var(--bg) 6%);
+  overflow: hidden;
+}
+
+.mm-model-group-recent {
+  border-color: color-mix(in srgb, var(--accent) 24%, var(--border-light));
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface));
+}
+
+.mm-model-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.mm-model-group-title {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.mm-model-group-copy {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.mm-model-group-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+}
+
+.mm-empty {
+  text-align: center;
+  padding: var(--space-lg) var(--space-md);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.mm-empty-welcome {
+  text-align: center;
+  padding: var(--space-xl) var(--space-md);
+  color: var(--text-secondary);
+}
+
+.mm-empty-welcome p {
+  margin-bottom: var(--space-md);
+  font-size: var(--text-sm);
+}
+
+.mm-empty-welcome .mm-chips {
+  justify-content: center;
+}
+
+/* --- Model Card --- */
+
+.mm-model-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.mm-model-card:hover {
+  border-color: var(--border);
+}
+
+.mm-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.mm-status-dot.loaded {
+  background: var(--success);
+  box-shadow: 0 0 6px rgba(76, 175, 80, 0.4);
+}
+
+.mm-status-dot.unloaded {
+  background: var(--text-muted);
+}
+
+.mm-model-info {
+  /* Keep a usable basis so a button-heavy actions block can't crush the
+     meta line into a 3-char-wide vertical strip — when the row gets tight
+     the actions wrap to their own line instead (flex-wrap on the card). */
+  flex: 1 1 260px;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.mm-model-name {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+
+/* The name text ellipsizes; the trailing drive badge stays visible. */
+.mm-model-name-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.mm-model-meta {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.mm-model-actions {
+  display: flex;
+  gap: var(--space-xs);
+  flex-shrink: 0;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  /* On a shared row this pins the buttons right; once the card wraps it
+     drops the whole actions block onto its own full-width row. */
+  margin-left: auto;
+}
+
+.mm-backend-badge {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  padding: 2px var(--space-sm);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+}
+
+/* --- Drive (storage volume) labelling + filter --- */
+
+/* Hidden by an active drive filter — applied to cards and empty groups. */
+.mm-filtered-out { display: none !important; }
+
+/* Per-model drive chip, sits inline after the model name. Clickable filter. */
+.mm-drive-badge {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 1px var(--space-sm);
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  color: var(--text-muted);
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+.mm-drive-badge:hover {
+  color: var(--text-primary);
+  border-color: var(--accent, var(--border));
+}
+.mm-drive-badge.active {
+  color: var(--accent-contrast, #fff);
+  background: var(--accent, var(--text-secondary));
+  border-color: var(--accent, var(--text-secondary));
+}
+
+/* Filter chip bar above the model list. */
+.mm-drive-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.mm-drive-chip {
+  padding: var(--space-xs) var(--space-md);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill, 999px);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+.mm-drive-chip:hover {
+  color: var(--text-primary);
+  border-color: var(--accent, var(--border));
+}
+.mm-drive-chip.active {
+  color: var(--accent-contrast, #fff);
+  background: var(--accent, var(--text-secondary));
+  border-color: var(--accent, var(--text-secondary));
+}
+
+/* Overview "Storage by drive" rollup. */
+.mm-drive-rollup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: var(--space-md);
+}
+.mm-drive-rollup-title {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-xs);
+}
+.mm-drive-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+.mm-drive-row:hover { border-color: var(--accent, var(--border)); }
+.mm-drive-row-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.mm-drive-row-meta {
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+/* --- Delete Confirmation --- */
+
+.mm-delete-confirm {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(244, 67, 54, 0.08);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(244, 67, 54, 0.2);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.mm-delete-confirm span {
+  flex: 1;
+}
+
+/* ==========================================================================
+   llama.cpp Server Dashboard
+   Industrial-utilitarian control panel aesthetic
+   ========================================================================== */
+
+/* --- Dashboard Container --- */
+
+.mm-lcpp-dashboard {
+  display: none;
+  margin-bottom: var(--space-lg);
+  animation: mm-fade-in var(--duration-fast) var(--ease-standard);
+}
+
+.mm-lcpp-dashboard.active {
+  display: block;
+}
+
+.mm-lcpp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.mm-lcpp-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.mm-lcpp-title svg {
+  width: 14px;
+  height: 14px;
+  opacity: 0.6;
+}
+
+/* --- Server Status LED --- */
+
+.mm-server-led {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+.mm-led-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: background 400ms, box-shadow 400ms;
+}
+
+.mm-led-dot.ok {
+  background: var(--success);
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+  animation: mm-led-pulse 3s ease-in-out infinite;
+}
+
+.mm-led-dot.loading {
+  background: var(--warning);
+  box-shadow: 0 0 8px rgba(255, 152, 0, 0.4);
+  animation: mm-led-blink 1s ease-in-out infinite;
+}
+
+.mm-led-dot.error {
+  background: var(--error);
+  box-shadow: 0 0 8px rgba(244, 67, 54, 0.4);
+}
+
+@keyframes mm-led-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes mm-led-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* --- Server Info Grid --- */
+
+.mm-lcpp-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.mm-stat-cell {
+  padding: var(--space-sm);
+  background: var(--bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+}
+
+.mm-stat-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.mm-stat-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --- Slot Visualization --- */
+
+.mm-slots-section {
+  margin-bottom: var(--space-md);
+}
+
+.mm-slots-row {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.mm-slot-block {
+  flex: 1;
+  min-width: 100px;
+  padding: var(--space-sm);
+  background: var(--bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  cursor: default;
+  transition: border-color var(--duration-fast) var(--ease-standard);
+  position: relative;
+}
+
+.mm-slot-block:hover {
+  border-color: var(--border);
+}
+
+.mm-slot-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-xs);
+}
+
+.mm-slot-id {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.mm-slot-status {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.mm-slot-status.idle {
+  color: var(--success);
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.mm-slot-status.busy {
+  color: var(--warning);
+  background: rgba(255, 152, 0, 0.1);
+}
+
+/* KV cache usage bar */
+.mm-slot-bar-track {
+  height: 4px;
+  background: var(--border-light);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.mm-slot-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--primary);
+  transition: width 400ms var(--ease-standard);
+}
+
+.mm-slot-bar-fill.high {
+  background: var(--warning);
+}
+
+.mm-slot-bar-fill.critical {
+  background: var(--error);
+}
+
+.mm-slot-tokens {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.mm-slot-erase {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--duration-fast), background var(--duration-fast), color var(--duration-fast);
+}
+
+.mm-slot-block:hover .mm-slot-erase {
+  opacity: 1;
+}
+
+.mm-slot-erase:hover {
+  background: rgba(244, 67, 54, 0.15);
+  color: var(--error);
+}
+
+.mm-slot-erase svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* --- LoRA Adapters --- */
+
+.mm-lora-section {
+  margin-bottom: var(--space-md);
+}
+
+.mm-lora-section.hidden {
+  display: none;
+}
+
+.mm-lora-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.mm-lora-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+}
+
+.mm-lora-name {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mm-lora-scale {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.mm-lora-slider {
+  width: 80px;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--border-light);
+  border-radius: 2px;
+  outline: none;
+}
+
+.mm-lora-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.mm-lora-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.mm-lora-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  min-width: 32px;
+  text-align: right;
+}
+
+.mm-lora-apply {
+  margin-top: var(--space-sm);
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* --- Router Mode Model Cards --- */
+
+.mm-status-dot.loading {
+  background: var(--warning);
+  box-shadow: 0 0 6px rgba(255, 152, 0, 0.4);
+  animation: mm-led-blink 1s ease-in-out infinite;
+}
+
+.mm-status-dot.failed {
+  background: var(--error);
+  box-shadow: 0 0 6px rgba(244, 67, 54, 0.3);
+}
+
+/* --- Backend-specific badges --- */
+
+.mm-backend-badge.ollama {
+  color: var(--primary);
+  border-color: rgba(76, 201, 240, 0.2);
+  background: rgba(76, 201, 240, 0.06);
+}
+
+.mm-backend-badge.llamacpp {
+  color: var(--warning);
+  border-color: rgba(255, 152, 0, 0.2);
+  background: rgba(255, 152, 0, 0.06);
+}
+
+.mm-backend-badge.engine {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 22%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.mm-backend-badge.docker {
+  color: var(--text-secondary);
+}
+
+/* --- Section Header (title + search) --- */
+
+.mm-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: var(--space-sm);
+}
+
+.mm-section-header .mm-section-title {
+  margin-bottom: 0;
+}
+
+.mm-model-search {
+  width: 180px;
+  padding: 4px 10px;
+  font-size: var(--text-xs);
+  border-radius: var(--radius-md);
+}
+
+/* --- Active Model Indicator --- */
+
+.mm-selected {
+  border-color: var(--accent) !important;
+  background: color-mix(in srgb, var(--accent) 4%, var(--surface)) !important;
+}
+
+.mm-selected-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+/* --- Model Detail Panel --- */
+
+.mm-model-detail {
+  padding: var(--space-sm) var(--space-md);
+  margin-top: var(--space-sm);
+  background: var(--bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  font-size: var(--text-xs);
+  width: 100%;
+  animation: mmDetailIn 0.15s ease-out;
+}
+
+@keyframes mmDetailIn {
+  from { opacity: 0; max-height: 0; }
+  to { opacity: 1; max-height: 200px; }
+}
+
+.mm-detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  color: var(--text-secondary);
+}
+
+.mm-detail-key {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.mm-detail-val {
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.mm-detail-loading {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* --- Manage Models Button (header) --- */
+
+.manage-models-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--min-tap-target);
+  height: var(--min-tap-target);
+  padding: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition: background var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+}
+
+.manage-models-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.manage-models-btn svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.manage-models-btn:hover svg,
+.manage-models-btn:focus-visible svg {
+  transform: scale(1.1);
+  transition: transform var(--duration-fast) var(--ease-bounce);
+}
+
+.manage-models-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* --- Responsive --- */
+
+/* Tablet & narrow desktop: keep two-column workspace but slim the sidebar
+   so the main pane has breathing room. Below this tier the layout
+   collapses to a single column under the mobile rules. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .mm-workspace {
+    grid-template-columns: 180px minmax(0, 1fr);
+    gap: var(--space-md);
+  }
+
+  .mm-sidebar {
+    padding: var(--space-sm);
+  }
+
+  .mm-nav-btn {
+    padding: 9px 10px;
+  }
+
+  .mm-nav-copy {
+    font-size: 10px;
+  }
+
+  .mm-overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mm-overview-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mm-load-sheet-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  /* Full-screen on phones: width was already 100%, now also full-height
+     so dense content isn't squeezed into ~70vh while ~30% of the screen
+     is wasted. Flex column keeps the header pinned and lets the body
+     own the scroll. dvh handles mobile-browser chrome correctly. */
+  .mm-modal-size {
+    width: 100% !important;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Override the desktop dual-pane setup: on mobile we want the
+     entire body to scroll as one unit so users can swipe naturally.
+     The sidebar collapses to a top row of nav pills (see .mm-nav
+     rules below). */
+  .mm-body {
+    flex: 1 1 auto;
+    max-height: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: block;
+  }
+
+  .mm-workspace {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+    flex: initial;
+    min-height: 0;
+  }
+
+  .mm-sidebar {
+    position: static;
+    padding: var(--space-sm);
+    max-height: none;
+    overflow: visible;
+  }
+
+  .mm-main {
+    overflow: visible;
+    padding-right: 0;
+    min-height: 0;
+  }
+
+  /* Wrap nav into a 2-up grid of pills instead of a horizontal scroll
+     strip. The old strip hid most tabs off-screen on narrow phones. */
+  .mm-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-bottom: 0;
+  }
+
+  .mm-nav-btn {
+    flex: 1 1 calc(50% - 3px);
+    min-width: 0;
+    padding: 12px 12px;
+    min-height: 44px;
+  }
+
+  .mm-overview-grid,
+  .mm-overview-stat-grid,
+  .mm-overview-mini-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mm-overview-hero-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mm-device-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mm-role-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mm-device-card {
+    min-height: 0;
+  }
+
+  .mm-download-row {
+    flex-direction: column;
+  }
+
+  .mm-gguf-item {
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+
+  .mm-gguf-name {
+    min-width: 100%;
+  }
+
+  .mm-gguf-dl-btn {
+    margin-left: auto;
+  }
+
+  .mm-model-card {
+    flex-wrap: wrap;
+  }
+
+  /* Long filenames like Qwen2.5-Coder-32B-Instruct-Q4_K_M.gguf were
+     ellipsis-truncated with no fallback. Allow break on narrow widths. */
+  .mm-model-name { flex-wrap: wrap; }
+  .mm-model-name-label {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+  }
+
+  .mm-model-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .mm-load-sheet-panel {
+    padding: var(--space-md);
+  }
+
+  .mm-load-sheet-grid,
+  .mm-load-plan {
+    grid-template-columns: 1fr;
+  }
+
+  .mm-delete-confirm {
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+
+  .manage-models-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .manage-models-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .mm-lcpp-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mm-slot-block {
+    min-width: 80px;
+  }
+
+  .mm-lora-slider {
+    width: 60px;
+  }
+
+  .mm-section-header {
+    flex-wrap: wrap;
+  }
+
+  .mm-selection-pill {
+    white-space: normal;
+  }
+
+  .mm-model-search {
+    width: 100%;
+  }
+
+  .mm-model-group-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mm-inline-actions {
+    flex-direction: column;
+  }
+
+  .mm-advanced summary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Very narrow phones: drop the secondary nav copy line so two pills
+   per row still fit comfortably. */
+@media (max-width: 420px) {
+  .mm-nav-copy {
+    display: none;
+  }
+
+  .mm-nav-btn {
+    padding: 14px 10px;
+  }
+}
+
+/* Docker Model Runner notice */
+.mm-dmr-notice {
+  padding: 12px 14px;
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--border));
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.mm-dmr-title {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.mm-dmr-text {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+.mm-dmr-text a { color: var(--accent); text-decoration: none; }
+.mm-dmr-text a:hover { text-decoration: underline; }
+.mm-dmr-cmd {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  margin: 3px 0;
+  background: var(--bg-elevated);
+  border-radius: 4px;
+  color: var(--accent);
+  user-select: all;
+}
+.mm-backend-badge.docker {
+  background: color-mix(in srgb, #2496ed 12%, transparent);
+  color: #2496ed;
+}
+
+/* ── Active Downloads panel ─────────────────────────────────────────── */
+.mm-downloads-section { padding-top: var(--space-sm); }
+.mm-download-card {
+  transition: border-color 200ms ease, background 200ms ease;
+}
+.mm-download-card[data-status="completed"] {
+  border-color: color-mix(in srgb, var(--success) 40%, var(--border-light));
+  background: color-mix(in srgb, var(--success) 4%, transparent);
+}
+.mm-download-card[data-status="failed"] {
+  border-color: color-mix(in srgb, var(--danger, #c44) 40%, var(--border-light));
+  background: color-mix(in srgb, var(--danger, #c44) 4%, transparent);
+}
+.mm-download-card[data-status="cancelled"] {
+  opacity: 0.7;
+}
+@keyframes mm-indet {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+.mm-dl-progress-fill {
+  will-change: width, transform;
+}
+.mm-model-actions .mm-delete-file-btn {
+  color: var(--text-muted);
+}
+.mm-model-actions .mm-delete-file-btn:hover {
+  color: var(--danger, #c44);
+  border-color: var(--danger, #c44);
+}
+
+/* ── GGUF picker: multi-part group + mmproj affordances ───────────── */
+/* Items now stack a header row + optional mmproj toggle + parts list,
+   so the row itself is column-flex and .mm-gguf-row holds the horizontal
+   name | badges | size | button line. */
+.mm-gguf-item {
+  flex-direction: column;
+  align-items: stretch;
+}
+.mm-gguf-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+}
+.mm-gguf-group .mm-gguf-expander {
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+.mm-gguf-subitems {
+  border-top: 1px dashed var(--border-light);
+  margin-top: var(--space-xs);
+  padding-top: var(--space-xs);
+}
+.mm-gguf-subitem:not(:last-child) {
+  border-bottom: 1px dashed color-mix(in srgb, var(--border-light) 50%, transparent);
+}
+.mm-mmproj-toggle:hover { color: var(--text); }
+.mm-mmproj-toggle input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+.mm-gguf-mmproj {
+  background: color-mix(in srgb, var(--accent) 3%, var(--bg));
+}
+
+
+/* Currently active model card highlight on the overview tab. */
+.mm-overview-current-card {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-soft, rgba(99, 102, 241, 0.15));
+}

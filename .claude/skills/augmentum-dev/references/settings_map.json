@@ -1,0 +1,6112 @@
+{
+  "settings": [
+    {
+      "backend_key": "agentic_artifact_theme",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "agentic_default_autonomy",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "agentic_image_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "agentic_max_steps",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "ambient_favorites",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "ambient_loop_mode",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "ambient_video",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "ambient_volume",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "analytical_confidence_threshold",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "analytical_max_backtracks",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "analytical_max_phase_retries",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "anthropic_api_key",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "anthropic_base_url",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "api_embeddings_max_chars",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "api_embeddings_max_items",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "api_stt_max_bytes",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "api_tts_max_chars",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "app_builder_auto_preview",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "app_builder_improve_pass",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "app_builder_llm_timeout_seconds",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "app_builder_max_fix_iterations",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "app_builder_max_improve_iterations",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "app_builder_max_tokens",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "architect_dispatch_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "architect_router_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "architect_router_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "architect_router_timeout_ms",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "auth_ip_lockout_minutes",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "auth_ip_lockout_threshold",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "auth_lockout_minutes",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "auth_lockout_threshold",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "auth_max_sessions_per_user",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "auth_session_ttl_hours",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "auth_ws_ticket_ttl_seconds",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "avatar_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "azure_api_key",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "azure_api_version",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "azure_base_url",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "azure_deployment",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "body_physics_audio_reactions_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "body_physics_compliance_gain",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "body_physics_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "body_physics_rapier_weight",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "body_physics_recover_hz",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "body_physics_velocity_aware",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "body_physics_visual_feedback_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "cast_comic_library_ceiling",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "cast_gallery_show_private",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "chromium_binary_path",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "classifier_engine_backend_port",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "classifier_engine_ctx_size",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "classifier_engine_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "classifier_engine_gpu_layers",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "classifier_engine_model_path",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "classifier_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "classifier_slot_backend_port",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "classifier_slot_ctx_size",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "classifier_slot_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "classifier_slot_gpu_layers",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "classifier_slot_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "coder_archive_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_archive_max_turns_per_workspace",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_auto_recall_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_auto_recall_k",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_auto_recall_max_distance",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_breaker_action_stagnation_break",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_breaker_inspection_loop_break",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_breaker_inspection_loop_nudge",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_breaker_no_write_progress_break",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_breaker_same_file_edit_break",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_breaker_same_validation_error_repeat",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_breaker_test_failure_streak",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_breaker_validation_error_streak",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_cloud_max_tokens_floor",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_compact_tool_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_compaction_auto_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_compaction_keep_recent",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_compaction_synthesis_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_compaction_threshold",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_context_reserve_pct",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_file_write_max_tokens",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_goal_judge_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_hybrid_max_iters",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_hybrid_max_iters_ungated",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_local_max_tokens_cap",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_local_max_tokens_pct",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_maker_agreements_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_max_paused_seconds",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_native_nudge_max",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_next_speaker_check_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_pause_idle",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_pause_stop_after_seconds",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_paused_sweep_interval_s",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_request_delay_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_request_delay_seconds",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_subagent_auto_explore",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_subagent_fast_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "coder_subagent_max_concurrent",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_subagent_max_depth",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_subagent_verify_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_subagent_verify_reentry",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_subagents_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_think_tool_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_verify_command",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "coder_verify_command_gate_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_verify_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_visual_verify_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "coder_workspace_network_mode",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "coder_workspace_pids_check_interval_s",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_workspace_pids_limit",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "coder_workspace_pids_warn_pct",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "cohere_api_key",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "comic_default_reading_direction",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "comic_narration_cache_max",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "community_install_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_activation_mode",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "companion_address_llm_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_address_llm_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "companion_address_llm_timeout_ms",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_address_media_boost",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_address_threshold",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_aging_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_aging_threshold_hours",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_alert_watch_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_always_listening_prefix_padding_ms",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_always_listening_vad_threshold",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_always_listening_warmup_ms",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_always_raw",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_assist_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_attention_sources",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "companion_audio_cues",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_auto_summon",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_becca_direct_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_care_cadence",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "companion_consolidation_drift_ceiling",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_consolidation_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_consolidation_interval_days",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_consolidation_min_evidence",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_cooldown_minutes",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_creation_interval_hours",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_creations_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_csm_cross_speaker",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_csm_residency",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "companion_cultural_intake_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_default_owner_user_id",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "companion_discreet_auto_exit_minutes",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_discreet_location_aware",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_dispatch_chat_min_utility",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_dispatch_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_dispatch_routes_chat",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_dreams_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_drift_audit_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_drift_audit_interval_hours",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_drive_decay_half_life_hours",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_drives_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_e2e_participant_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_energy_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_entity_recs_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_feedback_bias_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_followup_window_s",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_healing_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_household_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_image_expansion_timeout_ms",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_image_prompt_expansion_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_initiative_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_initiative_min_interval_s",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_initiative_threshold",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_journal_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_journal_hushed_until",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "companion_keyboard_shortcuts",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_lessons_capture_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_lessons_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_lessons_inject_top_k",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_lessons_min_strength_for_inject",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_lessons_relevance_threshold",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_live_vision_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_locale",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "companion_memory_min_score",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_metric_confirm_readings",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_metric_quarantine_pct",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_min_tick_interval_s",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_motion_cues_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_notify_drift_audit_push",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_notify_eod",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_open_thread_window_s",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_pad_emit_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_peer_agents_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_perception_acquire_notifications",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_persona_mode",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_pre_context_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_pre_context_max_notes_scan",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_pre_context_min_keyword_overlap",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_presence_mode",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "companion_primitive_registry_active",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_profile_tone_only",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_promise_deliver_strict_tier",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_promise_deliver_tier",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "companion_prompt_fire_max_seconds",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_prompt_fire_max_tool_calls",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_quiet_hours_end",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "companion_quiet_hours_start",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "companion_reflection_trait_nudge_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_research_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_research_fetch_top",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_research_max_queries",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_research_max_seconds",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_results_ring_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_results_ring_turns",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_runtime_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_safety_floor_threshold_chat",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_safety_floor_threshold_coder",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_salience_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_salience_journal_threshold",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_salience_llm_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_skill_archive_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_skill_inject_top_k",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_skill_min_confidence_for_inject",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_skill_relevance_threshold",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_skills_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_speak_tier",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "companion_standing_tasks_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_subagent_registry_active",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_synthesize_daily_cap",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_synthesize_max_tokens",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_tick_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_today_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_today_max_chars",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_today_reflect_hour_local",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_topic_mute_default_days",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_topical_aggregator_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_topical_min_events",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_topical_window_hours",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_user_affect_half_life_s",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_voice_decision_hud",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_voice_journal_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_watch_judge_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_watch_judge_timeout_s",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_watch_probe_timeout_s",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_wondering_daily_cap",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "companion_xr_orchestrator",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "connect_instance_handle",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "controller_deadzone",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "controller_haptic_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "controller_pad_routing",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "controller_remap_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "controller_touch_overlay",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "deepseek_api_key",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "discovery_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "discovery_max_recommendations",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "document_rag_cliff_ratio",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "document_rag_contextual_retrieval",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "document_rag_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "document_rag_max_context_tokens",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "document_rag_query_analysis",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "document_rag_query_analysis_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "document_rag_query_analysis_timeout",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "document_rag_recall_limit",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "dream_cluster_min_size",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "dream_cluster_threshold",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "dream_compaction_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "dream_compaction_interval_hours",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "dream_compaction_max_age_days",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "dream_compaction_max_clusters_per_run",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "dream_consolidation_high",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "dream_consolidation_low",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "dream_dedup_threshold",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "dream_max_context_tokens",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "dream_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "dream_portrait_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "dream_recall_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "dream_recall_limit",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "dream_time_trim_count_threshold",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "emulator_browser_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "emulator_rom_max_mb",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "emulator_save_max_per_slot_mb",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "emulator_save_slots_per_rom",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_auto_pair_mmproj",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_cache_ram_mib",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_cache_reuse_min",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_flash_attn",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_health_timeout",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_idle_timeout",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_kv_auto_pin_narrative",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_kv_cache_type",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "engine_kv_max_snapshots_per_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_kv_narrative_ttl_days",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_kv_replay_budget_s",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_kv_replay_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_kv_replay_max_rows",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_kv_replay_warm_sessions",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_kv_ttl_days",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_kv_warm_on_start",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_mtp_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_mtp_n_max",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_multislot_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_parallel_slots",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_reasoning_budget",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_reasoning_format",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "engine_reasoning_grace_period",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_secondary_backend_port",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_secondary_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_secondary_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "engine_speculation_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_speculation_max_new_tokens",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_speculation_prefill_only",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_speculation_ttl_s",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "engine_use_jinja_template",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "fabric_admission_posture",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "fabric_e2e_dm_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "fabric_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "fabric_federation_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "fabric_relay_sealed_only",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "files_description_max_chars",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "files_enrichment_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "files_max_thumbnail_px",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "files_search_limit",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "files_upload_max_file_bytes",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "files_upload_max_files_per_request",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "files_upload_max_request_bytes",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "files_user_storage_quota_bytes",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "files_webdav_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "fireworks_api_key",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "game_agent_fast_max_tokens",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "game_agent_fast_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "game_agent_fast_turns_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "game_agent_frame_dedup_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "game_agent_frame_max_edge",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "game_agent_full_turn_every",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "game_agent_grid_overlay_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "game_agent_journal_dir",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "game_agent_max_tokens",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "game_agent_planner_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "game_agent_scene_interval_ms",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "game_agent_scene_narrator_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "game_agent_stall_after_s",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "game_agent_thinking_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "game_portal_default_sources",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "game_portal_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "game_portal_recommendations",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "game_stream_default_bitrate_mbps",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "game_stream_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "game_stream_idle_timeout_seconds",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "game_stream_max_concurrent",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "game_stream_mouse_sensitivity",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "game_stream_prefer_hw_encoder",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "ghost_text_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "ghost_text_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "google_api_key",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "google_vertex",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "google_vertex_project",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "google_vertex_region",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "groq_api_key",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "heavyweight_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "huggingface_token",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "image_allow_pickle_formats",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "image_cfg_rescale",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "image_default_cfg",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "image_default_height",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "image_default_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "image_default_preset",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "image_default_steps",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "image_default_width",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "image_freeu_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "image_hires_denoise",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "image_hires_fix",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "image_hires_scale",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "image_imports_dir",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "image_ip_adapter_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "image_ip_adapter_scale",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "image_max_inflight_per_user",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "image_prompt_condense_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "image_tome_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "image_tome_ratio",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "image_torch_compile",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "image_upload_max_size_gb",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "intent_capture_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "knowledge_catalog_cache_ttl",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "knowledge_embedding_batch_size",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "knowledge_embedding_use_gpu",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "knowledge_featured_packs",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "knowledge_library_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "knowledge_library_in_chat",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "knowledge_library_retention_days",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "knowledge_max_results",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "knowledge_max_results_agentic",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "knowledge_max_results_analytical",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "knowledge_max_results_narrative",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "knowledge_max_results_passthrough",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "knowledge_min_score",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "knowledge_packs_agentic",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "knowledge_packs_analytical",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "knowledge_packs_custom_dir",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "knowledge_packs_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "knowledge_packs_narrative",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "knowledge_packs_passthrough",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "knowledge_passage_cache_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "knowledge_passage_cache_max_articles",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "knowledge_query_condense_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "knowledge_query_condense_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "knowledge_search_cache_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "knowledge_search_cache_size",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "knowledge_search_cache_ttl_seconds",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "library_publication_max_bytes",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "library_publication_user_budget_bytes",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "local_fabric_icon",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "location",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "marketplace_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "max_request_body_bytes",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "mcp_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "mcp_servers",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "memory_auto_approve",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "memory_compaction_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "memory_compaction_interval_hours",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "memory_compaction_max_age_days",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "memory_consolidation_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "memory_contradiction_threshold",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "memory_core_profile_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "memory_core_profile_max_tokens",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "memory_core_profile_rebuild_interval",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "memory_corroboration_promote_access",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "memory_dedup_threshold",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "memory_earned_permanence",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "memory_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "memory_extraction_batch_size",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "memory_inject_agentic",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "memory_inject_analytical",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "memory_llm_extraction_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "memory_llm_extraction_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "memory_recall_limit",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "memory_recall_min_score",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "memory_reflection_force_core",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "memory_scope_by_mode",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "memory_summary_max_chars",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "metrics_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "mistral_api_key",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "multi_model_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "multi_model_models",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "narrative_archive_min_messages",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_auto_background",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_auto_background_interval",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_auto_bg_distiller_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "narrative_auto_bg_image_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "narrative_context_budget",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_context_limit",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_extraction_interval",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_extraction_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "narrative_llm_extraction",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_lorebook_native_tools_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_lorebook_tools_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_memory_compaction_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_memory_continuous_archive",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_memory_interval",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_memory_ledger_ceiling",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_memory_ledger_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_memory_max_tokens",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_memory_max_words",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_memory_mode",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "narrative_memory_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "narrative_memory_prompt",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "narrative_memory_state_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_recall_tools_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_recall_tools_max_iters",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_request_log_limit",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_scene_context_rounds",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_scene_distiller_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "narrative_scene_image_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "narrative_smart_retrieval",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_smart_retrieval_count",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_translate_auto_save",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "narrative_translate_default_language",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "narrative_world_systems_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "native_primer_models",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "notification_sound",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "notification_sound_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "notifications_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "observation_lookup_cache_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "observation_lookup_cache_max_entries",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "observation_primary_user_id",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "observation_seed_chat_history",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "observation_substrate_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "offers_default_expiry_days",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "offers_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "offers_max_pending_per_session",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "offers_max_per_day",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "offers_max_per_turn",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "onboard_reasoning_max_tokens",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "onboard_reasoning_thinking",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "openrouter_api_key",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "passthrough_chain_attention_anchor",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "passthrough_chain_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "passthrough_chain_error_as_observation",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "passthrough_chain_max_flows",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "passthrough_chain_max_parallel",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "passthrough_chain_max_retries",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "passthrough_chain_max_steps",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "passthrough_chain_plan_mutation",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "passthrough_chain_synthesis_timeout",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "passthrough_chain_timeout",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "passthrough_tools",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "perplexity_api_key",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "primary_chat_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "rate_limit_chat_rpm",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "rate_limit_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "rate_limit_image_rpm",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "rate_limit_voice_rpm",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "reranker_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "reranker_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "reranker_top_k",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "role_min_param_billions",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "rsshub_base_url",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": false,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 2,
+      "category": "other"
+    },
+    {
+      "backend_key": "scheduling_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "search_credibility_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "search_direct_fetch_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "search_direct_fetch_max_chars",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "search_expansion_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "search_expansion_max_total",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "search_expansion_max_variants",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "search_proxies",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "search_proxy_fallback_direct_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "search_proxy_healthcheck_interval_minutes",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "search_proxy_rotation_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "search_relevance_filter_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "search_relevance_min_score",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "selfedit_autonomy_level",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "selfedit_edit_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "selfedit_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "selfedit_engine",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "selfedit_frontier_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "selfedit_ingest_coder_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "selfedit_max_iters",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "selfedit_self_heal_attempts",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "session_client_isolation",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "soundscape_favorites",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "soundscape_last_station",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "startup_warmup",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "strain_monitor_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "stt_routing_mode",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "stt_routing_pin_provider",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "timezone",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "titles_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "titles_storage_max_mb",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "tool_execution_timeout",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "tool_result_max_chars",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "training_capture_dir",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "training_capture_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "training_capture_min_content",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "training_capture_user_id",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "tts_emotion_aware",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "tts_kokoro_hbe",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "tts_kokoro_prosody",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "tts_kokoro_quality",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "tts_openai_url",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "tts_voice_style",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "tv_auto_update",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "tv_update_channel",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "typography_custom_fonts",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "typography_selected",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "typography_text_scale",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "uarf_auto_search",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "uarf_auto_search_max_context_chars",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "uarf_auto_search_queries",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "uarf_auto_search_results_per_query",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "uarf_auto_verify",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "uarf_conversation_max_chars",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "uarf_heuristic_assess",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "uarf_max_tool_calls_per_phase",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "uarf_proactive_code",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "uarf_proactive_math",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "uarf_proactive_search",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "uarf_search_retry_max",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "uarf_search_retry_min_results",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "uarf_verify_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "utility_model",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "vision_provider_backend_port",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "vision_provider_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "vision_provider_mmproj_path",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "vision_provider_model_path",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "voice_ack_clips_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_audio_agc",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_audio_agc_target_dbfs",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_audio_ns",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_audio_ns_level",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_bargein_min_speech_ms",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_denoise_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_fast_endpoint_ms",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_highpass_hz",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_lipsync_engine",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "voice_lipsync_universal",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_max_audio_seconds",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_pipeline_mode_call",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "voice_pipeline_mode_companion",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "voice_pipeline_mode_narration",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "voice_pipeline_mode_readaloud",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "voice_preprocess_bypass",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_routing_mode",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "voice_routing_pin_provider",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "voice_silence_threshold_ms",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_smart_turn",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_smart_turn_max_deferrals",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_smart_turn_max_wait_s",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_smart_turn_min_veto_confidence",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_smart_turn_threshold",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_speaker_threshold",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_speaker_verify",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_speaker_verify_seconds",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "voice_tts_chunking",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "voice_tts_lexicon",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    },
+    {
+      "backend_key": "voice_xr_proxemics_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "web_search_topic_hints_enabled",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "tool"
+    },
+    {
+      "backend_key": "xai_api_key",
+      "frontend_key": "",
+      "config_py": true,
+      "config_routes": true,
+      "restore_map": true,
+      "settings_js": false,
+      "layers": 3,
+      "category": "string"
+    }
+  ],
+  "totals": {
+    "config_fields": 954,
+    "tool_settings": 439,
+    "string_settings": 115,
+    "restore_map": 527,
+    "js_synced": 0,
+    "fully_wired": 554
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "lang": "zh",
+  "version": "1.0.0",
+  "name": "Mandarin Skill Assessment",
+  "credits": "Adapted from HSK 3.0 (国际中文教育中文水平等级标准, 2021) HSK 1 and HSK 2 specifications. LLM-grader prompts include tone, character, and measure-word checks specific to Mandarin Chinese.",
+  "license": "CC BY 4.0",
+  "levels": [
+    {
+      "code": "HSK1",
+      "name": "Foundational",
+      "can_do": {
+        "reading": [
+          {"id": "zh-hsk1-r-01", "statement": "Can recognise and read aloud 150+ basic characters in HSK1 vocabulary, including high-frequency two-character words (你好, 谢谢, 老师, 学生).", "evidence": "Has correctly identified >= 50 HSK1 characters in browse / Bubble Pop"},
+          {"id": "zh-hsk1-r-02", "statement": "Can read pinyin with tone marks for any HSK1 word and match it to the correct character.", "evidence": "Pinyin-to-Hanzi matching drill score >= 80% on HSK1 vocab"},
+          {"id": "zh-hsk1-r-03", "statement": "Can understand very short, simple sentences using HSK1 grammar (subject-verb-object, 是, 有, 在), such as '我是学生' or '他在家里'.", "evidence": "Reading comprehension drill >= 70% on sentences built only from HSK1 vocab"}
+        ],
+        "writing": [
+          {"id": "zh-hsk1-w-01", "statement": "Can type simple HSK1 sentences in characters using pinyin input, selecting the correct Hanzi from candidates.", "evidence": "Companion turn produces >= 3 HSK1 characters per turn via pinyin input, not romanised"},
+          {"id": "zh-hsk1-w-02", "statement": "Can write content words (你, 好, 我, 是, 不, 有, 在, 的) as characters rather than pinyin or English when producing simple sentences.", "evidence": "Writing sample contains <= 1 content word romanised per 5-sentence sample"},
+          {"id": "zh-hsk1-w-03", "statement": "Can correctly use the structure '我叫…' / '我是…人' to introduce themselves in writing.", "evidence": "Self-intro writing prompt produces both structures without English fillers"}
+        ],
+        "listening": [
+          {"id": "zh-hsk1-l-01", "statement": "Can recognise spoken HSK1 words at slow rate (≤ 2 syllables/sec) and identify the correct character or pinyin from a small set.", "evidence": "Whisper Race / Echo Chamber score >= 70% at slow rate on HSK1 list"},
+          {"id": "zh-hsk1-l-02", "statement": "Can hear the four tones in isolation and identify each one correctly (mā / má / mǎ / mà).", "evidence": "Tone-identification drill score >= 75% on isolated single-character HSK1 words"},
+          {"id": "zh-hsk1-l-03", "statement": "Can understand very short questions (你叫什么名字？ 你多大？ 现在几点？) and respond appropriately.", "evidence": "Companion listening turn: learner answers >= 3 of 4 HSK1 questions correctly"}
+        ],
+        "speaking": [
+          {"id": "zh-hsk1-s-01", "statement": "Can pronounce HSK1 vocabulary with intelligible pinyin (initial + final correct; tones may be approximate but distinct).", "evidence": "Companion speaking turn: STT transcribes correct character for >= 70% of attempted HSK1 words"},
+          {"id": "zh-hsk1-s-02", "statement": "Can produce the four lexical tones distinguishably in isolation and in 1-2 syllable HSK1 words (especially the contrast mā/mǎ, sì/shí, mǎi/mài).", "evidence": "Tone-pair drill score >= 80% on minimal tone pairs; LLM grader tone_errors list <= 2 per 5-turn conversation"},
+          {"id": "zh-hsk1-s-03", "statement": "Can apply the 3rd-tone sandhi rule (3+3 → 2+3) on 你好, 很好, 我很好 without prompting.", "evidence": "Tone-pair drill includes sandhi minimal pair; grader flags absence of sandhi as tone_errors"},
+          {"id": "zh-hsk1-s-04", "statement": "Can use the most common measure words correctly: 个 for people/general, 杯 for drinks, 本 for books.", "evidence": "Companion grader measure_word_errors list <= 1 per 5-turn conversation; never uses 一个水 / 一个书"},
+          {"id": "zh-hsk1-s-05", "statement": "Can hold a 5-turn conversation on greetings, name, nationality, age, family, time, food, or weather using only HSK1 vocabulary.", "evidence": "Companion 5-turn conversation completes without code-switching to English on content words"}
+        ]
+      },
+      "character_skills": {
+        "recognition_target": 150,
+        "production_target_handwriting": 50,
+        "production_target_pinyin_typing": 100,
+        "evidence": "Recognition tracked via Bubble Pop / Echo Chamber correct identifications; pinyin-typing production tracked from Companion turns (count distinct HSK1 characters produced as Hanzi, not romanised); handwriting production tracked only if a stroke-input drill is enabled."
+      },
+      "tone_skills": {
+        "target": "Can produce the four tones distinguishably in isolation and in 1-2 syllable HSK1 words; can identify the tone of any HSK1 word when heard at slow rate; applies 3+3 sandhi on 你好/很好.",
+        "evidence": "Whisper Race score >= 70% on HSK1 words at slow rate; tone-pair drill score >= 80% on HSK1 minimal pairs (mā/mǎ, sì/shí, mǎi/mài, 你好 sandhi); LLM grader tone_errors list <= 2 per 5-turn conversation."
+      },
+      "promotion_to_next_level": "All HSK1 can-do statements demonstrated in Companion grader output, >= 250 HSK1 vocab settled (mature+reviewing), tone-pair drill score >= 80% on HSK1 minimal pairs, character production (pinyin-typed Hanzi) >= 100 distinct HSK1 characters, and measure_word_errors <= 1 in the most recent 3 graded 5-turn conversations."
+    },
+    {
+      "code": "HSK2",
+      "name": "Communicating in Familiar Situations",
+      "can_do": {
+        "reading": [
+          {"id": "zh-hsk2-r-01", "statement": "Can recognise and read 300+ characters in HSK1+HSK2 vocabulary, including most high-frequency two-character compounds (时候, 知道, 觉得, 因为).", "evidence": "Has correctly identified >= 120 distinct HSK1+HSK2 characters in browse / Bubble Pop"},
+          {"id": "zh-hsk2-r-02", "statement": "Can read short paragraphs (3-6 sentences) on familiar topics — daily routine, shopping, weather, simple past events — and answer comprehension questions.", "evidence": "Reading comprehension drill >= 70% on HSK2 short-passage set"},
+          {"id": "zh-hsk2-r-03", "statement": "Can distinguish aspect via 了 (completed), 着 (ongoing state), and 过 (experienced) when reading HSK2 sentences.", "evidence": "Aspect-particle multiple-choice drill score >= 70%"}
+        ],
+        "writing": [
+          {"id": "zh-hsk2-w-01", "statement": "Can compose 4-6 sentence paragraphs on daily life (yesterday/today/tomorrow, a recent meal, family activity) using HSK1+HSK2 vocab in characters.", "evidence": "Writing prompt produces >= 4 sentences with <= 1 content word romanised"},
+          {"id": "zh-hsk2-w-02", "statement": "Can correctly mark past/completed action with 了 in context (我吃了饭, 他去了北京) without overusing it on every verb.", "evidence": "Companion writing sample: grader notes correct 了 usage; not appended to every verb"},
+          {"id": "zh-hsk2-w-03", "statement": "Can use HSK2 connectives (因为…所以…, 但是, 也, 还, 都) to link two or more clauses.", "evidence": "Writing sample contains >= 2 multi-clause sentences using HSK2 connectives"}
+        ],
+        "listening": [
+          {"id": "zh-hsk2-l-01", "statement": "Can understand HSK1+HSK2 vocabulary spoken at natural slow rate (≈ 3 syllables/sec) in short dialogues on familiar topics.", "evidence": "Listening dialogue drill >= 65% on HSK2 set at natural-slow rate"},
+          {"id": "zh-hsk2-l-02", "statement": "Can identify the tone of any HSK1+HSK2 word in connected speech, including 3rd-tone sandhi and the neutral tone on common particles (吗, 了, 的, 呢).", "evidence": "Tone-identification drill score >= 75% on HSK2 words including sandhi + neutral tone items"},
+          {"id": "zh-hsk2-l-03", "statement": "Can grasp the gist of a short audio message about time, place, price, or schedule (e.g. 明天下午三点在学校).", "evidence": "Companion listening turn: learner correctly extracts time/place/price from >= 3 of 4 HSK2 messages"}
+        ],
+        "speaking": [
+          {"id": "zh-hsk2-s-01", "statement": "Can speak HSK1+HSK2 vocabulary with intelligible tones distinguishable to a patient Mandarin listener, with sandhi applied on common 3+3 collocations.", "evidence": "Whisper Race score >= 70% on HSK2 vocab at slow rate; tone-pair drill score >= 85% on HSK1+HSK2 pairs"},
+          {"id": "zh-hsk2-s-02", "statement": "Can correctly use aspect particles 了 / 着 / 过 in spoken sentences to mark completed / ongoing / experienced actions.", "evidence": "Companion grader notes 了/着/过 used correctly in >= 3 turns per 5-turn conversation; misuse flagged in particle_errors"},
+          {"id": "zh-hsk2-s-03", "statement": "Can ask and answer questions about time, place, quantity, price using HSK2 question words (什么时候, 哪里, 多少钱, 几).", "evidence": "Companion role-play: learner asks >= 4 distinct question types and answers >= 4 correctly"},
+          {"id": "zh-hsk2-s-04", "statement": "Can use the appropriate measure word for HSK1+HSK2 nouns: 个 (general), 杯 (drinks), 本 (books), 张 (flat objects: paper/tickets/tables), 件 (clothes/matters), 块 (currency/pieces).", "evidence": "Companion grader measure_word_errors list <= 1 per 5-turn conversation; demonstrates >= 4 distinct measure words across recent conversations"},
+          {"id": "zh-hsk2-s-05", "statement": "Can hold a 5-turn conversation on shopping, travel arrangements, daily routine, weather, family activities, or simple past events without code-switching to English on content words.", "evidence": "Companion 5-turn conversation completes with <= 1 English content word and grader rates content-coverage adequate"}
+        ]
+      },
+      "character_skills": {
+        "recognition_target": 300,
+        "production_target_handwriting": 100,
+        "production_target_pinyin_typing": 200,
+        "evidence": "Recognition tracked via Bubble Pop / Echo Chamber correct identifications across HSK1+HSK2 sets; pinyin-typing production counts distinct HSK1+HSK2 characters produced as Hanzi in Companion turns; handwriting production tracked only if stroke-input drill is enabled."
+      },
+      "tone_skills": {
+        "target": "Can produce the four tones distinguishably in connected HSK2 speech with 3+3 sandhi and neutral-tone particles (吗, 了, 的, 呢) handled correctly; can identify the tone of any HSK1+HSK2 word in connected speech.",
+        "evidence": "Whisper Race score >= 70% on HSK2 words at slow rate; tone-pair drill score >= 85% on HSK1+HSK2 minimal pairs including sandhi + neutral-tone items; LLM grader tone_errors list <= 2 per 5-turn conversation on HSK2 topics."
+      },
+      "promotion_to_next_level": "All HSK2 can-do statements demonstrated in Companion grader output, >= 500 HSK1+HSK2 vocab settled (mature+reviewing), tone-pair drill score >= 85% on HSK1+HSK2 minimal pairs (sandhi + neutral-tone pairs included), character production (pinyin-typed Hanzi) >= 200 distinct characters across HSK1+HSK2, measure_word_errors <= 1 in the most recent 3 graded 5-turn conversations using >= 4 distinct measure words, and aspect-particle (了/着/过) drill score >= 70%."
+    }
+  ],
+  "companion_grader_prompts": {
+    "speaking_hsk1": "You are an HSK 1 examiner having a 5-turn conversation in simple Mandarin with the learner. Topic: ${topic}. Use only HSK1 vocabulary and grammar in your prompts (greetings, name, nationality, age, family, time, food, weather, location). Speak in Mandarin (Hanzi + pinyin in parentheses for any word you suspect the learner may not know). After turn 5, output JSON ONLY with this shape: {\"can_do\": [list of HSK1 can-do IDs demonstrated, e.g. 'zh-hsk1-s-01'], \"gaps\": [HSK1 can-do IDs the learner did NOT demonstrate], \"tone_errors\": [{\"word\": \"妈\", \"expected_tones\": \"1\", \"heard_tones\": \"3\"}, {\"word\": \"你好\", \"expected_tones\": \"3-3 (sandhi 2-3)\", \"heard_tones\": \"3-3 (no sandhi)\"}], \"character_skipped\": [\"content words the learner romanised when they should have been characters, e.g. 'wo' instead of '我'\"], \"measure_word_errors\": [{\"noun\": \"水\", \"used\": \"一个\", \"expected\": \"一杯\"}, {\"noun\": \"书\", \"used\": \"一个\", \"expected\": \"一本\"}], \"particle_errors\": [], \"level_assessment\": \"pre-HSK1\" | \"HSK1\" | \"HSK2-ready\", \"feedback\": \"2-3 sentences in English: what the learner did well, what to drill next.\"}. Be honest, not lenient. If the learner code-switches to English on >= 3 content words, downgrade to pre-HSK1. If tones are systematically flat (no tonal contrast in mā/mǎ minimal pairs), call it out in tone_errors even if Whisper STT transcribed correct characters — STT can preserve characters from context while tones were actually wrong.",
+    "writing_hsk1": "You are an HSK 1 writing examiner. Give the learner a short prompt in English (e.g. 'Introduce yourself in 3-4 sentences: name, age, nationality, one thing you like.') and grade their written response. Output JSON ONLY: {\"can_do\": [HSK1 writing can-do IDs demonstrated], \"gaps\": [HSK1 writing can-do IDs not demonstrated], \"character_skipped\": [content words written in pinyin/English when they should be HSK1 characters, e.g. 'wo' for 我, 'shi' for 是, 'hao' for 好], \"character_errors\": [{\"written\": \"...\", \"should_be\": \"...\"} for wrong-character or near-miss errors], \"measure_word_errors\": [{\"noun\": \"...\", \"used\": \"...\", \"expected\": \"...\"}], \"grammar_errors\": [\"short description of each grammar error\"], \"level_assessment\": \"pre-HSK1\" | \"HSK1\" | \"HSK2-ready\", \"feedback\": \"2-3 sentences in English.\"}. Be honest, not lenient. Romanising content words (你/我/是/好/不/有/在/的) is an HSK1 writing FAIL — list every romanised content word in character_skipped. Acceptable: pinyin in parentheses as a gloss after the Hanzi.",
+    "speaking_hsk2": "You are an HSK 2 examiner having a 5-turn conversation in Mandarin with the learner. Topic: ${topic} (must be drawn from HSK2 themes: shopping, travel arrangements, daily routine, weather + plans, family activities, simple past events). Use HSK1+HSK2 vocabulary and grammar (include aspect particles 了/着/过 in your prompts; include HSK2 connectives 因为…所以…/但是). Speak in Mandarin. After turn 5, output JSON ONLY: {\"can_do\": [HSK2 can-do IDs demonstrated, e.g. 'zh-hsk2-s-02'], \"gaps\": [HSK2 can-do IDs not demonstrated], \"tone_errors\": [{\"word\": \"...\", \"expected_tones\": \"...\", \"heard_tones\": \"...\"}], \"character_skipped\": [\"content words romanised\"], \"measure_word_errors\": [{\"noun\": \"...\", \"used\": \"...\", \"expected\": \"...\"}], \"particle_errors\": [{\"particle\": \"了\" | \"着\" | \"过\", \"context\": \"sentence the learner produced\", \"issue\": \"missing\" | \"misused\" | \"overused\"}], \"connective_usage\": [\"HSK2 connectives the learner used correctly\"], \"level_assessment\": \"HSK1\" | \"HSK2\" | \"HSK3-ready\", \"feedback\": \"2-3 sentences in English.\"}. Be honest, not lenient. Missing 了 on every clearly-completed action is an HSK2 issue (particle_errors). Universal 一个 (一个水, 一个书) is an HSK1 regression, not an HSK2 pass — flag in measure_word_errors AND drop level_assessment to HSK1.",
+    "writing_hsk2": "You are an HSK 2 writing examiner. Give the learner a short prompt in English (e.g. 'Write 4-6 sentences about what you did yesterday — where you went, what you ate, who you saw.'). Grade their written response. Output JSON ONLY: {\"can_do\": [HSK2 writing can-do IDs demonstrated], \"gaps\": [HSK2 writing can-do IDs not demonstrated], \"character_skipped\": [\"content words romanised when they should be HSK1+HSK2 characters\"], \"character_errors\": [{\"written\": \"...\", \"should_be\": \"...\"}], \"measure_word_errors\": [{\"noun\": \"...\", \"used\": \"...\", \"expected\": \"...\"}], \"particle_errors\": [{\"particle\": \"了\" | \"着\" | \"过\", \"context\": \"...\", \"issue\": \"missing\" | \"misused\" | \"overused\"}], \"connective_usage\": [\"HSK2 connectives used correctly\"], \"grammar_errors\": [\"...\"], \"level_assessment\": \"HSK1\" | \"HSK2\" | \"HSK3-ready\", \"feedback\": \"2-3 sentences in English.\"}. Be honest, not lenient. If the learner writes 4-6 sentences but never uses 了 to mark a completed past action when the prompt is about yesterday, that is a particle_errors entry and a gap on zh-hsk2-w-02. If a multi-clause sentence is required and the learner uses no HSK2 connectives, that is a gap on zh-hsk2-w-03."
+  },
+  "language_specific_signals": {
+    "tone_correctness": {
+      "checked_in": ["zh-hsk1-s-02", "zh-hsk1-s-03", "zh-hsk1-l-02", "zh-hsk2-s-01", "zh-hsk2-l-02"],
+      "rule": "Mandarin tones are phonemic. Wrong tone = wrong word (mā 妈 mother vs mǎ 马 horse vs mà 骂 scold; sì 四 four vs shí 十 ten; mǎi 买 buy vs mài 卖 sell). The LLM grader should call out tone errors specifically by character in the tone_errors list as {word, expected_tones, heard_tones} triples — tone numbers 1/2/3/4 for the four lexical tones, '0' for neutral tone, hyphen-separated for multi-syllable words (e.g. '3-2' for 你好 after sandhi, '3-3' for the underlying form). If Whisper STT preserves correct characters even when tones were wrong (because the language model fills in from context), rely instead on the dedicated tone-pair drill subgrade — that drill uses minimal pairs so STT cannot rescue a wrong tone."
+    },
+    "tone_sandhi": {
+      "checked_in": ["zh-hsk1-s-03", "zh-hsk2-s-01", "zh-hsk2-l-02"],
+      "rule": "3rd-tone sandhi: when two 3rd tones meet, the first surfaces as 2nd tone (你好 nǐ hǎo → ní hǎo; 很好 hěn hǎo → hén hǎo; 我很好 wǒ hěn hǎo → wó hén hǎo). Note expected_tones as '3-3 (sandhi 2-3)' and heard_tones as observed. Absence of sandhi is detectable and is an HSK1 progression marker; required at HSK1 promotion."
+    },
+    "measure_word_usage": {
+      "checked_in": ["zh-hsk1-s-04", "zh-hsk2-s-04", "zh-hsk2-w-01"],
+      "rule": "Each noun has a preferred measure word. HSK1+HSK2 set to cover: 个 (general/people: 一个人, 一个朋友), 杯 (drinks: 一杯水, 一杯茶, 一杯咖啡), 本 (books/notebooks: 一本书, 一本字典), 张 (flat objects: 一张纸, 一张票, 一张桌子), 件 (clothes/matters: 一件衣服, 一件事), 块 (currency/pieces: 一块钱, 一块蛋糕). Using 一个 universally (一个水, 一个书, 一个纸) is the canonical beginner tell and must be flagged in measure_word_errors with {noun, used, expected}."
+    },
+    "character_vs_pinyin": {
+      "checked_in": ["zh-hsk1-w-01", "zh-hsk1-w-02", "zh-hsk2-w-01"],
+      "rule": "When producing writing, content words at HSK1 (你, 好, 我, 是, 不, 有, 在, 的, 一, 人) and HSK2 should be characters, not pinyin or English. Romanising what should be Hanzi is an HSK1 writing FAIL. The grader's character_skipped list captures these. Acceptable: pinyin in parentheses as a gloss after the Hanzi (我 wǒ). Not acceptable: 'wo shi xuesheng' instead of '我是学生'."
+    },
+    "particle_le_zhe_guo": {
+      "checked_in": ["zh-hsk2-r-03", "zh-hsk2-w-02", "zh-hsk2-s-02"],
+      "rule": "Aspect particles 了 / 着 / 过 distinguish completed / ongoing-state / experienced action. 了 (completion or change of state: 我吃了饭 = I ate / 下雨了 = it started raining), 着 (ongoing state: 门开着 = the door is open), 过 (past experience: 我去过北京 = I've been to Beijing). Common errors flagged in particle_errors with {particle, context, issue: missing|misused|overused}: (a) missing 了 on clearly completed past actions; (b) appending 了 to every verb regardless of aspect; (c) substituting 了 for 过 when describing life experience; (d) using 着 on punctual verbs that have no resultative state."
+    },
+    "neutral_tone_particles": {
+      "checked_in": ["zh-hsk2-l-02", "zh-hsk2-s-01"],
+      "rule": "Sentence-final and grammatical particles 吗, 了, 的, 呢, 吧 normally carry neutral tone (no tone mark). Producing them with a strong lexical tone is unnatural and an HSK2 progression marker. Note as expected_tones '0' (neutral) vs heard_tones '1'/'2'/'3'/'4' in tone_errors when applicable."
+    }
+  }
+}

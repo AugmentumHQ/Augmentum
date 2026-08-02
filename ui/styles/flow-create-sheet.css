@@ -1,0 +1,291 @@
+/* ==========================================================================
+   Flow Create Sheet — content styles scoped inside .sheet.flow-create-sheet
+   Accent color is injected via --sheet-accent (mode-analytical / mode-agentic).
+   ========================================================================== */
+
+.sheet.flow-create-sheet .sheet__body {
+  padding-top: var(--space-md);
+}
+
+.flow-create-sheet__subtitle {
+  margin: 0 0 var(--space-lg);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+/* --- Name field ------------------------------------------------------- */
+
+.flow-create-sheet__field {
+  display: block;
+  margin-bottom: var(--space-lg);
+}
+
+.flow-create-sheet__label {
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-xs);
+}
+
+.flow-create-sheet__name-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  font-family: inherit;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color var(--duration-fast) var(--ease-standard),
+              box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.flow-create-sheet__name-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.flow-create-sheet__name-input:focus {
+  border-color: var(--sheet-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sheet-accent) 20%, transparent);
+}
+
+.flow-create-sheet__hint {
+  display: block;
+  margin-top: var(--space-xs);
+  font-size: var(--text-xs);
+  min-height: 1.2em;
+  color: var(--text-muted);
+}
+
+.flow-create-sheet__hint--error {
+  color: var(--error, #e53935);
+}
+
+/* --- Section label ---------------------------------------------------- */
+
+.flow-create-sheet__section-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+/* --- Template grid ---------------------------------------------------- */
+
+.flow-create-sheet__templates {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-sm);
+}
+
+.flow-create-sheet__templates-status {
+  grid-column: 1 / -1;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  padding: var(--space-lg);
+  text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+}
+
+.flow-create-sheet__templates-status--error {
+  color: var(--warning, var(--text-muted));
+  border-color: color-mix(in srgb, var(--warning, var(--border)) 40%, var(--border));
+}
+
+.flow-create-sheet__template {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  min-height: 124px;
+  transition: border-color var(--duration-fast) var(--ease-standard),
+              background var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard);
+}
+
+.flow-create-sheet__template input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.flow-create-sheet__template:hover {
+  border-color: color-mix(in srgb, var(--sheet-accent) 55%, var(--border));
+  background: color-mix(in srgb, var(--sheet-accent) 4%, var(--bg));
+}
+
+.flow-create-sheet__template.is-selected {
+  border-color: var(--sheet-accent);
+  background: color-mix(in srgb, var(--sheet-accent) 10%, var(--bg));
+  box-shadow: inset 0 0 0 1px var(--sheet-accent);
+}
+
+.flow-create-sheet__template:focus-within {
+  outline: none;
+  border-color: var(--sheet-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sheet-accent) 22%, transparent);
+}
+
+.flow-create-sheet__template-icon {
+  font-size: 22px;
+  line-height: 1;
+  color: var(--sheet-accent);
+}
+
+.flow-create-sheet__template-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.flow-create-sheet__template-desc {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  line-height: var(--line-height-relaxed);
+  /* Clamp to keep cards uniform on desktop */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.flow-create-sheet__template-meta {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: var(--space-xs);
+}
+
+.flow-create-sheet__template--blank .flow-create-sheet__template-icon {
+  font-weight: 300;
+  font-size: 28px;
+}
+
+/* --- Footer buttons --------------------------------------------------- */
+
+.flow-create-sheet__actions {
+  display: contents;
+}
+
+.flow-create-sheet__btn {
+  padding: 9px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard),
+              filter var(--duration-fast) var(--ease-standard);
+}
+
+.flow-create-sheet__btn:hover {
+  background: var(--bg-elevated);
+}
+
+.flow-create-sheet__btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-glow);
+}
+
+.flow-create-sheet__btn--primary {
+  background: var(--sheet-accent);
+  border-color: var(--sheet-accent);
+  color: #fff;
+}
+
+.flow-create-sheet__btn--primary:hover:not(:disabled) {
+  filter: brightness(1.12);
+}
+
+.flow-create-sheet__btn--primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.flow-create-sheet__btn--primary.is-loading {
+  cursor: wait;
+}
+
+/* --- Responsive ------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .flow-create-sheet__templates {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xs);
+  }
+
+  .flow-create-sheet__template {
+    min-height: 110px;
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .flow-create-sheet__template-desc {
+    -webkit-line-clamp: 2;
+  }
+}
+
+@media (max-width: 380px) {
+  .flow-create-sheet__templates {
+    grid-template-columns: 1fr;
+  }
+
+  .flow-create-sheet__template {
+    min-height: 0;
+    grid-template-rows: auto auto auto;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "icon name"
+      "icon desc"
+      "icon meta";
+    gap: 2px var(--space-md);
+    align-items: start;
+  }
+
+  .flow-create-sheet__template-icon { grid-area: icon; align-self: center; }
+  .flow-create-sheet__template-name { grid-area: name; }
+  .flow-create-sheet__template-desc {
+    grid-area: desc;
+    -webkit-line-clamp: 2;
+  }
+  .flow-create-sheet__template-meta { grid-area: meta; }
+}
+
+
+/* Body wrapper for the flow-create sheet (vertical stack). */
+.flow-create-sheet__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+/* Ghost variant of the action button (Cancel etc.). */
+.flow-create-sheet__btn--ghost {
+  background: transparent;
+  color: var(--text-muted);
+}
+.flow-create-sheet__btn--ghost:hover:not(:disabled) {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}

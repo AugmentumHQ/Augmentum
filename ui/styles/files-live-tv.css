@@ -1,0 +1,369 @@
+/* Files panel — Live TV rail browser.
+ *
+ * YouTube-TV-style horizontal channel rails. Each rail scrolls
+ * independently inside the Files panel; tiles use the existing
+ * theme tokens so they pick up dark/light without extra work.
+ *
+ * Rendered into ``state.el.grid`` with the class
+ * ``files-grid-live-tv``. The base ``.files-grid`` rules are
+ * overridden to a vertical stack (one rail per row, full width). */
+
+.files-grid.files-grid-live-tv {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 16px 4px 32px;
+}
+
+/* ── Rail container ─────────────────────────────────────────── */
+
+.files-live-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.files-live-rail-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 14px;
+}
+
+.files-live-rail-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.files-live-rail-count {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.files-live-rail-strip {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* Touch-friendly horizontal pan. Pairs with WebKit
+   * -webkit-overflow-scrolling for iOS momentum carry. */
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 14px;
+  padding: 4px 14px 12px;
+  /* Mask the rail edges so half-tiles at the boundary fade out
+   * instead of getting hard-clipped — signals "scroll for more"
+   * the way YouTube TV's rails do. */
+  -webkit-mask-image: linear-gradient(
+    to right, transparent 0, #000 18px,
+    #000 calc(100% - 18px), transparent 100%
+  );
+          mask-image: linear-gradient(
+    to right, transparent 0, #000 18px,
+    #000 calc(100% - 18px), transparent 100%
+  );
+}
+
+/* Slim scrollbar that doesn't fight the rail mask. */
+.files-live-rail-strip::-webkit-scrollbar { height: 6px; }
+.files-live-rail-strip::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-muted) 35%, transparent);
+  border-radius: 3px;
+}
+.files-live-rail-strip::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.files-live-rail-overflow {
+  align-self: center;
+  padding: 0 12px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+/* ── Tile ───────────────────────────────────────────────────── */
+
+.files-live-tile {
+  flex: 0 0 168px;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  background: var(--bg-elevated, var(--bg-primary));
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-family: inherit;
+  text-align: left;
+  /* Calm baseline → subtle hover lift. The lift is the entire
+   * affordance for "this is interactive" — heavy outlines or
+   * accent fills would compete with the channel logos. */
+  transition: transform 120ms ease, border-color 120ms ease,
+              background 120ms ease;
+}
+
+.files-live-tile:hover,
+.files-live-tile:focus-visible {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: color-mix(in srgb, var(--accent) 6%, var(--bg-elevated, var(--bg-primary)));
+  outline: none;
+}
+
+.files-live-tile:active {
+  transform: translateY(0);
+  transition-duration: 60ms;
+}
+
+.files-live-tile-logo-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--text-primary) 6%, transparent);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.files-live-tile-logo {
+  max-width: 80%;
+  max-height: 70%;
+  object-fit: contain;
+}
+
+/* Logo URL 404 (variant doesn't exist for this channel) — hide so
+ * the broken-image icon doesn't render. The fallback initials tile
+ * would have rendered instead if has_logo_* flags had told us. */
+.files-live-tile-logo.files-live-tile-logo-missing {
+  display: none;
+}
+
+/* Fallback initial-letters tile when no logo URL is available
+ * (channel never had a logo, or upstream stripped image tags). */
+.files-live-tile-logo-fallback {
+  width: 60%;
+  height: 60%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-radius: 6px;
+}
+
+.files-live-tile-number {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--bg-primary) 80%, transparent);
+  border-radius: 3px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.files-live-tile-name {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* Margin gives the live-now bar a small breathing room. Padding
+   * would expand the click target unnecessarily. */
+  margin-top: 2px;
+}
+
+.files-live-tile-now {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.files-live-tile-now-dot {
+  flex: 0 0 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: color-mix(in srgb, #ff3737 90%, transparent);
+  box-shadow: 0 0 0 0 color-mix(in srgb, #ff3737 60%, transparent);
+  /* Soft pulse — readable as "live" without being a strobe.
+   * 2.4s cycle is slow enough to ignore peripherally; respects
+   * prefers-reduced-motion. */
+  animation: files-live-tile-pulse 2.4s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .files-live-tile-now-dot {
+    animation: none;
+  }
+}
+
+@keyframes files-live-tile-pulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, #ff3737 60%, transparent); }
+  70%  { box-shadow: 0 0 0 6px color-mix(in srgb, #ff3737 0%,  transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, #ff3737 0%,  transparent); }
+}
+
+.files-live-tile-now-empty .files-live-tile-now-text {
+  font-style: italic;
+  opacity: 0.78;
+}
+
+/* ── Loading / empty states ─────────────────────────────────── */
+
+.files-live-tv-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 16px;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+/* ── Tile loading state ─────────────────────────────────────── */
+
+/* Pulse the tile while we wait for the play endpoint to mint a
+ * session + warm the upstream transcoder (can take a few seconds
+ * on a cold tuner). Subtle so a fast play doesn't strobe. */
+.files-live-tile.files-live-tile-loading {
+  pointer-events: none;
+  animation: files-live-tile-loading-pulse 1.2s ease-in-out infinite;
+}
+@keyframes files-live-tile-loading-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
+/* ── Player overlay ─────────────────────────────────────────── */
+
+.live-tv-player-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.78);
+  padding: 24px;
+  /* Click-through to the backdrop closes the player — the click
+   * handler discriminates target === root in JS. */
+  cursor: pointer;
+}
+
+.live-tv-player-frame {
+  position: relative;
+  width: min(1280px, 100%);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.6);
+  cursor: default;
+}
+
+.live-tv-player-title {
+  padding: 10px 56px 10px 16px;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  background: linear-gradient(180deg, rgba(0,0,0,0.65), rgba(0,0,0,0.2));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.live-tv-player-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 2;
+  transition: background 120ms ease;
+}
+.live-tv-player-close:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.live-tv-player-video {
+  width: 100%;
+  flex: 1;
+  min-height: 240px;
+  background: #000;
+  /* Native controls — the browser's chrome is fine for v1; a
+   * dedicated overlay is a separate concern (mirrors the
+   * media-player.css "long-term unified chrome" note). */
+}
+
+.live-tv-player-status {
+  padding: 6px 16px 8px;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.78);
+  min-height: 1.4em;
+}
+
+@media (max-width: 640px) {
+  .live-tv-player-overlay { padding: 0; }
+  .live-tv-player-frame { border-radius: 0; max-height: 100vh; height: 100vh; }
+}
+
+/* ── Mobile breakpoint ──────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .files-grid.files-grid-live-tv {
+    gap: 22px;
+    padding: 10px 0 24px;
+  }
+  .files-live-rail-head {
+    padding: 0 10px;
+  }
+  .files-live-rail-strip {
+    padding: 4px 10px 10px;
+    scroll-padding-left: 10px;
+    gap: 8px;
+  }
+  .files-live-tile {
+    flex: 0 0 142px;
+    padding: 6px;
+  }
+  .files-live-tile-name {
+    font-size: 0.78rem;
+  }
+  .files-live-tile-now {
+    font-size: 0.68rem;
+  }
+}

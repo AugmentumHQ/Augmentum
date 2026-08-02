@@ -1,0 +1,2718 @@
+/* becca-presence.css — Lane 4 §1.
+ *
+ * The persistent companion frame. Distinct from .voice-pill-float.pet-mode
+ * which is the call-minimized voice surface. Both never present at once:
+ * voice-pill takes over the bottom-right slot during a call; companion
+ * widget hides itself and donates the canvas.
+ *
+ * Mount gate: visible only when companion_persona_mode is on AND no voice
+ * call is active. Bound to the bus by ``ui/scripts/becca-presence.js``.
+ */
+
+.becca-presence {
+  position: fixed;
+  width: 360px;
+  height: 480px;
+  bottom: 24px;
+  /* Centered in the right gutter when the viewport is wide enough to
+     show one (chat content is max 800px centered). On narrower screens
+     the max() floor pins her at 24px from the viewport edge so she
+     never crowds the chat column. Math: gutter half = (100vw - 800px)/4,
+     subtract half widget (180px) to anchor the widget's center on the
+     gutter's center. Persisted positions in localStorage override this
+     after the user drags. */
+  right: max(24px, calc(25vw - 380px));
+  border-radius: 22px;
+  /* one below the glance HUD's 2147483640 */
+  z-index: 2147483639;
+  background: transparent;
+  /* Chromeless by default — she floats. Subtle outline only on hover
+     so the drag-target is discoverable without competing with her
+     visually when she's just being present. */
+  box-shadow: none;
+  contain: layout paint;
+  touch-action: none;
+  /* The transparent frame around her body is click-through — empty
+     space inside the widget bounds shouldn't block buttons / chat
+     beneath. Chrome (dock, dismiss, resize, timeline) opts back in
+     individually. The stage canvas flips between auto/none in JS
+     based on a raycast against the VRM, so her silhouette is the
+     only solid hit-target inside the frame. */
+  pointer-events: none;
+  transition:
+    opacity 220ms ease-out,
+    transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    width 180ms ease-out,
+    height 180ms ease-out,
+    box-shadow 220ms ease-out;
+  cursor: grab;
+  user-select: none;
+}
+
+.becca-presence:hover {
+  /* Faint outline ring + soft drop shadow appears so dragging stays
+     discoverable. No glass-blur — the avatar shouldn't compete with
+     her own backdrop. */
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    0 12px 32px -12px rgba(0, 0, 0, 0.4);
+}
+
+.becca-presence.dragging {
+  cursor: grabbing;
+  transition: none !important;
+  transform: none !important;
+}
+
+/* The VRM canvas / 2D fallback gets reparented here. */
+.becca-presence__stage {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  /* Default to solid — JS flips to 'none' over empty scene pixels via
+     raycast hit-test. Children (canvas, placeholder) inherit. */
+  pointer-events: auto;
+}
+.becca-presence__stage canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Placeholder until the standalone VRM render path lands. */
+.becca-presence__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  pointer-events: none;
+}
+.becca-placeholder-disc {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%,
+                              rgba(255, 220, 200, 0.95) 0%,
+                              rgba(232, 168, 156, 0.78) 40%,
+                              rgba(118, 86, 110, 0.55) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.4),
+              inset 0 -8px 12px -10px rgba(0, 0, 0, 0.25);
+  animation: becca-breathe 4.6s ease-in-out infinite;
+}
+.becca-placeholder-disc span {
+  font: 600 36px/1 'Times New Roman', Georgia, serif;
+  color: rgba(255, 240, 232, 0.92);
+  letter-spacing: -0.02em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+.becca-placeholder-name {
+  font: 500 12px/1 system-ui, -apple-system, sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+  color: rgba(232, 224, 220, 0.62);
+}
+@keyframes becca-breathe {
+  0%, 100% { transform: scale(1.0); }
+  50%      { transform: scale(1.025); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .becca-placeholder-disc { animation: none; }
+}
+
+/* Glow rings (Lane 4 §1.6). Driven by data-glow attribute. */
+.becca-presence[data-glow="warm"] {
+  box-shadow:
+    0 18px 48px -16px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 196, 158, 0.12),
+    0 0 28px -8px rgba(255, 196, 158, 0.22);
+}
+.becca-presence[data-glow="cool"] {
+  box-shadow:
+    0 18px 48px -16px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(158, 196, 255, 0.14),
+    0 0 28px -8px rgba(158, 196, 255, 0.22);
+}
+.becca-presence[data-glow="reaching"] {
+  box-shadow:
+    0 18px 48px -16px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(232, 232, 238, 0.22),
+    0 0 36px -6px rgba(232, 232, 238, 0.34);
+}
+
+/* Dock — bottom-center container holding the audio-mode toggle + the
+   status row, side by side. Positioned absolutely so dragging the
+   widget body still works behind it.
+   max-width keeps the dock inside the widget bounds when the widget
+   shrinks (mobile 132px, fullscreen 132px, screen-share 28px) — without
+   it the inline-flex grows past the rounded body and the status pill
+   overflows. The status row then flex-shrinks and ellipsises. */
+.becca-presence__dock {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100% - 24px);
+  z-index: 2147483641;
+  pointer-events: none;       /* row itself is informational only — */
+                              /* the button below opts back in.     */
+}
+.becca-presence__dock > .becca-presence__audio-mode,
+.becca-presence__dock > .becca-presence__eye,
+.becca-presence__dock > .becca-presence__mic-dsp,
+.becca-presence__dock > .becca-presence__input-mode,
+.becca-presence__dock > .becca-presence__ptt {
+  pointer-events: auto;       /* buttons are interactive again */
+}
+
+/* Status row — adaptive label inside the dock.
+   Default: her state ("listening", "idle", "thinking").
+   When audio is playing: source label ("hosting audio").
+   When wake-word fires: brief overlay flash near the top. */
+.becca-presence__status {
+  padding: 5px 12px 6px;
+  border-radius: 999px;
+  background: rgba(20, 18, 24, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: rgba(232, 224, 220, 0.86);
+  font: 500 11.5px/1 system-ui, -apple-system, sans-serif;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 2147483641;
+  pointer-events: none;     /* purely informational — drag passes through */
+  /* Allow flex-shrink inside the dock — without ``min-width: 0`` the
+     pill stays at its content width and forces the dock to grow past
+     the widget bounds. With it, the pill ellipsises gracefully when
+     the widget is narrow (mobile / fullscreen / screen-share). */
+  min-width: 0;
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 220ms ease-out, opacity 200ms ease-out;
+}
+
+/* Affect indicator — Synapse §2 visibility surface.
+ * Sits just above the dock, centered. Tasteful by design: italic, small,
+ * muted, appears only when she has a confident read. Hidden via [hidden]
+ * attribute when there's nothing to say (the honest default).
+ *
+ * Positioned absolutely so it anchors above the dock regardless of the
+ * widget's flow content. The dock sits at bottom 12px and is ~30px tall,
+ * so the affect line sits at bottom 50px with breathing room above the
+ * dock.
+ */
+.becca-presence__affect {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 12px;
+  font: italic 10.5px/1.3 system-ui, -apple-system, sans-serif;
+  color: rgba(232, 224, 220, 0.62);
+  letter-spacing: 0.01em;
+  max-width: calc(100% - 36px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  pointer-events: none;     /* informational — drag passes through */
+  user-select: none;
+  z-index: 2147483640;
+  transition: opacity 320ms ease-out;
+}
+
+.becca-presence__affect[hidden] {
+  display: none;
+}
+
+/* Track A — voice decision tell + HUD.
+ *
+ * The status-row tell reuses the override slot; on a confident ambient drop
+ * we fade the pill so the high-frequency "· not for me" reads as a quiet
+ * flicker-tick rather than an announcement (Matt opted into ambient tells).
+ */
+.becca-presence__status[data-tell="faint"] {
+  opacity: 0.55;
+}
+
+/* Opt-in decision HUD. A small translucent panel above the dock listing the
+ * last few routing verdicts (time · goal · confidence · transcript). Hidden
+ * unless companion_voice_decision_hud is on. Diagnostic, monospace, calm. */
+.becca-presence__decision-hud {
+  position: absolute;
+  bottom: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  max-width: min(340px, calc(100% - 24px));
+  padding: 7px 10px;
+  border-radius: 12px;
+  background: rgba(16, 14, 20, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font: 500 10.5px/1.35 ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  color: rgba(232, 224, 220, 0.82);
+  pointer-events: none;     /* informational — drag passes through */
+  user-select: none;
+  z-index: 2147483640;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+}
+
+.becca-presence__decision-hud[data-visible="1"] {
+  display: flex;
+}
+
+.becca-presence__decision-empty {
+  opacity: 0.5;
+  font-style: italic;
+}
+
+.becca-presence__decision-row {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.becca-presence__decision-time {
+  opacity: 0.5;
+  flex: 0 0 auto;
+}
+
+.becca-presence__decision-goal {
+  flex: 0 0 auto;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 9.5px;
+}
+
+/* Goal-coded dot color: act/converse warm-affirmative, idle neutral,
+ * drop muted-red. Kept subtle — this is a diagnostic surface. */
+.becca-presence__decision-row[data-goal="act"]      .becca-presence__decision-goal { color: #8fd6a8; }
+.becca-presence__decision-row[data-goal="converse"] .becca-presence__decision-goal { color: #9fc7f5; }
+.becca-presence__decision-row[data-goal="clarify"]  .becca-presence__decision-goal { color: #e6cf8a; }
+.becca-presence__decision-row[data-goal="idle"]     .becca-presence__decision-goal { color: rgba(232, 224, 220, 0.55); }
+.becca-presence__decision-row[data-goal="drop"]     .becca-presence__decision-goal { color: #e09a9a; }
+
+.becca-presence__decision-conf {
+  flex: 0 0 auto;
+  opacity: 0.62;
+  font-variant-numeric: tabular-nums;
+}
+
+.becca-presence__decision-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.78;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-style: italic;
+}
+
+/* Small colored dot prefixing the label, color encodes the state class. */
+.becca-presence__status::before {
+  content: '';
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(232, 200, 188, 0.78);
+  box-shadow: 0 0 6px rgba(232, 200, 188, 0.5);
+  transition: background 220ms ease-out, box-shadow 220ms ease-out;
+}
+
+/* State-specific dot colors */
+.becca-presence__status[data-state="listening"]::before {
+  background: rgba(184, 210, 255, 0.92);
+  box-shadow: 0 0 8px rgba(120, 168, 230, 0.55);
+}
+.becca-presence__status[data-state="thinking"]::before {
+  background: rgba(232, 200, 120, 0.92);
+  box-shadow: 0 0 8px rgba(232, 200, 120, 0.55);
+}
+.becca-presence__status[data-state="speaking"]::before {
+  background: rgba(184, 232, 184, 0.92);
+  box-shadow: 0 0 10px rgba(120, 200, 120, 0.65);
+}
+.becca-presence__status[data-state="hosting"]::before {
+  background: rgba(196, 168, 232, 0.92);
+  box-shadow: 0 0 10px rgba(168, 140, 220, 0.65);
+}
+
+/* Channel-handoff: she stepped aside to a sub-mode (coder/narrative/
+   agentic/bug_finder). Warm-amber dot evokes a standby lamp — present
+   but waiting. Overrides whatever data-state was when set. */
+.becca-presence__status[data-channel-handoff]::before {
+  background: rgba(232, 184, 120, 0.92);
+  box-shadow: 0 0 10px rgba(232, 168, 100, 0.6);
+}
+
+/* Mood overlay (narrate_state_to_user verb fires) — replaces the idle
+   label with one of four PAD-quadrant labels. Dot colour encodes
+   valence × arousal. Selectors are below the data-state ones above so
+   the mood tint wins over the default idle dot. Live interaction
+   states (listening/thinking/speaking) keep their own colour because
+   the JS suppresses the mood label while those fire. */
+.becca-presence__status[data-mood="energized"]::before {
+  /* high valence + high arousal — warm coral */
+  background: rgba(244, 168, 132, 0.92);
+  box-shadow: 0 0 10px rgba(244, 142, 110, 0.6);
+}
+.becca-presence__status[data-mood="settled"]::before {
+  /* high valence + low arousal — soft sage */
+  background: rgba(168, 212, 184, 0.92);
+  box-shadow: 0 0 9px rgba(140, 196, 168, 0.55);
+}
+.becca-presence__status[data-mood="restless"]::before {
+  /* low valence + high arousal — cool slate */
+  background: rgba(180, 192, 224, 0.92);
+  box-shadow: 0 0 9px rgba(150, 168, 212, 0.55);
+}
+.becca-presence__status[data-mood="subdued"]::before {
+  /* low valence + low arousal — muted lavender */
+  background: rgba(196, 188, 220, 0.85);
+  box-shadow: 0 0 8px rgba(168, 160, 200, 0.45);
+}
+
+/* The mood label is a noun, not a verb-state — italicise it lightly so
+   "energized" reads as her quiet observation rather than a system
+   status. ::first-letter capitalisation matches the title casing the
+   verb publishes. */
+.becca-presence__status[data-mood] {
+  font-style: italic;
+  letter-spacing: 0.01em;
+}
+
+/* Slow pulse when she's been in USER_IDLE — has been waiting a while.
+   Driven by JS setting data-channel-idle="1" on the status row. */
+@keyframes becca-channel-idle-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1.0; }
+}
+.becca-presence__status[data-channel-idle="1"]::before {
+  animation: becca-channel-idle-pulse 2800ms ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .becca-presence__status[data-channel-idle="1"]::before { animation: none; }
+}
+
+/* ── Dismiss button (top-right corner of the widget) ────────────────
+   Subtle × that fades in on hover. Click dismisses Becca for THIS tab
+   only — other tabs / browsers aren't affected. A small pip appears
+   bottom-right of the screen to summon her back. */
+.becca-presence__dismiss {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  color: rgba(232, 224, 220, 0.55);
+  cursor: pointer;
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  z-index: 2147483641;
+  transition: opacity 220ms ease-out, background 160ms ease-out,
+              color 160ms ease-out;
+}
+.becca-presence:hover .becca-presence__dismiss {
+  opacity: 0.7;
+}
+.becca-presence__dismiss:hover {
+  opacity: 1 !important;
+  background: rgba(232, 184, 184, 0.18);
+  color: rgba(255, 220, 220, 0.95);
+}
+.becca-presence__dismiss:focus-visible {
+  opacity: 1;
+  outline: 2px solid rgba(232, 184, 184, 0.7);
+  outline-offset: 2px;
+}
+
+/* ── Resize handles ───────────────────────────────────────────────
+   Four corner grab zones. Invisible by default; a subtle right-angle
+   chevron appears on widget hover so the affordance is discoverable
+   without competing with Becca visually. Drag from any corner. */
+.becca-presence__resize {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  z-index: 6;
+  background: transparent;
+  opacity: 0;
+  transition: opacity 140ms ease-out;
+  pointer-events: auto;
+}
+.becca-presence__resize::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-color: rgba(232, 224, 220, 0.65);
+  border-style: solid;
+  border-width: 0;
+}
+.becca-presence:hover .becca-presence__resize,
+.becca-presence.resizing .becca-presence__resize {
+  opacity: 0.55;
+}
+.becca-presence__resize:hover {
+  opacity: 1 !important;
+}
+.becca-presence__resize--nw {
+  top: -2px; left: -2px; cursor: nwse-resize;
+}
+.becca-presence__resize--nw::after {
+  border-top-width: 2px; border-left-width: 2px;
+  border-top-left-radius: 4px;
+}
+.becca-presence__resize--ne {
+  top: -2px; right: -2px; cursor: nesw-resize;
+}
+.becca-presence__resize--ne::after {
+  border-top-width: 2px; border-right-width: 2px;
+  border-top-right-radius: 4px;
+}
+.becca-presence__resize--sw {
+  bottom: -2px; left: -2px; cursor: nesw-resize;
+}
+.becca-presence__resize--sw::after {
+  border-bottom-width: 2px; border-left-width: 2px;
+  border-bottom-left-radius: 4px;
+}
+.becca-presence__resize--se {
+  bottom: -2px; right: -2px; cursor: nwse-resize;
+  /* Bottom-right is the canonical "resize" affordance — visible at
+     rest so the user knows where to grab when she first spawns,
+     without making the other three corners equally noisy. */
+  opacity: 0.4;
+}
+.becca-presence__resize--se::after {
+  /* Drop the inherited chevron border in favor of the three diagonal
+     grip lines users already pattern-match on (browser windows,
+     native chat widgets). SVG is inline so there's no extra fetch and
+     the stroke color matches the chevron warmth (#e8e0dc). */
+  border-width: 0;
+  border-radius: 0;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cg stroke='%23e8e0dc' stroke-width='1.2' stroke-linecap='round' fill='none'%3E%3Cline x1='1.5' y1='7' x2='7' y2='1.5'/%3E%3Cline x1='4' y1='7' x2='7' y2='4'/%3E%3Cline x1='6.5' y1='7' x2='7' y2='6.5'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+}
+/* Widget hover bumps SE a notch above the other three corners so
+   the canonical affordance stays the most prominent. The base
+   ``.becca-presence:hover .becca-presence__resize`` rule lifts all
+   corners to 0.55; this overrides for SE specifically. */
+.becca-presence:hover .becca-presence__resize--se {
+  opacity: 0.75;
+}
+.becca-presence.resizing {
+  user-select: none;
+}
+
+/* ── Header-logo summon affordance ───────────────────────────────
+   When Becca is dismissed (body.becca-dismissed), the animated logo
+   in the app header becomes an alternate way to summon her back.
+   Cursor + a soft warm glow on hover make the affordance discoverable
+   without changing the logo's resting appearance. */
+body.becca-dismissed .header-logo {
+  cursor: pointer;
+}
+body.becca-dismissed .header-logo .header-logo-glyph {
+  filter: drop-shadow(0 0 6px rgba(232, 184, 132, 0.45));
+  transition: filter 160ms ease-out;
+}
+body.becca-dismissed .header-logo:hover .header-logo-glyph {
+  filter: drop-shadow(0 0 10px rgba(232, 184, 132, 0.75));
+}
+
+/* ── Summon button (after dismissal) ───────────────────────────────
+   Docked in the composer toolbar next to auto-read. Base chrome comes
+   from .icon-btn.small.toolbar-toggle — these rules only handle the
+   portrait variant where the avatar's face replaces the silhouette. */
+#becca-summon-btn.has-portrait {
+  background-color: transparent;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+  /* Hide the silhouette SVG while a portrait is bound. The svg lives
+   * inside the button so we target it directly rather than wiping
+   * innerHTML (which would break the JS that already bound listeners). */
+  color: transparent;
+  filter: saturate(0.85) brightness(0.95);
+  transition: filter 240ms ease-out;
+}
+#becca-summon-btn.has-portrait svg { display: none; }
+#becca-summon-btn.has-portrait:hover {
+  filter: saturate(1) brightness(1.05);
+  background-color: transparent;
+}
+
+/* ── Timeline reveal handle ────────────────────────────────────────
+   Near-invisible 1px strip on the right edge of the widget. Opacity
+   ramps up on hover so it stays out of the way until you go looking
+   for it. Clicking opens the timeline panel. */
+.becca-presence__timeline-handle {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(232, 224, 220, 0.45);
+  opacity: 0.16;
+  transition: opacity 240ms ease-out, color 200ms ease-out;
+  z-index: 2147483641;
+}
+.becca-presence:hover .becca-presence__timeline-handle {
+  opacity: 0.7;
+}
+.becca-presence__timeline-handle:hover {
+  opacity: 1 !important;
+  color: rgba(232, 224, 220, 0.95);
+}
+.becca-presence__timeline-handle:focus-visible {
+  outline: 2px solid rgba(184, 210, 255, 0.7);
+  outline-offset: 2px;
+  opacity: 1;
+}
+.becca-presence[data-timeline-open="true"] .becca-presence__timeline-handle {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Timeline panel ────────────────────────────────────────────────
+   Slides in from the right edge of the widget. Contains the playback
+   history with per-row rating buttons. */
+.becca-presence__timeline {
+  position: absolute;
+  top: 14px;
+  bottom: 56px;       /* clear the bottom dock */
+  right: 8px;
+  width: 240px;
+  pointer-events: auto;
+  background: rgba(14, 12, 18, 0.88);
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 10px 8px 10px 10px;
+  color: rgba(232, 224, 220, 0.88);
+  font: 500 11.5px/1.3 system-ui, -apple-system, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 2147483642;
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.6);
+  transform: translateX(8px);
+  opacity: 0;
+  transition: transform 220ms ease-out, opacity 200ms ease-out;
+}
+.becca-presence[data-timeline-open="true"] .becca-presence__timeline {
+  transform: translateX(0);
+  opacity: 1;
+}
+.becca-presence__timeline[hidden] { display: none; }
+
+.becca-timeline__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(232, 224, 220, 0.72);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.becca-timeline__header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.becca-timeline__close,
+.becca-timeline__swap,
+.becca-timeline__upload {
+  background: transparent;
+  border: none;
+  color: rgba(232, 224, 220, 0.6);
+  font: 500 14px/1 system-ui;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 160ms ease-out, color 160ms ease-out;
+}
+.becca-timeline__close:hover,
+.becca-timeline__swap:hover,
+.becca-timeline__upload:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.92);
+}
+.becca-timeline__swap {
+  font-size: 13px;
+}
+.becca-timeline__upload {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+}
+/* In-flight upload — dim the + and spin a subtle indicator via a
+   short text swap (a heavyweight spinner is overkill on a 22×22 chip
+   and we already have data-uploading on the button). */
+.becca-timeline__upload[data-uploading="1"] {
+  opacity: 0.55;
+  cursor: progress;
+}
+
+.becca-timeline__empty-sub {
+  margin-top: 8px;
+  color: rgba(232, 224, 220, 0.4);
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+.becca-timeline__empty-sub strong {
+  color: rgba(232, 224, 220, 0.7);
+  font-weight: 600;
+}
+
+/* Voice-volume row — her TTS output gain. Compact slider pinned to the top
+   of the timeline panel, matching the muted chrome of the header. */
+.becca-timeline__voicevol {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 2px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(232, 224, 220, 0.72);
+}
+.becca-timeline__voicevol-icon { flex: 0 0 auto; opacity: 0.7; }
+.becca-timeline__voicevol-label {
+  flex: 0 0 auto;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.becca-timeline__voicevol-slider {
+  flex: 1 1 auto;
+  min-width: 60px;
+  height: 4px;
+  accent-color: var(--orb-hex, #34d399);
+  cursor: pointer;
+}
+.becca-timeline__voicevol-val {
+  flex: 0 0 auto;
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(232, 224, 220, 0.5);
+  min-width: 34px;
+  text-align: right;
+}
+
+/* Loops button ↻ — same chrome as the others; gets a subtle highlight
+   when a loop is active so the user always knows the conductor is
+   filtered. */
+.becca-timeline__loops[data-active="1"] {
+  color: rgba(184, 210, 255, 0.95);
+  background: rgba(184, 210, 255, 0.08);
+}
+.becca-timeline__loops[data-active="1"]:hover {
+  background: rgba(184, 210, 255, 0.16);
+}
+
+/* Active loop name chip — sits below the header row when a loop is
+   active. Clickable: tap to clear the loop without opening the
+   overlay. The dot stays on the left so it reads as a "status light"
+   rather than a button. */
+.becca-timeline__active-loop {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px 4px;
+  font-size: 10.5px;
+  color: rgba(184, 210, 255, 0.85);
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  letter-spacing: 0.02em;
+}
+.becca-timeline__active-loop:hover {
+  color: rgba(184, 210, 255, 1);
+  background: rgba(184, 210, 255, 0.04);
+}
+.becca-timeline__active-loop .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(184, 210, 255, 0.9);
+  box-shadow: 0 0 6px rgba(184, 210, 255, 0.5);
+}
+.becca-timeline__active-loop .name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 auto;
+}
+
+/* ── Loops overlay (Phase C) ──────────────────────────────────────
+   Mirrors the avatar picker overlay shape — floats over the widget,
+   has a back arrow that restores the timeline. */
+.becca-presence__loops-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2147483643;
+  /* Opt back in to clicks — same rationale as .becca-presence__avatar-
+     picker above. The widget root has pointer-events: none and every
+     interactive child has to set this explicitly, otherwise loop
+     activate / delete / create-from-history buttons are click-through
+     and the overlay reads as inert. */
+  pointer-events: auto;
+  border-radius: inherit;
+  background: rgba(14, 12, 18, 0.92);
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: rgba(232, 224, 220, 0.88);
+  font: 500 11.5px/1.3 system-ui, -apple-system, sans-serif;
+}
+
+/* Studio dock — when a side of the widget has room, the manager
+   mounts on <body> as a fixed panel BESIDE her instead of covering
+   the stage, so ▶ previews are watchable while editing metadata.
+   Geometry (left/top/width/height + data-side) is written every
+   frame by the JS follower in becca-presence.js, which is also why
+   there's deliberately no transition here — an eased left/top would
+   lag behind the widget during drags. */
+.becca-presence__loops-overlay--studio {
+  position: fixed;
+  inset: auto;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(14, 12, 18, 0.94);
+  box-shadow: 0 18px 48px -18px rgba(0, 0, 0, 0.55);
+  transition: none;
+}
+.becca-presence__loops-overlay--studio .becca-loops__back {
+  /* × close glyph (set in JS) reads better a touch smaller than the
+     overlay's ← back arrow. */
+  font-size: 15px;
+}
+
+.becca-loops__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(232, 224, 220, 0.72);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.becca-loops__header > span {
+  flex: 1 1 auto;
+}
+.becca-loops__back {
+  background: transparent;
+  border: none;
+  color: rgba(232, 224, 220, 0.7);
+  font: 500 16px/1 system-ui;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.becca-loops__back:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.95);
+}
+.becca-loops__create {
+  background: rgba(184, 210, 255, 0.10);
+  border: 1px solid rgba(184, 210, 255, 0.3);
+  color: rgba(184, 210, 255, 0.95);
+  font: 500 10.5px/1 system-ui;
+  padding: 4px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  transition: background 140ms ease-out, border-color 140ms ease-out;
+}
+.becca-loops__create:hover {
+  background: rgba(184, 210, 255, 0.18);
+  border-color: rgba(184, 210, 255, 0.5);
+}
+/* + add / + new loop / + from history all share .becca-loops__create
+   chrome; these per-button classes are the JS handler hooks. */
+.becca-loops__new,
+.becca-loops__history {
+  white-space: nowrap;  /* two-word labels in the narrow fallback overlay */
+}
+.becca-loops__upload[disabled] {
+  opacity: 0.55;
+  cursor: progress;
+}
+.becca-loops__upload-input {
+  display: none;  /* belt + suspenders with the hidden attribute */
+}
+.becca-loops__body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 8px;
+}
+.becca-loops__empty {
+  padding: 24px 12px;
+  text-align: center;
+  color: rgba(232, 224, 220, 0.5);
+  font-size: 11px;
+  line-height: 1.45;
+}
+.becca-loops__empty strong {
+  color: rgba(184, 210, 255, 0.85);
+  font-weight: 600;
+}
+.becca-loops__rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.becca-loops__row {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.becca-loops__row[data-active="1"] {
+  background: rgba(184, 210, 255, 0.10);
+  border: 1px solid rgba(184, 210, 255, 0.25);
+}
+.becca-loops__row .meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.becca-loops__row .name {
+  font-weight: 500;
+  color: rgba(232, 224, 220, 0.95);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.becca-loops__row .count {
+  color: rgba(232, 224, 220, 0.45);
+  font-size: 10px;
+}
+.becca-loops__row .actions {
+  display: flex;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+.becca-loops__row .btn-activate {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(232, 224, 220, 0.85);
+  font: 500 10px/1 system-ui;
+  padding: 4px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 140ms ease-out, color 140ms ease-out;
+}
+.becca-loops__row .btn-activate:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.95);
+}
+.becca-loops__row[data-active="1"] .btn-activate {
+  color: rgba(184, 210, 255, 0.95);
+  border-color: rgba(184, 210, 255, 0.5);
+}
+.becca-loops__row .btn-delete {
+  background: transparent;
+  border: none;
+  color: rgba(232, 184, 184, 0.7);
+  font: 500 14px/1 system-ui;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.becca-loops__row .btn-delete:hover {
+  background: rgba(232, 184, 184, 0.12);
+  color: rgba(255, 200, 200, 0.95);
+}
+
+/* ── Avatar picker overlay (opened from timeline) ────────────────
+   Compact grid that floats over the widget body. Same dark backdrop
+   as the timeline so the surfaces feel related. */
+.becca-presence__avatar-picker {
+  position: absolute;
+  inset: 0;
+  /* Must layer above the timeline panel (z-index 2147483642). Belt-
+     and-suspenders alongside the JS close-on-open behaviour — even if
+     the timeline somehow stays open during a race, the picker still
+     visually wins and intercepts clicks. */
+  z-index: 2147483643;
+  /* Opt back in to clicks. The widget root has pointer-events: none
+     (see the .becca-presence rule at the top of this file) and the
+     established pattern is for every interactive descendant to enable
+     events explicitly. Without this, both the back arrow and every
+     avatar tile in the grid are click-through and the screen reads
+     as "broken — nothing responds". */
+  pointer-events: auto;
+  border-radius: inherit;
+  background: rgba(14, 12, 18, 0.92);
+  backdrop-filter: blur(14px) saturate(120%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.becca-presence__avatar-picker-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(232, 224, 220, 0.72);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.becca-avatar-picker__back {
+  background: transparent;
+  border: none;
+  color: rgba(232, 224, 220, 0.7);
+  font: 500 16px/1 system-ui;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.becca-avatar-picker__back:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.95);
+}
+.becca-presence__avatar-picker-grid {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  align-content: start;
+}
+.becca-presence__avatar-picker-grid[data-state="loading"],
+.becca-presence__avatar-picker-grid[data-state="empty"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.becca-avatar-picker__empty {
+  color: rgba(232, 224, 220, 0.55);
+  font-size: 12px;
+  text-align: center;
+  padding: 16px;
+}
+.becca-avatar-picker__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  cursor: pointer;
+  color: rgba(232, 224, 220, 0.85);
+  font: 500 11px/1.2 system-ui;
+  transition: background 120ms ease-out, border-color 120ms ease-out;
+}
+.becca-avatar-picker__item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.becca-avatar-picker__item.is-active {
+  border-color: rgba(184, 210, 255, 0.55);
+  background: rgba(184, 210, 255, 0.10);
+}
+.becca-avatar-picker__item img,
+.becca-avatar-picker__thumb-fallback {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(232, 224, 220, 0.4);
+  font-size: 20px;
+}
+.becca-avatar-picker__name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.becca-timeline__rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.becca-timeline__row {
+  padding: 6px 4px 7px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: background 160ms ease-out;
+}
+.becca-timeline__row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+.becca-timeline__row[data-rating-active="like"]    { background: rgba(184, 232, 184, 0.10); }
+.becca-timeline__row[data-rating-active="dislike"] { background: rgba(232, 184, 184, 0.08); }
+.becca-timeline__row[data-rating-active="broken"]  { background: rgba(232, 200, 120, 0.10); opacity: 0.65; }
+
+.becca-timeline__row .meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 11.5px;
+}
+.becca-timeline__row .label {
+  color: rgba(232, 224, 220, 0.92);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 auto;
+}
+.becca-timeline__row .time {
+  color: rgba(232, 224, 220, 0.5);
+  font-size: 10px;
+  flex: 0 0 auto;
+}
+.becca-timeline__row .time .bonus {
+  color: rgba(184, 210, 255, 0.85);
+  margin-left: 4px;
+}
+
+.becca-timeline__row .actions {
+  display: flex;
+  gap: 4px;
+}
+.becca-timeline__row .btn-rating {
+  flex: 1 1 0;
+  height: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(232, 224, 220, 0.7);
+  border-radius: 6px;
+  font: 500 13px/1 system-ui;
+  cursor: pointer;
+  transition: background 140ms ease-out, color 140ms ease-out,
+              border-color 140ms ease-out, transform 140ms ease-out;
+}
+.becca-timeline__row .btn-rating:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.95);
+}
+.becca-timeline__row .btn-rating[data-just-rated="1"] {
+  transform: scale(0.92);
+}
+.becca-timeline__row[data-rating-active="like"]    .btn-like    { color: rgba(184, 232, 184, 0.95); border-color: rgba(184, 232, 184, 0.4); }
+.becca-timeline__row[data-rating-active="dislike"] .btn-dislike { color: rgba(232, 184, 184, 0.95); border-color: rgba(232, 184, 184, 0.4); }
+.becca-timeline__row[data-rating-active="broken"]  .btn-broken  { color: rgba(232, 200, 120, 0.95); border-color: rgba(232, 200, 120, 0.4); }
+
+.becca-timeline__empty {
+  padding: 24px 8px;
+  text-align: center;
+  color: rgba(232, 224, 220, 0.45);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+/* Wake-word flash overlay — brief animated band at the top of the
+   widget when a wake event fires. Driven by JS adding/removing
+   data-wake-flash. */
+.becca-presence__wake-flash {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  padding: 4px 10px 5px;
+  border-radius: 999px;
+  background: rgba(120, 168, 230, 0.18);
+  border: 1px solid rgba(168, 200, 240, 0.55);
+  color: rgba(220, 232, 255, 0.95);
+  font: 500 10.5px/1 system-ui, -apple-system, sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2147483641;
+  transition: opacity 220ms ease-out, transform 220ms ease-out;
+}
+.becca-presence[data-wake-flash="true"] .becca-presence__wake-flash {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Return-flash bubble — the channel-exit microcopy line surfaced when
+   a channel.exited event arrives. Sits just above the bottom dock so
+   the eye lands on it next to the status row that just released its
+   channel label. Auto-clears after ~6s via JS. */
+.becca-presence__return-flash {
+  position: absolute;
+  bottom: 56px;
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  max-width: calc(100% - 36px);
+  padding: 7px 14px 8px;
+  border-radius: 14px;
+  background: rgba(28, 22, 18, 0.82);
+  border: 1px solid rgba(232, 184, 120, 0.45);
+  color: rgba(244, 224, 200, 0.96);
+  font: 500 12px/1.35 system-ui, -apple-system, sans-serif;
+  letter-spacing: 0.01em;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2147483641;
+  transition: opacity 260ms ease-out, transform 260ms ease-out;
+}
+.becca-presence[data-return-flash="true"] .becca-presence__return-flash {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* PTT / talk-mode button — lives in the bottom dock, mirroring the
+   audio-mode toggle. Two stacked axes:
+   - data-talk-mode  : off | auto — short click cycles. Auto runs the
+     wake-word listener and shows a persistent "she's listening" glow.
+   - data-ptt-state  : idle | connecting | recording | processing | speaking
+     | error — hold-to-talk one-shot, takes precedence visually.
+   - data-wake-state : off | connecting | listening | paused | error —
+     reflects the underlying wake session; layers on top of talk-mode
+     to show connecting/error/paused states while in auto. */
+.becca-presence__ptt {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  background: rgba(20, 18, 24, 0.62);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: rgba(232, 220, 200, 0.88);
+  box-shadow: 0 0 8px rgba(232, 220, 200, 0.18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  /* iOS Safari hold-to-talk hardening. A long press used to trigger the
+     text-selection callout (the "whole screen highlights" symptom) and
+     steal the pointer mid-hold, making PTT wildly inconsistent on iPad.
+     touch-action:none routes the gesture straight to our pointer handlers;
+     user-select/touch-callout:none kill the selection + magnifier; the
+     transparent tap highlight removes the grey flash. */
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 180ms ease-out,
+              transform 180ms ease-out,
+              color 180ms ease-out,
+              box-shadow 180ms ease-out;
+}
+/* The SVG icon must not become a selection/drag target — events belong to
+   the button, and a selectable icon is what iOS latches onto on long-press. */
+.becca-presence__ptt .becca-presence__ptt-icon,
+.becca-presence__ptt svg {
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.becca-presence__ptt:hover {
+  transform: translateY(-1px) scale(1.04);
+  background: rgba(34, 30, 36, 0.82);
+}
+.becca-presence__ptt:active {
+  transform: scale(0.95);
+  background: rgba(48, 40, 28, 0.92);
+  color: rgba(255, 240, 200, 1);
+  box-shadow: 0 0 14px rgba(255, 220, 140, 0.5);
+}
+.becca-presence__ptt:focus-visible {
+  outline: 2px solid rgba(255, 220, 140, 0.7);
+  outline-offset: 2px;
+}
+
+/* Icon wrapper inside the button. ``_setTalkMode`` swaps just the SVG
+   here so the button's other state attributes (talk-mode, ptt-state,
+   wake-state) keep their bindings clean. */
+.becca-presence__ptt .becca-presence__ptt-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  transition: opacity 180ms ease-out;
+}
+
+/* Talk-mode baseline — set on click, immediate feedback before the wake
+   session has had a chance to connect. ``data-wake-state`` styles below
+   layer on top once the listener reaches each state. Suppressed when an
+   active PTT-state (recording / processing / speaking / connecting) is
+   driving its own visual, so hold-to-talk stays unambiguous. */
+.becca-presence__ptt[data-talk-mode="auto"]:not([data-ptt-state="recording"]):not([data-ptt-state="processing"]):not([data-ptt-state="speaking"]):not([data-ptt-state="connecting"]) {
+  color: rgba(184, 232, 200, 0.96);
+  background: rgba(22, 32, 26, 0.7);
+  border-color: rgba(120, 220, 170, 0.22);
+  box-shadow: 0 0 10px rgba(120, 220, 170, 0.32);
+}
+.becca-presence__ptt[data-talk-mode="auto"][data-wake-state="off"]:not([data-ptt-state="recording"]):not([data-ptt-state="processing"]):not([data-ptt-state="speaking"]):not([data-ptt-state="connecting"]) {
+  /* Auto requested but the listener hasn't started (or was paused for a
+     call and hasn't resumed) — show "ready" affordance, not the dim
+     "off" wake style. */
+  opacity: 1;
+  color: rgba(184, 232, 200, 0.85);
+}
+
+/* PTT state machine — data-ptt-state set by BeccaPttSession via the
+   widget's onStateChange handler. ``recording`` is the user-held state;
+   ``processing`` is awaiting transcript/LLM; ``speaking`` is server-TTS
+   active. Each gets a distinct visual so the hold-to-talk affordance
+   is unambiguous. */
+.becca-presence__ptt[data-ptt-state="connecting"] {
+  color: rgba(184, 210, 255, 0.95);
+  box-shadow: 0 0 12px rgba(184, 210, 255, 0.4);
+  animation: becca-ptt-pulse 1.2s ease-in-out infinite;
+}
+.becca-presence__ptt[data-ptt-state="recording"] {
+  background: rgba(184, 60, 60, 0.85);
+  color: #fff;
+  box-shadow: 0 0 14px rgba(232, 100, 100, 0.65);
+  transform: scale(1.06);
+}
+.becca-presence__ptt[data-ptt-state="recording"]::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(232, 100, 100, 0.5);
+  animation: becca-ptt-ring 1.1s ease-out infinite;
+  pointer-events: none;
+}
+.becca-presence__ptt {
+  position: relative;
+}
+.becca-presence__ptt[data-ptt-state="processing"] {
+  color: rgba(232, 196, 120, 0.95);
+  box-shadow: 0 0 12px rgba(232, 196, 120, 0.45);
+  animation: becca-ptt-pulse 0.9s ease-in-out infinite;
+}
+.becca-presence__ptt[data-ptt-state="speaking"] {
+  color: rgba(184, 232, 184, 0.95);
+  box-shadow: 0 0 14px rgba(120, 232, 160, 0.55);
+}
+.becca-presence__ptt[data-ptt-state="error"] {
+  color: rgba(255, 140, 140, 0.95);
+  box-shadow: 0 0 12px rgba(255, 100, 100, 0.55);
+  background: rgba(60, 20, 20, 0.85);
+}
+@keyframes becca-ptt-pulse {
+  0%, 100% { box-shadow: 0 0 8px currentColor; }
+  50%      { box-shadow: 0 0 18px currentColor; }
+}
+@keyframes becca-ptt-ring {
+  0%   { transform: scale(0.85); opacity: 0.75; }
+  100% { transform: scale(1.4);  opacity: 0;    }
+}
+
+/* Wake-state visuals on the same PTT button — independent axis from
+   data-ptt-state. Tap toggles wake on/off; hold is still PTT one-shot.
+   data-ptt-state takes precedence visually when active (recording /
+   speaking / processing) — these wake-state styles only apply in the
+   idle PTT state to avoid double-painting. */
+.becca-presence__ptt[data-wake-state="off"]:not([data-ptt-state="recording"]):not([data-ptt-state="speaking"]):not([data-ptt-state="processing"]) {
+  opacity: 0.62;
+  color: rgba(232, 220, 200, 0.6);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
+}
+.becca-presence__ptt[data-wake-state="connecting"]:not([data-ptt-state="recording"]):not([data-ptt-state="speaking"]):not([data-ptt-state="processing"]) {
+  color: rgba(168, 200, 255, 0.92);
+  box-shadow: 0 0 12px rgba(168, 200, 255, 0.4);
+  animation: becca-wake-pulse 1.4s ease-in-out infinite;
+}
+.becca-presence__ptt[data-wake-state="listening"]:not([data-ptt-state="recording"]):not([data-ptt-state="speaking"]):not([data-ptt-state="processing"]) {
+  color: rgba(184, 232, 200, 0.96);
+  box-shadow: 0 0 14px rgba(120, 220, 170, 0.5);
+  animation: becca-wake-breath 3s ease-in-out infinite;
+}
+.becca-presence__ptt[data-wake-state="paused"]:not([data-ptt-state="recording"]):not([data-ptt-state="speaking"]):not([data-ptt-state="processing"]) {
+  color: rgba(200, 200, 200, 0.7);
+  box-shadow: 0 0 8px rgba(200, 200, 200, 0.3);
+}
+.becca-presence__ptt[data-wake-state="error"]:not([data-ptt-state="recording"]):not([data-ptt-state="speaking"]):not([data-ptt-state="processing"]) {
+  color: rgba(255, 160, 140, 0.85);
+  box-shadow: 0 0 10px rgba(255, 120, 100, 0.4);
+}
+@keyframes becca-wake-pulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(168, 200, 255, 0.35); }
+  50%      { box-shadow: 0 0 16px rgba(168, 200, 255, 0.6); }
+}
+@keyframes becca-wake-breath {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(120, 220, 170, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(120, 220, 170, 0.6);
+    transform: scale(1.04);
+  }
+}
+
+/* Audio-mode button — lives inside the bottom dock, paired with the
+   status row. Toggles between "assistant" (warm, she's listening for
+   you) and "host" (cool, media plays through her). */
+.becca-presence__audio-mode {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  background: rgba(20, 18, 24, 0.62);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2147483641;
+  transition: background 180ms ease-out,
+              transform 180ms ease-out,
+              color 180ms ease-out,
+              box-shadow 180ms ease-out;
+}
+.becca-presence__audio-mode[data-role="assistant"] {
+  color: rgba(232, 200, 188, 0.88);
+  box-shadow: 0 0 8px rgba(232, 200, 188, 0.18);
+}
+.becca-presence__audio-mode[data-role="host"] {
+  color: rgba(184, 210, 255, 0.92);
+  box-shadow: 0 0 10px rgba(120, 168, 230, 0.32);
+  background: rgba(24, 30, 44, 0.72);
+  border-color: rgba(168, 200, 240, 0.18);
+}
+.becca-presence__audio-mode:hover {
+  transform: translateY(-1px) scale(1.04);
+  background: rgba(34, 30, 36, 0.82);
+}
+.becca-presence__audio-mode[data-role="host"]:hover {
+  background: rgba(34, 42, 60, 0.82);
+}
+.becca-presence__audio-mode:focus-visible {
+  outline: 2px solid rgba(184, 210, 255, 0.7);
+  outline-offset: 2px;
+}
+
+/* ── Live-camera "eye" button (next to the ear) ── */
+.becca-presence__eye {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  background: rgba(20, 18, 24, 0.62);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: rgba(200, 224, 232, 0.86);
+  box-shadow: 0 0 8px rgba(160, 210, 224, 0.16);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2147483641;
+  transition: background 180ms ease-out,
+              transform 180ms ease-out,
+              color 180ms ease-out,
+              box-shadow 180ms ease-out;
+}
+.becca-presence__eye:hover {
+  transform: translateY(-1px) scale(1.04);
+  background: rgba(30, 36, 40, 0.82);
+}
+.becca-presence__eye[data-cam-state="on"] {
+  color: rgba(140, 232, 200, 0.96);
+  background: rgba(22, 40, 36, 0.78);
+  border-color: rgba(140, 232, 200, 0.28);
+  box-shadow: 0 0 14px rgba(120, 230, 190, 0.5);
+}
+.becca-presence__eye:focus-visible {
+  outline: 2px solid rgba(160, 224, 210, 0.7);
+  outline-offset: 2px;
+}
+
+/* Mic DSP (echo-cancellation) toggle — same coin shape as the eye button.
+   Default (AEC on) is quiet; the accent lights up when AEC is OFF to signal
+   "music stays full-range while listening." */
+.becca-presence__mic-dsp {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  background: rgba(20, 18, 24, 0.62);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: rgba(210, 214, 224, 0.82);
+  box-shadow: 0 0 8px rgba(180, 190, 210, 0.14);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2147483641;
+  transition: background 180ms ease-out,
+              transform 180ms ease-out,
+              color 180ms ease-out,
+              box-shadow 180ms ease-out;
+}
+.becca-presence__mic-dsp:hover {
+  transform: translateY(-1px) scale(1.04);
+  background: rgba(30, 36, 40, 0.82);
+}
+.becca-presence__mic-dsp[data-aec="off"] {
+  color: rgba(232, 210, 140, 0.96);
+  background: rgba(40, 36, 22, 0.78);
+  border-color: rgba(232, 210, 140, 0.28);
+  box-shadow: 0 0 14px rgba(230, 200, 120, 0.5);
+}
+.becca-presence__mic-dsp:focus-visible {
+  outline: 2px solid rgba(224, 210, 160, 0.7);
+  outline-offset: 2px;
+}
+
+/* ── Camera-on composite: the user's camera fills the stage as a backdrop;
+   the VRM canvas shrinks to a corner PIP so she's a reacting presence in
+   the shot, not blocking it. The webcam <video> is inserted as the stage's
+   first child (paints behind), the canvas is lifted above + cornered. ── */
+.becca-presence__stage .companion-cam {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  z-index: 1;
+  background: #000;
+}
+.becca-presence__stage.companion-camera-on canvas {
+  /* Top-right PIP — clears the bottom dock. !important overrides the
+     base inset:0 / 100% rule. */
+  inset: 10px 10px auto auto !important;
+  width: 38% !important;
+  height: 38% !important;
+  border-radius: 14px;
+  z-index: 2;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+/* ── FULL-SCREEN camera call ──────────────────────────────────────────────
+   The camera should fill the screen, not the little floating widget. The
+   widget root is position:fixed but `contain: layout paint` + the drag
+   transform make a nested position:fixed child resolve against the WIDGET,
+   not the viewport — so we expand the ROOT itself to fill the viewport.
+   transform:none cancels any drag offset so it truly fills. */
+.becca-presence.becca-presence--camera {
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  right: auto !important;
+  bottom: auto !important;
+  border-radius: 0 !important;
+  transform: none !important;
+  pointer-events: auto;
+  z-index: 2147483645;
+}
+/* In full-screen the VRM PIP is sized to a sensible corner (38% of the whole
+   screen would be huge), matching the voice-overlay camera PIP. Bottom-right
+   to clear the top flip control. */
+.becca-presence.becca-presence--camera .becca-presence__stage.companion-camera-on canvas {
+  inset: auto 16px 16px auto !important;
+  width: clamp(120px, 24%, 240px) !important;
+  height: clamp(160px, 28%, 320px) !important;
+}
+/* Flip (front/back) control — overlaid top-left while the camera fills. */
+.becca-presence__cam-flip {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  background: rgba(10, 12, 16, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: rgba(255, 255, 255, 0.9);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+  pointer-events: auto;
+  transition: background 160ms ease-out, transform 160ms ease-out;
+}
+.becca-presence__cam-flip:hover {
+  background: rgba(20, 24, 30, 0.78);
+  transform: scale(1.06);
+}
+
+/* Real-talk panel — overlay above everything. Crisis access cannot
+   be obscured by stuck dialogs. */
+.becca-realtalk-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(360px, 92vw);
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 2147483641;
+  background: rgba(26, 24, 30, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 18px;
+  box-shadow: 0 32px 64px -16px rgba(0, 0, 0, 0.7);
+  padding: 24px;
+  color: rgba(232, 224, 220, 0.95);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+.becca-realtalk-panel h3 {
+  margin: 0 0 14px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: rgba(232, 200, 188, 0.95);
+}
+.becca-realtalk-panel p {
+  margin: 0 0 14px;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.becca-realtalk-panel .becca-resource-card {
+  background: rgba(40, 36, 42, 0.6);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 8px 0;
+}
+.becca-realtalk-panel .becca-resource-card strong {
+  display: block;
+  font-size: 18px;
+  letter-spacing: 0.02em;
+}
+.becca-realtalk-panel .becca-resource-card small {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+  opacity: 0.75;
+}
+.becca-realtalk-panel button.becca-close {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(60, 56, 64, 0.8);
+  color: rgba(232, 224, 220, 0.95);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Glance HUD reparent target (inside widget). */
+.becca-presence__hud {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  right: 10px;
+  pointer-events: none;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: rgba(232, 224, 220, 0.78);
+}
+
+/* Fullscreen / screen-share / discreet states. */
+.becca-presence[data-surface="fullscreen"] {
+  width: 132px;
+  height: 198px;
+  opacity: 0.78;
+}
+.becca-presence[data-surface="screen-share"] {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  bottom: 16px;
+  right: 16px;
+}
+.becca-presence[data-surface="discreet"] {
+  width: 1px;
+  height: 1px;
+  opacity: 0.001;
+  pointer-events: auto;  /* still tappable; the corner is the affordance */
+}
+
+/* Mobile portrait.
+   Scoped to the explicit ``data-surface="mobile-portrait"`` attribute
+   (set by becca-presence.js:_detectSurface) so that narrow non-mobile
+   surfaces — e.g. a 400px-wide fullscreen viewport — don't inherit
+   the mobile layout. Pre-fix this query targeted every selector at
+   ``(max-width: 600px)`` regardless of which surface the JS had
+   detected. */
+@media (max-width: 600px) {
+  .becca-presence[data-surface="mobile-portrait"] {
+    width: 132px;
+    height: 198px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 88px);
+    right: 14px;
+  }
+  /* At 132px wide there isn't room for the audio button, the status
+     label, AND the PTT button. Collapse the status pill to its colored
+     dot indicator — the dot already encodes state (listening/thinking/
+     speaking/hosting) and reads cleanly at a glance. Restored on every
+     other surface where the text fits comfortably. */
+  .becca-presence[data-surface="mobile-portrait"] .becca-presence__status {
+    padding: 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    font-size: 0;
+    max-width: none;
+    box-shadow: none;
+  }
+  .becca-presence[data-surface="mobile-portrait"] .becca-presence__status::before {
+    width: 10px;
+    height: 10px;
+  }
+  /* Affect line gets crowded above the dock at this size — hide it on
+     mobile rather than fighting the 132px width. The desktop and tablet
+     surfaces are where the read is meant to be visible. */
+  .becca-presence[data-surface="mobile-portrait"] .becca-presence__affect {
+    display: none;
+  }
+}
+/* Same collapse for the fullscreen surface, which mirrors mobile width. */
+.becca-presence[data-surface="fullscreen"] .becca-presence__status {
+  padding: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  font-size: 0;
+  max-width: none;
+  box-shadow: none;
+}
+.becca-presence[data-surface="fullscreen"] .becca-presence__status::before {
+  width: 10px;
+  height: 10px;
+}
+.becca-presence[data-surface="fullscreen"] .becca-presence__affect { display: none; }
+
+/* Mobile landscape */
+@media (max-width: 900px) and (orientation: landscape) {
+  .becca-presence {
+    width: 132px;
+    height: 198px;
+    top: calc(env(safe-area-inset-top, 0px) + 12px);
+    right: 14px;
+    bottom: auto;
+  }
+}
+
+/* Light theme */
+[data-theme="light"] .becca-presence {
+  background:
+    linear-gradient(180deg,
+                    rgba(248, 244, 240, 0.62) 0%,
+                    rgba(232, 226, 220, 0.78) 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 18px 48px -16px rgba(70, 60, 80, 0.18),
+    0 4px 14px -6px rgba(70, 60, 80, 0.10);
+}
+[data-theme="light"] .becca-realtalk-panel {
+  background: rgba(248, 244, 240, 0.96);
+  color: rgba(40, 32, 44, 0.95);
+}
+/* In light theme the widget background flips cream-on-cream, so the
+   in-flow text labels (placeholder name + affect line) need a darker
+   color or they sit invisibly against the body. The chrome controls
+   (status pill, wake-flash, return-flash, catching-up, timeline panel,
+   audio/PTT buttons) all carry their own dark translucent backdrops
+   and stay readable as-is. */
+[data-theme="light"] .becca-placeholder-name {
+  color: rgba(70, 56, 64, 0.62);
+}
+[data-theme="light"] .becca-placeholder-disc span {
+  color: rgba(255, 244, 238, 0.95);
+}
+[data-theme="light"] .becca-presence__affect {
+  color: rgba(70, 56, 64, 0.65);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .becca-presence,
+  .becca-presence__hud {
+    transition: opacity 180ms linear !important;
+  }
+  .becca-presence:hover {
+    transform: none;
+  }
+}
+
+/* High contrast */
+@media (prefers-contrast: more) {
+  .becca-presence {
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: none;
+    border: 2px solid CanvasText;
+  }
+  [data-theme="light"] .becca-presence {
+    background: rgba(255, 255, 255, 0.95);
+  }
+}
+
+/* Focus ring */
+.becca-presence:focus-visible {
+  outline: 2px solid rgba(248, 232, 200, 0.85);
+  outline-offset: 2px;
+}
+
+
+/* ── Catching-up overlay ──────────────────────────────────────────
+ *
+ * Shown by becca-presence.js:_showCatchingUpOverlay when the heartbeat
+ * detects the VRM stage is dark AND the engine is mid-swap. Floats
+ * inside .becca-presence__stage as a sibling to the canvas. The
+ * register is intentionally low-attention — small spinner, dim
+ * label — so a brief model swap reads as "loading" instead of
+ * "broken" without yanking the user's focus.
+ *
+ * z-index is implicit (DOM order): the overlay is appended AFTER
+ * the placeholder so it covers the placeholder; the VRM canvas is
+ * appended later by the avatar pipeline so it covers the overlay
+ * (and the heartbeat removes the overlay when VRM activates, defense
+ * in depth).
+ */
+.becca-presence__catching-up {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  pointer-events: none;
+  background: rgba(20, 18, 24, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: inherit;
+  /* Soft fade-in so the overlay doesn't snap the user's attention. */
+  animation: becca-catching-up-in 240ms ease-out;
+}
+.becca-presence__catching-up-spinner {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(232, 200, 188, 0.18);
+  border-top-color: rgba(232, 200, 188, 0.75);
+  animation: becca-catching-up-spin 1.2s linear infinite;
+}
+.becca-presence__catching-up-text {
+  color: rgba(232, 200, 188, 0.72);
+  font: 500 12px/1.3 system-ui, -apple-system, "Segoe UI", sans-serif;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+@keyframes becca-catching-up-spin { to { transform: rotate(360deg); } }
+@keyframes becca-catching-up-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .becca-presence__catching-up { animation: none; }
+  .becca-presence__catching-up-spinner {
+    animation: none;
+    border-top-color: rgba(232, 200, 188, 0.5);
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────────
+ * Reduced-motion sweep (2026-05-28)
+ *
+ * The widget has six keyframe animations that the OS-level
+ * ``prefers-reduced-motion: reduce`` setting should respect. The
+ * older piecewise blocks above caught placeholder breathe + status
+ * pulse + catching-up spinner; this universal-selector sweep covers
+ * the remaining PTT/wake button animations and any future ones
+ * without having to enumerate selectors. ``!important`` because
+ * the individual animation declarations are inside attribute-state
+ * selectors with higher specificity than a bare element selector.
+ * ─────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .becca-presence,
+  .becca-presence *,
+  .becca-presence *::before,
+  .becca-presence *::after {
+    animation: none !important;
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────────
+ * Tab-hidden pause (2026-05-28)
+ *
+ * When the host tab goes hidden, ``becca-presence.js`` adds the
+ * ``is-tab-hidden`` class to the widget root. This pauses ALL
+ * descendant keyframe animations (and the placeholder/breath/pulse
+ * micro-animations) without unsetting them, so they resume seamlessly
+ * the moment the user returns to the tab.
+ *
+ * Pairs with ``pauseAvatarRender()`` for the 3D loop. CSS pause is
+ * the cheap layer that handles the 6 micro-animations the avatar
+ * renderer doesn't touch.
+ * ─────────────────────────────────────────────────────────────────── */
+.becca-presence.is-tab-hidden,
+.becca-presence.is-tab-hidden *,
+.becca-presence.is-tab-hidden *::before,
+.becca-presence.is-tab-hidden *::after {
+  animation-play-state: paused !important;
+}
+
+/* ── Slice 1: chrome melt-away ─────────────────────────────────────
+ *
+ * After 4s of no interaction (and no live state — listening / heard /
+ * thinking / speaking force reveal), the dock + audio-mode toggle +
+ * status row fade to a quiet 0.18 opacity. Hover / focus-within /
+ * pointerdown on the widget body pokes chrome alive instantly. The
+ * translucent avatar stays visible the whole time — preserves the
+ * "she's just there" feel without making controls undiscoverable.
+ *
+ * Driven by data-chrome-idle="1" on the widget root, set by JS after
+ * the idle timer fires. JS clears it on activity OR live state.
+ * pointer-events stay 'auto' on the PTT button even while faded so
+ * the user can still find it by feel; full opacity returns on reveal.
+ * ───────────────────────────────────────────────────────────────── */
+.becca-presence__dock,
+.becca-presence__affect {
+  transition: opacity 560ms ease-out;
+}
+.becca-presence[data-chrome-idle="1"] .becca-presence__dock {
+  opacity: 0.18;
+}
+.becca-presence[data-chrome-idle="1"] .becca-presence__affect {
+  opacity: 0.55;
+}
+/* Reveal triggers — any pointer/keyboard touch of the widget wakes
+   chrome immediately. The transition switches to a fast curve on
+   reveal so the user sees instant feedback when they interact. */
+.becca-presence:hover .becca-presence__dock,
+.becca-presence:focus-within .becca-presence__dock,
+.becca-presence:hover .becca-presence__affect,
+.becca-presence:focus-within .becca-presence__affect {
+  opacity: 1;
+  transition: opacity 140ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .becca-presence__dock,
+  .becca-presence__affect {
+    transition: none;
+  }
+  .becca-presence[data-chrome-idle="1"] .becca-presence__dock {
+    opacity: 1;  /* opt out of melt-away entirely for reduced-motion */
+  }
+}
+
+/* ── Slice 1: transcript chip ──────────────────────────────────────
+ *
+ * Surfaces partial STT text as the user speaks. Sits above the status
+ * row, below the affect row. aria-live polite so screen readers hear
+ * it but it's quiet for sighted users — small italic with subtle
+ * backdrop blur, fades in/out cleanly. Auto-hides on turn-complete /
+ * turn-aborted.
+ *
+ * Color stays warm/muted to read as "her hearing you" not "a UI
+ * notification." Truncates with ellipsis when long (the JS uses
+ * _truncateGraceful at the word boundary first; ellipsis here catches
+ * any residual overflow at narrow widget sizes).
+ * ───────────────────────────────────────────────────────────────── */
+.becca-presence__transcript {
+  position: absolute;
+  bottom: 78px;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  padding: 5px 14px 6px;
+  border-radius: 999px;
+  background: rgba(20, 18, 24, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: rgba(244, 232, 224, 0.88);
+  font: italic 500 11.5px/1.2 system-ui, -apple-system, sans-serif;
+  letter-spacing: 0.01em;
+  max-width: calc(100% - 32px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+  z-index: 2147483641;
+  opacity: 0;
+  transition: opacity 220ms ease-out, transform 220ms ease-out;
+}
+.becca-presence__transcript[data-visible="1"] {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .becca-presence__transcript {
+    transition: opacity 80ms linear;
+    transform: translateX(-50%);
+  }
+  .becca-presence__transcript[data-visible="1"] { transform: translateX(-50%); }
+}
+
+/* ── "Read this …" context handoff chip ───────────────────────────
+ *
+ * A tappable pill above the transcript chip, shown only when the
+ * foreground surface has registered loadable content. Pressing it hands
+ * the companion the full page/chat/file. Warmer + slightly more present
+ * than the transcript chip (it's an affordance, not passive feedback),
+ * but still calm — it folds away once used.
+ * ───────────────────────────────────────────────────────────────── */
+.becca-presence__context-chip {
+  position: absolute;
+  bottom: 104px;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  padding: 5px 14px 6px;
+  border: 1px solid rgba(200, 176, 152, 0.28);
+  border-radius: 999px;
+  background: rgba(34, 28, 26, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: rgba(248, 236, 224, 0.94);
+  font: 600 11.5px/1.2 system-ui, -apple-system, sans-serif;
+  letter-spacing: 0.01em;
+  max-width: calc(100% - 28px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  user-select: none;
+  z-index: 2147483641;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease-out, transform 220ms ease-out,
+    background 160ms ease-out;
+}
+.becca-presence__context-chip[data-visible="1"] {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+.becca-presence__context-chip:hover {
+  background: rgba(46, 38, 34, 0.9);
+}
+.becca-presence__context-chip:disabled {
+  cursor: default;
+  opacity: 0.75;
+}
+@media (prefers-reduced-motion: reduce) {
+  .becca-presence__context-chip {
+    transition: opacity 80ms linear;
+    transform: translateX(-50%);
+  }
+  .becca-presence__context-chip[data-visible="1"] { transform: translateX(-50%); }
+}
+
+/* ── Slice 1: "heard you" state ────────────────────────────────────
+ *
+ * Brief 500ms state shown when STT finalizes, before 'thinking'.
+ * Closes the "did she hear me?" feedback gap. Soft sage-green dot
+ * with a single gentle pulse — distinct from listening (blue) and
+ * thinking (amber). Label reads "heard you" as quiet affirmation.
+ * ───────────────────────────────────────────────────────────────── */
+.becca-presence__status[data-state="heard"]::before {
+  background: rgba(184, 232, 200, 0.95);
+  box-shadow: 0 0 10px rgba(140, 220, 170, 0.7);
+  animation: becca-heard-pulse 480ms ease-out 1;
+}
+@keyframes becca-heard-pulse {
+  0%   { transform: scale(1);   opacity: 1; }
+  40%  { transform: scale(1.6); opacity: 1; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .becca-presence__status[data-state="heard"]::before { animation: none; }
+}
+
+/* ── Slice 1: verb dispatch tick ───────────────────────────────────
+ *
+ * When a verb fires (cast.send, navigate.open_surface, timer.set, …)
+ * the status row briefly shows the verb's friendly label with a
+ * sage check-dot. Closes the loop on delegated actions so the user
+ * knows she heard their goal and acted. Cleared by JS after ~1400ms.
+ * ───────────────────────────────────────────────────────────────── */
+.becca-presence__status[data-tick="1"]::before {
+  background: rgba(196, 232, 188, 0.95);
+  box-shadow: 0 0 11px rgba(160, 220, 160, 0.7);
+}
+.becca-presence__status[data-tick="1"] {
+  background: rgba(28, 38, 30, 0.84);
+  color: rgba(232, 244, 224, 0.92);
+}
+
+/* ── Slice 1: mini-controls drawer ─────────────────────────────────
+ *
+ * 450ms long-press anywhere on the widget reveals a small inline
+ * strip above the dock with three handles: talk-mode toggle,
+ * always-listening toggle, and a settings handle. Surfaces settings
+ * without exposing chrome by default. Auto-hides after 12s of no
+ * interaction.
+ *
+ * Slides up from behind the dock with a soft fade. Each button is a
+ * pill the same height as the dock buttons so the visual rhythm
+ * matches. Active state shows the underlying preference clearly.
+ * ───────────────────────────────────────────────────────────────── */
+.becca-presence__mini-controls {
+  position: absolute;
+  bottom: 56px;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(20, 18, 24, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  z-index: 2147483641;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 220ms ease-out, transform 220ms ease-out;
+}
+.becca-presence__mini-controls[data-visible="1"] {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+.becca-presence__mini-btn {
+  appearance: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid transparent;
+  color: rgba(232, 224, 220, 0.86);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font: 500 10.5px/1.1 system-ui, -apple-system, sans-serif;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 160ms ease-out, color 160ms ease-out,
+              border-color 160ms ease-out;
+}
+.becca-presence__mini-btn:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: rgba(244, 232, 224, 0.96);
+}
+.becca-presence__mini-btn:focus-visible {
+  outline: none;
+  border-color: rgba(196, 224, 244, 0.55);
+}
+.becca-presence__mini-btn[data-active="1"] {
+  background: rgba(196, 232, 200, 0.18);
+  color: rgba(220, 244, 220, 0.96);
+  border-color: rgba(196, 232, 200, 0.32);
+}
+.becca-presence__mini-btn-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(232, 224, 220, 0.35);
+  transition: background 160ms ease-out, box-shadow 160ms ease-out;
+}
+.becca-presence__mini-btn-label {
+  white-space: nowrap;       /* keep "talk: auto" + "listen: on" intact */
+  font-variant-numeric: tabular-nums;
+}
+.becca-presence__mini-btn[data-active="1"] .becca-presence__mini-btn-dot {
+  background: rgba(184, 232, 200, 0.95);
+  box-shadow: 0 0 6px rgba(140, 220, 170, 0.6);
+}
+@media (prefers-reduced-motion: reduce) {
+  .becca-presence__mini-controls,
+  .becca-presence__mini-btn,
+  .becca-presence__mini-btn-dot {
+    transition: none;
+  }
+  .becca-presence__mini-controls { transform: translateX(-50%); }
+  .becca-presence__mini-controls[data-visible="1"] { transform: translateX(-50%); }
+}
+
+/* Light-theme inversions for the new surfaces */
+[data-theme="light"] .becca-presence__transcript {
+  background: rgba(248, 244, 240, 0.86);
+  color: rgba(48, 44, 56, 0.92);
+}
+[data-theme="light"] .becca-presence__mini-controls {
+  background: rgba(248, 244, 240, 0.88);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+[data-theme="light"] .becca-presence__mini-btn {
+  background: rgba(0, 0, 0, 0.04);
+  color: rgba(56, 48, 60, 0.86);
+}
+[data-theme="light"] .becca-presence__mini-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(40, 34, 48, 0.96);
+}
+[data-theme="light"] .becca-presence__mini-btn[data-active="1"] {
+  background: rgba(120, 196, 152, 0.18);
+  color: rgba(40, 80, 56, 0.96);
+  border-color: rgba(120, 196, 152, 0.40);
+}
+[data-theme="light"] .becca-presence__status[data-tick="1"] {
+  background: rgba(232, 244, 232, 0.92);
+  color: rgba(40, 64, 44, 0.95);
+}
+
+/* ── Animations master list (loops overlay rework) ─────────────── */
+
+.becca-lib__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 2px 6px;
+  color: rgba(232, 224, 220, 0.6);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.becca-lib__header > span { flex: 0 0 auto; }
+.becca-lib__filter {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 10px;
+  color: rgba(232, 224, 220, 0.9);
+  font: 400 11px/1.2 system-ui;
+  padding: 4px 8px;
+  text-transform: none;
+  letter-spacing: normal;
+}
+.becca-lib__filter:focus {
+  outline: none;
+  border-color: rgba(184, 210, 255, 0.4);
+}
+/* Family chips — derived category buckets over the role vocabulary.
+   One row of pills under the filter; the active chip is filled. */
+.becca-lib__fams {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0 0 8px;
+}
+.becca-lib__fam {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(232, 224, 220, 0.65);
+  font: 500 10px/1 system-ui;
+  padding: 4px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 120ms ease-out, border-color 120ms ease-out,
+              color 120ms ease-out;
+}
+.becca-lib__fam:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(232, 224, 220, 0.9);
+}
+.becca-lib__fam[data-on="1"] {
+  background: rgba(184, 210, 255, 0.14);
+  border-color: rgba(184, 210, 255, 0.45);
+  color: rgba(184, 210, 255, 0.95);
+}
+.becca-lib__fam .count {
+  opacity: 0.55;
+  font-size: 9px;
+}
+/* Family section headers in the ungrouped "all" view. */
+.becca-lib__group {
+  list-style: none;
+  margin: 6px 0 2px;
+  padding: 0 2px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(232, 224, 220, 0.45);
+}
+.becca-lib__group:first-child { margin-top: 0; }
+.becca-lib__group .count {
+  opacity: 0.6;
+  margin-left: 4px;
+}
+.becca-lib__rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.becca-lib__row {
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.becca-lib__row[data-off="1"] .meta { opacity: 0.42; }
+.becca-lib__rowline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+}
+.becca-lib__rowline .meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.becca-lib__rowline .name {
+  font-weight: 500;
+  font-size: 11.5px;
+  color: rgba(232, 224, 220, 0.95);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.becca-lib__rowline .tags {
+  color: rgba(232, 224, 220, 0.45);
+  font-size: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.becca-lib__rowline .badge {
+  display: inline-block;
+  font: 600 8.5px/1 system-ui;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 5px;
+  border-radius: 8px;
+  margin-left: 4px;
+  vertical-align: 1px;
+}
+.becca-lib__rowline .badge-yours {
+  background: rgba(184, 210, 255, 0.14);
+  color: rgba(184, 210, 255, 0.95);
+}
+.becca-lib__rowline .badge-bvh {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(232, 224, 220, 0.7);
+}
+.becca-lib__rowline .badge-off {
+  background: rgba(232, 184, 184, 0.14);
+  color: rgba(232, 184, 184, 0.9);
+}
+.becca-lib__rowline .actions {
+  display: flex;
+  gap: 2px;
+  flex: 0 0 auto;
+}
+.becca-lib__rowline .actions button {
+  background: transparent;
+  border: none;
+  color: rgba(232, 224, 220, 0.65);
+  font: 500 12px/1 system-ui;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.becca-lib__rowline .actions button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.95);
+}
+.becca-lib__rowline .lib-del { color: rgba(232, 184, 184, 0.7); }
+.becca-lib__rowline .lib-del:hover {
+  background: rgba(232, 184, 184, 0.12);
+  color: rgba(255, 200, 200, 0.95);
+}
+.becca-lib__rowline .lib-pick {
+  flex: 0 0 auto;
+  accent-color: rgba(184, 210, 255, 0.9);
+}
+
+/* pick-mode banner */
+.becca-lib__pickbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(184, 210, 255, 0.10);
+  border: 1px solid rgba(184, 210, 255, 0.25);
+  font-size: 11px;
+  color: rgba(232, 224, 220, 0.9);
+}
+.becca-lib__pickbar .title {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.becca-lib__pickbar .count {
+  color: rgba(184, 210, 255, 0.9);
+  font-size: 10px;
+  flex: 0 0 auto;
+}
+.becca-lib__pickbar button {
+  background: rgba(184, 210, 255, 0.10);
+  border: 1px solid rgba(184, 210, 255, 0.3);
+  color: rgba(184, 210, 255, 0.95);
+  font: 500 10.5px/1 system-ui;
+  padding: 4px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.becca-lib__pickbar .btn-pick-cancel {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.14);
+  color: rgba(232, 224, 220, 0.75);
+}
+
+/* inline metadata editor */
+.becca-lib__editor {
+  padding: 4px 10px 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 10.5px;
+  color: rgba(232, 224, 220, 0.75);
+}
+.becca-lib__editor .ed-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.becca-lib__editor .ed-field > span {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(232, 224, 220, 0.5);
+}
+.becca-lib__editor input[type="text"],
+.becca-lib__editor input[type="number"],
+.becca-lib__editor textarea {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 8px;
+  color: rgba(232, 224, 220, 0.92);
+  font: 400 11px/1.3 system-ui;
+  padding: 5px 8px;
+  resize: vertical;
+}
+.becca-lib__editor input:focus,
+.becca-lib__editor textarea:focus {
+  outline: none;
+  border-color: rgba(184, 210, 255, 0.4);
+}
+.becca-lib__editor .ed-sliders {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+}
+.becca-lib__editor .ed-slider {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.becca-lib__editor .ed-slider > span {
+  flex: 0 0 56px;
+  font-size: 9.5px;
+  color: rgba(232, 224, 220, 0.55);
+}
+.becca-lib__editor input[type="range"] {
+  flex: 1 1 auto;
+  min-width: 0;
+  accent-color: rgba(184, 210, 255, 0.85);
+  height: 14px;
+}
+.becca-lib__editor .ed-advanced summary {
+  cursor: pointer;
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(232, 224, 220, 0.5);
+}
+.becca-lib__editor .ed-advanced[open] summary { margin-bottom: 6px; }
+.becca-lib__editor .ed-advanced {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.becca-lib__editor .ed-checks,
+.becca-lib__editor .ed-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+.becca-lib__editor .ed-checks label,
+.becca-lib__editor .ed-modes label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: rgba(232, 224, 220, 0.7);
+  cursor: pointer;
+}
+.becca-lib__editor .ed-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.becca-lib__editor .ed-actions button {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(232, 224, 220, 0.85);
+  font: 500 10.5px/1 system-ui;
+  padding: 4px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.becca-lib__editor .ed-save {
+  background: rgba(184, 210, 255, 0.10);
+  border-color: rgba(184, 210, 255, 0.35);
+  color: rgba(184, 210, 255, 0.95);
+}
+.becca-lib__editor .ed-reset { color: rgba(232, 184, 184, 0.8); }
+
+/* light theme — the overlay itself goes light here so the dark-on-
+   light inner rules below actually sit on a light surface. */
+[data-theme="light"] .becca-presence__loops-overlay {
+  background: rgba(247, 245, 250, 0.96);
+  color: rgba(56, 48, 60, 0.88);
+}
+[data-theme="light"] .becca-loops__header {
+  color: rgba(56, 48, 60, 0.65);
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+[data-theme="light"] .becca-loops__back { color: rgba(56, 48, 60, 0.6); }
+[data-theme="light"] .becca-loops__row { background: rgba(0, 0, 0, 0.04); }
+[data-theme="light"] .becca-loops__row .name { color: rgba(56, 48, 60, 0.9); }
+[data-theme="light"] .becca-loops__empty { color: rgba(56, 48, 60, 0.55); }
+[data-theme="light"] .becca-lib__fam {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.10);
+  color: rgba(56, 48, 60, 0.7);
+}
+[data-theme="light"] .becca-lib__fam[data-on="1"] {
+  background: rgba(90, 120, 200, 0.12);
+  border-color: rgba(90, 120, 200, 0.45);
+  color: rgba(70, 95, 170, 0.95);
+}
+[data-theme="light"] .becca-lib__group { color: rgba(56, 48, 60, 0.5); }
+[data-theme="light"] .becca-lib__row { background: rgba(0, 0, 0, 0.03); }
+[data-theme="light"] .becca-lib__rowline .name { color: rgba(56, 48, 60, 0.92); }
+[data-theme="light"] .becca-lib__rowline .tags { color: rgba(56, 48, 60, 0.5); }
+[data-theme="light"] .becca-lib__filter,
+[data-theme="light"] .becca-lib__editor input[type="text"],
+[data-theme="light"] .becca-lib__editor input[type="number"],
+[data-theme="light"] .becca-lib__editor textarea {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.10);
+  color: rgba(56, 48, 60, 0.92);
+}
+[data-theme="light"] .becca-lib__editor,
+[data-theme="light"] .becca-lib__pickbar { color: rgba(56, 48, 60, 0.85); }
+
+/* ── Stage-manager text input ─────────────────────────────────────────
+   Dock toggle (mirrors the audio-mode button) + a compose bar under the
+   dock that appears in 'stage' mode. Talk to draft, edit, Send — or type. */
+.becca-presence__input-mode {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  background: rgba(20, 18, 24, 0.62);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: rgba(210, 210, 220, 0.72);
+  z-index: 2147483641;
+  transition: background 180ms ease-out, transform 180ms ease-out,
+              color 180ms ease-out, box-shadow 180ms ease-out;
+}
+.becca-presence__input-mode[data-mode="stage"] {
+  color: rgba(200, 232, 210, 0.92);
+  box-shadow: 0 0 10px rgba(150, 220, 175, 0.28);
+  background: rgba(22, 32, 26, 0.72);
+  border-color: rgba(170, 220, 185, 0.18);
+}
+.becca-presence__input-mode:hover {
+  transform: translateY(-1px) scale(1.04);
+  background: rgba(34, 30, 36, 0.82);
+}
+.becca-presence__input-mode:focus-visible {
+  outline: 2px solid rgba(184, 210, 255, 0.7);
+  outline-offset: 2px;
+}
+
+.becca-presence__compose {
+  position: absolute;
+  bottom: 48px;               /* clears the dock (bottom:12px + ~28px) */
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  max-width: 460px;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 16px;
+  background: rgba(20, 18, 24, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 2147483641;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+.becca-presence__compose[hidden] { display: none; }
+.becca-presence__compose-input {
+  flex: 1 1 auto;
+  min-height: 34px;
+  max-height: 160px;
+  resize: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: rgba(240, 238, 244, 0.96);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  padding: 7px 8px;
+}
+.becca-presence__compose-input::placeholder { color: rgba(200, 200, 210, 0.4); }
+.becca-presence__compose-input.shake { animation: becca-compose-shake 0.4s ease; }
+@keyframes becca-compose-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+.becca-presence__compose-send {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(150, 220, 175, 0.18);
+  color: rgba(210, 240, 220, 0.95);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 160ms ease-out, transform 160ms ease-out;
+}
+.becca-presence__compose-send:hover {
+  background: rgba(150, 220, 175, 0.3);
+  transform: translateY(-1px);
+}
+.becca-presence__compose-send:focus-visible {
+  outline: 2px solid rgba(184, 210, 255, 0.7);
+  outline-offset: 2px;
+}

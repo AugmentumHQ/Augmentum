@@ -1,0 +1,31 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "arm_clasp_low_front_L",
+  "tags": [
+    "single-arm",
+    "L",
+    "formal",
+    "attentive"
+  ],
+  "description": "Single-arm primitive: left arm in 'clasp_low_front_L' pose. Lands at region 'belly' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+  "family": "per_arm",
+  "anchors": {
+    "leftHand": {
+      "type": "region-contact",
+      "region": "belly",
+      "tolerance": 0.04,
+      "fingerStyle": "clasp_low_front_L"
+    },
+    "rightHand": {
+      "type": "free-space"
+    }
+  },
+  "body": {},
+  "provenance": {
+    "source": "auto-generated",
+    "generator": "scripts/generate_per_arm_primitives.py",
+    "wrapsAffordance": "clasp_low_front_L",
+    "consensusRegion": "belly",
+    "createdAt": "2026-05-14"
+  }
+}

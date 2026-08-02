@@ -1,0 +1,30 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "casual_hand_on_hip",
+  "tags": ["casual", "confident", "stance"],
+  "description": "Left hand on left hip (hip_L affordance), right arm rests at side. Slight head turn + spine twist for casual confidence.",
+  "family": "idle_lefthip",
+
+  "anchors": {
+    "leftHand": {
+      "type": "region-contact",
+      "region": "hip_L",
+      "tolerance": 0.025,
+      "fingerStyle": "hip_L"
+    },
+    "rightHand": {
+      "type": "free-space"
+    }
+  },
+
+  "body": {
+    "head":  { "pitch": -2, "yaw": 5 },
+    "spine": { "twist": 3 }
+  },
+
+  "provenance": {
+    "source": "manual",
+    "curatedBy": "maintainer",
+    "createdAt": "2026-05-14"
+  }
+}

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="400" height="400">
+  <rect width="100" height="100" fill="#111118"/>
+  <g fill="none" stroke="#6c8aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- seed/root node -->
+    <circle cx="50" cy="86" r="2.5" fill="#6c8aff" stroke="none"/>
+    <!-- trunk -->
+    <path d="M50 84 L50 62"/>
+    <!-- first split (shared prefix branches) -->
+    <path d="M50 62 L34 50"/>
+    <path d="M50 62 L66 50"/>
+    <!-- left branch splits -->
+    <path d="M34 50 L22 34"/>
+    <path d="M34 50 L40 34"/>
+    <!-- right branch splits -->
+    <path d="M66 50 L60 34"/>
+    <path d="M66 50 L78 34"/>
+    <!-- deepest level -->
+    <path d="M22 34 L18 22"/>
+    <path d="M22 34 L26 22"/>
+    <path d="M78 34 L74 22"/>
+    <path d="M78 34 L82 22"/>
+    <!-- leaves (token terminals) -->
+    <circle cx="18" cy="22" r="2" fill="#6c8aff" stroke="none"/>
+    <circle cx="26" cy="22" r="2" fill="#6c8aff" stroke="none"/>
+    <circle cx="40" cy="34" r="2" fill="#6c8aff" stroke="none"/>
+    <circle cx="60" cy="34" r="2" fill="#6c8aff" stroke="none"/>
+    <circle cx="74" cy="22" r="2" fill="#6c8aff" stroke="none"/>
+    <circle cx="82" cy="22" r="2" fill="#6c8aff" stroke="none"/>
+  </g>
+</svg>

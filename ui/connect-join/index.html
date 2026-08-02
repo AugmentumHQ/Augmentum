@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Join — Augmentum</title>
+  <link rel="stylesheet" href="connect-join.css">
+</head>
+<body>
+  <main class="cj-wrap">
+    <header class="cj-header">
+      <div class="cj-brand">Augmentum</div>
+      <div class="cj-tagline">Connect</div>
+    </header>
+
+    <!-- State: verifying the invite token -->
+    <section class="cj-card" data-state="loading">
+      <div class="cj-spinner"></div>
+      <div class="cj-title">Checking your invite…</div>
+    </section>
+
+    <!-- State: valid invite — create your account -->
+    <section class="cj-card" data-state="form" hidden>
+      <div class="cj-status-dot cj-ok"></div>
+      <div class="cj-title" data-form-title>You're invited</div>
+      <div class="cj-sub" data-form-sub></div>
+      <form class="cj-form" data-claim-form novalidate>
+        <label class="cj-field">
+          <span>Username</span>
+          <input type="text" name="username" maxlength="32" minlength="3"
+                 autocomplete="username" spellcheck="false" autocapitalize="off"
+                 placeholder="3–32 letters, numbers, _" required data-username
+                 aria-describedby="cj-username-status">
+          <span class="cj-username-status" id="cj-username-status"
+                data-username-status role="status" aria-live="polite" hidden></span>
+        </label>
+        <label class="cj-field">
+          <span>Display name <em>(optional)</em></span>
+          <input type="text" name="display_name" maxlength="48"
+                 autocomplete="nickname" placeholder="How you'll appear" data-display>
+        </label>
+        <label class="cj-field">
+          <span>Password</span>
+          <input type="password" name="password" minlength="8"
+                 autocomplete="new-password" placeholder="At least 8 characters"
+                 required data-password>
+        </label>
+        <label class="cj-field">
+          <span>Confirm password</span>
+          <input type="password" name="confirm" minlength="8"
+                 autocomplete="new-password" placeholder="Re-enter password"
+                 required data-confirm>
+        </label>
+        <fieldset class="cj-field cj-visibility">
+          <legend>Who can find you?</legend>
+          <label class="cj-radio">
+            <input type="radio" name="discoverable" value="private" checked data-vis-private>
+            <span class="cj-radio-text">
+              <strong data-vis-private-title>Only people who invite you</strong>
+              <em>You won't show up when others on this server browse or search. The person who invited you can always reach you.</em>
+            </span>
+          </label>
+          <label class="cj-radio">
+            <input type="radio" name="discoverable" value="public" data-vis-public>
+            <span class="cj-radio-text">
+              <strong data-vis-public-title>Anyone on this server</strong>
+              <em>Other members can find you in the directory and start a conversation. You can change this later in Settings.</em>
+            </span>
+          </label>
+        </fieldset>
+        <div class="cj-error" data-form-error hidden></div>
+        <button type="submit" class="cj-submit" data-submit>Create account &amp; join</button>
+      </form>
+    </section>
+
+    <!-- State: success -->
+    <section class="cj-card" data-state="done" hidden>
+      <div class="cj-status-dot cj-ok"></div>
+      <div class="cj-title">Welcome aboard</div>
+      <div class="cj-sub">Taking you in…</div>
+    </section>
+
+    <!-- State: terminal — invalid / expired / used / revoked -->
+    <section class="cj-card" data-state="terminal" hidden>
+      <div class="cj-status-dot cj-err"></div>
+      <div class="cj-title" data-terminal-title>Invite unavailable</div>
+      <div class="cj-sub" data-terminal-sub></div>
+    </section>
+  </main>
+  <script type="module" src="connect-join.js"></script>
+</body>
+</html>

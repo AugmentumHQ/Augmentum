@@ -1,0 +1,2707 @@
+{
+  "schema": "augmentum.landmark-cross-vrm-stats.v1",
+  "generatedAt": "2026-05-14T15:22:50",
+  "vrmCount": 6,
+  "landmarks": {
+    "ankle_L": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            0.16345178322363635,
+            -1.644716292125957,
+            -0.0714444983328054
+          ],
+          "region": "ankle_L",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            0.11504363614369424,
+            -1.6348100451125334,
+            -0.09498314604960517
+          ],
+          "region": "ankle_L",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            0.11876458301653649,
+            -1.6803391826183254,
+            -0.09718159616621322
+          ],
+          "region": "ankle_L",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            0.16026083371414465,
+            -1.6027458733453892,
+            -0.07041251824952455
+          ],
+          "region": "ankle_L",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            0.1187635446284163,
+            -1.6803173184006623,
+            -0.09717984255534577
+          ],
+          "region": "ankle_L",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            0.11504220691681488,
+            -1.6348648771995722,
+            -0.09498200976687518
+          ],
+          "region": "ankle_L",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          0.1319,
+          -1.6463,
+          -0.0877
+        ],
+        "stddev": [
+          0.0213,
+          0.0273,
+          0.0119
+        ],
+        "maxStddev": 0.0273,
+        "reliability": "medium",
+        "consensusRegion": "ankle_L",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "ankle_R": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -0.16362672862797342,
+            -1.644716881848639,
+            -0.0714444983328054
+          ],
+          "region": "ankle_R",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            -0.11521641728089871,
+            -1.6348100397259382,
+            -0.09498315166009452
+          ],
+          "region": "ankle_R",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            -0.1189398246752881,
+            -1.6803391826183252,
+            -0.09718159616621322
+          ],
+          "region": "ankle_R",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -0.16043336672305827,
+            -1.6027464783183503,
+            -0.07041251137483182
+          ],
+          "region": "ankle_R",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            -0.11893838726661848,
+            -1.6803172450000934,
+            -0.09717979667997638
+          ],
+          "region": "ankle_R",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            -0.11521604984464998,
+            -1.6348648771995722,
+            -0.09498200976687518
+          ],
+          "region": "ankle_R",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -0.1321,
+          -1.6463,
+          -0.0877
+        ],
+        "stddev": [
+          0.0213,
+          0.0273,
+          0.0119
+        ],
+        "maxStddev": 0.0273,
+        "reliability": "medium",
+        "consensusRegion": "ankle_R",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "belly_center": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -8.74571831505818e-05,
+            0.27700813857853346,
+            0.2318577296180537
+          ],
+          "region": "belly",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            -0.16330667156575138,
+            0.3527500513174189,
+            0.1562340987118398
+          ],
+          "region": "belly",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            0.07045201848638702,
+            0.29477468073891805,
+            0.23829632017197752
+          ],
+          "region": "belly",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -8.625962976406524e-05,
+            0.3417091874298619,
+            0.2255530961730019
+          ],
+          "region": "belly",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            -8.74275984172079e-05,
+            0.2769649045412402,
+            0.2322243334396046
+          ],
+          "region": "belly",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            -0.17333746575903902,
+            0.35254311602138344,
+            0.16871106518736012
+          ],
+          "region": "belly",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -0.0444,
+          0.316,
+          0.2088
+        ],
+        "stddev": [
+          0.0911,
+          0.0338,
+          0.0332
+        ],
+        "maxStddev": 0.0911,
+        "reliability": "low",
+        "consensusRegion": "belly",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "cheek_L": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            0.08086206955947736,
+            0.9742775535583527,
+            -0.0114276149501863
+          ],
+          "region": "cheek_L",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            0.07077585568901498,
+            0.9754197433288082,
+            -0.013805042083682221
+          ],
+          "region": "cheek_L",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            0.08069422495234628,
+            0.9741150315113302,
+            -0.01123505284544824
+          ],
+          "region": "cheek_L",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            0.07857541559596228,
+            0.9595521874765551,
+            -0.030109248306597686
+          ],
+          "region": "cheek_L",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            0.08168525854686945,
+            0.9749947436170989,
+            -0.012373523166703657
+          ],
+          "region": "cheek_L",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            0.08085541766679134,
+            0.962338359015757,
+            -0.03251665890390279
+          ],
+          "region": "cheek_L",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          0.0789,
+          0.9701,
+          -0.0186
+        ],
+        "stddev": [
+          0.0038,
+          0.0065,
+          0.0091
+        ],
+        "maxStddev": 0.0091,
+        "reliability": "high",
+        "consensusRegion": "cheek_L",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "cheek_R": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -0.08103697694571721,
+            0.9742775488684001,
+            -0.011427614165273008
+          ],
+          "region": "cheek_R",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            -0.0709486090816147,
+            0.9754197370316523,
+            -0.013805058649647579
+          ],
+          "region": "cheek_R",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            -0.08086945063509682,
+            0.9741150188930359,
+            -0.01123504159653319
+          ],
+          "region": "cheek_R",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -0.07874791506589035,
+            0.9595521757423969,
+            -0.030109242617189304
+          ],
+          "region": "cheek_R",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            -0.08185997146003708,
+            0.9749951187234013,
+            -0.012373367519954279
+          ],
+          "region": "cheek_R",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            -0.08102922555054556,
+            0.9623383288223841,
+            -0.032516643135366737
+          ],
+          "region": "cheek_R",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -0.0791,
+          0.9701,
+          -0.0186
+        ],
+        "stddev": [
+          0.0038,
+          0.0065,
+          0.0091
+        ],
+        "maxStddev": 0.0091,
+        "reliability": "high",
+        "consensusRegion": "cheek_R",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "collarbone_L": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            0.033489131532666014,
+            0.6689310613523961,
+            0.17442792165269713
+          ],
+          "region": "chest_L",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            0.046099251916101584,
+            0.5574172422557628,
+            0.18586361170916788
+          ],
+          "region": "chest_L",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            0.026916418809857,
+            0.6726754286288315,
+            0.1703011712615324
+          ],
+          "region": "chest_L",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            0.047316664838450206,
+            0.6167879728817524,
+            0.1626538099341446
+          ],
+          "region": "chest_L",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            0.027333388093548967,
+            0.6719330570421271,
+            0.17023023961962436
+          ],
+          "region": "chest_L",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            0.04692554207768393,
+            0.5587178150370345,
+            0.1947706220846698
+          ],
+          "region": "chest_L",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          0.038,
+          0.6244,
+          0.1764
+        ],
+        "stddev": [
+          0.009,
+          0.0507,
+          0.0108
+        ],
+        "maxStddev": 0.0507,
+        "reliability": "low",
+        "consensusRegion": "chest_L",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "collarbone_R": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -0.03366404589896719,
+            0.6689310613523961,
+            0.17442792165269713
+          ],
+          "region": "chest_R",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            -0.04627202014025767,
+            0.5574172422557628,
+            0.18586361170916788
+          ],
+          "region": "chest_R",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            -0.02709166046860859,
+            0.6726754286288315,
+            0.1703011712615324
+          ],
+          "region": "chest_R",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -0.04748918409797834,
+            0.6167879728817524,
+            0.1626538099341446
+          ],
+          "region": "chest_R",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            -0.027508243290383386,
+            0.6719330570421271,
+            0.17023023961962436
+          ],
+          "region": "chest_R",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            -0.04709938500551903,
+            0.5587178150370345,
+            0.1947706220846698
+          ],
+          "region": "chest_R",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -0.0382,
+          0.6244,
+          0.1764
+        ],
+        "stddev": [
+          0.009,
+          0.0507,
+          0.0108
+        ],
+        "maxStddev": 0.0507,
+        "reliability": "low",
+        "consensusRegion": "chest_R",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "ear_L": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            0.1917102693450634,
+            1.09285196541592,
+            -0.046429946493959345
+          ],
+          "region": "ear_L",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            0.15679367676329867,
+            1.0748726108928404,
+            -0.045727402239139854
+          ],
+          "region": "ear_L",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            0.20569730257740568,
+            1.0935313280704417,
+            -0.0648486592308553
+          ],
+          "region": "ear_L",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            0.1661726294885431,
+            1.080250718579795,
+            -0.04705548499628708
+          ],
+          "region": "ear_L",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            0.19161715764190437,
+            1.0928564070252804,
+            -0.04634143915740122
+          ],
+          "region": "ear_L",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            0.15679307509184096,
+            1.07481585274394,
+            -0.04572755071271686
+          ],
+          "region": "ear_L",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          0.1781,
+          1.0849,
+          -0.0494
+        ],
+        "stddev": [
+          0.0191,
+          0.0084,
+          0.0069
+        ],
+        "maxStddev": 0.0191,
+        "reliability": "medium",
+        "consensusRegion": "ear_L",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "ear_R": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -0.19179323979405327,
+            1.0931521321798587,
+            -0.04622124877119803
+          ],
+          "region": "ear_R",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            -0.14886472965147718,
+            1.081878417718275,
+            -0.05839580062210732
+          ],
+          "region": "ear_R",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            -0.17722682723473912,
+            1.0857435124625743,
+            -0.04639644226731882
+          ],
+          "region": "ear_R",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -0.15696637667894053,
+            1.0748853783817596,
+            -0.045727380292952646
+          ],
+          "region": "ear_R",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            -0.19164504398261195,
+            1.0931587879288946,
+            -0.046080283723163036
+          ],
+          "region": "ear_R",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            -0.14886520600533945,
+            1.0818216566970476,
+            -0.05839599202456752
+          ],
+          "region": "ear_R",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -0.1692,
+          1.0851,
+          -0.0502
+        ],
+        "stddev": [
+          0.0185,
+          0.0065,
+          0.0058
+        ],
+        "maxStddev": 0.0185,
+        "reliability": "medium",
+        "consensusRegion": "ear_R",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "elbow_L": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            0.6741120850977089,
+            0.7939162355536936,
+            -0.06536083035434462
+          ],
+          "region": "elbow_L",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            0.6683630493774175,
+            0.6651222434854585,
+            -0.08320887631551538
+          ],
+          "region": "elbow_L",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            0.6741118563846328,
+            0.7938994434521881,
+            -0.06536100464872203
+          ],
+          "region": "elbow_L",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            0.7024230857875905,
+            0.7953557062618788,
+            0.01804459125522455
+          ],
+          "region": "lower_arm_L",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            0.6820138570673945,
+            0.8313906933579084,
+            -0.06147008081318902
+          ],
+          "region": "elbow_L",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            0.6740583582443653,
+            0.6524456371851083,
+            -0.08618548877563822
+          ],
+          "region": "lower_arm_L",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          0.6792,
+          0.7554,
+          -0.0573
+        ],
+        "stddev": [
+          0.0111,
+          0.0696,
+          0.035
+        ],
+        "maxStddev": 0.0696,
+        "reliability": "low",
+        "consensusRegion": "elbow_L",
+        "regionAgreement": 0.667,
+        "sampleSize": 6
+      }
+    },
+    "elbow_R": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -0.6742869994640102,
+            0.7939162355536936,
+            -0.06536083035434463
+          ],
+          "region": "elbow_R",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            -0.6689848414898889,
+            0.6654711078170061,
+            -0.0831113812447401
+          ],
+          "region": "elbow_R",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            -0.6742870980433845,
+            0.7938994434521881,
+            -0.06536100464872205
+          ],
+          "region": "elbow_R",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -0.7025956050471187,
+            0.7953557062618788,
+            0.01804459125522455
+          ],
+          "region": "lower_arm_R",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            -0.6821887122642288,
+            0.8313906933579084,
+            -0.06147008081318902
+          ],
+          "region": "elbow_R",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            -0.6746830615130538,
+            0.6528175893554339,
+            -0.08611671271431237
+          ],
+          "region": "lower_arm_R",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -0.6795,
+          0.7555,
+          -0.0572
+        ],
+        "stddev": [
+          0.011,
+          0.0695,
+          0.0349
+        ],
+        "maxStddev": 0.0695,
+        "reliability": "low",
+        "consensusRegion": "elbow_R",
+        "regionAgreement": 0.667,
+        "sampleSize": 6
+      }
+    },
+    "eye_inner_L": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            0.059874451026936844,
+            1.085491118671354,
+            0.11337544373685604
+          ],
+          "region": "eye_L",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            0.06314877255669063,
+            1.0714374320641964,
+            0.09537323593504556
+          ],
+          "region": "eye_L",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            0.06383600511797216,
+            1.0823598699651757,
+            0.11177748844476193
+          ],
+          "region": "eye_L",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            0.05535832979410598,
+            1.071340016840428,
+            0.09034635544000863
+          ],
+          "region": "eye_L",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            0.0458161155726355,
+            1.0804285773811193,
+            0.13828623785304578
+          ],
+          "region": "eye_L",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            0.05769951479058987,
+            1.0734820529145204,
+            0.08922423725921912
+          ],
+          "region": "eye_L",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          0.0576,
+          1.0774,
+          0.1064
+        ],
+        "stddev": [
+          0.006,
+          0.0056,
+          0.0172
+        ],
+        "maxStddev": 0.0172,
+        "reliability": "medium",
+        "consensusRegion": "eye_L",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "eye_inner_R": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -0.060049446868082224,
+            1.085491118671354,
+            0.1133754825344009
+          ],
+          "region": "eye_R",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            -0.0633218410242391,
+            1.0714380384094944,
+            0.09537304172555515
+          ],
+          "region": "eye_R",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            -0.06401135540984862,
+            1.0823596216608902,
+            0.11177744964721734
+          ],
+          "region": "eye_R",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -0.05553089030179054,
+            1.071340016840428,
+            0.09034636918939411
+          ],
+          "region": "eye_R",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            -0.045990959130207676,
+            1.0804285773811193,
+            0.1382862533720621
+          ],
+          "region": "eye_R",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            -0.05787343334001352,
+            1.0734827128847477,
+            0.08922430600611779
+          ],
+          "region": "eye_R",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -0.0578,
+          1.0774,
+          0.1064
+        ],
+        "stddev": [
+          0.006,
+          0.0056,
+          0.0172
+        ],
+        "maxStddev": 0.0172,
+        "reliability": "medium",
+        "consensusRegion": "eye_R",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "eye_outer_L": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            0.08069618549356446,
+            1.0768250507459656,
+            0.1060616719972547
+          ],
+          "region": "eye_L",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            0.06968229395362792,
+            1.0731549276769579,
+            0.09039654866629425
+          ],
+          "region": "eye_L",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            0.08384056227762851,
+            1.0750736290138538,
+            0.10486336250317535
+          ],
+          "region": "eye_L",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            0.07365088346495031,
+            1.0677471374228906,
+            0.08203457005728891
+          ],
+          "region": "eye_L",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            0.08633278315465401,
+            1.0864608810992293,
+            0.12239054397298246
+          ],
+          "region": "eye_L",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            0.07299525289192856,
+            1.0720045995656204,
+            0.08198567005656261
+          ],
+          "region": "eye_L",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          0.0779,
+          1.0752,
+          0.098
+        ],
+        "stddev": [
+          0.0061,
+          0.0058,
+          0.0146
+        ],
+        "maxStddev": 0.0146,
+        "reliability": "high",
+        "consensusRegion": "eye_L",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "eye_outer_R": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -0.08087119297397329,
+            1.0768250507459656,
+            0.10606173407332649
+          ],
+          "region": "eye_R",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            -0.06985510342594012,
+            1.0731555876474559,
+            0.09039655554098693
+          ],
+          "region": "eye_R",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            -0.08401586601245147,
+            1.0750738773181392,
+            0.10486334698415752
+          ],
+          "region": "eye_R",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -0.07382345084732761,
+            1.0677471374228906,
+            0.08203457005728891
+          ],
+          "region": "eye_R",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            -0.08650762283247211,
+            1.0864608810992293,
+            0.12239055173249062
+          ],
+          "region": "eye_R",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            -0.07316920581480155,
+            1.0720052595358478,
+            0.08198572505408155
+          ],
+          "region": "eye_R",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -0.078,
+          1.0752,
+          0.098
+        ],
+        "stddev": [
+          0.0061,
+          0.0058,
+          0.0146
+        ],
+        "maxStddev": 0.0146,
+        "reliability": "high",
+        "consensusRegion": "eye_R",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "forehead_center": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -0.0233426628980796,
+            1.0853478470976756,
+            0.1405196028361972
+          ],
+          "region": "forehead",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            -0.03608635514879172,
+            1.0771433493859677,
+            0.11608832706379019
+          ],
+          "region": "forehead",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            -0.023388097298220493,
+            1.084849368730782,
+            0.14058260903790987
+          ],
+          "region": "forehead",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -0.03914048505260159,
+            1.0737288900705917,
+            0.11240091284443916
+          ],
+          "region": "forehead",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            0.014046719228567204,
+            1.0863508823115813,
+            0.14299237955088503
+          ],
+          "region": "forehead",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            0.025897742561970718,
+            1.0748726101834896,
+            0.1202594746928724
+          ],
+          "region": "forehead",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -0.0137,
+          1.0804,
+          0.1288
+        ],
+        "stddev": [
+          0.0247,
+          0.0052,
+          0.0128
+        ],
+        "maxStddev": 0.0247,
+        "reliability": "medium",
+        "consensusRegion": "forehead",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "head_back": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -0.000659900780358099,
+            1.02497568577232,
+            -0.21818099051165787
+          ],
+          "region": "head_back",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            0.012427896016871607,
+            0.9940735278537942,
+            -0.2063114792027464
+          ],
+          "region": "head_back",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            0.019438638423514107,
+            0.9908113621765032,
+            -0.2683445817503819
+          ],
+          "region": "head_back",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            0.010293615333471796,
+            0.991965219806911,
+            -0.2085093323890836
+          ],
+          "region": "head_back",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            -0.0006598715268438732,
+            1.0249786893431139,
+            -0.2181810996245543
+          ],
+          "region": "head_back",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            0.012427354519393188,
+            0.9940165952170564,
+            -0.2063116766269943
+          ],
+          "region": "head_back",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          0.0089,
+          1.0035,
+          -0.221
+        ],
+        "stddev": [
+          0.0073,
+          0.0153,
+          0.0218
+        ],
+        "maxStddev": 0.0218,
+        "reliability": "medium",
+        "consensusRegion": "head_back",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "head_top": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -0.008539229551041586,
+            1.292134414270676,
+            -0.1326616301963199
+          ],
+          "region": "head_top",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            0.15342133236735989,
+            1.156398948682442,
+            -0.033670237959001426
+          ],
+          "region": "head_top",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            0.09803717659824504,
+            1.135102197037518,
+            -0.14257748340013787
+          ],
+          "region": "head_top",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -0.15357143486189914,
+            1.1355748045471925,
+            -0.09662134328819058
+          ],
+          "region": "head_top",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            -0.00853909267308122,
+            1.2921375059191345,
+            -0.13266150157808565
+          ],
+          "region": "head_top",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            0.15342073227521655,
+            1.1563420145640715,
+            -0.033670443043240864
+          ],
+          "region": "head_top",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          0.039,
+          1.1946,
+          -0.0953
+        ],
+        "stddev": [
+          0.109,
+          0.0695,
+          0.0459
+        ],
+        "maxStddev": 0.109,
+        "reliability": "low",
+        "consensusRegion": "head_top",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "hip_L": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            0.2975624613440506,
+            -0.06253809575510415,
+            0.01379315415144679
+          ],
+          "region": "hip_L",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            0.2707878121756724,
+            -0.06111495821988991,
+            0.012399576774503441
+          ],
+          "region": "hip_L",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            0.3223248097947207,
+            -0.05320013143402163,
+            -0.020384047107690123
+          ],
+          "region": "hip_L",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            0.2707879400732053,
+            -0.061101947009722775,
+            0.012399634358390204
+          ],
+          "region": "hip_L",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            0.30822334203737795,
+            -0.05407111694637698,
+            -0.015309554699806003
+          ],
+          "region": "hip_L",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            0.2707871616523229,
+            -0.0611716185958361,
+            0.012399243168793072
+          ],
+          "region": "hip_L",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          0.2901,
+          -0.0589,
+          0.0025
+        ],
+        "stddev": [
+          0.0206,
+          0.0037,
+          0.0145
+        ],
+        "maxStddev": 0.0206,
+        "reliability": "medium",
+        "consensusRegion": "hip_L",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "hip_R": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -0.29239239542964424,
+            -0.06279551407209065,
+            -0.020694657606128063
+          ],
+          "region": "hip_R",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            -0.26712680871275196,
+            -0.06052322673285989,
+            -0.0172645347669011
+          ],
+          "region": "hip_R",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            -0.3217413316723106,
+            -0.0635817863244164,
+            -0.028351131243545623
+          ],
+          "region": "hip_R",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -0.2671266797867705,
+            -0.060510278197710696,
+            -0.017264473326209853
+          ],
+          "region": "hip_R",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            -0.3071048754985782,
+            -0.06319509934273684,
+            -0.024427771107679484
+          ],
+          "region": "hip_R",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            -0.2671272134536436,
+            -0.06057989555258836,
+            -0.017264989082272975
+          ],
+          "region": "hip_R",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -0.2871,
+          -0.0619,
+          -0.0209
+        ],
+        "stddev": [
+          0.0217,
+          0.0013,
+          0.0042
+        ],
+        "maxStddev": 0.0217,
+        "reliability": "medium",
+        "consensusRegion": "hip_R",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "knee_L": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            0.10197093076435126,
+            -0.8349982243469658,
+            0.011195213001647037
+          ],
+          "region": "knee_L",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            0.0983943725393201,
+            -0.8133797512608266,
+            0.01878859784055771
+          ],
+          "region": "knee_L",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            0.0998664868675401,
+            -0.8421354345198038,
+            0.017072447075436797
+          ],
+          "region": "knee_L",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            0.09839450186062641,
+            -0.813366961084511,
+            0.01878866976154169
+          ],
+          "region": "knee_L",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            0.10149119463293124,
+            -0.83838395701095,
+            0.01577841516883872
+          ],
+          "region": "knee_L",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            0.0983937787452368,
+            -0.813436390746114,
+            0.018788174800506516
+          ],
+          "region": "knee_L",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          0.0998,
+          -0.826,
+          0.0167
+        ],
+        "stddev": [
+          0.0015,
+          0.0127,
+          0.0027
+        ],
+        "maxStddev": 0.0127,
+        "reliability": "high",
+        "consensusRegion": "knee_L",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "knee_R": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -0.10214584513065243,
+            -0.8349982243469658,
+            0.011195213001647037
+          ],
+          "region": "knee_R",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            -0.09856714076347617,
+            -0.8133797512608264,
+            0.018788597840557714
+          ],
+          "region": "knee_R",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            -0.10004172852629167,
+            -0.8421354345198038,
+            0.017072447075436793
+          ],
+          "region": "knee_R",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -0.09856702112015456,
+            -0.813366961084511,
+            0.018788669761541688
+          ],
+          "region": "knee_R",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            -0.10166604982976565,
+            -0.83838395701095,
+            0.015778415168838718
+          ],
+          "region": "knee_R",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            -0.0985676216730719,
+            -0.8134363907461137,
+            0.018788174800506516
+          ],
+          "region": "knee_R",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -0.0999,
+          -0.826,
+          0.0167
+        ],
+        "stddev": [
+          0.0015,
+          0.0127,
+          0.0027
+        ],
+        "maxStddev": 0.0127,
+        "reliability": "high",
+        "consensusRegion": "knee_R",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "knuckle_L": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            1.2601011104397244,
+            0.7269062496901029,
+            -0.051007656652846615
+          ],
+          "region": "hand_L",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            1.2550689434348372,
+            0.7569275958759178,
+            -0.04288051204815455
+          ],
+          "region": "hand_L",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            1.2601006654197349,
+            0.7268895735205132,
+            -0.051007981241072926
+          ],
+          "region": "hand_L",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            1.255069115503448,
+            0.7569407752672392,
+            -0.04288035465278062
+          ],
+          "region": "hand_L",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            1.2601007236102846,
+            0.7269097282899517,
+            -0.05100784712303551
+          ],
+          "region": "hand_L",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            1.2550679166115644,
+            0.7568707311763891,
+            -0.04288084113145393
+          ],
+          "region": "hand_L",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          1.2576,
+          0.7419,
+          -0.0469
+        ],
+        "stddev": [
+          0.0025,
+          0.015,
+          0.0041
+        ],
+        "maxStddev": 0.015,
+        "reliability": "medium",
+        "consensusRegion": "hand_L",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "knuckle_R": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -1.2602760248060252,
+            0.7269062496901029,
+            -0.051007656652846615
+          ],
+          "region": "hand_R",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            -1.2552417116589936,
+            0.7569275958759178,
+            -0.042880512048154386
+          ],
+          "region": "hand_R",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            -1.2602759070784868,
+            0.7268895735205132,
+            -0.05100798124107293
+          ],
+          "region": "hand_R",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -1.255241634762976,
+            0.7569407752672392,
+            -0.04288035465278062
+          ],
+          "region": "hand_R",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            -1.2602755788071192,
+            0.7269097282899517,
+            -0.051007847123035514
+          ],
+          "region": "hand_R",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            -1.2552417595393994,
+            0.7568707311763891,
+            -0.04288084113145393
+          ],
+          "region": "hand_R",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -1.2578,
+          0.7419,
+          -0.0469
+        ],
+        "stddev": [
+          0.0025,
+          0.015,
+          0.0041
+        ],
+        "maxStddev": 0.015,
+        "reliability": "medium",
+        "consensusRegion": "hand_R",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "mouth_center": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            3.0183286358391984e-05,
+            0.9917327087877174,
+            0.07919824083407075
+          ],
+          "region": "mouth",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            -5.020986677061862e-06,
+            0.9915984894162919,
+            0.06550322802825766
+          ],
+          "region": "mouth",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            -0.036332454557849975,
+            0.9435278843437247,
+            0.024004738297266227
+          ],
+          "region": "mouth",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            0.0006747244545448378,
+            0.9849350502916445,
+            0.05416746861678396
+          ],
+          "region": "mouth",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            3.272155980556507e-05,
+            0.9917363303872414,
+            0.07919826644967858
+          ],
+          "region": "mouth",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            0.0007820756757419813,
+            0.9848703502934456,
+            0.05416645284520111
+          ],
+          "region": "mouth",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -0.0058,
+          0.9814,
+          0.0594
+        ],
+        "stddev": [
+          0.0137,
+          0.0172,
+          0.0188
+        ],
+        "maxStddev": 0.0188,
+        "reliability": "medium",
+        "consensusRegion": "mouth",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "navel": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            0.0068529919200388595,
+            0.05041230025855218,
+            0.2065870881366445
+          ],
+          "region": "navel",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            0.011421874921480136,
+            0.055965746997682135,
+            0.19257315389850546
+          ],
+          "region": "navel",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            0.007270656342426622,
+            0.05247530155797567,
+            0.21903167171674776
+          ],
+          "region": "navel",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -0.0115945174437337,
+            0.055978699552847955,
+            0.19257322798454182
+          ],
+          "region": "navel",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            0.0070993558513029655,
+            0.0511932579361235,
+            0.212816411958847
+          ],
+          "region": "navel",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            0.011421327375022087,
+            0.05590895404283462,
+            0.19257263455971002
+          ],
+          "region": "navel",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          0.0054,
+          0.0537,
+          0.2027
+        ],
+        "stddev": [
+          0.0079,
+          0.0024,
+          0.0107
+        ],
+        "maxStddev": 0.0107,
+        "reliability": "high",
+        "consensusRegion": "navel",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "neck_back": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -4.105188655841535e-05,
+            0.833417525150523,
+            -0.148450579817054
+          ],
+          "region": "neck",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            -8.638404086161875e-05,
+            0.8292311515920239,
+            -0.14026600709858225
+          ],
+          "region": "neck",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            -5.581372451474516e-06,
+            0.833638661283968,
+            -0.15023609587416065
+          ],
+          "region": "neck",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -8.625972545312187e-05,
+            0.8183071060560397,
+            -0.14073508395755618
+          ],
+          "region": "neck",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            -1.7637309860558965e-05,
+            0.8335202966854804,
+            -0.14927093817872666
+          ],
+          "region": "neck",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            -8.692282142676007e-05,
+            0.8177067547155474,
+            -0.14032554846421288
+          ],
+          "region": "neck",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -0.0001,
+          0.8276,
+          -0.1449
+        ],
+        "stddev": [
+          0.0,
+          0.007,
+          0.0045
+        ],
+        "maxStddev": 0.007,
+        "reliability": "high",
+        "consensusRegion": "neck",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "neck_front": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -0.04401557261602222,
+            0.823478965380808,
+            0.004934849346549653
+          ],
+          "region": "neck",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            -0.04126455929697904,
+            0.8376261963155498,
+            0.014981627062263846
+          ],
+          "region": "neck",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            -0.04401571385629094,
+            0.823462050598219,
+            0.004934855117930348
+          ],
+          "region": "neck",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -0.04126443856075782,
+            0.8376389620256388,
+            0.014981707898524467
+          ],
+          "region": "neck",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            -0.04401554266943529,
+            0.8234821354192913,
+            0.004934937756716777
+          ],
+          "region": "neck",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            -0.04126507976608347,
+            0.837568875465627,
+            0.014981286987222509
+          ],
+          "region": "neck",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -0.0426,
+          0.8305,
+          0.01
+        ],
+        "stddev": [
+          0.0014,
+          0.0071,
+          0.005
+        ],
+        "maxStddev": 0.0071,
+        "reliability": "high",
+        "consensusRegion": "neck",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "nose_tip": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -6.231577544390946e-05,
+            1.016260903765953,
+            0.10746876583540949
+          ],
+          "region": "forehead",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            0.0015860629274343692,
+            1.0644654429703888,
+            0.12550116293657634
+          ],
+          "region": "forehead",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            -6.247813174904541e-05,
+            1.0162431429739218,
+            0.10746858658480463
+          ],
+          "region": "forehead",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -0.025140199881706456,
+            1.0550363956660957,
+            0.12396081739971955
+          ],
+          "region": "forehead",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            0.0013740081799612474,
+            1.0822427610516512,
+            0.14510368918195599
+          ],
+          "region": "forehead",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            -0.024232530705561185,
+            1.0594056761992559,
+            0.1238256576124447
+          ],
+          "region": "forehead",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -0.0078,
+          1.0489,
+          0.1222
+        ],
+        "stddev": [
+          0.012,
+          0.0246,
+          0.0127
+        ],
+        "maxStddev": 0.0246,
+        "reliability": "medium",
+        "consensusRegion": "forehead",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "shoulder_L": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            0.07827500201133437,
+            0.8047824619837803,
+            -0.006849763817211515
+          ],
+          "region": "shoulder_L",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            0.07705957479837837,
+            0.7999086623700756,
+            0.0023311129774862063
+          ],
+          "region": "shoulder_L",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            0.07827486036730813,
+            0.8047657009444126,
+            -0.00684985902048938
+          ],
+          "region": "shoulder_L",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            0.07705969985911856,
+            0.7999214277973656,
+            0.002331190066715081
+          ],
+          "region": "shoulder_L",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            0.07827509565450802,
+            0.8047856202210509,
+            -0.006849713037413653
+          ],
+          "region": "shoulder_L",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            0.07705899894259927,
+            0.7998515769741275,
+            0.002330760687499605
+          ],
+          "region": "shoulder_L",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          0.0777,
+          0.8023,
+          -0.0023
+        ],
+        "stddev": [
+          0.0006,
+          0.0024,
+          0.0046
+        ],
+        "maxStddev": 0.0046,
+        "reliability": "high",
+        "consensusRegion": "shoulder_L",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "shoulder_R": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -0.07844991637763557,
+            0.8047824619837803,
+            -0.006849763817211533
+          ],
+          "region": "shoulder_R",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            -0.07723234302253446,
+            0.7999086623700756,
+            0.0023311129774862063
+          ],
+          "region": "shoulder_R",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            -0.07845010202605975,
+            0.8047657009444126,
+            -0.0068498590204894025
+          ],
+          "region": "shoulder_R",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -0.0772322191186467,
+            0.7999214277973656,
+            0.002331190066715081
+          ],
+          "region": "shoulder_R",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            -0.07844995085134246,
+            0.8047856202210509,
+            -0.006849713037413673
+          ],
+          "region": "shoulder_R",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            -0.07723284187043436,
+            0.7998515769741275,
+            0.002330760687499605
+          ],
+          "region": "shoulder_R",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -0.0778,
+          0.8023,
+          -0.0023
+        ],
+        "stddev": [
+          0.0006,
+          0.0024,
+          0.0046
+        ],
+        "maxStddev": 0.0046,
+        "reliability": "high",
+        "consensusRegion": "shoulder_R",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "sternum": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -8.74571831505818e-05,
+            0.309415820918581,
+            0.23157984608271087
+          ],
+          "region": "sternum",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            0.007837300290404596,
+            0.33610861923933644,
+            0.20240863453043628
+          ],
+          "region": "sternum",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            0.00010346187066159212,
+            0.3368744490863661,
+            0.2310273422163202
+          ],
+          "region": "sternum",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -9.00051025589096e-05,
+            0.32898835173132757,
+            0.19611936608433161
+          ],
+          "region": "sternum",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            7.399284311573152e-05,
+            0.33657919312559764,
+            0.2309772771648031
+          ],
+          "region": "sternum",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            -9.066692724391959e-05,
+            0.3289184512855157,
+            0.19611884929323153
+          ],
+          "region": "sternum",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          0.0013,
+          0.3295,
+          0.2147
+        ],
+        "stddev": [
+          0.0029,
+          0.0096,
+          0.0166
+        ],
+        "maxStddev": 0.0166,
+        "reliability": "medium",
+        "consensusRegion": "sternum",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "temple_L": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            0.18804667980202577,
+            1.0945855114920549,
+            -0.0013927782715534812
+          ],
+          "region": "temple_L",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            0.16534252211160733,
+            1.0728759801465098,
+            -0.011578797973617463
+          ],
+          "region": "temple_L",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            0.1951933174293804,
+            1.0928412904612637,
+            0.0038945904815880614
+          ],
+          "region": "temple_L",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            0.17423242300894914,
+            1.0811982162317255,
+            -0.023527691250128876
+          ],
+          "region": "temple_L",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            0.20176503447876323,
+            1.0839458072389865,
+            -0.0072551340429002
+          ],
+          "region": "temple_L",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            0.15008666388248243,
+            1.075589557840438,
+            -0.015399024522798566
+          ],
+          "region": "temple_L",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          0.1791,
+          1.0835,
+          -0.0092
+        ],
+        "stddev": [
+          0.0178,
+          0.0081,
+          0.009
+        ],
+        "maxStddev": 0.0178,
+        "reliability": "medium",
+        "consensusRegion": "temple_L",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "temple_R": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -0.18840726369903407,
+            1.094916252802522,
+            -0.0014024615325402081
+          ],
+          "region": "temple_R",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            -0.14947769100079242,
+            1.0769895762599557,
+            0.006168294669904862
+          ],
+          "region": "temple_R",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            -0.17691207051493543,
+            1.0862053584334528,
+            -0.01079062132415122
+          ],
+          "region": "temple_R",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -0.17571600117116767,
+            1.0773483882984105,
+            -0.02001231024382792
+          ],
+          "region": "temple_R",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            -0.20072585254821013,
+            1.0838757854373686,
+            -0.007893761448044916
+          ],
+          "region": "temple_R",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            -0.15026050681031752,
+            1.075589557840438,
+            -0.015399024522798566
+          ],
+          "region": "temple_R",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -0.1736,
+          1.0825,
+          -0.0082
+        ],
+        "stddev": [
+          0.0187,
+          0.0068,
+          0.0087
+        ],
+        "maxStddev": 0.0187,
+        "reliability": "medium",
+        "consensusRegion": "temple_R",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "wrist_L": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            1.135785717532006,
+            0.7795256739037741,
+            -0.04463502388772985
+          ],
+          "region": "hand_L",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            1.1400748278202681,
+            0.7565502783918813,
+            -0.04486709794636704
+          ],
+          "region": "hand_L",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            1.135785540396513,
+            0.7795088855615733,
+            -0.044635087302857944
+          ],
+          "region": "hand_L",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            1.1400749602994513,
+            0.7565632613149854,
+            -0.044866996829049405
+          ],
+          "region": "hand_L",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            1.1357855767290603,
+            0.7795295095009311,
+            -0.044634337763018166
+          ],
+          "region": "hand_L",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            1.1290232372999323,
+            0.7469130114514505,
+            -0.045454217054274944
+          ],
+          "region": "hand_L",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          1.1361,
+          0.7664,
+          -0.0448
+        ],
+        "stddev": [
+          0.0037,
+          0.0135,
+          0.0003
+        ],
+        "maxStddev": 0.0135,
+        "reliability": "high",
+        "consensusRegion": "hand_L",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    },
+    "wrist_R": {
+      "perVRM": {
+        "becca": {
+          "normalized": [
+            -1.1249626477658083,
+            0.7283123316754958,
+            -0.0634361511308024
+          ],
+          "region": "hand_R",
+          "skeletonHeight": 0.4800935615128268
+        },
+        "danny": {
+          "normalized": [
+            -1.1416918995249525,
+            0.7582019496716487,
+            -0.051097347051034234
+          ],
+          "region": "hand_R",
+          "skeletonHeight": 0.5418846293693997
+        },
+        "lise": {
+          "normalized": [
+            -1.12496279780501,
+            0.7282955338455628,
+            -0.06343620401165104
+          ],
+          "region": "hand_R",
+          "skeletonHeight": 0.48009356483653787
+        },
+        "louis": {
+          "normalized": [
+            -1.1416916343522172,
+            0.7582149374681378,
+            -0.05109709279940927
+          ],
+          "region": "hand_R",
+          "skeletonHeight": 0.5418846253064484
+        },
+        "roxanne": {
+          "normalized": [
+            -1.1249625249997484,
+            0.7283161811704462,
+            -0.06343646618876299
+          ],
+          "region": "hand_R",
+          "skeletonHeight": 0.4800936119400132
+        },
+        "vance": {
+          "normalized": [
+            -1.1291672601373535,
+            0.7469520207801644,
+            -0.04543611122467688
+          ],
+          "region": "hand_R",
+          "skeletonHeight": 0.5418848515380206
+        }
+      },
+      "stats": {
+        "mean": [
+          -1.1312,
+          0.7414,
+          -0.0563
+        ],
+        "stddev": [
+          0.0075,
+          0.0136,
+          0.0074
+        ],
+        "maxStddev": 0.0136,
+        "reliability": "high",
+        "consensusRegion": "hand_R",
+        "regionAgreement": 1.0,
+        "sampleSize": 6
+      }
+    }
+  }
+}

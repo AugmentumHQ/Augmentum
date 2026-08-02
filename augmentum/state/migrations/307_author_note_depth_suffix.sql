@@ -1,0 +1,17 @@
+-- Author's Note depth: old shipped default (4) → suffix-safe default (1).
+--
+-- Depth >= 2 anchors the note N non-system messages from the END, so it
+-- slides through HISTORY as the conversation grows — mutating a
+-- previously-clean message every turn. That breaks the stable-prefix
+-- contract: every KV reuse mechanism (in-slot prefix match, RAM
+-- prompt-cache restore, hybrid-model checkpoint validity) is bounded by
+-- the first divergent token, so a sliding note forfeits ALL prefix reuse
+-- for the session (measured: full re-prefill per narrative turn, 12-15
+-- min at 61k tokens on Qwen3.5-122B — 2026-07-02 trace).
+--
+-- Only rows still at the old default value are rewritten: 4 was never a
+-- deliberate user choice for these rows, it was our shipped default.
+-- Any other stored depth (2, 3, 5, ...) is an explicit user setting and
+-- is left untouched — deep anchoring stays available, it just carries a
+-- visible reuse cost (kv_prefix_stability contract=violated telemetry).
+UPDATE prompt_presets SET author_note_depth = 1 WHERE author_note_depth = 4;

@@ -1,0 +1,340 @@
+{
+  "lang": "fr",
+  "version": "1.0.0",
+  "name": "French Skill Assessment",
+  "credits": "Can-do statements adapted from the CEFR Companion Volume (2020, Council of Europe) global-scale and self-assessment grids, cross-referenced with DELF A1/A2 exam descriptors (France Education International / CIEP) and the Niveau A1/A2 pour le français — Référentiel (Beacco / Conseil de l'Europe). LLM-grader prompts hand-tuned to surface the production-grammar gaps that vocab-only recognition counts cannot see: verb conjugation accuracy, gender agreement, passé composé auxiliary choice (avoir vs être), negation completeness (ne…pas), and liaison in connected speech.",
+  "license": "CC BY 4.0",
+  "level_system": "cefr",
+  "skills": ["reading", "writing", "listening", "speaking"],
+  "vocab_thresholds": {
+    "A1": {"settled_minimum": 450, "rationale": "~60% of the curated DELF A1 lexicon (the réferentiel A1 inventory clusters at ~750 productive items). Below 450 settled, the learner cannot perform A1 skill tasks without dictionary lookup, so any skill-task pass is unstable."},
+    "A2": {"settled_minimum": 900, "rationale": "~60% of the combined A1+A2 lexical target (~1500 productive items per the Beacco référentiel A2). Aligns with the DELF A2 oral and written production demands."},
+    "B1": {"settled_minimum": 1800, "rationale": "Threshold-level lexicon for handling 'most situations likely to arise while travelling' per the CEFR Companion Volume, and the lower bound used by the DELF B1 réferentiel for productive vocabulary."}
+  },
+  "levels": [
+    {
+      "code": "A1",
+      "name": "Introductif / Découverte (DELF A1)",
+      "global_descriptor": "Can understand and use familiar everyday expressions and very basic phrases aimed at the satisfaction of needs of a concrete type. Can introduce themselves and others and can ask and answer questions about personal details such as where they live, people they know and things they have. Can interact in a simple way provided the other person talks slowly and clearly and is prepared to help. (CEFR Companion Volume 2020, global scale; DELF A1 général exam descriptors.)",
+      "can_do": {
+        "reading": [
+          {
+            "id": "fr-a1-r-01",
+            "statement": "Can recognise familiar names, words and very simple phrases on signs, notices, menus and short messages.",
+            "evidence": "In Mirror (L2→L1 direction) the learner has correctly assembled the English meaning for at least 6 distinct A1-vocab Tatoeba sentences (≤8 words each) across separate sessions, without using the gloss tooltip."
+          },
+          {
+            "id": "fr-a1-r-02",
+            "statement": "Can read short, simple texts containing the highest-frequency vocabulary, including everyday items like cafés, transport, weather and family.",
+            "evidence": "Story Weaver: completed at least 2 full 5-chapter stories at A1 vocab band with ≥70% correct branch selections on first try."
+          },
+          {
+            "id": "fr-a1-r-03",
+            "statement": "Can pick out specific predictable information (price in euros, time, day, place) from simple everyday material such as posters, leaflets and tickets.",
+            "evidence": "Bubble Pop: at least 3 sessions of ≥75% accuracy on the numbers / time / price word families (units fr-a1 numbers, fr-a1 time, plus money lexicon when present)."
+          },
+          {
+            "id": "fr-a1-r-04",
+            "statement": "Can understand short, simple personal messages (postcards, SMS, greeting cards) when they contain familiar names and high-frequency vocabulary.",
+            "evidence": "Companion 'read and reply' task on an A1 postcard or short message: the learner correctly answered ≥3 comprehension questions about the sender, the place and the activity described."
+          }
+        ],
+        "writing": [
+          {
+            "id": "fr-a1-w-01",
+            "statement": "Can write a short, simple postcard or message — for example, sending holiday greetings or introducing themselves.",
+            "evidence": "Companion 'compose' affordance produced ≥3 grammatical French sentences (sujet + verbe + complément) on a personal-info topic, graded A1-passing by the writing_a1 LLM rubric."
+          },
+          {
+            "id": "fr-a1-w-02",
+            "statement": "Can fill in personal-detail forms — name, nationality, address, age, profession — and write short notes about themselves.",
+            "evidence": "Companion guided form-fill task: learner produced ≥5 personal-detail sentences. Gender agreement on nationality adjective (e.g. 'française' vs 'français') and present-tense conjugation of 'être' marked correct by the LLM grader."
+          },
+          {
+            "id": "fr-a1-w-03",
+            "statement": "Can link words or groups of words with very basic linear connectors ('et', 'mais', 'parce que').",
+            "evidence": "At least 3 of the learner's Companion writing turns contain a connector ('et' / 'mais' / 'parce que' / 'aussi') used correctly between two clauses."
+          },
+          {
+            "id": "fr-a1-w-04",
+            "statement": "Can write a few simple sentences about themselves and imaginary people, where they live and what they do, using complete negation when needed (ne + verbe + pas).",
+            "evidence": "Companion writing turn produced ≥4 sentences spanning ≥2 of {name, origin, residence, profession}, with at least one correctly-formed negative sentence (both 'ne' and 'pas' present) verified by writing_a1's negation check."
+          }
+        ],
+        "listening": [
+          {
+            "id": "fr-a1-l-01",
+            "statement": "Can understand familiar words and very basic phrases about themselves, family and immediate concrete surroundings, when people speak slowly and clearly.",
+            "evidence": "Echo Chamber: at least 3 separate sessions scoring ≥6/10 at the default (slow) TTS rate on the A1 sentence band."
+          },
+          {
+            "id": "fr-a1-l-02",
+            "statement": "Can follow speech that is very slow and carefully articulated, with long pauses for them to assimilate meaning.",
+            "evidence": "Echo Chamber: at least one session of ≥8/10 with no replay-at-slower-speed used (i.e. picked the right gloss on first hearing)."
+          },
+          {
+            "id": "fr-a1-l-03",
+            "statement": "Can recognise numbers, prices in euros and times spoken aloud, including times of day and days of the week.",
+            "evidence": "Bubble Pop voice band on numbers / time / money: ≥75% recognition over 2 sessions."
+          },
+          {
+            "id": "fr-a1-l-04",
+            "statement": "Can grasp short, simple directions to a familiar place, when slowly and clearly delivered.",
+            "evidence": "Echo Chamber 'directions' mini-band OR Companion voice mode where the learner correctly identified the destination and one turn instruction ('à droite', 'à gauche', 'tout droit') from a 2-3 sentence spoken passage."
+          }
+        ],
+        "speaking": [
+          {
+            "id": "fr-a1-s-01",
+            "statement": "Can interact in a simple way provided the other person is prepared to repeat or rephrase at a slower rate and help formulate what they are trying to say.",
+            "evidence": "Companion voice mode: completed a 5-turn conversation in which the learner spoke (not typed) on a familiar topic (greetings / family / food / weather), graded A1-passing by speaking_a1."
+          },
+          {
+            "id": "fr-a1-s-02",
+            "statement": "Can ask and answer simple questions in areas of immediate need or on very familiar topics (name, nationality, age, where they live, profession).",
+            "evidence": "Whisper Race: at least 2 sessions of ≥70% similarity-pass rate on personal-info vocab. AND Companion voice turn where the learner answered a 'comment t'appelles-tu / d'où viens-tu / quel âge as-tu' style prompt with a correctly-conjugated 'être'/'avoir'/'s'appeler' clause."
+          },
+          {
+            "id": "fr-a1-s-03",
+            "statement": "Can introduce themselves and others using basic greeting and leave-taking expressions ('bonjour', 'salut', 'au revoir', 'enchanté(e)').",
+            "evidence": "Companion voice mode: opening 2 turns include a greeting and a self-introduction with correct gender on 'enchanté'/'enchantée'. Verified by speaking_a1 rubric on the language_specific_signals[gender_agreement] check."
+          },
+          {
+            "id": "fr-a1-s-04",
+            "statement": "Can produce simple mainly isolated phrases about people and places (where I live, my family, what I like).",
+            "evidence": "Companion voice mode: at least 4 distinct turns produced ≥1 grammatical short phrase (sujet + verbe + complément), no critical breakdowns flagged by the grader."
+          },
+          {
+            "id": "fr-a1-s-05",
+            "statement": "Can use 'tu' and 'vous' appropriately at a basic level — 'tu' with peers and known people, 'vous' with strangers, elders and in formal contexts.",
+            "evidence": "Companion voice mode: across at least 2 sessions the learner addressed a formal partner with 'vous' and an informal partner with 'tu', without crossing the register mid-conversation. Verified by speaking_a1's tu_vous_register signal."
+          }
+        ]
+      },
+      "promotion_to_next_level": "All 17 A1 can-do statements have ≥1 piece of evidence logged AND vocab_settled (counts.mature + counts.reviewing) ≥ 450 AND at least one speaking_a1 grader run returned level_assessment of 'A2-ready' AND at least one writing_a1 grader run flagged negation_complete = true. Recognised-word count alone is NEVER sufficient to promote — that's the bug this rubric exists to fix."
+    },
+    {
+      "code": "A2",
+      "name": "Intermédiaire / Survie (DELF A2)",
+      "global_descriptor": "Can understand sentences and frequently used expressions related to areas of most immediate relevance (very basic personal and family information, shopping, local geography, employment). Can communicate in simple and routine tasks requiring a simple and direct exchange of information on familiar and routine matters. Can describe in simple terms aspects of their background, immediate environment and matters in areas of immediate need. (CEFR Companion Volume 2020; DELF A2 général exam descriptors.)",
+      "can_do": {
+        "reading": [
+          {
+            "id": "fr-a2-r-01",
+            "statement": "Can understand short, simple texts on familiar matters of a concrete type which consist of high-frequency everyday or job-related language.",
+            "evidence": "Story Weaver: completed at least 2 full 5-chapter stories at A2 vocab band with ≥70% correct branches AND ≥1 stretch (A2) word picked correctly via context, not gloss."
+          },
+          {
+            "id": "fr-a2-r-02",
+            "statement": "Can understand short, simple personal letters, emails, posts and messages, including descriptions of events in the recent past.",
+            "evidence": "Companion 'read this short letter and reply' task: learner answered ≥3 reading-comprehension questions correctly about an A2-band ~80-120 word text (e.g. an invitation, a cancellation, a description of a recent weekend)."
+          },
+          {
+            "id": "fr-a2-r-03",
+            "statement": "Can identify specific information in simpler written material such as menus, timetables (SNCF / RATP style), brochures and short news items.",
+            "evidence": "Constellation or Companion's scan-this-text task: ≥80% accuracy extracting 5 specific facts (time / price / location / name / quantity) from an A2-band realia text."
+          },
+          {
+            "id": "fr-a2-r-04",
+            "statement": "Can understand simple instructions on equipment encountered in everyday life — such as a public telephone, a ticket machine, or basic recipe steps.",
+            "evidence": "Companion 'follow these instructions' task: learner correctly completed a 4-step ordered instruction set (e.g. a vending-machine flow or a 4-step recipe) summarised in their own French."
+          }
+        ],
+        "writing": [
+          {
+            "id": "fr-a2-w-01",
+            "statement": "Can write a series of simple phrases and sentences linked with simple connectors like 'et', 'mais', 'parce que' and 'alors'.",
+            "evidence": "Companion journal turn produced ≥5 sentences using at least 2 different connectors, with correctly-conjugated present-tense verbs marked correct by writing_a2."
+          },
+          {
+            "id": "fr-a2-w-02",
+            "statement": "Can write short, simple notes, messages and personal letters describing past experiences and events using the passé composé.",
+            "evidence": "Companion journal turn produced ≥4 sentences in the passé composé, graded ≥70% accurate on auxiliary choice (avoir vs être) by writing_a2 against the language_specific_signals[passe_compose_required] check."
+          },
+          {
+            "id": "fr-a2-w-03",
+            "statement": "Can describe their family, living conditions, educational background, present or recent job.",
+            "evidence": "Companion 'describe yourself in 5 sentences' task: produced 5+ sentences spanning ≥2 of {family, home, work/study, daily routine}, no critical-error flags from writing_a2."
+          },
+          {
+            "id": "fr-a2-w-04",
+            "statement": "Can write a short, simple invitation, apology or thank-you message using appropriate register (tu / vous) and politeness formulae.",
+            "evidence": "Companion 'write a thank-you note' or 'write an invitation' task: ≥3 sentences with correct register chosen for the recipient (vous for unknown / formal, tu for peer), verified by writing_a2's tu_vous_register signal."
+          },
+          {
+            "id": "fr-a2-w-05",
+            "statement": "Can write very simple descriptions of people and places using adjective-noun gender and number agreement correctly most of the time.",
+            "evidence": "Across at least 2 Companion writing turns, the learner produced ≥4 noun-adjective pairs with correct gender + number agreement (e.g. 'une grande maison', 'des petits enfants'), verified by writing_a2's gender_agreement_correct_pct ≥ 80."
+          }
+        ],
+        "listening": [
+          {
+            "id": "fr-a2-l-01",
+            "statement": "Can understand phrases and expressions related to areas of most immediate priority (personal and family information, shopping, local area, employment) provided speech is clearly and slowly articulated.",
+            "evidence": "Echo Chamber: at least 3 sessions scoring ≥7/10 on the A2 sentence band at the default speech rate."
+          },
+          {
+            "id": "fr-a2-l-02",
+            "statement": "Can catch the main point in short, clear, simple messages and announcements (station announcements, voicemail, shop loudspeaker).",
+            "evidence": "Echo Chamber 'announcement' mini-band (sentences with imperative or informational register): ≥7/10 on at least one session, OR Companion voice mode where the learner correctly summarised a 3-sentence spoken passage delivered by the partner."
+          },
+          {
+            "id": "fr-a2-l-03",
+            "statement": "Can follow speech delivered at near-natural rate on familiar topics, even when they do not catch every word — including handling normal connected-speech phenomena like liaison.",
+            "evidence": "Echo Chamber: ≥7/10 on at least one session at 1.0× (default) rate without using any 'replay slow' affordance. The session must include sentences with obligatory liaison (e.g. 'vous_avez', 'les_amis', 'mon_ami') and the learner correctly transcribed or glossed them. This evidence does NOT count if the learner only ever passes at the slower-replay rate."
+          },
+          {
+            "id": "fr-a2-l-04",
+            "statement": "Can understand and extract the essential information from short, recorded passages dealing with predictable everyday matters (weather report, simple radio ad).",
+            "evidence": "Companion 'listen and answer' task on a 30-45 second clip: ≥3 of 4 comprehension questions answered correctly."
+          }
+        ],
+        "speaking": [
+          {
+            "id": "fr-a2-s-01",
+            "statement": "Can communicate in simple and routine tasks requiring a simple and direct exchange of information on familiar topics and activities (ordering at a café, asking the price, buying a ticket).",
+            "evidence": "Companion voice mode: 8-turn conversation on a routine topic (café order, asking directions, making plans) graded A2-passing by speaking_a2 with no more than 1 critical-error flag."
+          },
+          {
+            "id": "fr-a2-s-02",
+            "statement": "Can handle very short social exchanges, even though they cannot usually understand enough to keep conversation going themselves.",
+            "evidence": "Companion voice mode: at least 2 separate sessions where the learner initiated a topic (not just responded) and the partner accepted the turn without a clarification request."
+          },
+          {
+            "id": "fr-a2-s-03",
+            "statement": "Can use a series of phrases and sentences to describe in simple terms their family and other people, living conditions, educational background, present or recent job.",
+            "evidence": "Companion voice mode: produced a ≥45-second monologue (3+ linked sentences) on one of {family, work, home, daily routine}, graded A2-passing by speaking_a2."
+          },
+          {
+            "id": "fr-a2-s-04",
+            "statement": "Can describe past activities and personal experiences using the passé composé, with correct auxiliary choice (avoir vs être) for common verbs.",
+            "evidence": "Companion voice mode: at least 2 turns containing correctly-conjugated passé composé forms covering both auxiliaries (e.g. 'j'ai mangé' AND 'je suis allé(e)'), verified by speaking_a2's language_specific_signals[passe_compose_required] check at ≥70% accuracy."
+          },
+          {
+            "id": "fr-a2-s-05",
+            "statement": "Can ask for and follow detailed directions or instructions.",
+            "evidence": "Companion voice mode 'directions' scenario: learner correctly asked at least one clarifying question ('c'est à droite ou à gauche ?', 'combien de rues ?') and followed a 3-step instruction, verified by speaking_a2."
+          },
+          {
+            "id": "fr-a2-s-06",
+            "statement": "Can produce connected speech with appropriate use of liaison in common obligatory contexts (article + noun, pronoun + verb, short adjective + noun).",
+            "evidence": "Companion voice mode (or Whisper Race phrase band): across one session the learner produced ≥3 utterances containing an obligatory liaison context, and the grader marked liaison as 'present' or 'mostly present' (small misses tolerated). Verified by speaking_a2's liaison_observed signal."
+          }
+        ]
+      },
+      "promotion_to_next_level": "All 19 A2 can-do statements have ≥1 piece of evidence logged AND vocab_settled ≥ 900 AND at least one speaking_a2 grader run returned level_assessment of 'B1-ready' AND at least one writing_a2 grader run flagged the learner as passe_compose_competent AND negation_complete remains true across the most recent 3 writing samples. Vocab-only promotion is forbidden: a learner with 900 settled words but no speaking_a2 'B1-ready' run remains classified A2."
+    },
+    {
+      "code": "B1",
+      "name": "Seuil (DELF B1)",
+      "global_descriptor": "Can understand the main points of clear standard input on familiar matters regularly encountered in work, school, leisure, etc. Can deal with most situations likely to arise while travelling in an area where the language is spoken. Can produce simple connected text on topics that are familiar or of personal interest. Can describe experiences and events, dreams, hopes and ambitions and briefly give reasons and explanations for opinions and plans. (CEFR Companion Volume 2020; DELF B1 général exam descriptors.)",
+      "can_do": {
+        "reading": [
+          {
+            "id": "fr-b1-r-01",
+            "statement": "Can read straightforward factual texts on subjects related to their field and interest with a satisfactory level of comprehension.",
+            "evidence": "Companion reader-comprehension task on a 200-400 word B1-band text: ≥75% accuracy answering 5+ inference questions, not just literal recall."
+          },
+          {
+            "id": "fr-b1-r-02",
+            "statement": "Can understand the description of events, feelings and wishes in personal letters well enough to correspond regularly with a pen friend.",
+            "evidence": "Companion correspondence-thread task: learner answered a B1 narrative letter with a topically coherent ≥6-sentence reply graded B1-passing."
+          }
+        ],
+        "writing": [
+          {
+            "id": "fr-b1-w-01",
+            "statement": "Can write simple connected text on topics which are familiar or of personal interest, with paragraph-level cohesion.",
+            "evidence": "Companion journal entry of ≥10 sentences on a personal-interest topic, with paragraph-level cohesion (not just listed sentences), graded B1-passing."
+          },
+          {
+            "id": "fr-b1-w-02",
+            "statement": "Can write personal letters describing experiences and impressions, contrasting background and foregrounded events (imparfait vs passé composé).",
+            "evidence": "Companion letter task: ≥10 sentence reply mixing narration (passé composé) and background description (imparfait), graded B1-passing on tense-mix accuracy by the writing_a2 grader extended to tense contrast (or a B1 grader if available)."
+          }
+        ],
+        "listening": [
+          {
+            "id": "fr-b1-l-01",
+            "statement": "Can understand the main points of clear standard speech on familiar matters regularly encountered.",
+            "evidence": "Echo Chamber B1 sentence band: ≥7/10 on at least 2 sessions at 1.0× rate."
+          },
+          {
+            "id": "fr-b1-l-02",
+            "statement": "Can understand the main point of many radio or TV programmes on current affairs or topics of personal interest when the delivery is relatively slow and clear.",
+            "evidence": "Companion 'listen and summarise' task on a 30-60 second clip: learner produced a 3-sentence summary that the grader marked as capturing the main point."
+          }
+        ],
+        "speaking": [
+          {
+            "id": "fr-b1-s-01",
+            "statement": "Can deal with most situations likely to arise whilst travelling in an area where the language is spoken (booking accommodation, returning a defective item, reporting a lost object).",
+            "evidence": "Companion voice mode roleplay completed end-to-end without the learner switching to English, graded B1-passing."
+          },
+          {
+            "id": "fr-b1-s-02",
+            "statement": "Can enter unprepared into conversation on topics that are familiar, of personal interest or pertinent to everyday life.",
+            "evidence": "Companion voice mode: ≥10-turn unprepared conversation on a learner-chosen topic, graded B1-passing with ≥1 instance of the learner repairing their own utterance after a partner clarification."
+          }
+        ]
+      },
+      "promotion_to_next_level": "Out of scope for this assessment file — B1→B2 requires expanded rubrics (extended discourse, abstract topics, argumentation, subjunctive mood, conditional) that are tracked in a separate spec."
+    }
+  ],
+  "companion_grader_prompts": {
+    "speaking_a1": "You are a DELF A1 examiner conducting a 5-turn casual conversation in French with a learner. Topic: \"${topic}\". Speak ONLY in French, slowly and clearly, using A1 vocabulary and present-tense forms of être, avoir, aller, faire, s'appeler, habiter, parler, aimer. Do NOT correct mistakes mid-conversation — record them mentally. After turn 5 ends, output STRICTLY valid JSON with no prose around it, in exactly this shape:\n\n{\n  \"can_do_demonstrated\": [\"fr-a1-s-XX\", ...],\n  \"can_do_gaps\": [\"fr-a1-s-XX\", ...],\n  \"conjugation_errors\": [\n    {\"verb\": \"manger\", \"form_used\": \"je mangé\", \"correction\": \"je mange\"}\n  ],\n  \"gender_errors\": [\n    {\"adjective\": \"grande\", \"context\": \"un homme\", \"correct\": \"grand\"}\n  ],\n  \"negation_errors\": [\n    {\"utterance\": \"je sais pas\", \"issue\": \"missing ne\", \"correction\": \"je ne sais pas\"}\n  ],\n  \"language_specific_signals\": {\n    \"gender_agreement_observed\": true|false,\n    \"gender_agreement_correct_pct\": <0-100 integer or \"not_observed\">,\n    \"verb_conjugation_correct_pct\": <0-100>,\n    \"negation_complete\": true|false|\"not_observed\",\n    \"tu_vous_register_consistent\": true|false|\"not_observed\",\n    \"liaison_observed\": true|false\n  },\n  \"critical_errors\": [\"<short description>\", ...],\n  \"level_assessment\": \"pre-A1\" | \"A1\" | \"A2-ready\",\n  \"feedback\": \"<one short paragraph in English, max 4 sentences, what they did well and the single most useful thing to practice next>\"\n}\n\nGrading rules — be honest, not lenient. Augmentum's audit found this app overstates levels because it leans on recognised-word counts. Counter that bias:\n- 'pre-A1' if the learner needed English fallbacks, could not produce a subject+verb clause unaided, or used only memorised single words.\n- 'A1' is the default outcome when the learner met A1 descriptors. This is NOT a consolation prize — it's the honest result for a learner doing A1 work. Some negation drop ('je sais pas') and occasional gender slips are EXPECTED at A1; do not downgrade for them — log them in negation_errors / gender_errors but still award A1 if the descriptors were met.\n- 'A2-ready' ONLY if the learner spontaneously produced a connector ('et' / 'mais' / 'parce que') AND showed correct gender agreement on at least one adjective AND used at least one verb beyond être/avoir/s'appeler/habiter AND maintained a consistent tu/vous register. Recognising A2 vocabulary is not enough; production is required.\nNever give 'A2-ready' as encouragement.",
+    "speaking_a2": "You are a DELF A2 examiner conducting an 8-turn conversation in French with a learner. Topic: \"${topic}\". Speak ONLY in French at near-natural rate using A2-band vocabulary. Use the présent, the passé composé and the imparfait freely; do NOT use subjunctive, conditional or future-of-probability — those are B1+. Do not correct mid-conversation. Probe at least once for past-tense narration ('raconte-moi ce que tu as fait hier' or similar) and at least once for a directional / locational exchange that may invite liaison ('où est-ce que vous allez ?'). After turn 8, output STRICTLY valid JSON:\n\n{\n  \"can_do_demonstrated\": [\"fr-a2-s-XX\", ...],\n  \"can_do_gaps\": [\"fr-a2-s-XX\", ...],\n  \"conjugation_errors\": [\n    {\"verb\": \"aller\", \"form_used\": \"je vas\", \"correction\": \"je vais\"}\n  ],\n  \"gender_errors\": [\n    {\"adjective\": \"belle\", \"context\": \"un livre\", \"correct\": \"beau\"}\n  ],\n  \"negation_errors\": [\n    {\"utterance\": \"je connais pas\", \"issue\": \"missing ne\", \"correction\": \"je ne connais pas\"}\n  ],\n  \"language_specific_signals\": {\n    \"passe_compose_observed\": true|false,\n    \"passe_compose_auxiliary_correct_pct\": <0-100>,\n    \"passe_compose_etre_agreement_correct\": true|false|\"not_observed\",\n    \"imparfait_vs_passe_compose_choice_correct\": true|false|\"not_observed\",\n    \"gender_agreement_correct_pct\": <0-100>,\n    \"verb_conjugation_correct_pct\": <0-100>,\n    \"negation_complete_pct\": <0-100>,\n    \"liaison_observed\": true|false,\n    \"liaison_correct\": true|false|\"not_observed\",\n    \"tu_vous_register_consistent\": true|false,\n    \"connectors_used\": [\"et\", \"mais\", \"parce que\", \"alors\", \"aussi\", ...]\n  },\n  \"critical_errors\": [\"<short description>\", ...],\n  \"level_assessment\": \"A1-retained\" | \"A2\" | \"B1-ready\",\n  \"feedback\": \"<one paragraph in English, max 5 sentences>\"\n}\n\nGrading rules — be honest, not lenient:\n- 'A1-retained' if the learner could not sustain past-tense narration, defaulted to present for past events, systematically dropped 'ne' beyond the casual-speech norm, or could not initiate a topic turn.\n- 'A2' is the default outcome when descriptors are met. Auxiliary mistakes on être-verbs (e.g. 'j'ai allé' for 'je suis allé') are expected at A2 — log them but do not downgrade if accuracy on the auxiliary choice is ≥70%.\n- 'B1-ready' ONLY if ALL of: (a) at least one correct imparfait/passé-composé contrast in spontaneous speech, (b) at least one repair of own utterance after partner clarification, (c) verb conjugation correct ≥75%, (d) passé composé auxiliary correct ≥85%, (e) topic was initiated (not just responded to) at least twice, (f) tu/vous register held consistently across the conversation. If any of these is missing, return 'A2'.",
+    "writing_a1": "You are a DELF A1 writing examiner. The learner will submit a short text on the topic: \"${topic}\". Read it once. Output STRICTLY valid JSON:\n\n{\n  \"sentence_count\": <integer>,\n  \"can_do_demonstrated\": [\"fr-a1-w-XX\", ...],\n  \"can_do_gaps\": [\"fr-a1-w-XX\", ...],\n  \"conjugation_errors\": [\n    {\"verb\": \"être\", \"form_used\": \"je suis française\", \"correction\": \"je suis française\", \"note\": \"this example is correct — only log actual errors\"}\n  ],\n  \"gender_errors\": [\n    {\"adjective\": \"petite\", \"context\": \"un chien\", \"correct\": \"petit\"}\n  ],\n  \"negation_errors\": [\n    {\"utterance\": \"je parle pas anglais\", \"issue\": \"missing ne\", \"correction\": \"je ne parle pas anglais\"}\n  ],\n  \"language_specific_signals\": {\n    \"gender_agreement_correct_pct\": <0-100>,\n    \"verb_conjugation_correct_pct\": <0-100>,\n    \"negation_complete\": true|false|\"not_observed\",\n    \"connectors_used\": [\"et\", \"mais\", \"parce que\", \"aussi\", ...]\n  },\n  \"critical_errors\": [\"<short description, max 5 items>\"],\n  \"level_assessment\": \"pre-A1\" | \"A1\" | \"A2-ready\",\n  \"feedback\": \"<one paragraph in English, max 4 sentences, with one concrete suggestion>\"\n}\n\nGrading rules — be honest:\n- An A1 text is short (3-8 sentences), uses present tense, has frequent agreement slips and may drop 'ne' in informal contexts. That is FINE — it should still be graded 'A1'.\n- 'pre-A1' if the text is mostly English, mostly single words, or has no recognisable subject+verb clauses.\n- For writing (unlike speech) the 'ne' is expected to be present — log a negation_error for every dropped 'ne' in writing. negation_complete is true only if every negative sentence in the submission contains both 'ne' and 'pas' (or another negative particle: jamais / rien / personne / plus).\n- 'A2-ready' ONLY if the text uses ≥2 distinct connectors, contains zero gender-agreement errors, uses at least one verb beyond être/avoir/s'appeler correctly conjugated, negation_complete is true, and the text has ≥5 sentences. Do not give 'A2-ready' for length alone or vocab range alone.",
+    "writing_a2": "You are a DELF A2 writing examiner. The learner will submit a text on the topic: \"${topic}\", which the prompt should naturally elicit some past-tense content (e.g. 'parle-moi de ton week-end', 'décris un voyage que tu as fait', 'écris un message de remerciement pour un cadeau que tu as reçu'). Output STRICTLY valid JSON:\n\n{\n  \"sentence_count\": <integer>,\n  \"can_do_demonstrated\": [\"fr-a2-w-XX\", ...],\n  \"can_do_gaps\": [\"fr-a2-w-XX\", ...],\n  \"conjugation_errors\": [\n    {\"verb\": \"aller\", \"form_used\": \"j'ai allé\", \"correction\": \"je suis allé(e)\", \"note\": \"auxiliary error — aller takes être\"}\n  ],\n  \"gender_errors\": [\n    {\"adjective\": \"belle\", \"context\": \"un voyage\", \"correct\": \"beau\"}\n  ],\n  \"negation_errors\": [\n    {\"utterance\": \"j'ai pas vu\", \"issue\": \"missing ne\", \"correction\": \"je n'ai pas vu\"}\n  ],\n  \"language_specific_signals\": {\n    \"passe_compose_observed\": true|false,\n    \"passe_compose_auxiliary_correct_pct\": <0-100>,\n    \"passe_compose_etre_agreement_correct\": true|false|\"not_observed\",\n    \"imparfait_observed\": true|false,\n    \"imparfait_vs_passe_compose_choice_correct\": true|false|\"not_observed\",\n    \"gender_agreement_correct_pct\": <0-100>,\n    \"verb_conjugation_correct_pct\": <0-100>,\n    \"negation_complete\": true|false,\n    \"connectors_used\": [\"et\", \"mais\", \"parce que\", \"alors\", \"aussi\", \"donc\", ...],\n    \"tu_vous_register_consistent\": true|false|\"not_observed\",\n    \"passe_compose_competent\": true|false\n  },\n  \"critical_errors\": [\"<short description, max 5 items>\"],\n  \"level_assessment\": \"A1-retained\" | \"A2\" | \"B1-ready\",\n  \"feedback\": \"<one paragraph in English, max 5 sentences, with one concrete suggestion>\"\n}\n\nGrading rules — be honest, not lenient. The Augmentum audit specifically called out overstatement of writing skill from vocabulary recognition. Counter it:\n- passe_compose_competent is true ONLY if at least two passé composé verb forms appear, are correctly conjugated, the auxiliary choice (avoir vs être) is correct for the verbs used, AND past-participle agreement with être-auxiliary subjects is at least attempted (e.g. 'elle est allée' not 'elle est allé'). One memorised 'j'ai mangé' does not qualify.\n- 'A1-retained' if the learner avoided past tense, wrote only present-tense lists of facts, made systematic agreement errors, or dropped 'ne' across the whole submission (writing register expects 'ne' to be present).\n- 'A2' is the default when A2 descriptors are met.\n- 'B1-ready' ONLY if passe_compose_competent is true AND the text has paragraph-level cohesion (not just connector-joined sentences) AND uses ≥3 distinct connectors AND gender agreement correct ≥85% AND negation_complete is true AND the text contains at least one imparfait/passé-composé contrast used correctly. Without all six, return 'A2'."
+  },
+  "language_specific_signals": {
+    "gender_agreement_required": [
+      "fr-a1-w-02",
+      "fr-a1-s-03",
+      "fr-a2-w-03",
+      "fr-a2-w-05",
+      "fr-a2-s-03"
+    ],
+    "verb_conjugation_required": [
+      "fr-a1-w-01",
+      "fr-a1-w-02",
+      "fr-a1-w-04",
+      "fr-a1-s-02",
+      "fr-a1-s-04",
+      "fr-a2-w-01",
+      "fr-a2-w-02",
+      "fr-a2-s-01",
+      "fr-a2-s-03",
+      "fr-a2-s-04"
+    ],
+    "passe_compose_required": [
+      "fr-a2-w-02",
+      "fr-a2-s-04",
+      "fr-b1-w-02"
+    ],
+    "imparfait_vs_passe_compose_required": [
+      "fr-b1-w-02"
+    ],
+    "negation_required": [
+      "fr-a1-w-04",
+      "fr-a2-w-02",
+      "fr-a2-w-04"
+    ],
+    "tu_vous_register_required": [
+      "fr-a1-s-05",
+      "fr-a2-w-04"
+    ],
+    "liaison_observed": [
+      "fr-a2-l-03",
+      "fr-a2-s-06"
+    ],
+    "notes": "These are language-specific grammar features that LLM graders MUST inspect when assigning evidence to the listed can-do IDs. They exist because the vocab-only CEFR estimate cannot see any of them — a learner can have 100% mature recognition on 'aller' as a vocabulary item while still saying 'j'ai allé' (wrong auxiliary). The grader prompts above query these signals explicitly so the assessment surface can refuse to credit a can-do whose grammar prerequisite was not observed even when the topical content was on-target. Liaison is intentionally listed as a SPEAKING-only signal: it is a phonological phenomenon, listener-graded, and only sometimes orthographically visible (e.g. liaison with 'h aspiré' is forbidden, with 'h muet' obligatory — these distinctions only surface in audio)."
+  },
+  "evidence_storage_contract": {
+    "summary": "Recommended storage shape for the can-do evidence log so the assessment view can render a 4-axis CEFR grid and the promotion gate above can be evaluated cheaply.",
+    "table_hint": "assessment_evidence (user_id, lang, can_do_id, source_game, source_session_id, score, grader_payload_json, created_at)",
+    "user_scoped": true,
+    "indices": ["(user_id, lang, can_do_id)", "(user_id, lang, created_at)"],
+    "promotion_query_sketch": "SELECT can_do_id FROM assessment_evidence WHERE user_id = ? AND lang = 'fr' AND can_do_id LIKE 'fr-a1-%' GROUP BY can_do_id — compare result set against the full A1 can_do list; if equal AND vocab settled >= 450 AND latest speaking_a1 grader payload has level_assessment = 'A2-ready' AND latest writing_a1 grader payload has negation_complete = true, promote."
+  }
+}

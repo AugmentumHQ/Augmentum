@@ -1,0 +1,1561 @@
+/* cast-control — phone/desktop remote for the TV cast.
+ *
+ * Touch-first layout: large tap targets, vertical scroll, sticky top
+ * (receiver picker) and bottom (now-playing). Inherits the editorial-
+ * dark register from the rest of the cast family.
+ */
+
+:root {
+  --paper:        #15110c;
+  --paper-deep:   #1d1812;
+  --paper-shade:  #251f17;
+  --ink:          #ede2cb;
+  --ink-soft:     #b8aa92;
+  --ink-mute:     #877a66;
+  --accent:       #d9a14e;
+  --accent-glow:  rgba(217, 161, 78, 0.45);
+  --accent-deep:  #b67c2e;
+  --line:         rgba(237, 226, 203, 0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Fraunces", "Newsreader", Georgia, serif;
+  font-feature-settings: "ss01", "ss03";
+  -webkit-font-smoothing: antialiased;
+  min-height: 100%;
+  /* Page-level scrollbar off everywhere. Touch + drag + wheel + arrow
+   * keys all still scroll — we're only hiding the visible track. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar { display: none; }
+body {
+  display: flex;
+  flex-direction: column;
+  /* dvh stays correct on iOS Safari when the URL bar collapses; vh
+   * is the pre-dvh fallback. */
+  min-height: 100vh;
+  min-height: 100dvh;
+  background:
+    radial-gradient(ellipse at top, rgba(217, 161, 78, 0.06), transparent 70%),
+    var(--paper);
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--ink); }
+button { background: none; border: 0; color: inherit; font: inherit; cursor: pointer; }
+
+/* ── Topbar ───────────────────────────────────────────────────── */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 14px 18px;
+  background: rgba(21, 17, 12, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.back {
+  color: var(--ink-soft);
+  font-size: 22px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.15s ease;
+}
+.back:hover { background: var(--paper-shade); color: var(--ink); }
+.title-group {
+  display: flex;
+  flex-direction: column;
+}
+.title-overline {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.title {
+  font-size: 22px;
+  font-weight: 400;
+  font-variation-settings: "opsz" 60, "SOFT" 30, "WONK" 0;
+  letter-spacing: -0.005em;
+}
+
+/* Topbar-right cluster */
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Follow-on-TV toggle.
+ *
+ * Lives next to the receiver picker. Visible only when a receiver is
+ * selected (JS adds/removes .hidden). Off-state is a subtle outlined
+ * chip; on-state lights the dot + border with the accent color. Same
+ * pill geometry as the receiver picker for visual coherence. */
+.follow-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--paper-shade);
+  border: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 120ms, color 120ms;
+}
+.follow-toggle.hidden { display: none; }
+.follow-toggle:hover { border-color: var(--ink-mute); color: var(--ink); }
+.follow-toggle-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink-mute);
+  transition: background 160ms, box-shadow 160ms;
+}
+.follow-toggle[aria-pressed="true"] {
+  border-color: var(--accent, #d9a14e);
+  color: var(--ink);
+}
+.follow-toggle[aria-pressed="true"] .follow-toggle-dot {
+  background: var(--accent, #d9a14e);
+  box-shadow: 0 0 8px rgba(217, 161, 78, 0.6);
+}
+
+/* Preferences gear — small icon button between the follow toggle
+ * and the receiver picker. Only visible when a receiver is selected
+ * (same gating as the follow toggle). Matches the picker's pill
+ * geometry as a circle so the cluster feels coherent. */
+.prefs-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--paper-shade);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: border-color 120ms, color 120ms;
+}
+.prefs-button.hidden { display: none; }
+.prefs-button:hover { border-color: var(--ink-mute); color: var(--ink); }
+
+
+/* Preferences sheet — same chrome family as the library-sheet but
+ * narrower so it doesn't overwhelm the screen on phones. Settings
+ * are infrequent + lightweight, so the visual register is calm. */
+.prefs-sheet[hidden],
+.prefs-sheet.hidden { display: none; }
+.prefs-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.prefs-sheet-scrim {
+  position: absolute; inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+.prefs-sheet-card {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  max-height: 80vh;
+  background: var(--paper-shade, #1a1612);
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 -18px 48px rgba(0, 0, 0, 0.55);
+}
+.prefs-sheet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 18px 22px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.prefs-sheet-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.prefs-sheet-overline {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.prefs-sheet-title {
+  font-size: 18px;
+  color: var(--ink);
+  font-weight: 500;
+}
+.prefs-sheet-close {
+  background: none;
+  border: none;
+  color: var(--ink-mute);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+.prefs-sheet-close:hover { color: var(--ink); }
+.prefs-sheet-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 16px 22px 22px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.prefs-sheet-body::-webkit-scrollbar { display: none; }
+
+.prefs-sheet-section {
+  margin-top: 14px;
+}
+.prefs-sheet-section:first-child { margin-top: 0; }
+.prefs-sheet-section-label {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 8px;
+}
+
+/* Toggle row — full-width clickable area, label left, control right. */
+.prefs-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.prefs-toggle:last-child { border-bottom: none; }
+.prefs-toggle-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.prefs-toggle-name {
+  font-size: 14px;
+  color: var(--ink);
+}
+.prefs-toggle-hint {
+  font-size: 11px;
+  color: var(--ink-mute);
+}
+.prefs-toggle input[type="checkbox"] {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent, #d9a14e);
+  cursor: pointer;
+}
+
+.prefs-sheet-loading {
+  padding: 30px 0;
+  text-align: center;
+  font-style: italic;
+  color: var(--ink-mute);
+}
+
+/* Receiver picker */
+.receiver-picker {
+  position: relative;
+}
+.receiver-picker-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--paper-shade);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.receiver-picker-button:hover { border-color: var(--ink-mute); }
+.receiver-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink-mute);
+}
+.receiver-dot.live {
+  background: #5cd573;
+  box-shadow: 0 0 8px rgba(92, 213, 115, 0.6);
+}
+.receiver-caret {
+  font-size: 10px;
+  color: var(--ink-mute);
+}
+.receiver-picker-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 240px;
+  max-width: 320px;
+  background: var(--paper-deep);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  z-index: 11;
+}
+.receiver-picker-menu.hidden { display: none; }
+.receiver-picker-empty {
+  padding: 18px;
+  font-size: 13px;
+  color: var(--ink-mute);
+  line-height: 1.5;
+}
+.receiver-picker-item {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ink);
+  border-bottom: 1px solid var(--line);
+  transition: background 0.12s ease;
+}
+.receiver-picker-item:last-child { border-bottom: none; }
+.receiver-picker-item:hover { background: var(--paper-shade); }
+.receiver-picker-item.active {
+  background: var(--paper-shade);
+}
+.receiver-picker-item.active::after {
+  content: "✓";
+  margin-left: auto;
+  color: var(--accent);
+}
+.receiver-picker-item-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.receiver-picker-item-sub {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.receiver-picker-item.offline {
+  cursor: default;
+  opacity: 0.85;
+}
+.receiver-picker-item.offline:hover { background: transparent; }
+.receiver-picker-item.offline .receiver-dot {
+  background: var(--ink-mute);
+  opacity: 0.45;
+}
+.receiver-picker-section {
+  padding: 10px 18px 4px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  border-top: 1px solid var(--line);
+  background: var(--paper-shade);
+}
+.receiver-picker-action {
+  margin-left: auto;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+.receiver-picker-action:hover {
+  background: var(--accent);
+  color: var(--paper);
+  border-color: var(--accent);
+}
+.receiver-picker-action.ghost {
+  background: transparent;
+  color: var(--ink-mute);
+}
+.receiver-picker-action.ghost:hover {
+  color: var(--ink);
+  background: var(--paper-shade);
+}
+
+/* Pair-by-code form pinned at the bottom of the picker menu. The
+   uppercased monospace input matches the pair-code styling on the
+   receiver page (cast-receiver.css .cr-pair-code) so users see "this
+   field expects the same thing I'm looking at on the TV." */
+.receiver-picker-pair-form {
+  padding: 12px 18px 16px;
+  border-top: 1px solid var(--line);
+  background: var(--paper-shade);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.receiver-picker-pair-form .receiver-picker-section {
+  padding: 0;
+  border-top: none;
+  background: transparent;
+}
+.receiver-picker-pair-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.receiver-picker-pair-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.receiver-picker-pair-input::placeholder {
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-mute);
+  font-family: inherit;
+}
+.receiver-picker-pair-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.receiver-picker-pair-btn {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--paper);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.12s ease;
+}
+.receiver-picker-pair-btn:hover { opacity: 0.85; }
+.receiver-picker-pair-btn:disabled { opacity: 0.55; cursor: default; }
+.receiver-picker-pair-hint {
+  margin: 0;
+  font-size: 11px;
+  color: var(--ink-mute);
+  line-height: 1.45;
+}
+.receiver-picker-pair-hint a {
+  color: var(--ink);
+  border-bottom: 1px dashed var(--ink-mute);
+  text-decoration: none;
+}
+.receiver-picker-pair-msg {
+  margin: 0;
+  min-height: 14px;
+  font-size: 11px;
+  color: var(--ink-mute);
+  line-height: 1.4;
+}
+.receiver-picker-pair-msg[data-state="error"] { color: #ef4444; }
+.receiver-picker-pair-msg[data-state="success"] { color: #10b981; }
+
+
+/* ── Library ──────────────────────────────────────────────────── */
+
+.library {
+  flex: 1;
+  padding: 20px 18px 100px;  /* bottom pad clears now-playing */
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.loading {
+  color: var(--ink-mute);
+  padding: 40px 0;
+  text-align: center;
+  font-style: italic;
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.rail-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.rail-see-all {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  padding: 6px 10px;
+  border-radius: 999px;
+  transition: color 0.12s ease, background 0.12s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.rail-see-all:hover { color: var(--accent); background: var(--paper-shade); }
+.rail-title {
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--ink);
+  font-variation-settings: "opsz" 60, "SOFT" 30;
+}
+.rail-strip {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 140px;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scroll-snap-type: x mandatory;
+  /* Hide the scrollbar chrome — swipe / drag still scrolls. The
+   * tiles speak for themselves; a bar under them is noise on a
+   * phone-sized surface. */
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* legacy Edge / IE */
+}
+.rail-strip::-webkit-scrollbar { display: none; }  /* WebKit / Blink */
+
+/* Tiles */
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  scroll-snap-align: start;
+  transition: transform 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.tile:active { transform: scale(0.97); }
+.tile-art {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  background: linear-gradient(135deg, var(--paper-deep), var(--paper-shade));
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 14px 28px -10px rgba(0, 0, 0, 0.5);
+}
+.tile-art.landscape { aspect-ratio: 16 / 9; }
+
+/* Continue rail mixes kinds (movies, shows, audiobooks, comics, music
+   videos) and looks hodge-podge when each tile picks its own aspect.
+   Force the poster shape here so the strip reads as one consistent
+   shelf — landscape thumbs (music videos, episodes) get center-cropped
+   via object-fit:cover, which loses less information than cropping
+   top+bottom off poster art would. Dedicated per-kind rails (Music
+   videos, Recently added) keep their authentic shapes. */
+.rail[data-cc-rail="resume"] .tile-art,
+.rail[data-cc-rail="resume"] .tile-art.landscape {
+  aspect-ratio: 2 / 3;
+}
+.tile-art img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.tile-art-placeholder {
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-mute);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.tile-progress {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.5);
+}
+.tile-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+.tile-chip {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.72);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+}
+.tile-title {
+  font-size: 14px;
+  color: var(--ink);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tile-sub {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Library shortcuts row */
+.libraries {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.library-chip {
+  padding: 10px 18px;
+  background: var(--paper-shade);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.library-chip-provider {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+/* ── Now Playing ──────────────────────────────────────────────── */
+
+.now-playing {
+  position: fixed;
+  /* Padded for the iPhone notch + home-indicator safe areas so the
+   * card doesn't clip under the rounded display corners when the
+   * controller is held in portrait. */
+  left: max(12px, env(safe-area-inset-left, 0px));
+  right: max(12px, env(safe-area-inset-right, 0px));
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  z-index: 9;
+  display: flex;
+  flex-direction: column;
+  background: rgba(29, 24, 18, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+.now-playing.hidden { display: none; }
+
+.np-strip {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+}
+.np-art {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: var(--paper-shade);
+  background-size: cover;
+  background-position: center;
+  flex: 0 0 auto;
+}
+.np-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Progress strip — sits under title/sub. Tap-to-seek on the bar. */
+.np-progress[hidden] { display: none; }
+.np-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 2px;
+}
+.np-progress-bar {
+  height: 4px;
+  background: rgba(237, 226, 203, 0.12);
+  border-radius: 999px;
+  overflow: hidden;
+  cursor: pointer;
+  /* Bigger hit area than the visible bar so tap-to-seek isn't fiddly
+   * on phones. The transparent padding doesn't show but accepts taps. */
+  position: relative;
+  padding: 6px 0;
+  margin: -6px 0;
+  background-clip: content-box;
+}
+.np-progress-fill {
+  position: absolute;
+  left: 0; top: 6px;
+  height: 4px;
+  width: 0;
+  background: linear-gradient(to right, var(--accent), #ffe7a8);
+  box-shadow: 0 0 8px var(--accent-glow);
+  border-radius: 999px;
+  transition: width 0.5s linear;
+}
+.np-progress-time {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--ink-mute);
+  display: inline-flex;
+  gap: 0.4ch;
+}
+.np-time-sep { opacity: 0.5; }
+.np-title {
+  font-size: 14px;
+  color: var(--ink);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.np-sub {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.np-controls {
+  display: flex;
+  gap: 6px;
+}
+.np-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.np-btn:hover {
+  color: var(--ink);
+  border-color: var(--ink-mute);
+}
+.np-btn-invite {
+  /* Visually distinct from playback transport — same shape, accent
+     border so it reads as a non-transport action. */
+  color: var(--ink);
+  font-weight: 600;
+}
+.np-btn-invite:not([hidden]) {
+  border-color: #4ade80;
+  color: #4ade80;
+}
+.np-btn-revoke {
+  width: auto;
+  padding: 0 14px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+/* Couch co-op waiting panel — sits below the now-playing strip when
+   the host has minted an invite. Shows the slot count + a stop-
+   inviting button. The actual QR lives on the TV. */
+.np-invite-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(74, 222, 128, 0.06);
+  border-top: 1px solid rgba(74, 222, 128, 0.2);
+  font-size: 14px;
+}
+.np-invite-status {
+  flex: 1;
+  color: var(--ink);
+}
+
+/* Expanded sheet — appears above the strip when ⋯ is tapped. Slides
+ * up from the strip's top edge, scrim'd inside the same card so the
+ * compact strip stays visible below it. */
+.np-sheet {
+  border-top: 1px solid var(--line);
+  background: rgba(15, 13, 9, 0.88);
+  padding: 14px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  /* Cap the sheet height + scroll inside. Without this, opening
+   * multiple sections (especially for comic with 6 sub-panels) ran
+   * the card off the top of the viewport with no way to reach
+   * what was clipped above. 70vh leaves room for the topbar +
+   * compact strip while preserving headroom for short content. */
+  max-height: 70vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* No visible bar — momentum scroll still works on touch + drag. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.np-sheet::-webkit-scrollbar { display: none; }
+.np-sheet[hidden] { display: none; }
+.np-sheet-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: var(--ink-mute);
+  font-size: 18px;
+  line-height: 1;
+}
+.np-sheet-close:hover { color: var(--ink); }
+.np-sheet-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+/* Restore the ``hidden`` semantics — author ``display: flex`` above
+ * overrides the UA default ``[hidden] { display: none }``, which
+ * left every kind-gated section visible regardless of the JS toggle.
+ * That's why audio + video + comic controls all appeared at once. */
+.np-sheet-section[hidden] { display: none; }
+.np-sheet-title {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+.np-toggle-row, .np-jump-row, .np-speed-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+/* Volume row — mute button + slider + readout. Layout is row so it
+ * stays compact on phone; the slider takes all available space. */
+.np-volume-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.np-volume-mute {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--paper-shade);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 18px;
+  flex: 0 0 auto;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.12s ease, color 0.12s ease;
+}
+.np-volume-mute.is-muted {
+  color: var(--err, #d6593b);
+  border-color: var(--err, #d6593b);
+}
+.np-volume-slider {
+  flex: 1 1 auto;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--accent) 0%,
+    var(--accent) var(--cc-vol-pct, 100%),
+    rgba(237, 226, 203, 0.12) var(--cc-vol-pct, 100%),
+    rgba(237, 226, 203, 0.12) 100%
+  );
+  outline: none;
+  cursor: pointer;
+}
+.np-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffe7a8;
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+  cursor: pointer;
+}
+.np-volume-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffe7a8;
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+  cursor: pointer;
+}
+.np-volume-readout {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  min-width: 3ch;
+  text-align: right;
+  flex: 0 0 auto;
+}
+.np-volume-hint {
+  margin-top: 6px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--ink-mute);
+  line-height: 1.4;
+}
+
+.np-cc-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.np-cc-item {
+  padding: 10px 16px;
+  background: var(--paper-shade);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+  font-size: 13px;
+  font-family: inherit;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+  max-width: 100%;
+}
+.np-cc-item:hover { border-color: var(--ink-mute); }
+.np-cc-item.is-active {
+  background: color-mix(in srgb, var(--accent) 14%, var(--paper-shade));
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.np-cc-item-sub {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+.np-toggle, .np-jump, .np-speed {
+  padding: 8px 14px;
+  background: var(--paper-shade);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+.np-toggle:hover, .np-jump:hover, .np-speed:hover {
+  border-color: var(--ink-mute);
+}
+.np-toggle[data-on="true"],
+.np-speed.is-active {
+  background: color-mix(in srgb, var(--accent) 14%, var(--paper-shade));
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.np-toggle-hint {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--ink-mute);
+}
+
+/* ── Scroll pad ────────────────────────────────────────────────
+ * Floats above the now-playing card. Visible when the TV is in
+ * webtoon mode (auto) OR the user explicitly enables it for other
+ * comic modes. Captures pointer / wheel / arrow-key input and
+ * routes to TV as scroll_delta_px patches. */
+
+.scroll-pad {
+  position: fixed;
+  left: max(12px, env(safe-area-inset-left, 0px));
+  right: max(12px, env(safe-area-inset-right, 0px));
+  /* Sit above the now-playing card. now-playing is bottom: 12px and
+   * roughly 78–130px tall depending on progress bar — 130 px clear
+   * stays above it on both kinds. Adds safe-area-inset so the stack
+   * lifts above the iPhone home-indicator on devices that have one. */
+  bottom: calc(130px + env(safe-area-inset-bottom, 0px));
+  z-index: 8;
+  background: rgba(15, 13, 9, 0.92);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+.scroll-pad.hidden {
+  transform: translateY(20px);
+  opacity: 0;
+  pointer-events: none;
+}
+.scroll-pad:focus { outline: 1px solid var(--accent); outline-offset: 2px; }
+
+.scroll-pad-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--line);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.scroll-pad-glyph {
+  color: var(--accent);
+  font-size: 12px;
+  letter-spacing: 0;
+}
+.scroll-pad-label { flex: 1; }
+.scroll-pad-close {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  color: var(--ink-mute);
+  font-size: 18px;
+  line-height: 1;
+}
+.scroll-pad-close:hover { color: var(--ink); }
+
+.scroll-pad-surface {
+  position: relative;
+  height: 22vh;
+  min-height: 140px;
+  max-height: 240px;
+  cursor: grab;
+  /* Block native scroll on the surface itself so finger drags land
+   * here instead of moving the page. touch-action: none is required
+   * for pointer events to fire continuously without browser scroll. */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  background:
+    radial-gradient(ellipse at center, rgba(217, 161, 78, 0.06), transparent 70%),
+    rgba(21, 17, 12, 0.6);
+}
+.scroll-pad-surface:active { cursor: grabbing; }
+.scroll-pad-surface.dragging { cursor: grabbing; }
+
+/* Webtoon-only sensitivity gradient — left = precise / slow, right =
+ * fast traversal. Painted under the existing radial accent so the
+ * indicator dot and hint still read clearly. Labels sit at the
+ * vertical edges so they don't compete with the centred hint text. */
+.scroll-pad.comic-gain .scroll-pad-surface {
+  background:
+    linear-gradient(
+      to right,
+      rgba(120, 140, 180, 0.08) 0%,
+      rgba(217, 161, 78, 0.18) 100%
+    ),
+    radial-gradient(ellipse at center, rgba(217, 161, 78, 0.06), transparent 70%),
+    rgba(21, 17, 12, 0.6);
+}
+.scroll-pad.comic-gain .scroll-pad-surface::before,
+.scroll-pad.comic-gain .scroll-pad-surface::after {
+  position: absolute;
+  bottom: 6px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  opacity: 0.7;
+  pointer-events: none;
+}
+.scroll-pad.comic-gain .scroll-pad-surface::before {
+  content: "‹ slow";
+  left: 10px;
+}
+.scroll-pad.comic-gain .scroll-pad-surface::after {
+  content: "fast ›";
+  right: 10px;
+  color: var(--accent);
+}
+
+.scroll-pad-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  opacity: 0.65;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.scroll-pad-surface.dragging .scroll-pad-hint { opacity: 0; }
+
+/* Velocity / direction feedback — a glowing dot that follows the
+ * pointer during drag, and pulses on wheel/key. */
+.scroll-pad-indicator {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 40px; height: 40px;
+  margin: -20px 0 0 -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+.scroll-pad-surface.dragging .scroll-pad-indicator,
+.scroll-pad-surface.flash    .scroll-pad-indicator {
+  opacity: 0.85;
+}
+
+
+/* ── Library drill-in sheet ───────────────────────────────────────
+ *
+ * Full-viewport overlay that pages a section (See all) or an
+ * episode list (series drill-in). Card sits flush with the bottom
+ * on phone, centred on wider screens. Scrim dims the library
+ * underneath so the user knows the context is modal. */
+
+.library-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.library-sheet.hidden { display: none; }
+
+.library-sheet-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 8, 7, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: lib-sheet-scrim-in 0.18s ease-out;
+}
+@keyframes lib-sheet-scrim-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.library-sheet-card {
+  position: relative;
+  width: 100%;
+  max-width: 920px;
+  max-height: 92vh;
+  background: var(--paper-deep);
+  border: 1px solid var(--line);
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.7);
+  animation: lib-sheet-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (min-width: 720px) {
+  .library-sheet { align-items: center; padding: 24px; }
+  .library-sheet-card {
+    border-radius: 18px;
+    max-height: 85vh;
+    border: 1px solid var(--line);
+  }
+}
+@keyframes lib-sheet-in {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.library-sheet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px 22px 12px;
+  border-bottom: 1px solid var(--line);
+  flex: 0 0 auto;
+}
+.library-sheet-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.library-sheet-overline {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.library-sheet-title {
+  font-size: 24px;
+  font-weight: 400;
+  font-variation-settings: "opsz" 80, "SOFT" 30;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.library-sheet-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--paper-shade);
+  color: var(--ink-soft);
+  font-size: 20px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  transition: color 0.12s ease;
+}
+
+/* ── Library-sheet controls (sort + filter) ──────────────────── */
+
+.library-sheet-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  padding: 4px 18px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.library-sheet-controls.hidden { display: none; }
+
+.library-sheet-search-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 220px;
+  min-width: 160px;
+}
+.library-sheet-search {
+  flex: 1 1 auto;
+  background: var(--paper-shade);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 10px;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.library-sheet-search::placeholder { color: var(--ink-mute); }
+.library-sheet-search:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+.library-sheet-search-wrap[hidden] { display: none; }
+
+.library-sheet-sort-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.library-sheet-controls-label {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.library-sheet-sort {
+  background: var(--paper-shade);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 10px;
+  cursor: pointer;
+  /* Reset native arrow on iOS Safari; the right padding leaves room
+   * for the implicit caret on platforms that draw one. */
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 28px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-mute) 50%),
+                    linear-gradient(135deg, var(--ink-mute) 50%, transparent 50%);
+  background-position: calc(100% - 14px) 52%, calc(100% - 9px) 52%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+.library-sheet-sort:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.library-sheet-filter-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-left: auto;
+}
+.library-sheet-chip {
+  padding: 6px 12px;
+  background: var(--paper-shade);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+.library-sheet-chip:hover { border-color: var(--ink-mute); color: var(--ink); }
+.library-sheet-chip.is-active {
+  background: color-mix(in srgb, var(--accent) 14%, var(--paper-shade));
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.library-sheet-close:hover { color: var(--ink); }
+
+.library-sheet-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 18px 22px;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.library-sheet-body::-webkit-scrollbar { display: none; }
+
+.library-sheet-loading {
+  color: var(--ink-mute);
+  font-style: italic;
+  padding: 40px 0;
+  text-align: center;
+}
+
+/* Grid of tiles for paginated section view. Tighter than the home
+ * rail since this is a dedicated browsing context. */
+.library-sheet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+  gap: 14px 12px;
+}
+@media (min-width: 480px) {
+  .library-sheet-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+}
+
+/* Series drill-in: per-season group with its own header. */
+.library-sheet-season {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.library-sheet-season-head {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-shadow: 0 0 8px var(--accent-glow);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+}
+.library-sheet-episode {
+  display: grid;
+  grid-template-columns: 96px 1fr auto;
+  gap: 12px;
+  padding: 10px 4px;
+  border-radius: 10px;
+  cursor: pointer;
+  align-items: center;
+  transition: background 0.12s ease;
+}
+.library-sheet-episode:hover { background: var(--paper-shade); }
+.library-sheet-episode-art {
+  width: 96px;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, var(--paper-deep), var(--paper-shade));
+  border-radius: 6px;
+  overflow: hidden;
+  flex: 0 0 auto;
+  position: relative;
+}
+.library-sheet-episode-art img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.library-sheet-episode-meta {
+  min-width: 0;
+}
+.library-sheet-episode-num {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-shadow: 0 0 6px var(--accent-glow);
+  margin-bottom: 3px;
+}
+.library-sheet-episode-title {
+  font-size: 14px;
+  color: var(--ink);
+  font-weight: 500;
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.library-sheet-episode-progress {
+  width: 100%;
+  height: 2px;
+  background: rgba(237, 226, 203, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.library-sheet-episode-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent-glow);
+}
+
+.library-sheet-foot {
+  flex: 0 0 auto;
+  padding: 12px 22px 18px;
+  border-top: 1px solid var(--line);
+}
+.library-sheet-foot.hidden { display: none; }
+.library-sheet-loadmore {
+  width: 100%;
+  padding: 12px;
+  background: var(--paper-shade);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+.library-sheet-loadmore:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--paper-shade));
+}
+.library-sheet-loadmore:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ── Toast ────────────────────────────────────────────────────── */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  /* Lifts above the iPhone home-indicator on devices that have one;
+   * stays at 92px on devices without (inset evaluates to 0). */
+  bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  z-index: 12;
+  padding: 10px 18px;
+  background: var(--paper-deep);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  animation: toast-in 0.2s ease-out;
+}
+.toast.hidden { display: none; }
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(6px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ── Fonts ────────────────────────────────────────────────────── */
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1&family=JetBrains+Mono:wght@300..600&display=swap");

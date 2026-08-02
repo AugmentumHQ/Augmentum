@@ -1,0 +1,20 @@
+{
+  "name": "augmentum_explore",
+  "workspace_id": "45f1e36d-1b8f-42a0-bdcb-fde282363b30",
+  "workspace_name": "augmentum-self-test",
+  "mode": "explore",
+  "notes": [
+    "Explore-mode run against augmentum-self-test. Statistical-coverage",
+    "audit — the planner picks chunks blind, the detector scans each one.",
+    "",
+    "Suggested command:",
+    "  python scripts/bug_finder_test_bench.py \\",
+    "    --workspace-id 45f1e36d-1b8f-42a0-bdcb-fde282363b30 \\",
+    "    --model deepseek-v4-pro \\",
+    "    --max-chunks 8 \\",
+    "    --detector-runs-per-chunk 2 \\",
+    "    --focus-paths augmentum/auth,augmentum/proxy,augmentum/coder \\",
+    "    --fixture tests/bug_finder_bench_fixtures/augmentum_explore.json"
+  ],
+  "expected_findings": []
+}

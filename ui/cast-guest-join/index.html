@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Join — Augmentum</title>
+  <link rel="stylesheet" href="cast-guest-join.css">
+</head>
+<body>
+  <main class="gj-wrap">
+    <header class="gj-header">
+      <div class="gj-brand">Augmentum</div>
+      <div class="gj-tagline">Couch co-op join</div>
+    </header>
+
+    <!-- State 1: connecting / verifying token -->
+    <section class="gj-card" data-state="connecting" hidden>
+      <div class="gj-spinner"></div>
+      <div class="gj-title">Joining the game…</div>
+      <div class="gj-sub">Checking your invite.</div>
+    </section>
+
+    <!-- State 1.5: identify result — pick your profile or create new -->
+    <section class="gj-card" data-state="who-are-you" hidden>
+      <div class="gj-title">Who's playing?</div>
+      <div class="gj-sub">Tap your name, or create a new player.</div>
+      <div class="gj-profile-list" data-profile-list></div>
+      <div class="gj-divider" data-profile-divider></div>
+      <form class="gj-name-form" data-name-form>
+        <input
+          type="text"
+          maxlength="32"
+          placeholder="Your name"
+          autocomplete="off"
+          spellcheck="false"
+          data-name-input
+        >
+        <button type="submit" class="gj-confirm">Create &amp; play</button>
+      </form>
+      <div class="gj-error" data-name-error hidden></div>
+    </section>
+
+    <!-- State 1.6: Phase 3 welcome-back — device matched, skip picker -->
+    <section class="gj-card" data-state="welcome-back" hidden>
+      <div class="gj-status-dot gj-status-ok"></div>
+      <div class="gj-title" data-welcome-title>Welcome back</div>
+      <div class="gj-sub">Joining…</div>
+      <button class="gj-not-me" data-action="not-me">not me?</button>
+    </section>
+
+    <!-- State 2: connected, waiting for controller -->
+    <section class="gj-card" data-state="needs-pad" hidden>
+      <div class="gj-status-dot gj-status-warn"></div>
+      <div class="gj-title">Pair a controller</div>
+      <div class="gj-sub">
+        Open your phone's Bluetooth settings and pair a game controller.
+        It'll show up here automatically.
+      </div>
+    </section>
+
+    <!-- State 3: controller active, awaiting first press -->
+    <section class="gj-card" data-state="claim-slot" hidden>
+      <div class="gj-status-dot gj-status-ok"></div>
+      <div class="gj-title">Press any button</div>
+      <div class="gj-sub">
+        Press a button on your controller to claim your player slot.
+      </div>
+    </section>
+
+    <!-- State 4: in-game -->
+    <section class="gj-card" data-state="playing" hidden>
+      <div class="gj-status-dot gj-status-ok"></div>
+      <div class="gj-title" data-slot-label>Playing as Player 2</div>
+      <div class="gj-sub">
+        Your controller inputs go straight to the game on the TV.
+      </div>
+      <button class="gj-leave" data-action="leave">Leave game</button>
+    </section>
+
+    <!-- State 5: terminal — disconnected, expired, full, error -->
+    <section class="gj-card" data-state="terminal" hidden>
+      <div class="gj-status-dot gj-status-err"></div>
+      <div class="gj-title" data-terminal-title>Disconnected</div>
+      <div class="gj-sub" data-terminal-sub></div>
+    </section>
+  </main>
+  <script type="module" src="cast-guest-join.js"></script>
+</body>
+</html>

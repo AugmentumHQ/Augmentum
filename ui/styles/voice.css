@@ -1,0 +1,4006 @@
+/* ==========================================================================
+   Voice Chat Overlay — "Signal" aesthetic
+   Deep-space communication terminal. Concentric rings, radial state glow,
+   atmospheric grain, cinematic typography.
+   ========================================================================== */
+
+/* --- Voice Design Tokens --- */
+/* Fonts (Space Mono + Outfit) loaded via <link> in index.html */
+.voice-overlay {
+  --voice-font-display: 'Outfit', sans-serif;
+  --voice-font-mono: 'Space Mono', 'SF Mono', monospace;
+  --voice-bg-deep: #06060e;
+  --voice-bg-mid: #0a0a16;
+  --voice-surface: rgba(255, 255, 255, 0.03);
+  --voice-surface-border: rgba(255, 255, 255, 0.06);
+  --voice-text: rgba(255, 255, 255, 0.88);
+  --voice-text-dim: rgba(255, 255, 255, 0.35);
+  --voice-text-ghost: rgba(255, 255, 255, 0.15);
+
+  /* State colors */
+  --voice-idle: #6b7a94;
+  --voice-listen: #5ec4d4;
+  --voice-record: #e09070;
+  --voice-process: #8a9cc5;
+  --voice-speak: #b08ed8;
+  --voice-glow-radius: 300px;
+}
+
+
+/* ==========================================================================
+   Call Button (in header)
+   ========================================================================== */
+
+#voice-call-btn {
+  position: relative;
+}
+
+#voice-call-btn.in-call {
+  color: var(--error);
+}
+
+#voice-call-btn.in-call::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--error);
+  animation: voice-beacon 2s ease-in-out infinite;
+}
+
+@keyframes voice-beacon {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+
+/* ==========================================================================
+   Overlay Shell
+   ========================================================================== */
+
+.voice-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-voice);
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Solid opaque base — starfield renders on top of this */
+  background: var(--voice-bg-deep);
+}
+
+/* Starfield — canvas rendered by JS for reliable star rendering */
+.voice-starfield {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0.88;
+  background:
+    linear-gradient(115deg, rgba(80, 98, 148, 0.13), transparent 42%),
+    linear-gradient(245deg, transparent 42%, rgba(94, 196, 212, 0.035) 76%, transparent),
+    linear-gradient(180deg, var(--voice-bg-mid), var(--voice-bg-deep) 46%, #030308);
+}
+
+.voice-starfield::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(6, 6, 14, 0.12), transparent 18%, transparent 72%, rgba(3, 3, 8, 0.46)),
+    linear-gradient(90deg, rgba(3, 3, 8, 0.28), transparent 20%, transparent 80%, rgba(3, 3, 8, 0.28));
+}
+
+.voice-starfield canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Smooth atmospheric veil — avoids low-resolution tiled grain artifacts. */
+.voice-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.42;
+  background:
+    linear-gradient(135deg, rgba(108, 99, 255, 0.04), transparent 34%),
+    linear-gradient(315deg, rgba(94, 196, 212, 0.032), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 24%, rgba(0, 0, 0, 0.16));
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Radial state glow — shifts color per state */
+.voice-overlay::after {
+  content: '';
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  width: var(--voice-glow-radius);
+  height: var(--voice-glow-radius);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--voice-glow-color, var(--voice-idle)) 0%, transparent 70%);
+  opacity: var(--voice-glow-opacity, 0.08);
+  filter: blur(60px);
+  transition: background 0.6s var(--ease-standard);
+  pointer-events: none;
+  z-index: 1;
+}
+
+
+.voice-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Drop the heavy ::before/::after pseudo-elements (filter: blur(60-72px),
+   gradients, multi-layer compositing) entirely when the overlay isn't
+   active. Without this, even though `opacity: 0` hides them, the filter
+   layers stay in the compositor tree at first paint — significant VRAM
+   pressure on mobile that has nothing to do with whether voice is open.
+   `content: none` removes the pseudo-element from the box tree so the
+   GPU never allocates layers for them until the user opens voice. */
+.voice-overlay:not(.active)::before,
+.voice-overlay:not(.active)::after {
+  content: none;
+}
+
+/* Clip-path for portal transition — set via JS during animation */
+.voice-overlay.minimizing {
+  pointer-events: none;
+}
+
+.voice-overlay.minimized {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Chrome fade-out during minimize */
+.voice-overlay.minimizing .voice-info,
+.voice-overlay.minimizing .voice-top-right,
+.voice-overlay.minimizing .voice-controls,
+.voice-overlay.minimizing .voice-center .voice-transcript-user,
+.voice-overlay.minimizing .voice-center .voice-transcript-ai,
+.voice-overlay.minimizing .voice-stage,
+.voice-overlay.minimizing .voice-status-text {
+  opacity: 0;
+  transition: opacity 0.18s ease-out;
+}
+
+/* Chrome fade-in during expand */
+.voice-overlay.expanding .voice-info,
+.voice-overlay.expanding .voice-top-right,
+.voice-overlay.expanding .voice-controls,
+.voice-overlay.expanding .voice-center .voice-transcript-user,
+.voice-overlay.expanding .voice-center .voice-transcript-ai {
+  opacity: 0;
+  animation: voice-chrome-fadein 0.2s ease-out 0.55s forwards;
+}
+
+@keyframes voice-chrome-fadein {
+  to { opacity: 1; }
+}
+
+/* All content above the grain/glow layers */
+.voice-overlay > * {
+  position: relative;
+  z-index: 3;
+}
+
+.voice-overlay > .voice-starfield {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.voice-overlay.avatar-mode-active > .voice-starfield {
+  opacity: 0.62;
+}
+
+.voice-overlay.avatar-mode-active::before {
+  opacity: 0.28;
+}
+
+.voice-overlay.avatar-mode-active::after {
+  top: 45%;
+  filter: blur(72px);
+}
+
+
+/* ==========================================================================
+   Staggered Entrance
+   ========================================================================== */
+
+.voice-overlay .voice-center,
+.voice-overlay .voice-controls {
+  transform: translateY(24px) scale(0.97);
+  opacity: 0;
+  transition:
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.voice-overlay.active .voice-center    { transition-delay: 0.08s; }
+.voice-overlay.active .voice-controls  { transition-delay: 0.20s; }
+
+.voice-overlay.active .voice-center,
+.voice-overlay.active .voice-controls {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* Mobile: info & top-right become flow elements — include in entrance */
+@media (max-width: 767px) {
+  .voice-overlay .voice-info,
+  .voice-overlay .voice-top-right {
+    opacity: 0;
+    transform: translateY(-12px);
+    transition:
+      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .voice-overlay.active .voice-info      { transition-delay: 0.04s; }
+  .voice-overlay.active .voice-top-right  { transition-delay: 0.10s; }
+
+  .voice-overlay.active .voice-info,
+  .voice-overlay.active .voice-top-right {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* --- Progressive Disclosure — conversing state --- */
+.voice-overlay.conversing .voice-info {
+  opacity: 0.15;
+  transition: opacity 0.5s var(--ease-standard);
+}
+
+.voice-overlay.conversing .voice-top-right {
+  opacity: 0.15;
+  transition: opacity 0.5s var(--ease-standard);
+}
+
+.voice-overlay.conversing .voice-controls {
+  opacity: 0.5;
+  transition: opacity 0.5s var(--ease-standard);
+}
+
+/* Hover restore */
+.voice-overlay.conversing .voice-info:hover,
+.voice-overlay.conversing .voice-top-right:hover,
+.voice-overlay.conversing .voice-controls:hover {
+  opacity: 1;
+}
+
+/* Touch restore */
+.voice-overlay.conversing .voice-info.touch-revealed,
+.voice-overlay.conversing .voice-top-right.touch-revealed,
+.voice-overlay.conversing .voice-controls.touch-revealed {
+  opacity: 1;
+}
+
+/* Mobile: conversing dims less aggressively (inline elements, not overlays) */
+@media (max-width: 767px) {
+  .voice-overlay.conversing .voice-info,
+  .voice-overlay.conversing .voice-top-right {
+    opacity: 0.3;
+  }
+}
+
+
+/* ==========================================================================
+   Voice Center — Three-Column Layout
+   Desktop: user-text | orb | ai-text (flanking)
+   Mobile: vertical stack (orb dominant)
+   ========================================================================== */
+
+.voice-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: 1100px;
+}
+
+/* --- Orb Group (center column) --- */
+
+/* Shared flex/alignment for the orb-group container. Vertical placement
+   lives on the [data-mode] variants below — the same DOM element does
+   double duty as the orb stage (decorative voice call) and the avatar
+   stage (VRM/portrait viewport), so its sizing/anchoring depends on
+   which mode avatar.js has flipped it into. */
+.voice-orb-group {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Orb mode — plain voice call. Truly centered in the available vertical
+   space: equal auto margins both sides, so as transcript-log grows below
+   it the orb stays the visual anchor instead of being shoved against
+   the floor. */
+.voice-orb-group[data-mode="orb"] {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+/* Orb grows slightly when speaking — reactive, alive */
+.voice-overlay[data-state="speaking"] .voice-orb {
+  transform: scale(1.05);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.voice-orb-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.voice-orb {
+  width: 400px;
+  height: 400px;
+}
+
+/* --- Avatar Viewport --- */
+.voice-avatar-viewport {
+  width: min(240px, 40vw);
+  height: min(240px, 40vh);
+  max-height: 35vh;
+  position: relative;
+  z-index: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 1;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* No transition in experience mode — instant fullscreen prevents canvas clearing */
+.voice-avatar-viewport.avatar-experience {
+  transition: none;
+  /* Sensible default sizing for any breakpoint not caught by the media
+     queries below (e.g. 1180-1280px gap before the wide-desktop rule).
+     Portrait 3:4 to match VRM proportions. */
+  width: clamp(360px, 38vw, 520px);
+  height: clamp(520px, 78vh, 720px);
+  max-width: clamp(360px, 38vw, 520px);
+  max-height: 84vh;
+  aspect-ratio: 3 / 4;
+}
+
+.voice-avatar-viewport canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* ── Live-camera composite (call surface) ──
+   The user's camera fills the viewport as a backdrop; the VRM canvas
+   shrinks to a corner PIP so the companion reacts within the same shot. */
+.voice-avatar-viewport .companion-cam {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  z-index: 1;
+  background: #000;
+}
+
+/* ── FULL CAMERA MODE ──────────────────────────────────────────────────
+   The camera button is a call-MODE switch (top toolbar). When on, the
+   overlay gets ``camera-mode-active`` and the call surface transforms into
+   a full-bleed video call: camera edge-to-edge, VRM as a corner PIP,
+   transcript as caption overlay, controls floating over the bottom.
+   Absolute children resolve against ``.voice-overlay`` (the fixed call
+   root) because .voice-center / .voice-orb-group are statically positioned. */
+.voice-overlay.camera-mode-active .voice-avatar-viewport.companion-camera-on {
+  display: block !important;
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 0;
+  aspect-ratio: auto;
+  background: #000;
+  z-index: 20;
+}
+/* Companion VRM → corner PIP, floating above the camera. */
+.voice-overlay.camera-mode-active .voice-avatar-viewport.companion-camera-on canvas {
+  position: absolute;
+  inset: auto 16px 16px auto !important;
+  width: clamp(120px, 26%, 240px) !important;
+  height: clamp(160px, 30%, 320px) !important;
+  border-radius: 16px;
+  z-index: 21;
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+}
+/* Hide the decorative orb + status chrome behind the camera. */
+.voice-overlay.camera-mode-active .voice-orb-wrap,
+.voice-overlay.camera-mode-active .voice-status-text,
+.voice-overlay.camera-mode-active .avatar-atmosphere-canvas {
+  display: none !important;
+}
+/* Transcript → translucent caption overlay near the bottom (read-only). */
+.voice-overlay.camera-mode-active .voice-transcript-log {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 92px;
+  z-index: 22;
+  max-height: 30vh;
+  padding: 0 18px;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0));
+}
+.voice-overlay.camera-mode-active .voice-transcript-ai {
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.92);
+}
+/* Floating, glassy control bar over the bottom of the camera. */
+.voice-overlay.camera-mode-active .voice-controls {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 22px;
+  z-index: 23;
+  width: auto;
+  max-width: 94vw;
+  padding: 8px 16px;
+  border-radius: var(--radius-full, 9999px);
+  background: rgba(15, 18, 24, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+/* Keep the top toolbar tappable ABOVE the full-bleed camera so the user
+   can always toggle camera mode back off. */
+.voice-overlay.camera-mode-active .voice-top-right {
+  z-index: 25;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Flip front/back — floats top-right over the camera. Base is flex
+   (the inline style="display:none" + JS toggle controls visibility). */
+.voice-camera-flip-overlay {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  z-index: 24;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(15, 18, 24, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.92);
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.2s var(--ease-standard);
+}
+.voice-camera-flip-overlay:hover { background: rgba(34, 40, 52, 0.7); }
+.voice-camera-flip-overlay svg { width: 18px; height: 18px; }
+
+/* Camera toolbar toggle "on" state — green "live" tint over the standard
+   tools-toggle active look. */
+#voice-camera-btn[data-cam-state="on"] {
+  color: rgba(140, 232, 200, 0.98);
+  border-color: rgba(140, 232, 200, 0.45);
+  background: rgba(22, 44, 38, 0.6);
+  box-shadow: 0 0 14px rgba(120, 230, 190, 0.35);
+}
+#voice-camera-btn[data-cam-state="on"] svg { color: rgba(140, 232, 200, 0.98); }
+
+/* --- Avatar Loading Indicator --- */
+.avatar-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 6, 14, 0.9);
+  transition: opacity 0.3s ease;
+}
+
+.avatar-loading.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.avatar-loading-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgba(108, 99, 255, 0.06) 45%,
+    rgba(108, 99, 255, 0.12) 50%,
+    rgba(108, 99, 255, 0.06) 55%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: avatar-shimmer 1.8s ease-in-out infinite;
+}
+
+@keyframes avatar-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.avatar-loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  z-index: 1;
+}
+
+.avatar-loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-top-color: rgba(108, 99, 255, 0.6);
+  border-radius: 50%;
+  animation: avatar-spin 0.8s linear infinite;
+}
+
+@keyframes avatar-spin {
+  to { transform: rotate(360deg); }
+}
+
+.avatar-loading-text {
+  font-family: var(--voice-font-display, 'Outfit', sans-serif);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.04em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avatar-loading-shimmer { animation: none; }
+  .avatar-loading-spinner { animation: none; border-top-color: rgba(108, 99, 255, 0.4); }
+}
+
+/* --- DOM-Based 2D Avatar Renderer --- */
+.avatar-2d-root {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+  transform-origin: center 42%;
+}
+
+.avatar-2d-base {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.avatar-2d-region {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+  will-change: transform, opacity;
+  opacity: 0;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
+/* --- Avatar Picker (mid-call switch) --- */
+.avatar-picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-voice) + 10);
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: avatar-picker-in 0.2s ease-out;
+}
+
+@keyframes avatar-picker-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.avatar-picker-panel {
+  background: var(--voice-bg-mid, #0a0a16);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+  max-width: 360px;
+  width: 90vw;
+  max-height: 70vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+}
+
+.avatar-picker-header {
+  font-family: var(--voice-font-display, 'Outfit', sans-serif);
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.avatar-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 12px;
+}
+
+.avatar-picker-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+
+.avatar-picker-item:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-2px);
+}
+
+.avatar-picker-item:active {
+  transform: scale(0.95);
+}
+
+.avatar-picker-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.avatar-picker-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.avatar-picker-name {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* Transcript overlay inside expanded viewport */
+
+/* Avatar toggle active state */
+#voice-avatar-toggle.active {
+  background: rgba(160, 200, 220, 0.12);
+  border-color: rgba(160, 200, 220, 0.25);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* CSS vignette overlay for avatar viewport */
+.voice-avatar-viewport::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(6, 6, 14, 0.4) 100%);
+  z-index: 1;
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .voice-avatar-viewport {
+    width: min(140px, 36vw);
+    height: min(140px, 20vh);
+    max-height: 20vh;
+  }
+}
+
+/* Group chat: split-pane rendering. Each character has its own
+   <div> pane containing its own canvas. The .main pane fills the
+   viewport (active speaker), the .pip pane is a small overlay
+   (non-speaker). Speaker swap = swap .main/.pip CSS classes. */
+
+.voice-avatar-viewport.group-split {
+  /* Group viewport stays full-size — the active speaker fills it,
+     and the PIP is positioned within. Don't shrink for "fit both
+     side-by-side" since we no longer share the canvas. */
+  width: min(360px, 75vw);
+  height: min(360px, 60vh);
+}
+
+.voice-avatar-viewport.avatar-experience.group-split {
+  /* Experience mode keeps its full landscape sizing — the PIP overlays
+     within without changing the viewport's external footprint. */
+}
+
+.voice-avatar-pane {
+  position: absolute;
+  background: transparent;
+  overflow: hidden;
+  border-radius: inherit;
+  transition: inset 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.2s ease;
+}
+
+.voice-avatar-pane.main {
+  inset: 0;
+  z-index: 1;
+}
+
+.voice-avatar-pane.pip {
+  /* aspect-ratio drives height from width (4:5 = 1.25× tall). Single
+     source of truth for the PIP shape across desktop/mobile/wide so a
+     viewport resize doesn't drift the proportions. */
+  width: clamp(96px, 26%, 160px);
+  aspect-ratio: 4 / 5;
+  height: auto;
+  bottom: 12px;
+  right: 12px;
+  z-index: 3;
+  border-radius: 12px;
+  border: 2px solid color-mix(in srgb, var(--accent) 70%, transparent);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35),
+              0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.voice-avatar-pane.pip:hover {
+  border-color: var(--accent);
+  transform: scale(1.04);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45),
+              0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+}
+
+.voice-avatar-pane.pip:active {
+  transform: scale(0.98);
+}
+
+.voice-avatar-pane.pip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.voice-avatar-pane canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+@media (max-width: 767px) {
+  .voice-avatar-viewport.group-split {
+    width: min(280px, 88vw);
+    height: min(360px, 50vh);
+  }
+  /* On mobile, anchor the PIP to the TOP-right of the viewport rather
+     than bottom-right. The bottom edge of the viewport sits right
+     above the call controls bar (mic mute / end call / etc.) and the
+     PIP gets clipped or visually crowded down there. The top-right
+     corner is empty space — and visually adjacent to the avatar
+     toggle button in the top-right tools cluster, so the PIP reads
+     as "the other character, parked near the avatar control."
+     Aspect-ratio is inherited from the base rule (4:5 = 1.25× tall). */
+  .voice-avatar-pane.pip {
+    width: 26%;
+    top: 12px;
+    right: 12px;
+    bottom: auto;
+  }
+}
+
+/* Legacy class retained for any callers still adding it; the new
+   path uses .group-split. Deprecated. */
+.voice-avatar-viewport.group {
+  width: min(500px, 90vw);
+}
+
+@media (max-width: 767px) {
+  .voice-avatar-viewport.group {
+    width: min(320px, 85vw);
+  }
+}
+
+.voice-status-text {
+  font-family: var(--voice-font-display);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--voice-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  text-align: center;
+  margin-top: 4px;
+  transition: color 0.4s var(--ease-standard);
+}
+
+/* Active mic name — sits below the status text as a diagnostic
+   confirmation that Chrome honored the user's device pick. Lower
+   contrast than the status so it reads as supplementary info. */
+.voice-mic-label {
+  font-family: var(--voice-font-display);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--voice-text-dim);
+  opacity: 0.5;
+  text-align: center;
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.4s var(--ease-standard);
+}
+.voice-mic-label:empty {
+  display: none;
+}
+
+.voice-overlay.avatar-mode-active .voice-center {
+  max-width: none;
+}
+
+.voice-overlay.avatar-mode-active .voice-status-text {
+  --voice-state-r: 230;
+  --voice-state-g: 238;
+  --voice-state-b: 255;
+  /* Pinned to top-LEFT corner — top-right is occupied by the mode/tools
+     toggle (.voice-top-right at top:24px right:24px). Top-left has no
+     other UI competing for the space. The pill chrome (gradient bg,
+     icon animations) is preserved; only positioning differs. */
+  position: fixed !important;
+  top: 16px !important;
+  left: 100px !important;       /* clears the voice chat text in the top-left area */
+  right: auto !important;
+  bottom: auto !important;
+  margin-top: 0 !important;
+  align-self: auto !important;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 0;
+  min-height: 32px;
+  padding: 7px 16px 7px 10px;
+  transform: none !important;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.18);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 16px 50%, rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.14), transparent 34px),
+    linear-gradient(180deg, rgba(12, 16, 28, 0.70), rgba(5, 7, 15, 0.48));
+  box-shadow:
+    0 18px 46px rgba(0, 0, 0, 0.32),
+    0 0 34px rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.035);
+  /* backdrop-filter removed — heavy blur over the WebGL avatar canvas
+     triggered GPU compositor failures (rendered as RGB noise) on some
+     hardware at narrow viewport widths. Solid near-opaque background
+     instead. The radial-gradient bg painted above keeps the visual
+     character — just no live blur of pixels behind. */
+  background:
+    radial-gradient(circle at 16px 50%, rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.18), transparent 34px),
+    rgba(8, 12, 18, 0.94) !important;
+  color: rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.92);
+  font-size: clamp(10px, 1.15vw, 12px);
+  line-height: 1;
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 18px currentColor;
+  white-space: nowrap;
+}
+
+.voice-overlay.avatar-mode-active .voice-status-text::before {
+  content: '';
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.98) 0 2px, transparent 2.8px),
+    conic-gradient(from 18deg, transparent 0 58deg, rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.88) 72deg 142deg, transparent 158deg 360deg);
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.30),
+    0 0 18px rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.22);
+}
+
+.voice-overlay.avatar-mode-active .voice-status-text::after {
+  content: '';
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.54), transparent);
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.voice-overlay.avatar-mode-active[data-state="listening"] .voice-status-text {
+  --voice-state-r: 119;
+  --voice-state-g: 224;
+  --voice-state-b: 235;
+}
+
+.voice-overlay.avatar-mode-active[data-state="listening"] .voice-status-text::before {
+  animation: voice-state-listening 2.4s ease-in-out infinite;
+}
+
+.voice-overlay.avatar-mode-active[data-state="recording"] .voice-status-text {
+  --voice-state-r: 255;
+  --voice-state-g: 177;
+  --voice-state-b: 136;
+}
+
+.voice-overlay.avatar-mode-active[data-state="recording"] .voice-status-text::before {
+  background:
+    radial-gradient(circle at center, rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.98) 0 4px, transparent 4.6px),
+    radial-gradient(circle at center, rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.16), transparent 68%);
+  animation: voice-state-recording 1.25s ease-in-out infinite;
+}
+
+.voice-overlay.avatar-mode-active[data-state="connecting"] .voice-status-text,
+.voice-overlay.avatar-mode-active[data-state="processing"] .voice-status-text,
+.voice-overlay.avatar-mode-active[data-state="composing"] .voice-status-text {
+  --voice-state-r: 190;
+  --voice-state-g: 205;
+  --voice-state-b: 245;
+}
+
+.voice-overlay.avatar-mode-active[data-state="connecting"] .voice-status-text::before,
+.voice-overlay.avatar-mode-active[data-state="processing"] .voice-status-text::before,
+.voice-overlay.avatar-mode-active[data-state="composing"] .voice-status-text::before {
+  animation: voice-state-spin 1.9s linear infinite;
+}
+
+.voice-overlay.avatar-mode-active[data-state="speaking"] .voice-status-text {
+  --voice-state-r: 205;
+  --voice-state-g: 174;
+  --voice-state-b: 244;
+}
+
+.voice-overlay.avatar-mode-active[data-state="speaking"] .voice-status-text::before {
+  border-radius: 7px;
+  background:
+    linear-gradient(to top, transparent 26%, rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.92) 26% 72%, transparent 72%) 4px 50% / 2px 14px no-repeat,
+    linear-gradient(to top, transparent 14%, rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.92) 14% 86%, transparent 86%) 8px 50% / 2px 14px no-repeat,
+    linear-gradient(to top, transparent 34%, rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.92) 34% 68%, transparent 68%) 12px 50% / 2px 14px no-repeat,
+    linear-gradient(180deg, rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.12), rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.04));
+  animation: voice-state-speaking 0.95s ease-in-out infinite;
+}
+
+.voice-overlay.avatar-mode-active[data-state="disconnected"] .voice-status-text {
+  --voice-state-r: 255;
+  --voice-state-g: 149;
+  --voice-state-b: 126;
+}
+
+@keyframes voice-state-listening {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow:
+      inset 0 0 0 1px rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.30),
+      0 0 18px rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.22),
+      0 0 0 0 rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.0);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow:
+      inset 0 0 0 1px rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.38),
+      0 0 22px rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.28),
+      0 0 0 4px rgba(var(--voice-state-r), var(--voice-state-g), var(--voice-state-b), 0.08);
+  }
+}
+
+@keyframes voice-state-recording {
+  0%, 100% { transform: scale(1); opacity: 0.92; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+@keyframes voice-state-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes voice-state-speaking {
+  0%, 100% { transform: scaleY(0.92); }
+  50% { transform: scaleY(1.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voice-overlay.avatar-mode-active .voice-status-text::before {
+    animation: none !important;
+  }
+}
+
+.voice-overlay[data-state="recording"] .voice-status-text {
+  color: rgba(224, 144, 112, 0.7);
+}
+
+.voice-overlay[data-state="speaking"] .voice-status-text {
+  color: rgba(176, 142, 216, 0.6);
+}
+
+
+/* --- User Transcript (hidden — data source only, display is in the log) --- */
+.voice-transcript-user { display: none; }
+
+/* --- Conversation Transcript Log (scrolling below orb) --- */
+
+.voice-transcript-log {
+  flex: 0 1 auto;
+  min-height: 60px;
+  max-height: 34vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  width: 100%;
+  max-width: 520px;
+  align-self: center;
+  padding: 8px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
+  position: relative;
+  z-index: 5; /* Above avatar viewport (z-index: 1) */
+  margin-bottom: auto;
+}
+
+.voice-transcript-log::-webkit-scrollbar { width: 4px; }
+.voice-transcript-log::-webkit-scrollbar-track { background: transparent; }
+.voice-transcript-log::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+}
+
+/* In avatar mode, the avatar viewport replaces the orb in the same
+   flex slot — same dimensions, same position, same surrounding flow.
+   The default `.voice-transcript-log` rules then place the transcript
+   below it identically to how the orb mode handles it. No drawer, no
+   custom positioning — just orb-substitution. */
+
+/* Hide the orb canvas + its concentric state rings (::before / ::after).
+   The avatar takes their place in the flex column. */
+.voice-overlay.avatar-mode-active .voice-orb-wrap,
+.voice-overlay.avatar-mode-active .voice-orb-wrap::before,
+.voice-overlay.avatar-mode-active .voice-orb-wrap::after {
+  display: none !important;
+}
+
+/* Disable layers that were built for the previous fullscreen avatar
+   mode. At orb-size they show through as visible chrome instead of
+   doing their intended job:
+   - The vignette darkens the outer edge of the now-small avatar box
+     and reads as a black outline.
+   - The atmosphere canvas (`mix-blend-mode: screen`, designed to
+     spread particles across the whole viewport) fills the orb-group
+     and shows as a discolored rectangle.
+   - The subtitle/drawer containers were designed for fullscreen
+     bottom-edge subtitles; the new transcript log does that job.
+*/
+.voice-overlay.avatar-mode-active .voice-avatar-viewport::after,
+.voice-overlay.avatar-mode-active .avatar-atmosphere-canvas,
+.voice-overlay.avatar-mode-active .avatar-subtitle-container,
+.voice-overlay.avatar-mode-active .avatar-drawer-container {
+  display: none !important;
+}
+
+/* Collapsed: hide the transcript outright. Works in BOTH avatar mode
+   and non-avatar (orb) mode — the toggle button is shared infra now. */
+.voice-overlay.avatar-transcript-collapsed .voice-transcript-log {
+  display: none !important;
+}
+
+/* Default: hidden (only shown when the avatar mode adds .voice-controls
+   visibility — see the .voice-controls override below). The previous
+   absolute-positioned floating button on the right edge is gone. */
+.voice-avatar-transcript-toggle {
+  display: none;
+}
+
+/* Toggle button shown in BOTH avatar mode and non-avatar (orb) mode.
+   Behavior is the same: collapse hides the message thread, expand
+   shows it. Naming is "avatar" for legacy reasons; functionally it
+   toggles the conversation transcript regardless of mode. */
+.voice-controls .voice-avatar-transcript-toggle {
+  display: inline-flex;
+}
+
+.voice-avatar-transcript-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+.voice-overlay.avatar-thread-mode .voice-log-bubble {
+  max-width: 94%;
+}
+
+.voice-overlay.avatar-thread-mode .voice-log-user {
+  color: rgba(255, 255, 255, 0.62);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.voice-overlay.avatar-thread-mode .voice-log-ai {
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.voice-overlay.avatar-thread-mode .avatar-subtitle-container {
+  display: none;
+}
+
+/* Avatar-mode responsive sizing — mirrors the non-avatar rules at the
+   same breakpoints. Without these, the avatar stays at 400x400 even
+   on a half-screen window, eating most of the vertical space and
+   collapsing the transcript to 60px (a half-visible line). */
+
+/* No-history mode — when the conversation hasn't started yet OR the
+   transcript is collapsed, take the whole screen for the avatar so it
+   reads as a full-body presence rather than a small portrait widget.
+   Class toggled by avatar.js. Portrait aspect 3:4 fits arm-extended
+   poses; camera preset switches to `fullBody` in JS to match. */
+.voice-overlay.avatar-mode-active.no-history .voice-avatar-viewport.avatar-experience {
+  width: auto !important;
+  height: 92vh !important;
+  aspect-ratio: 3 / 4 !important;
+  max-width: 70vw !important;
+  max-height: 92vh !important;
+}
+.voice-overlay.no-history .voice-orb-group[data-mode="avatar"] {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+.voice-overlay.avatar-mode-active.no-history .voice-transcript-log {
+  display: none !important;
+}
+
+/* === Wide desktop side-by-side layout (≥1280px) ====================
+   On wide desktop we have enough horizontal space to show the avatar
+   at full-body size AND the transcript as a side panel. Avatar stays
+   ~92vh tall on the LEFT, transcript becomes a vertical column on the
+   RIGHT. Below 1280px the responsive stacked layout (existing rules)
+   kicks back in. Mobile is unchanged.
+   ================================================================ */
+@media (min-width: 1280px) {
+  /* Avatar full-body always on wide desktop, regardless of transcript state */
+  .voice-overlay.avatar-mode-active .voice-avatar-viewport.avatar-experience {
+    width: auto !important;
+    height: 92vh !important;
+    aspect-ratio: 3 / 4 !important;
+    max-width: 50vw !important;
+    max-height: 92vh !important;
+  }
+
+  /* When transcript is visible (no-history is NOT set): row layout */
+  .voice-overlay.avatar-mode-active:not(.no-history) .voice-center {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 32px !important;
+    max-width: 100% !important;
+  }
+
+  /* Transcript becomes a vertical column on the right side. Shorter
+     than the avatar (avatar is 92vh, transcript ~62vh) and pushed down
+     ~12vh from the top so it visually aligns with the avatar's torso/
+     gesture region rather than stretching from head to floor. */
+  .voice-overlay.avatar-mode-active:not(.no-history) .voice-transcript-log {
+    width: clamp(360px, 32vw, 520px) !important;
+    max-width: clamp(360px, 32vw, 520px) !important;
+    height: auto !important;
+    max-height: 62vh !important;
+    flex: 0 0 auto !important;
+    align-self: flex-start !important;
+    margin-top: 14vh !important;
+  }
+
+  /* Avatar's orb-group resets margins for clean row alignment */
+  .voice-overlay:not(.no-history) .voice-orb-group[data-mode="avatar"] {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    flex: 0 0 auto !important;
+  }
+}
+
+/* Narrow desktop / half-screen (768-1180px): avatar uses 3:4 portrait so
+   the full body fits comfortably. Width-constrained so it doesn't crowd
+   the transcript on the right. */
+@media (min-width: 768px) and (max-width: 1180px) and (min-height: 560px) {
+  .voice-avatar-viewport.avatar-experience {
+    width: clamp(360px, 42vw, 480px) !important;
+    height: clamp(480px, 62vh, 640px) !important;
+    max-width: clamp(360px, 42vw, 480px) !important;
+    max-height: 72vh !important;
+    aspect-ratio: 3 / 4 !important;
+  }
+
+  .voice-overlay.avatar-mode-active .voice-transcript-log {
+    min-height: 112px;
+    max-height: clamp(180px, 30vh, 280px);
+    max-width: min(560px, calc(100vw - 48px));
+  }
+
+  .voice-orb-group[data-mode="avatar"] {
+    /* Tighten the auto top-margin so the avatar doesn't get pushed
+       to the bottom of voice-center. Anchored ~32-72px from the top
+       of the available area instead of consuming all upper space. */
+    margin-top: clamp(32px, 6vh, 72px);
+    margin-bottom: 8px;
+  }
+}
+
+/* Short viewport / very narrow desktop windows: portrait 3:4, height-led
+   so the avatar still feels large on shallow displays. */
+@media (max-height: 700px) and (min-width: 768px) {
+  .voice-avatar-viewport.avatar-experience {
+    width: clamp(280px, 48vh, 380px) !important;
+    height: clamp(380px, 64vh, 500px) !important;
+    max-width: clamp(280px, 48vh, 380px) !important;
+    max-height: 76vh !important;
+    aspect-ratio: 3 / 4 !important;
+  }
+
+  .voice-orb-group[data-mode="avatar"] {
+    margin-top: clamp(20px, 4vh, 48px);
+    margin-bottom: 4px;
+  }
+
+  .voice-overlay.avatar-mode-active .voice-transcript-log {
+    min-height: 96px;
+    max-height: 28vh;
+  }
+}
+
+/* Mobile cinematic mode: avatar fills the vertical space between the
+   listening-status header and the PTT/controls bar. The 3:4 aspect
+   stays so the avatar reads tall, but height is now ~78vh (was 52vh)
+   which lets the full-body framing in _autoFrameVRM (portrait branch)
+   actually show the full body cleanly instead of a small avatar in
+   the lower half of an undersized canvas. */
+@media (max-width: 767px) {
+  .voice-avatar-viewport.avatar-experience {
+    width: clamp(280px, 92vw, 480px) !important;
+    height: clamp(440px, 78vh, 720px) !important;
+    max-width: 96vw !important;
+    max-height: 82vh !important;
+    aspect-ratio: 3 / 4 !important;
+  }
+
+  .voice-orb-group[data-mode="avatar"] {
+    /* Tighten the top margin so the larger viewport sits just below
+       the status header instead of pushing into it. */
+    margin-top: clamp(8px, 2vh, 28px);
+    margin-bottom: 4px;
+  }
+
+  .voice-overlay.avatar-mode-active .voice-transcript-log {
+    min-height: clamp(140px, 26vh, 240px);
+    margin-bottom: 14px;
+    padding: 10px 12px 14px;
+    gap: 10px;
+  }
+}
+
+/* --- Conversation Bubbles --- */
+
+.voice-log-bubble {
+  padding: 8px 14px;
+  border-radius: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.55;
+  animation: voice-bubble-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: 85%;
+}
+
+@keyframes voice-bubble-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* User bubble — right-aligned, subtle */
+.voice-log-user {
+  align-self: flex-end;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  font-style: italic;
+  border-bottom-right-radius: 4px;
+}
+
+/* AI bubble — left-aligned, prominent */
+.voice-log-ai {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 15px;
+  letter-spacing: 0;
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  border-bottom-left-radius: 4px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.voice-log-ai.voice-log-streaming {
+  border-color: rgba(190, 205, 245, 0.10);
+  box-shadow: inset 2px 0 0 rgba(190, 205, 245, 0.18);
+}
+
+.voice-log-ai.voice-log-streaming::after {
+  content: '';
+  display: inline-block;
+  width: 0.45em;
+  height: 1em;
+  margin-left: 0.22em;
+  transform: translateY(0.16em);
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.42;
+  animation: voice-stream-caret 1.1s ease-in-out infinite;
+}
+
+@keyframes voice-stream-caret {
+  0%, 100% { opacity: 0.20; }
+  50% { opacity: 0.62; }
+}
+
+/* Live partial — pulsing opacity while user is still speaking */
+.voice-log-live {
+  opacity: 0.5;
+  animation: voice-live-pulse 1.5s ease-in-out infinite;
+  border-style: dashed;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: transparent;
+}
+
+@keyframes voice-live-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+/* --- Word-by-word reveal animation --- */
+
+@keyframes voice-word-in {
+  from { opacity: 0; filter: blur(2px); }
+  to { opacity: 1; filter: blur(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voice-log-ai.voice-log-streaming::after,
+}
+
+/* Links inside voice bubbles */
+.voice-word-link {
+  color: rgba(130, 180, 255, 0.9);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(130, 180, 255, 0.3);
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.voice-word-link:hover {
+  color: rgba(160, 200, 255, 1);
+  border-color: rgba(160, 200, 255, 0.6);
+}
+
+/* Stagger: each word gets a tiny extra delay via JS inline style,
+   but the base animation handles the reveal naturally for streaming. */
+
+/* Hide AI transcript element (legacy — kept for stage manager compat) */
+.voice-transcript-ai {
+  display: none;
+}
+.voice-transcript-ai.stage-hidden {
+  display: none;
+}
+
+/* Fade state for the log */
+.voice-transcript-log.dimmed {
+  opacity: 0.3;
+  transition: opacity 1s var(--ease-standard);
+}
+
+
+/* ==========================================================================
+   Tablet Layout
+   ========================================================================== */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .voice-orb {
+    width: 300px;
+    height: 300px;
+  }
+  .voice-transcript-user,
+  .voice-transcript-ai {
+    max-width: 200px;
+  }
+}
+
+/* Narrow standard-call layout: preserve the orb/transcript balance as text wraps. */
+@media (min-width: 768px) and (max-width: 1180px) and (min-height: 560px) {
+  .voice-overlay:not(.avatar-mode-active):not(:has(.voice-stage:not([hidden]))) .voice-center {
+    max-width: min(760px, 94vw);
+  }
+
+  .voice-overlay:not(.avatar-mode-active):not(:has(.voice-stage:not([hidden]))) .voice-orb {
+    width: clamp(300px, 34vw, 360px);
+    height: clamp(300px, 34vw, 360px);
+  }
+
+  .voice-overlay:not(:has(.voice-stage:not([hidden]))) .voice-orb-group[data-mode="orb"] {
+    margin-bottom: 6px;
+  }
+
+  .voice-overlay:not(.avatar-mode-active):not(:has(.voice-stage:not([hidden]))) .voice-transcript-log {
+    min-height: 112px;
+    max-height: clamp(220px, 38vh, 360px);
+    max-width: min(560px, calc(100vw - 48px));
+    padding: 10px 18px 14px;
+  }
+
+  .voice-overlay:not(.avatar-mode-active):not(:has(.voice-stage:not([hidden]))) .voice-log-bubble {
+    max-width: 92%;
+  }
+}
+
+/* ==========================================================================
+   Mobile Layout — Vertical Stack
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  .voice-center {
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-height: 0;
+    justify-content: flex-start;
+    overflow: hidden;
+  }
+
+  /* Orb: generous size — this is the centerpiece */
+  .voice-orb {
+    width: min(280px, 68vw);
+    height: min(280px, 68vw);
+  }
+
+  .voice-orb-group {
+    gap: 0;
+    flex-shrink: 0;
+  }
+  .voice-orb-group[data-mode="orb"] {
+    /* Anchor the orb near the top of the screen on mobile — the
+       transcript-log flexes below to fill the rest. Overrides the
+       desktop default (auto/auto centering) since portrait viewports
+       have plenty of vertical room and centering reads as "drifting". */
+    margin-top: 12vh;
+    margin-bottom: 12px;
+  }
+
+  /* Conversation log: fills remaining space below orb */
+  .voice-transcript-log {
+    max-width: 100%;
+    padding: 8px 12px;
+    max-height: none;
+    flex: 1 1 0;
+  }
+
+  .voice-log-ai {
+    font-size: 16px;
+    max-width: 92%;
+  }
+
+  .voice-log-user {
+    font-size: 12px;
+    max-width: 80%;
+  }
+
+  /* Tighten gap between status text and transcript */
+  .voice-status-text {
+    margin-top: 2px;
+    margin-bottom: 0;
+  }
+
+  .voice-overlay.avatar-mode-active .voice-status-text {
+    top: calc(env(safe-area-inset-top, 0px) + 16px) !important;
+    max-width: calc(100vw - 32px);
+    min-width: 116px;
+    padding: 7px 12px;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+  }
+}
+
+@media (max-width: 767px) and (min-height: 560px) {
+  .voice-overlay:not(:has(.voice-stage:not([hidden]))) .voice-orb-group[data-mode="orb"] {
+    margin-top: clamp(52px, 8vh, 84px);
+    margin-bottom: 8px;
+  }
+
+  .voice-overlay:not(.avatar-mode-active):not(:has(.voice-stage:not([hidden]))) .voice-transcript-log {
+    min-height: clamp(170px, 30vh, 280px);
+    margin-bottom: 14px;
+    padding: 10px 12px 14px;
+    gap: 10px;
+  }
+}
+
+/* --- Voice image card (generated images shown in transcript) --- */
+.voice-image-card {
+  position: relative;
+  margin: 12px auto 8px;
+  max-width: 260px;
+  border-radius: 12px;
+  overflow: visible;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  transition: transform var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.voice-image-dismiss {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: #e53935;
+  color: #fff;
+  font-size: 14px;
+  line-height: 22px;
+  text-align: center;
+  padding: 0;
+  cursor: pointer;
+  z-index: 2;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.voice-image-card:hover .voice-image-dismiss {
+  opacity: 1;
+}
+
+.voice-image-dismiss:hover {
+  background: #c62828;
+}
+
+.voice-image-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+.voice-image-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ── image_search result grid ──────────────────────────────────────
+   Rendered in the voice transcript log when the image_search tool
+   returns results. Tapping a cell opens the full image. See voice.js
+   _showVoiceImages. */
+.voice-image-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  width: 100%;
+  max-width: 360px;
+  margin: 12px auto 8px;
+}
+.voice-image-grid-cell {
+  display: block;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface-2, var(--surface-hover));
+  transition: transform 0.12s ease;
+}
+.voice-image-grid-cell:hover { transform: scale(1.03); }
+.voice-image-grid-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── YouTube 3-card picker ─────────────────────────────────────────
+   Rendered in the voice transcript log when the YouTube tool returns
+   search results. Tapping a card hands the video off to the YouTube
+   panel via the existing `media:play` event. Stage 1 of the voice +
+   YouTube integration — see voice.js _showVoiceVideos. */
+.voice-video-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 360px;
+  margin: 12px auto 8px;
+}
+
+.voice-video-card {
+  display: grid;
+  grid-template-columns: 22px 64px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px 6px 6px;
+  border: 1px solid var(--voice-surface-border);
+  border-radius: 10px;
+  background: var(--voice-surface);
+  color: var(--voice-text);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: transform var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard),
+              background var(--duration-fast) var(--ease-standard);
+}
+
+.voice-video-card:hover {
+  transform: translateX(2px);
+  border-color: var(--voice-listen);
+  background: rgba(94, 196, 212, 0.06);
+}
+
+.voice-video-card:active {
+  transform: translateX(2px) scale(0.98);
+}
+
+.voice-video-card-num {
+  font-family: var(--voice-font-mono);
+  font-size: 12px;
+  color: var(--voice-text-dim);
+  text-align: center;
+}
+
+.voice-video-card-thumb {
+  width: 64px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: var(--voice-bg-mid);
+}
+
+.voice-video-card-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.voice-video-card-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--voice-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.3;
+}
+
+.voice-video-card-sub {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--voice-text-dim);
+  font-family: var(--voice-font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+
+/* ==========================================================================
+   Controls — Central PTT orb + flanking utility buttons
+   ========================================================================== */
+
+.voice-controls {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-shrink: 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Mobile: controls always reachable at bottom */
+@media (max-width: 767px) {
+  .voice-controls {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    padding-top: 8px;
+  }
+}
+
+/* --- Push-to-Talk Orb --- */
+.voice-ptt-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.2s var(--ease-standard),
+    border-color 0.2s var(--ease-standard),
+    color 0.2s var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard),
+    box-shadow 0.3s var(--ease-standard);
+  -webkit-user-select: none;
+  user-select: none;
+  position: relative;
+}
+
+.voice-ptt-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.voice-ptt-btn:active,
+.voice-ptt-btn.pressed {
+  background: var(--voice-record);
+  border-color: var(--voice-record);
+  color: white;
+  transform: scale(0.92);
+  box-shadow:
+    0 0 30px rgba(248, 113, 113, 0.3),
+    0 0 60px rgba(248, 113, 113, 0.1);
+}
+
+.voice-ptt-btn svg {
+  width: 28px;
+  height: 28px;
+  pointer-events: none;
+}
+
+/* PTT label */
+.voice-ptt-label {
+  position: absolute;
+  bottom: -24px;
+  font-family: var(--voice-font-mono);
+  font-size: 9px;
+  color: var(--voice-text-ghost);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+
+/* --- Utility Buttons (interrupt, end call) --- */
+.voice-ctrl-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s var(--ease-standard);
+}
+
+/* Author-stylesheet display:flex above ties specificity with the UA's
+   [hidden]{display:none} rule and wins by source order, so <button hidden>
+   was visibly rendering. Re-establish the hidden attribute's effect for
+   .voice-ctrl-btn (e.g. VR/MR entry buttons, pin transcript) and the
+   end-call button so JS toggling `el.hidden` works as expected. */
+.voice-ctrl-btn[hidden],
+.voice-end-btn[hidden] {
+  display: none;
+}
+
+.voice-ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.voice-ctrl-btn:active {
+  transform: scale(0.92);
+}
+
+.voice-ctrl-btn svg {
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+
+/* Pause button — paused state shows play icon with accent glow */
+#voice-pause-btn .voice-resume-icon {
+  width: 16px;
+  height: 16px;
+}
+
+#voice-pause-btn.paused {
+  border-color: var(--voice-speak);
+  color: var(--voice-speak);
+  background: rgba(129, 140, 248, 0.08);
+}
+
+/* End call — large, red, unmistakable */
+.voice-end-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid rgba(248, 113, 113, 0.5);
+  background: rgba(248, 113, 113, 0.2);
+  color: var(--voice-record);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s var(--ease-standard);
+}
+
+.voice-end-btn:hover {
+  background: var(--voice-record);
+  border-color: var(--voice-record);
+  color: white;
+  box-shadow: 0 0 24px rgba(248, 113, 113, 0.35);
+}
+
+.voice-end-btn:active {
+  transform: scale(0.90);
+}
+
+.voice-end-btn svg {
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+}
+
+/* Minimize — small, subtle, clearly secondary */
+.voice-minimize-btn {
+  width: 36px !important;
+  height: 36px !important;
+  opacity: 0.5;
+}
+
+.voice-minimize-btn:hover {
+  opacity: 1;
+}
+
+
+/* ==========================================================================
+   Top Right Controls — mode toggle + tools toggle
+   ========================================================================== */
+
+.voice-top-right {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 40;
+}
+
+.voice-mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-full, 9999px);
+  padding: 3px;
+}
+
+.voice-tools-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: var(--radius-full, 9999px);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.3);
+  font-family: var(--voice-font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-standard);
+}
+
+.voice-tools-toggle:hover {
+  color: rgba(255, 255, 255, 0.6);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.voice-tools-toggle.active {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.voice-tools-toggle svg {
+  opacity: 0.6;
+  transition: opacity 0.25s var(--ease-standard);
+}
+
+.voice-tools-toggle.active svg {
+  opacity: 1;
+}
+
+.voice-mode-toggle label {
+  cursor: pointer;
+  padding: 5px 14px;
+  border-radius: var(--radius-full, 9999px);
+  font-family: var(--voice-font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  transition: all 0.25s var(--ease-standard);
+}
+
+.voice-mode-toggle label:hover {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.voice-mode-toggle label.active {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+
+/* ==========================================================================
+   Info Area — top left (model + voice pills + duration)
+   ========================================================================== */
+
+.voice-info {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 40;
+  transition: opacity 0.5s var(--ease-standard);
+}
+
+.voice-info.dimmed {
+  opacity: 0.2;
+  pointer-events: auto;
+}
+
+.voice-info.dimmed:hover {
+  opacity: 1;
+}
+
+.voice-info > span:first-child {
+  font-family: var(--voice-font-display);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--voice-text-dim);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Pill buttons */
+.voice-pill {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 5px;
+  padding: 4px 10px;
+  background: var(--voice-surface);
+  border: 1px solid var(--voice-surface-border);
+  border-radius: 20px;
+  color: var(--voice-text-dim);
+  font-family: var(--voice-font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  max-width: 160px;
+  position: relative;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+
+.voice-pill:hover {
+  color: var(--voice-text);
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.voice-pill.open {
+  color: var(--voice-text);
+  border-color: var(--voice-speak);
+  background: rgba(129, 140, 248, 0.08);
+}
+
+.voice-pill-icon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.voice-pill.open .voice-pill-icon {
+  opacity: 0.8;
+  color: var(--voice-speak);
+}
+
+.voice-pill-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+/* Dropdown panel */
+.voice-selector-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 280px;
+  max-height: 340px;
+  background: rgba(10, 10, 22, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--voice-surface-border);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard), visibility var(--duration-fast);
+  z-index: 50;
+  pointer-events: auto;
+}
+
+.voice-selector-panel.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Search input */
+.voice-selector-search {
+  padding: 8px;
+  border-bottom: 1px solid var(--voice-surface-border);
+  flex-shrink: 0;
+}
+
+.voice-selector-search input {
+  width: 100%;
+  padding: 5px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--voice-surface-border);
+  border-radius: 6px;
+  color: var(--voice-text);
+  font-family: var(--voice-font-mono);
+  font-size: 10px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.voice-selector-search input::placeholder {
+  color: var(--voice-text-ghost);
+}
+
+.voice-selector-search input:focus {
+  border-color: var(--voice-speak);
+}
+
+/* Scrollable list */
+.voice-selector-list {
+  overflow-y: auto;
+  flex: 1;
+  padding: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.08) transparent;
+}
+
+.voice-selector-list::-webkit-scrollbar { width: 3px; }
+.voice-selector-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+
+/* Group header */
+.voice-selector-group {
+  padding: 4px 8px;
+  font-family: var(--voice-font-display);
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--voice-text-ghost);
+  margin-top: 4px;
+}
+
+.voice-selector-group:first-child { margin-top: 0; }
+
+/* Item */
+.voice-selector-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-family: var(--voice-font-mono);
+  font-size: 10px;
+  color: var(--voice-text-dim);
+  transition: background 0.12s, color 0.12s;
+  position: relative;
+}
+.voice-selector-item-top {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+.voice-desc {
+  width: 100%;
+  font-size: 8px;
+  color: var(--voice-text-ghost);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-left: 16px;
+}
+.voice-gender {
+  font-size: 9px;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+.voice-grade {
+  font-size: 7px;
+  padding: 0 3px;
+  border-radius: 3px;
+  font-weight: 700;
+  flex-shrink: 0;
+  line-height: 14px;
+}
+.voice-mix-badge {
+  font-size: 7px;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: #7c3aed22;
+  color: #a78bfa;
+  flex-shrink: 0;
+  line-height: 14px;
+}
+
+.voice-peer-badge {
+  display: inline-block;
+  font-size: 0.85em;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.voice-selector-item:hover .voice-peer-badge,
+.voice-selector-item.active .voice-peer-badge {
+  background: transparent;
+}
+
+/* Fabric source badges populated by voice-display.js helpers.
+   `shared`  = local + N peers (e.g. "• 2") — soft accent indicating redundancy.
+   `peer`    = peer-only voice (e.g. "[Box 3]") — colored chip naming the source. */
+.voice-source-badge {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 0.78em;
+  padding: 1px 6px;
+  border-radius: 3px;
+  vertical-align: middle;
+  flex-shrink: 0;
+  cursor: help;
+}
+.voice-source-shared {
+  background: rgba(120, 140, 255, 0.14);
+  color: rgba(170, 190, 255, 0.92);
+}
+.voice-source-peer {
+  background: rgba(255, 180, 120, 0.16);
+  color: rgba(255, 210, 170, 0.95);
+}
+
+.voice-selector-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--voice-text);
+}
+
+.voice-selector-item.active {
+  color: var(--voice-speak);
+  background: rgba(129, 140, 248, 0.08);
+}
+
+.voice-selector-item-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+
+/* Recent header */
+.voice-selector-recent-header {
+  padding: 4px 8px;
+  font-size: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--voice-speak);
+  opacity: 0.6;
+}
+
+.voice-selector-divider {
+  height: 1px;
+  background: var(--voice-surface-border);
+  margin: 4px 8px;
+}
+
+/* Empty state */
+.voice-selector-empty {
+  padding: 20px;
+  text-align: center;
+  color: var(--voice-text-ghost);
+  font-size: 10px;
+  font-family: var(--voice-font-mono);
+}
+
+/* Duration label */
+.voice-info-duration {
+  font-family: var(--voice-font-mono);
+  font-size: 10px;
+  color: var(--voice-text-ghost) !important;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+}
+
+
+/* ==========================================================================
+   Auto-detect mode — PTT button becomes passive indicator
+   ========================================================================== */
+
+.voice-overlay[data-input-mode="auto"] .voice-ptt-btn {
+  border-style: dashed;
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.voice-overlay[data-input-mode="auto"][data-state="recording"] .voice-ptt-btn {
+  opacity: 1;
+  border-style: solid;
+  background: var(--voice-record);
+  border-color: var(--voice-record);
+  box-shadow: 0 0 30px rgba(248, 113, 113, 0.3);
+}
+
+.voice-overlay[data-input-mode="auto"] .voice-ptt-label {
+  display: none;
+}
+
+
+/* ==========================================================================
+   Mobile
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  /* ── Mobile: flow layout instead of absolute corners ── */
+  .voice-overlay {
+    justify-content: flex-start;
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  /* Info bar: pills flow horizontally, centered */
+  .voice-info {
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px 16px 0;
+  }
+
+  /* Hide "Voice Chat" label — obvious on mobile */
+  .voice-info > span:first-child {
+    display: none;
+  }
+
+  .voice-info-duration {
+    order: 10; /* Push to end of row */
+  }
+
+  /* Controls bar: centered, wraps if needed */
+  .voice-top-right {
+    position: static;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 8px 16px 0;
+    gap: 6px;
+  }
+
+  /* ── Larger touch targets (44px minimum) ── */
+  .voice-tools-toggle {
+    min-height: 38px;
+    padding: 8px 14px;
+    font-size: 11px;
+  }
+
+  .voice-mode-toggle {
+    min-height: 38px;
+  }
+
+  .voice-mode-toggle label {
+    min-height: 34px;
+    padding: 7px 14px;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* ── Pill dropdowns: full-width fixed sheet, not anchored to pill ── */
+  .voice-selector-panel {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    top: 80px;
+    width: auto;
+    max-height: 55vh;
+    border-radius: 14px;
+  }
+
+  .voice-selector-panel.visible {
+    transform: translateY(0);
+  }
+
+  /* ── Controls: closer to orb, not pinned to bottom edge ── */
+  .voice-controls {
+    gap: 18px;
+    padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+    margin-bottom: auto;
+  }
+
+  .voice-ptt-btn {
+    width: 64px;
+    height: 64px;
+  }
+
+  .voice-ctrl-btn,
+  .voice-end-btn {
+    width: 46px;
+    height: 46px;
+  }
+}
+
+@media (max-width: 380px) {
+  .voice-controls {
+    gap: 12px;
+  }
+
+  .voice-ptt-btn {
+    width: 56px;
+    height: 56px;
+  }
+
+  .voice-ctrl-btn,
+  .voice-end-btn {
+    width: 42px;
+    height: 42px;
+  }
+
+  /* Stack pills vertically on very narrow screens */
+  .voice-info {
+    gap: 6px;
+  }
+
+  .voice-pill {
+    max-width: 140px;
+  }
+}
+
+
+/* ==========================================================================
+   Voice Enrollment Modal
+   ========================================================================== */
+
+.voice-enrollment {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 6, 14, 0.92);
+  backdrop-filter: blur(20px);
+  animation: voice-enrollment-in 0.4s ease-out;
+}
+
+.voice-enrollment[hidden] {
+  display: none;
+}
+
+@keyframes voice-enrollment-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.voice-enrollment-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 36px 32px;
+  border-radius: 16px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0.01) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  animation: voice-enrollment-card-in 0.5s ease-out 0.1s both;
+}
+
+@keyframes voice-enrollment-card-in {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.voice-enrollment-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.voice-enrollment-header svg {
+  color: var(--voice-listen);
+  margin-bottom: 12px;
+  opacity: 0.8;
+}
+
+.voice-enrollment-header h3 {
+  font-family: var(--voice-font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--voice-text);
+  margin: 0 0 8px;
+  letter-spacing: 0.02em;
+}
+
+.voice-enrollment-header p {
+  font-family: var(--voice-font-display);
+  font-size: 0.82rem;
+  color: var(--voice-text-dim);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* --- Phrase List --- */
+
+.voice-enrollment-phrases {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.voice-enrollment-phrase {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  transition: all 0.3s var(--ease-standard);
+}
+
+.voice-enrollment-phrase.active {
+  background: rgba(74, 222, 128, 0.06);
+  border-color: rgba(74, 222, 128, 0.15);
+}
+
+.voice-enrollment-phrase.recording {
+  background: rgba(248, 113, 113, 0.08);
+  border-color: rgba(248, 113, 113, 0.2);
+}
+
+.voice-enrollment-phrase.done {
+  background: rgba(74, 222, 128, 0.04);
+  border-color: rgba(74, 222, 128, 0.1);
+}
+
+.phrase-number {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-family: var(--voice-font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--voice-text-dim);
+  transition: all 0.3s var(--ease-standard);
+}
+
+.voice-enrollment-phrase.active .phrase-number,
+.voice-enrollment-phrase.recording .phrase-number {
+  background: var(--voice-listen);
+  color: #06060e;
+}
+
+.voice-enrollment-phrase.done .phrase-number {
+  background: rgba(74, 222, 128, 0.2);
+  color: var(--voice-listen);
+}
+
+.phrase-text {
+  flex: 1;
+  font-family: var(--voice-font-display);
+  font-size: 0.78rem;
+  color: var(--voice-text-dim);
+  line-height: 1.45;
+  transition: color 0.3s var(--ease-standard);
+}
+
+.voice-enrollment-phrase.active .phrase-text,
+.voice-enrollment-phrase.recording .phrase-text {
+  color: var(--voice-text);
+}
+
+.voice-enrollment-phrase.done .phrase-text {
+  color: var(--voice-text-dim);
+  text-decoration: line-through;
+  text-decoration-color: rgba(74, 222, 128, 0.3);
+}
+
+.phrase-status {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+}
+
+.phrase-check { display: none; color: var(--voice-listen); }
+.phrase-mic { display: none; }
+
+.voice-enrollment-phrase.active .phrase-mic {
+  display: block;
+  color: var(--voice-text-dim);
+}
+
+.voice-enrollment-phrase.recording .phrase-mic {
+  display: block;
+  color: var(--voice-record);
+  animation: enrollment-pulse 1s ease-in-out infinite;
+}
+
+.voice-enrollment-phrase.done .phrase-check {
+  display: block;
+}
+
+@keyframes enrollment-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* --- Progress Bar --- */
+
+.voice-enrollment-progress {
+  margin-bottom: 20px;
+}
+
+.voice-enrollment-bar {
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.voice-enrollment-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 2px;
+  background: var(--voice-listen);
+  transition: width 0.6s var(--ease-standard);
+}
+
+/* --- Actions --- */
+
+.voice-enrollment-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.voice-enrollment-record {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: 24px;
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  background: rgba(74, 222, 128, 0.08);
+  color: var(--voice-listen);
+  font-family: var(--voice-font-display);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-standard);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.voice-enrollment-record:hover {
+  background: rgba(74, 222, 128, 0.14);
+  border-color: rgba(74, 222, 128, 0.3);
+}
+
+.voice-enrollment-record.recording {
+  background: rgba(248, 113, 113, 0.12);
+  border-color: rgba(248, 113, 113, 0.3);
+  color: var(--voice-record);
+}
+
+.voice-enrollment-record.recording svg {
+  animation: enrollment-pulse 1s ease-in-out infinite;
+}
+
+.voice-enrollment-record.processing {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.voice-enrollment-skip {
+  background: none;
+  border: none;
+  color: var(--voice-text-ghost);
+  font-family: var(--voice-font-display);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 6px 12px;
+  transition: color 0.2s var(--ease-standard);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.voice-enrollment-skip:hover {
+  color: var(--voice-text-dim);
+}
+
+/* --- Result --- */
+
+.voice-enrollment-result {
+  text-align: center;
+  padding: 20px 0 0;
+}
+
+.enrollment-success {
+  animation: voice-enrollment-card-in 0.4s ease-out;
+}
+
+.enrollment-success svg {
+  color: var(--voice-listen);
+  margin-bottom: 8px;
+}
+
+.enrollment-success p {
+  font-family: var(--voice-font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--voice-text);
+  margin: 0 0 4px;
+}
+
+.enrollment-quality {
+  font-family: var(--voice-font-mono);
+  font-size: 0.72rem;
+  color: var(--voice-text-dim);
+}
+
+/* ==========================================================================
+   Stage Manager — format actions/dialogue before sending
+   ========================================================================== */
+
+/* --- Stage Manager — Resonance floating composition --- */
+
+.voice-stage {
+  max-width: 580px;
+  width: 88%;
+  margin-bottom: 12px;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+  backdrop-filter: none;
+  overflow: visible;
+  animation: voice-stage-in 0.3s ease-out;
+}
+
+@keyframes voice-stage-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.voice-stage-text {
+  min-height: 48px;
+  max-height: 150px;
+  overflow-y: auto;
+  padding: 12px 4px 10px;
+  color: rgba(255, 255, 255, 0.70);
+  font-family: var(--voice-font-display);
+  font-size: 14px;
+  line-height: 1.6;
+  outline: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+  text-align: center;
+  scrollbar-width: none;
+  /* Gradient underline — signals editability */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background-image: linear-gradient(90deg, transparent 10%, rgba(160, 200, 220, 0.15) 50%, transparent 90%);
+  background-size: 100% 1px;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  transition: border-color 0.3s var(--ease-standard);
+}
+
+.voice-stage-text::-webkit-scrollbar { width: 0; }
+
+.voice-stage-text:focus {
+  border-bottom-color: rgba(160, 200, 220, 0.25);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.voice-stage-text:empty::before {
+  content: attr(data-placeholder);
+  color: var(--voice-text-ghost);
+  pointer-events: none;
+}
+
+.voice-stage-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 0 0;
+  border-top: none;
+  background: transparent;
+}
+
+.voice-stage-btn {
+  padding: 5px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--voice-text-dim);
+  font-family: var(--voice-font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-standard);
+  letter-spacing: 0.3px;
+}
+
+.voice-stage-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--voice-text);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Active mode — button stays lit when mode is toggled on */
+.voice-stage-btn.active {
+  background: rgba(160, 200, 220, 0.15);
+  border-color: rgba(160, 200, 220, 0.3);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.voice-stage-send {
+  background: rgba(160, 200, 220, 0.12);
+  border-color: rgba(160, 200, 220, 0.25);
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  padding: 5px 18px;
+  letter-spacing: 0.5px;
+}
+
+.voice-stage-send:hover {
+  background: rgba(160, 200, 220, 0.22);
+  border-color: rgba(160, 200, 220, 0.35);
+}
+
+.voice-stage-spacer { flex: 1; }
+
+/* PTT button wrapper */
+.voice-ptt-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Resume icon visibility controlled via JS inline style (display toggle) */
+
+/* Pinned AI context — reference text above composition area */
+.voice-stage-pin {
+  padding: 4px 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.32);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.55;
+  max-height: 40vh;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  text-align: left;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}
+
+.voice-stage-pin::-webkit-scrollbar { width: 3px; }
+.voice-stage-pin::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 3px; }
+
+/* === Stage Manager — universal floating overlay layout ==============
+   Default flow layout pushed surrounding content (orb shrunk, transcript
+   reshuffled). The new approach lifts stage OUT of flow and docks it as
+   a floating overlay above the controls bar — surrounding content stays
+   put. Applies in BOTH avatar mode and non-avatar (orb) mode.
+
+   Also: pinned message context is hidden universally — the transcript
+   log shows full conversation history, so the pin is redundant clutter.
+   ================================================================== */
+.voice-overlay .voice-stage:not([hidden]) {
+  position: fixed !important;
+  bottom: 92px !important;             /* clear the .voice-controls bar */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 88%;
+  max-width: 580px;
+  margin: 0 !important;
+  padding: 12px 16px;
+  /* Solid near-opaque background instead of backdrop-filter blur.
+     Stacked heavy backdrop-filters (status pill + stage) trigger GPU
+     compositor failures on some Chrome+GPU combos at narrow viewport
+     widths — manifests as RGB noise filling whatever the buffer
+     happens to be. Solid bg = zero compositor cost = no glitch. */
+  background: rgba(8, 12, 18, 0.96) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px !important;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55),
+              0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  z-index: 30;
+}
+.voice-overlay .voice-stage-pin {
+  display: none !important;
+}
+@media (max-width: 1180px) {
+  .voice-overlay .voice-stage:not([hidden]) {
+    width: calc(100% - 24px);
+    max-width: none;
+    bottom: 80px !important;
+  }
+  .voice-overlay .voice-stage-text {
+    max-height: 100px !important;
+    font-size: 13px;
+  }
+  .voice-overlay .voice-stage-toolbar {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-top: 8px;
+  }
+}
+
+/* Stage toggle button active state */
+#voice-stage-toggle.active {
+  background: rgba(160, 200, 220, 0.12);
+  border-color: rgba(160, 200, 220, 0.25);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Pin button active state */
+#voice-pin-transcript.active {
+  background: rgba(160, 200, 220, 0.12);
+  border-color: rgba(160, 200, 220, 0.25);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Shake feedback — triggered when Send is clicked with empty stage text */
+@keyframes voice-stage-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.voice-stage-text.shake {
+  animation: voice-stage-shake 0.3s var(--ease-standard);
+}
+
+.voice-overlay:has(.voice-stage:not([hidden])):not(.avatar-mode-active) .voice-orb {
+  width: clamp(240px, 26vw, 340px);
+  height: clamp(240px, 26vw, 340px);
+}
+
+.voice-overlay:has(.voice-stage:not([hidden])) .voice-orb-group[data-mode="orb"] {
+  margin-bottom: 6px;
+}
+
+/* Removed: orb-shrink + transcript-reflow rules. Stage is now a
+   floating overlay (not in flow), so surrounding content doesn't
+   need to make room for it. The orb keeps its size; transcript
+   keeps its size — the user toggles the transcript independently
+   via the new shared toggle button. */
+
+/* Mobile stage — only when visible (preserve hidden attribute) */
+@media (max-width: 767px) {
+  .voice-stage:not([hidden]) {
+    width: 92%;
+    margin-bottom: 6px;
+  }
+
+  .voice-stage-text {
+    padding: 10px 8px 8px;
+    font-size: 15px;
+    line-height: 1.5;
+    text-align: left;
+  }
+
+  .voice-stage-toolbar {
+    gap: 6px;
+    padding: 6px 0 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .voice-stage-btn {
+    padding: 6px 12px;
+    min-height: 34px;
+  }
+
+  /* Removed: stage-triggered transcript reflow. Stage is overlay now. */
+}
+
+/* ==========================================================================
+   Landscape — short viewport, wide screen
+   ========================================================================== */
+
+@media (max-height: 500px) and (orientation: landscape) {
+  /* Compact top bars */
+  .voice-info {
+    padding-top: 6px;
+  }
+
+  .voice-top-right {
+    padding-top: 4px;
+  }
+
+  /* Smaller orb to fit everything vertically */
+  .voice-orb {
+    width: min(140px, 30vh);
+    height: min(140px, 30vh);
+  }
+
+  /* Reduce status text space */
+  .voice-status-text {
+    font-size: 9px;
+    letter-spacing: 3px;
+    margin-top: 1px;
+  }
+
+  /* Transcript: horizontal layout (flanking), not stacked */
+  .voice-center {
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .voice-overlay:not(.avatar-mode-active) .voice-transcript-log {
+    max-width: min(360px, 42vw);
+    min-height: 0;
+    max-height: min(112px, 30vh);
+    padding: 6px 12px 8px;
+    gap: 8px;
+  }
+
+  .voice-overlay:not(.avatar-mode-active) .voice-log-bubble {
+    max-width: 100%;
+    padding: 6px 12px;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .voice-overlay.avatar-mode-active .voice-status-text {
+    top: calc(env(safe-area-inset-top, 0px) + 48px);
+  }
+
+  .voice-transcript-user,
+  .voice-transcript-ai {
+    max-width: 35%;
+    text-align: left;
+    font-size: 13px;
+    max-height: 30vh;
+  }
+
+  .voice-transcript-user {
+    text-align: right;
+  }
+
+  /* Compact controls */
+  .voice-ptt-btn {
+    width: 52px;
+    height: 52px;
+  }
+
+  .voice-ctrl-btn,
+  .voice-end-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .voice-controls {
+    gap: 14px;
+    padding-bottom: 8px;
+  }
+
+  /* Avatar viewport: shorter */
+  .voice-avatar-viewport {
+    max-height: 28vh;
+  }
+}
+
+
+/* ==========================================================================
+   S-Tier Voice Enhancements — Appended Overrides
+   State-reactive rings, mobile adaptations, PTT prominence,
+   connection states, status text, transcript animations.
+   ========================================================================== */
+
+
+/* --- 1. Orb State Ring — Concentric Pulsing Border --- */
+
+.voice-orb-wrap {
+  position: relative;
+}
+
+.voice-orb-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  border: 1.5px solid var(--voice-idle);
+  opacity: 0.15;
+  transition: border-color 0.6s var(--ease-standard), opacity 0.6s var(--ease-standard), transform 0.6s var(--ease-standard);
+  pointer-events: none;
+}
+
+.voice-orb-wrap::after {
+  content: '';
+  position: absolute;
+  inset: -32px;
+  border-radius: 50%;
+  border: 1px solid var(--voice-idle);
+  opacity: 0.06;
+  transition: border-color 0.6s var(--ease-standard), opacity 0.6s var(--ease-standard), transform 0.6s var(--ease-standard);
+  pointer-events: none;
+}
+
+/* Listening — calm teal rings */
+.voice-overlay[data-state="listening"] .voice-orb-wrap::before {
+  border-color: var(--voice-listen);
+  opacity: 0.25;
+}
+.voice-overlay[data-state="listening"] .voice-orb-wrap::after {
+  border-color: var(--voice-listen);
+  opacity: 0.1;
+}
+
+/* Recording — warm pulsing rings */
+.voice-overlay[data-state="recording"] .voice-orb-wrap::before {
+  border-color: var(--voice-record);
+  opacity: 0.4;
+  transform: scale(calc(1 + var(--audio-energy, 0) * 0.06));
+  animation: voice-ring-pulse 1.2s ease-in-out infinite;
+}
+.voice-overlay[data-state="recording"] .voice-orb-wrap::after {
+  border-color: var(--voice-record);
+  opacity: 0.15;
+}
+
+/* Processing — spinning ring */
+.voice-overlay[data-state="processing"] .voice-orb-wrap::before {
+  border-color: var(--voice-process);
+  animation: voice-ring-spin 3s linear infinite;
+}
+
+/* Speaking — breathing ring */
+.voice-overlay[data-state="speaking"] .voice-orb-wrap::before {
+  border-color: var(--voice-speak);
+  opacity: calc(0.15 + var(--audio-energy, 0) * 0.25);
+  transform: scale(calc(1 + var(--audio-energy, 0) * 0.08));
+  animation: voice-ring-breathe 2.5s ease-in-out infinite;
+}
+.voice-overlay[data-state="speaking"] .voice-orb-wrap::after {
+  border-color: var(--voice-speak);
+  opacity: calc(0.05 + var(--audio-energy, 0) * 0.12);
+  transform: scale(calc(1 + var(--audio-energy, 0) * 0.04));
+}
+
+/* Ring keyframes */
+@keyframes voice-ring-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.15; }
+}
+
+@keyframes voice-ring-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+@keyframes voice-ring-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+
+/* --- 2. Mobile Speaking Layout — orb stays big, grows slightly --- */
+
+@media (max-width: 767px) {
+  .voice-orb {
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Orb GROWS when speaking — reactive, not diminished */
+  .voice-overlay[data-state="speaking"] .voice-orb {
+    transform: scale(1.08);
+  }
+}
+
+
+/* --- 3. PTT Button — Elevated Prominence --- */
+
+.voice-ptt-btn {
+  width: 80px;
+  height: 80px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04),
+              0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+.voice-ptt-btn svg {
+  width: 32px;
+  height: 32px;
+}
+
+.voice-ptt-btn:active,
+.voice-ptt-btn.pressed {
+  transform: scale(0.88);
+  box-shadow:
+    0 0 40px rgba(224, 144, 112, 0.35),
+    0 0 80px rgba(224, 144, 112, 0.15),
+    inset 0 0 20px rgba(224, 144, 112, 0.1);
+}
+
+
+/* --- 4. Connection State Styles --- */
+
+.voice-overlay[data-state="connecting"] .voice-center {
+  opacity: 0.5;
+}
+
+.voice-overlay[data-state="connecting"] .voice-status-text {
+  color: var(--voice-text-dim);
+  animation: voice-status-pulse 1.5s ease-in-out infinite;
+}
+
+.voice-overlay[data-state="disconnected"] .voice-status-text {
+  color: var(--voice-record);
+}
+
+@keyframes voice-status-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Reconnect button (shown on disconnect) */
+.voice-reconnect-btn {
+  display: none;
+  margin-top: 16px;
+  padding: 10px 24px;
+  border-radius: 24px;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--voice-text);
+  font-family: var(--voice-font-mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-standard);
+}
+
+/* Autoplay-block re-arm (iOS): hidden until playback is blocked; the
+   tap is the gesture that re-authorizes audio. Mirrors reconnect-btn. */
+.voice-audio-unlock-btn {
+  display: none;
+  margin-top: 16px;
+  padding: 10px 24px;
+  border-radius: 24px;
+  border: 1.5px solid rgba(255, 200, 100, 0.35);
+  background: rgba(255, 200, 100, 0.08);
+  color: var(--voice-text);
+  font-family: var(--voice-font-mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-standard);
+}
+
+.voice-audio-unlock-btn.visible {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.voice-audio-unlock-btn:hover {
+  background: rgba(255, 200, 100, 0.15);
+  border-color: rgba(255, 200, 100, 0.55);
+}
+
+.voice-reconnect-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.voice-overlay[data-state="disconnected"] .voice-reconnect-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  animation: fade-in 0.3s var(--ease-standard);
+}
+
+
+/* --- 5. Enhanced Status Text --- */
+
+.voice-overlay[data-state="listening"] .voice-status-text {
+  color: rgba(94, 196, 212, 0.6);
+}
+
+.voice-overlay[data-state="processing"] .voice-status-text {
+  color: rgba(138, 156, 197, 0.6);
+}
+
+/* Mobile: larger status text for arm's-length readability */
+@media (max-width: 767px) {
+  .voice-status-text {
+    font-size: 12px;
+    letter-spacing: 3px;
+  }
+}
+
+
+/* --- 6. Transcript Entry Animation --- */
+
+.voice-transcript-ai {
+  transition: opacity 0.4s var(--ease-standard), max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Smooth entrance for the entire transcript area when content appears */
+.voice-transcript-ai:not(:empty) {
+  animation: voice-text-in 0.3s ease-out;
+}
+
+@keyframes voice-text-in {
+  from { opacity: 0.3; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Voice Preview Button --- */
+.voice-preview-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--voice-text-ghost);
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard);
+  cursor: pointer;
+}
+
+.voice-selector-item:hover .voice-preview-btn {
+  opacity: 1;
+}
+
+.voice-preview-btn:hover {
+  color: var(--voice-text);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.voice-preview-btn.playing {
+  opacity: 1;
+  color: var(--voice-speak);
+  animation: voice-preview-pulse 1s ease-in-out infinite;
+}
+
+@keyframes voice-preview-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* On touch devices, always show preview button */
+@media (hover: none) {
+  .voice-preview-btn {
+    opacity: 0.5;
+  }
+}
+
+/* --- Toast Visibility During Voice Call ---
+   The z-index lift that used to live here is gone: `--z-toast` now sits above
+   every surface globally (see variables.css), so this was one surface's
+   workaround for a scale-wide problem. Only the voice-specific restyling
+   below remains. */
+
+/* ==========================================================================
+   Avatar Experience — Cinematic Mode
+   ========================================================================== */
+
+/* Avatar viewport in avatar mode: orb-equivalent dimensions, sitting in
+   normal flex flow inside `.voice-orb-group`. Replaces the previous
+   fullscreen treatment so the transcript naturally flows below it
+   exactly like non-avatar voice mode. */
+.voice-avatar-viewport.avatar-experience {
+  width: 400px !important;
+  height: 400px !important;
+  max-width: 90vw !important;
+  max-height: 50vh !important;
+  position: relative !important;
+  inset: auto !important;
+  border-radius: 12px !important;
+  z-index: 1;
+  flex: 0 0 auto;
+}
+
+.voice-avatar-viewport.avatar-experience.drawer-open {
+  /* Drawer-open camera preset still triggers the side shift, but no
+     scale change — the avatar stays the same height. */
+  transform: translateX(-8%);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.avatar-atmosphere-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0.94;
+  mix-blend-mode: screen;
+}
+
+.avatar-experience-hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease !important;
+}
+
+.avatar-experience-hidden:hover {
+  opacity: 1 !important;
+  pointer-events: all !important;
+}
+
+@media (hover: none) {
+  .avatar-experience-hidden:active,
+  .avatar-experience-hidden.touch-revealed {
+    opacity: 1 !important;
+    pointer-events: all !important;
+  }
+}
+
+/* --- Subtitle Bar --- */
+.avatar-subtitle-container {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.avatar-subtitle-bar {
+  max-width: 60vw;
+  padding: 10px 24px;
+  border-radius: 8px;
+  background: rgba(6, 6, 14, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s var(--ease-standard), transform 0.3s var(--ease-standard);
+}
+
+.avatar-subtitle-bar.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.avatar-subtitle-ai {
+  font-family: var(--voice-font-display, 'Outfit', sans-serif);
+  font-size: 16px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.92);
+  text-align: center;
+  max-height: 4.5em;
+  overflow: hidden;
+  transition: opacity 0.2s var(--ease-standard);
+}
+
+.avatar-subtitle-ai.fading {
+  opacity: 0;
+}
+
+.avatar-subtitle-user {
+  max-width: 50vw;
+  padding: 6px 16px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  font-family: var(--voice-font-mono, 'Space Mono', monospace);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s var(--ease-standard), transform 0.3s var(--ease-standard);
+}
+
+.avatar-subtitle-user.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 767px) {
+  .avatar-subtitle-container {
+    bottom: 16px;
+    width: 90%;
+    left: 5%;
+    transform: none;
+  }
+  .avatar-subtitle-bar {
+    max-width: 100%;
+    padding: 8px 16px;
+  }
+  .avatar-subtitle-ai {
+    font-size: 14px;
+    max-height: 3em;
+  }
+  .avatar-subtitle-user {
+    max-width: 80%;
+    font-size: 11px;
+  }
+}
+
+/* --- Drawer --- */
+.avatar-drawer-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.avatar-drawer-edge {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60px;
+  border-radius: 3px 0 0 3px;
+  background: rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  pointer-events: all;
+  transition: background 0.3s var(--ease-standard), width 0.2s var(--ease-standard);
+  animation: drawer-edge-pulse 3s ease-in-out infinite;
+}
+
+@keyframes drawer-edge-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.avatar-drawer-edge:hover {
+  width: 5px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.avatar-drawer-edge.open {
+  opacity: 0.3;
+}
+
+.avatar-drawer-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: clamp(300px, 35vw, 500px);
+  background: rgba(6, 6, 14, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: all;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.avatar-drawer-panel.open {
+  transform: translateX(0);
+}
+
+.avatar-drawer-panel.peeking {
+  transform: translateX(calc(100% - 100px));
+}
+
+.avatar-drawer-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.avatar-drawer-tab {
+  flex: 1;
+  padding: 10px 4px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: var(--voice-font-mono, 'Space Mono', monospace);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+  position: relative;
+}
+
+.avatar-drawer-tab:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.avatar-drawer-tab.active {
+  color: rgba(255, 255, 255, 0.9);
+  border-bottom-color: var(--voice-speak, #b08ed8);
+}
+
+.avatar-drawer-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--voice-record, #e09070);
+  color: white;
+  font-size: 9px;
+  line-height: 16px;
+  text-align: center;
+  padding: 0 4px;
+}
+
+.avatar-drawer-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.avatar-drawer-pane {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  padding: 12px 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.avatar-drawer-pane.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.avatar-drawer-msg {
+  padding: 6px 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.75);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.avatar-drawer-msg-role {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.35);
+  margin-right: 8px;
+}
+
+.avatar-drawer-msg-ai .avatar-drawer-msg-role {
+  color: var(--voice-speak, #b08ed8);
+}
+
+.avatar-drawer-tool-result {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.avatar-drawer-tool-name {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--voice-listen, #5ec4d4);
+  margin-bottom: 4px;
+}
+
+.avatar-drawer-tool-content {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+}
+
+.avatar-drawer-char-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.avatar-drawer-char-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-drawer-char-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.avatar-drawer-atmo-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.avatar-drawer-atmo-controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.avatar-drawer-atmo-controls select,
+.avatar-drawer-atmo-controls input[type="range"] {
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  .avatar-subtitle-bar {
+    max-width: 90vw;
+    padding: 8px 16px;
+  }
+
+  .avatar-subtitle-ai {
+    font-size: 14px;
+  }
+
+  .avatar-drawer-panel {
+    width: 85vw;
+  }
+
+  .avatar-subtitle-container {
+    bottom: 60px;
+  }
+}
+
+/* ==========================================================================
+   Voice Pill (minimized floating widget)
+   ========================================================================== */
+
+.voice-pill-float {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: calc(var(--z-voice, 100) - 1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 24px;
+  background: rgba(10, 10, 22, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.2s ease;
+}
+
+.voice-pill-float:hover {
+  transform: scale(1.04);
+  box-shadow: 0 6px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.voice-pill-float:active {
+  transform: scale(0.97);
+}
+
+.voice-pill-float[hidden] {
+  display: none;
+}
+
+/* Mobile: position above orb nav bar so they don't overlap */
+@media (max-width: 767px) {
+  .voice-pill-float {
+    bottom: calc(var(--orb-bar-height) + env(safe-area-inset-bottom, 0px));
+    right: 12px;
+  }
+}
+
+.voice-pill-orb {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.voice-pill-timer {
+  font-family: var(--voice-font-mono, 'SF Mono', monospace);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+/* State glow ring on pill orb */
+.voice-pill-float::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  width: 36px;
+  height: 36px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--voice-pill-glow, var(--voice-idle)) 0%, transparent 70%);
+  opacity: 0.3;
+  filter: blur(8px);
+  pointer-events: none;
+  transition: background 0.4s ease;
+}
+
+.voice-pill-float[data-state="listening"] { --voice-pill-glow: var(--voice-listen); }
+.voice-pill-float[data-state="recording"] { --voice-pill-glow: var(--voice-record); }
+.voice-pill-float[data-state="processing"] { --voice-pill-glow: var(--voice-process); }
+.voice-pill-float[data-state="speaking"] { --voice-pill-glow: var(--voice-speak); }
+
+@media (max-width: 600px) {
+  .voice-pill-float {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 72px);
+    right: 12px;
+  }
+}
+
+/* --- Desktop-pet mode: minimized avatar call --------------------------------
+   When a solo VRM call is minimized, voice.js reparents the live avatar canvas
+   into .voice-pill-avatar and adds .pet-mode. The pill stops being a rounded
+   chip and becomes a small portrait frame the avatar stands in; the call timer
+   shrinks to a chip overlaid at the bottom. The orb canvas + glow ::before are
+   hidden (the avatar replaces them). */
+.voice-pill-avatar {
+  display: none;
+  position: relative;
+  flex: 1;
+  width: 100%;
+  border-radius: inherit;
+  overflow: hidden;
+}
+.voice-pill-avatar canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.voice-pill-float.pet-mode {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  width: 132px;
+  height: 172px;
+  border-radius: 18px;
+  /* Lift it off the very corner so the frame doesn't kiss the edges. */
+  bottom: 18px;
+  right: 18px;
+}
+.voice-pill-float.pet-mode .voice-pill-orb,
+.voice-pill-float.pet-mode::before {
+  display: none;
+}
+.voice-pill-float.pet-mode .voice-pill-avatar {
+  display: block;
+}
+.voice-pill-float.pet-mode .voice-pill-timer {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  background: rgba(10, 10, 22, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+/* Home-session badge — identifies what conversation the persistent pill
+   is bound to (character name in narrative, session title in chat, etc).
+   In orb-chip mode it sits inline before the timer; in pet-mode it
+   floats over the avatar's top edge as a single-line chip. */
+.voice-pill-badge {
+  font-family: var(--voice-font-mono, 'SF Mono', monospace);
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  color: rgba(255, 255, 255, 0.78);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  user-select: none;
+}
+.voice-pill-badge[hidden] { display: none; }
+
+/* Pet-mode: badge sits inline with the timer at the bottom so the
+   avatar's face isn't covered. Badge anchors to the left, timer to
+   the right (its own rule below pins it center — we override). */
+.voice-pill-float.pet-mode .voice-pill-badge {
+  position: absolute;
+  bottom: 6px;
+  left: 8px;
+  max-width: calc(100% - 64px);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10.5px;
+  background: rgba(10, 10, 22, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+@media (max-width: 767px) {
+  .voice-pill-float.pet-mode {
+    bottom: calc(var(--orb-bar-height) + env(safe-area-inset-bottom, 0px) + 4px);
+    right: 14px;
+  }
+}
+
+/* Drag-to-reposition: while dragging, suppress the hover scale + transitions
+   so the pill tracks the pointer 1:1. */
+.voice-pill-float.dragging {
+  cursor: grabbing;
+  transition: none;
+  transform: none !important;
+}
+.voice-pill-float.pet-mode { cursor: grab; }
+.voice-pill-float.pet-mode.dragging { cursor: grabbing; }
+
+/* Mobile long-press: while the user is holding the pill before the
+   long-press timer fires, the browser would otherwise eat the pointermove
+   for scrolling. touch-action:none keeps the pointer events ours. The
+   pet-mode pill is the only draggable surface on phones, so scoping this
+   to .pet-mode preserves the orb-chip's tap-passthrough on mobile. */
+.voice-pill-float.pet-mode {
+  touch-action: none;
+}
+
+/* Long-press armed (mobile only — desktop arms instantly so this state is
+   not entered there). Subtle outline + scale tell the user "you're now
+   moving me", matched to the pet frame's rounded corners. */
+.voice-pill-float.drag-armed {
+  transform: scale(1.04);
+  box-shadow:
+    0 8px 36px rgba(0, 0, 0, 0.55),
+    0 0 0 2px rgba(129, 140, 248, 0.55);
+}

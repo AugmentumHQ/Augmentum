@@ -1,0 +1,22 @@
+# llama-swap config for the vLLM fallback tier.
+#
+# Augmentum manages this file: it appends one `models:` entry per safetensors
+# model the user downloads (Phase 3), then reloads llama-swap. Each entry maps a
+# served model name to the vLLM command that serves it. `${PORT}` is filled by
+# llama-swap. `ttl` unloads an idle upstream to free VRAM for the chat/TTS models.
+#
+# Hand-editing is fine, but Augmentum-written entries are marked and may be
+# rewritten. See spec:
+#   docs/superpowers/specs/2026-07-22-unsupported-arch-serving-vllm-safetensors-design.md
+
+healthCheckTimeout: 600
+
+models: {}
+  # Example (Augmentum writes entries in this shape):
+  # "Nanbeige4.1-3B":
+  #   cmd: >
+  #     vllm serve /root/.cache/huggingface/Nanbeige/Nanbeige4.1-3B
+  #     --model-impl transformers --trust-remote-code
+  #     --served-model-name Nanbeige4.1-3B
+  #     --host 0.0.0.0 --port ${PORT} --dtype bfloat16 --max-model-len 8192
+  #   ttl: 600

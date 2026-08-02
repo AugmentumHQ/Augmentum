@@ -1,0 +1,31 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "stomach_hold",
+  "tags": ["nervous", "self-soothing", "comforting", "anxious"],
+  "description": "Right hand resting on stomach — comforting self-touch or nervous holding.",
+  "family": "thinking",
+
+  "anchors": {
+    "rightHand": {
+      "type": "region-contact",
+      "region": "belly",
+      "tolerance": 0.03,
+      "fingerStyle": "stomach_R"
+    },
+    "leftHand": {
+      "type": "free-space"
+    }
+  },
+
+  "body": {
+    "head":  { "pitch": 4 },
+    "spine": { "forwardLean": 2 }
+  },
+
+  "provenance": {
+    "source": "manual",
+    "curatedBy": "maintainer",
+    "createdAt": "2026-05-14",
+    "notes": "stomach_R → belly (100% consensus). Soft forward pitch reads as inward focus."
+  }
+}

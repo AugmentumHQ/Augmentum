@@ -1,0 +1,156 @@
+{
+  "__metadata__": {
+    "source": "https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json",
+    "license": "MIT",
+    "license_url": "https://github.com/BerriAI/litellm/blob/main/LICENSE",
+    "purpose": "Reference table for cost-aware fabric routing. Local + peer models default to 0.0 (sunk hardware cost); cloud-backed peer capabilities populate from these entries by model_id lookup.",
+    "format_note": "Costs are per-TOKEN (matching LiteLLM's wire format). $0.00003/token = $30 per 1M tokens. Multiply by 1e6 when displaying $/1M to operators.",
+    "refresh": "Run scripts/refresh_litellm_costs.py to pull the latest from upstream. Initial vendored set covers the most-routed providers; the refresh fills in the long tail.",
+    "format_version": 1,
+    "vendored_at": "2026-05-16",
+    "vendored_count": 14
+  },
+  "gpt-4o": {
+    "max_tokens": 16384,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 16384,
+    "input_cost_per_token": 0.0000025,
+    "output_cost_per_token": 0.00001,
+    "litellm_provider": "openai",
+    "mode": "chat",
+    "supports_vision": true,
+    "supports_function_calling": true
+  },
+  "gpt-4o-mini": {
+    "max_tokens": 16384,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 16384,
+    "input_cost_per_token": 0.00000015,
+    "output_cost_per_token": 0.0000006,
+    "litellm_provider": "openai",
+    "mode": "chat",
+    "supports_vision": true,
+    "supports_function_calling": true
+  },
+  "o1": {
+    "max_tokens": 100000,
+    "max_input_tokens": 200000,
+    "max_output_tokens": 100000,
+    "input_cost_per_token": 0.000015,
+    "output_cost_per_token": 0.00006,
+    "litellm_provider": "openai",
+    "mode": "chat"
+  },
+  "o1-mini": {
+    "max_tokens": 65536,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 65536,
+    "input_cost_per_token": 0.000003,
+    "output_cost_per_token": 0.000012,
+    "litellm_provider": "openai",
+    "mode": "chat"
+  },
+  "claude-3-5-sonnet-20241022": {
+    "max_tokens": 8192,
+    "max_input_tokens": 200000,
+    "max_output_tokens": 8192,
+    "input_cost_per_token": 0.000003,
+    "output_cost_per_token": 0.000015,
+    "litellm_provider": "anthropic",
+    "mode": "chat",
+    "supports_vision": true,
+    "supports_function_calling": true
+  },
+  "claude-3-5-haiku-20241022": {
+    "max_tokens": 8192,
+    "max_input_tokens": 200000,
+    "max_output_tokens": 8192,
+    "input_cost_per_token": 0.0000008,
+    "output_cost_per_token": 0.000004,
+    "litellm_provider": "anthropic",
+    "mode": "chat",
+    "supports_function_calling": true
+  },
+  "claude-3-opus-20240229": {
+    "max_tokens": 4096,
+    "max_input_tokens": 200000,
+    "max_output_tokens": 4096,
+    "input_cost_per_token": 0.000015,
+    "output_cost_per_token": 0.000075,
+    "litellm_provider": "anthropic",
+    "mode": "chat",
+    "supports_vision": true,
+    "supports_function_calling": true
+  },
+  "gemini-1.5-pro": {
+    "max_tokens": 8192,
+    "max_input_tokens": 2097152,
+    "max_output_tokens": 8192,
+    "input_cost_per_token": 0.00000125,
+    "output_cost_per_token": 0.000005,
+    "litellm_provider": "vertex_ai-language-models",
+    "mode": "chat",
+    "supports_vision": true,
+    "supports_function_calling": true
+  },
+  "gemini-1.5-flash": {
+    "max_tokens": 8192,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 8192,
+    "input_cost_per_token": 0.000000075,
+    "output_cost_per_token": 0.0000003,
+    "litellm_provider": "vertex_ai-language-models",
+    "mode": "chat",
+    "supports_vision": true,
+    "supports_function_calling": true
+  },
+  "mistral-large-latest": {
+    "max_tokens": 128000,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 128000,
+    "input_cost_per_token": 0.000002,
+    "output_cost_per_token": 0.000006,
+    "litellm_provider": "mistral",
+    "mode": "chat",
+    "supports_function_calling": true
+  },
+  "groq/llama-3.1-70b-versatile": {
+    "max_tokens": 8192,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 8192,
+    "input_cost_per_token": 0.00000059,
+    "output_cost_per_token": 0.00000079,
+    "litellm_provider": "groq",
+    "mode": "chat",
+    "supports_function_calling": true
+  },
+  "deepseek-chat": {
+    "max_tokens": 4096,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 4096,
+    "input_cost_per_token": 0.00000014,
+    "output_cost_per_token": 0.00000028,
+    "litellm_provider": "deepseek",
+    "mode": "chat",
+    "supports_function_calling": true
+  },
+  "openrouter/anthropic/claude-3.5-sonnet": {
+    "max_tokens": 8192,
+    "max_input_tokens": 200000,
+    "max_output_tokens": 8192,
+    "input_cost_per_token": 0.000003,
+    "output_cost_per_token": 0.000015,
+    "litellm_provider": "openrouter",
+    "mode": "chat",
+    "supports_vision": true
+  },
+  "together_ai/meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo": {
+    "max_tokens": 128000,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 4096,
+    "input_cost_per_token": 0.00000088,
+    "output_cost_per_token": 0.00000088,
+    "litellm_provider": "together_ai",
+    "mode": "chat"
+  }
+}

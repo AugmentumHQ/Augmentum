@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Augmentum · Reading</title>
+  <link rel="stylesheet" href="cast-comic.css">
+</head>
+<body>
+  <!-- Always-visible chapter progress strip at the very top. 2px tall,
+       fills as the reader walks through the chapter. The HUD-counter
+       and autoplay countdown live separately so transient feedback
+       doesn't compete with persistent position. -->
+  <div class="progress-strip" data-cc-progress-strip>
+    <div class="progress-strip-fill" data-cc-progress-fill></div>
+  </div>
+
+  <!-- Reader stage. JS rebuilds children when mode changes between
+       single / dual / webtoon. The wrapper holds the mode class so CSS
+       can dispatch layout without re-rendering on every page turn. -->
+  <main class="stage mode-single fit-smart dir-ltr" data-cc-stage></main>
+
+  <!-- Centered spinner — only shown when a page load takes >400ms, so
+       fast pages never reveal it. Sits above the stage but below the
+       HUD/error overlay. -->
+  <div class="spinner" data-cc-spinner aria-hidden="true">
+    <div class="spinner-ring"></div>
+  </div>
+
+  <!-- Error overlay. Persistent failure (after retry budget exhausted)
+       lands here with a TV-remote-clickable retry button. Patch
+       protocol from the phone-side can dismiss it too. -->
+  <div class="error-overlay" data-cc-error hidden>
+    <div class="error-card">
+      <div class="error-icon">!</div>
+      <div class="error-text" data-cc-error-text>Page failed to load</div>
+      <button class="error-retry" data-cc-retry type="button">Retry</button>
+    </div>
+  </div>
+
+  <!-- HUD — page counter + title strip. Fades after settle so the art
+       has the screen; phone-side page turns re-show it briefly. -->
+  <aside class="hud" data-cc-hud>
+    <div class="hud-title" data-cc-title>—</div>
+    <div class="hud-progress">
+      <span data-cc-page>1</span>
+      <span class="hud-sep">/</span>
+      <span data-cc-total>—</span>
+    </div>
+    <div class="hud-mode-chip" data-cc-mode-chip hidden></div>
+    <!-- Webtoon autoplay only — surfaces the current px/sec preset so
+         the user knows what they're scrolling at without opening the
+         sheet. Hidden in paged/dual (the countdown strip is the cue
+         there) and when autoplay is off. -->
+    <div class="hud-speed-chip" data-cc-speed-chip hidden></div>
+  </aside>
+
+  <!-- Autoplay countdown bar above the bottom edge. Only visible when
+       autoplay is active; the fill animates from 0→100% over the
+       per-page dwell, then resets when the next page mounts. -->
+  <div class="autoplay-strip" data-cc-autoplay-strip hidden>
+    <div class="autoplay-strip-fill" data-cc-autoplay-fill></div>
+  </div>
+
+  <script type="module" src="cast-comic.js"></script>
+</body>
+</html>

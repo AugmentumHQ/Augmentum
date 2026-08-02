@@ -1,0 +1,55 @@
+name: fix_null_check
+tier: surgical
+description: |
+  Single-file bug fix. The agent should read the function, identify
+  the missing None guard, and patch it. Plan + short act loop.
+
+workspace:
+  files:
+    cart.py: |
+      def total_with_discount(items, discount_pct):
+          # Bug: items can be None when cart is empty.
+          subtotal = sum(item.price for item in items)
+          return subtotal * (1 - discount_pct / 100)
+    test_cart.py: |
+      from cart import total_with_discount
+
+
+      def test_empty_cart_returns_zero():
+          assert total_with_discount(None, 10) == 0
+
+user_message: |
+  test_empty_cart_returns_zero is failing because total_with_discount
+  crashes on None. Fix the function so an empty cart returns 0.
+
+backend: scripted
+responses:
+  - tool_calls:
+      - name: code_read
+        input:
+          file_path: cart.py
+  - tool_calls:
+      - name: code_edit
+        input:
+          file_path: cart.py
+          search: "def total_with_discount(items, discount_pct):\n    # Bug: items can be None when cart is empty.\n    subtotal = sum(item.price for item in items)"
+          replace: "def total_with_discount(items, discount_pct):\n    if not items:\n        return 0\n    subtotal = sum(item.price for item in items)"
+  - content: "Fixed: return 0 when items is None or empty."
+
+assertions:
+  - property: file_contains
+    path: cart.py
+    text: "if not items:"
+  - property: file_contains
+    path: cart.py
+    text: "return 0"
+  - property: file_unchanged
+    path: test_cart.py
+  - property: tools_used_includes
+    names: [code_edit]
+  - property: max_iterations
+    n: 8
+  - property: max_tokens
+    n: 5000
+  - property: tier_classified_as
+    expected: surgical

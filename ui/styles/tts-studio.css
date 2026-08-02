@@ -1,0 +1,174 @@
+/* TTS Recording Studio modal — mounted by ui/scripts/tts-studio.js. */
+
+.tts-studio-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, .55);
+  opacity: 0;
+  transition: opacity .15s;
+}
+
+.tts-studio-overlay.visible {
+  opacity: 1;
+}
+
+.tts-studio-panel {
+  background: var(--bg-elevated, #161625);
+  color: var(--text, #ececf1);
+  border: 1px solid var(--border, #2d2d45);
+  border-radius: var(--radius-lg, 14px);
+  width: min(640px, 92vw);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, .5);
+}
+
+.tts-studio-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border, #2d2d45);
+}
+
+.tts-studio-head h2 {
+  flex: 1;
+  font-size: var(--text-base, 15px);
+  font-weight: 600;
+  margin: 0;
+}
+
+.tts-studio-close {
+  background: none;
+  border: none;
+  color: var(--text-muted, #a1a1b5);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.tts-studio-close:hover {
+  background: var(--accent-soft, rgba(108, 138, 255, .12));
+  color: var(--text, #ececf1);
+}
+
+.tts-studio-body {
+  padding: 16px 18px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tts-studio-body input[type=text],
+.tts-studio-body textarea,
+.tts-studio-body select {
+  background: var(--bg, #0f0f1a);
+  color: var(--text, #ececf1);
+  border: 1px solid var(--border, #2d2d45);
+  border-radius: var(--radius-sm, 8px);
+  padding: 8px 10px;
+  font: inherit;
+  width: 100%;
+}
+
+.tts-studio-body textarea {
+  resize: vertical;
+  min-height: 140px;
+  line-height: 1.5;
+}
+
+.tts-studio-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tts-studio-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 120px;
+  font-size: var(--text-xs, 12px);
+  color: var(--text-muted, #a1a1b5);
+}
+
+.tts-studio-count {
+  font-size: var(--text-xs, 12px);
+  color: var(--text-muted, #a1a1b5);
+  text-align: right;
+}
+
+.tts-studio-count.warn {
+  color: var(--warning, #fbbf24);
+}
+
+.tts-studio-foot {
+  padding: 14px 18px;
+  border-top: 1px solid var(--border, #2d2d45);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tts-studio-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tts-studio-gen {
+  padding: 9px 18px;
+  border-radius: var(--radius-sm, 8px);
+  border: none;
+  cursor: pointer;
+  background: var(--accent, #6c8aff);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+}
+
+.tts-studio-gen:disabled {
+  opacity: .6;
+  cursor: default;
+}
+
+.tts-studio-secondary {
+  padding: 9px 14px;
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  background: none;
+  border: 1px solid var(--border, #2d2d45);
+  color: var(--text, #ececf1);
+  font: inherit;
+}
+
+.tts-studio-result {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tts-studio-result audio {
+  width: 100%;
+}
+
+.tts-studio-saved {
+  font-size: var(--text-sm, 13px);
+  color: var(--success, #86efac);
+}
+
+.tts-studio-err {
+  font-size: var(--text-sm, 13px);
+  color: var(--danger, #f87171);
+}

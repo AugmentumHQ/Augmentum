@@ -1,0 +1,43 @@
+{
+  "schema": "control.game.v1",
+  "id": "pokemon_emerald",
+  "description": "Pokémon Emerald (Gen-3, GBA). Same control surface as Ruby/Sapphire; own id so the translation layer (walk_grid navigation, screen rules, keyboard layout) keys correctly.",
+  "applies_to_controllers": ["gba"],
+  "applies_to_log_schema": "pokemon_emerald.v1",
+  "actions": {
+    "confirm": {
+      "binding": "face_east",
+      "hint": "Advance dialog one box. Talk to NPC facing you. Pick up item on the tile in front. Confirm a menu choice. The single most-used button."
+    },
+    "cancel": {
+      "binding": "face_south",
+      "hint": "Cancel / back out / close menu. Hold while walking to run (after the Running Shoes are obtained from Mom)."
+    },
+    "menu": {
+      "binding": "start",
+      "hint": "Open the main menu: Pokédex, Pokémon, Bag, Player, Save, Option, Exit. Only available in the overworld."
+    },
+    "registered": {
+      "binding": "select",
+      "hint": "Use the currently registered key item. Common registrations: Bike (toggles riding), Itemfinder."
+    },
+    "nav_up": {
+      "binding": "dpad_up",
+      "hint": "Walk one tile north. First press while facing another direction just turns you to face north (no movement). Held: continuous walking."
+    },
+    "nav_down": {
+      "binding": "dpad_down",
+      "hint": "Walk one tile south. First press while facing another direction just turns you to face south. Held: continuous walking."
+    },
+    "nav_left": {
+      "binding": "dpad_left",
+      "hint": "Walk one tile west. First press while facing another direction just turns you to face west. Held: continuous walking."
+    },
+    "nav_right": {
+      "binding": "dpad_right",
+      "hint": "Walk one tile east. First press while facing another direction just turns you to face east. Held: continuous walking."
+    }
+  },
+  "hardware_passthrough": ["shoulder_l", "shoulder_r"],
+  "notes": "Emerald does not bind L/R in the overworld. Exposed as hardware passthrough so a power user (or future rule) can still drive them directly."
+}

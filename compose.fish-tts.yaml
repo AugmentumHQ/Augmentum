@@ -1,0 +1,49 @@
+services:
+  augmentum:
+    environment:
+      - AUGMENTUM_TTS_FISH_URL=http://fish-tts:8080
+
+  fish-tts:
+    image: fishaudio/fish-speech:server-cuda
+    entrypoint: ["/bin/sh", "/app/patches/patch_entrypoint.sh"]
+    ports:
+      - "6600:8080"
+    volumes:
+      - fish_models:/app/checkpoints
+      - fish_voices:/app/references
+      - ./config/fish-tts/tokenizer.py:/app/fish_speech/tokenizer.py:ro
+      - ./config/fish-tts/patch_entrypoint.sh:/app/patches/patch_entrypoint.sh:ro
+    environment:
+      COMPILE: "1"
+      BACKEND: "cuda"
+      LLAMA_CHECKPOINT_PATH: "checkpoints/openaudio-s1-mini"
+      DECODER_CHECKPOINT_PATH: "checkpoints/openaudio-s1-mini/codec.pth"
+      HF_TOKEN: "${AUGMENTUM_HUGGINGFACE_TOKEN:-}"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 600s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    logging:
+      options:
+        max-size: "50m"
+        max-file: "3"
+    # Host-RAM backstop. Sized for the COMPILE=1 path, not steady state: the
+    # torch.compile/inductor warmup at first start is the peak here (it forks
+    # compile workers and holds graph IR in host RAM) and it is far larger
+    # than the resident openaudio-s1-mini + codec footprint afterwards.
+    # Unverified estimate — this service isn't running. Set COMPILE=0 if you
+    # need to run it under a tighter budget.
+    mem_limit: ${AUGMENTUM_FISH_TTS_MEM_LIMIT:-12g}
+
+volumes:
+  fish_models:
+  fish_voices:

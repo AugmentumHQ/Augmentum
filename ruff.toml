@@ -1,0 +1,18 @@
+target-version = "py311"
+line-length = 100
+
+[lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[lint.per-file-ignores]
+# Coder phase modules resolve handler helpers at runtime via _LiveProxy /
+# _bind_handler_helpers() (names injected into module globals — see
+# augmentum/modes/coder/README.md). F821 can't see that; everywhere else
+# it's a real NameError and must stay loud.
+"augmentum/modes/coder/_legacy.py" = ["F821"]
+"augmentum/modes/coder/phase_act.py" = ["F821"]
+"augmentum/modes/coder/phase_plan.py" = ["F821"]
+
+[lint.isort]
+known-first-party = ["augmentum"]

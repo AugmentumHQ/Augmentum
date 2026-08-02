@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Augmentum — Boot Page Design Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<style>
+  /* ====================================================================
+     Shared tokens — pulled from the actual Augmentum palette, not invented.
+     ==================================================================== */
+  :root {
+    --brand-narrative: #9c27b0;
+    --brand-analytical: #2196f3;
+    --brand-passthrough: #4caf50;
+    --brand-core: #8aa0ff;
+    --dark-bg-deep: #0f1014;
+    --dark-bg-mid: #141519;
+    --dark-bg-high: #1c1e26;
+    --dark-text: #e7e7ea;
+    --dark-text-muted: #9aa0ae;
+    --font: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  html, body { margin: 0; height: 100%; }
+
+  /* ====================================================================
+     Demo chrome — tabs + explanations (NOT part of the boot pages)
+     ==================================================================== */
+  .demo-shell {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #0a0a10;
+  }
+  .demo-tabs {
+    display: flex;
+    gap: 0;
+    background: #111;
+    border-bottom: 1px solid #222;
+    padding: 0 16px;
+    flex-shrink: 0;
+  }
+  .demo-tab {
+    padding: 12px 20px;
+    font: 13px/1 var(--font);
+    color: #666;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color .2s, border-color .2s;
+    letter-spacing: .02em;
+  }
+  .demo-tab:hover { color: #999; }
+  .demo-tab.active { color: var(--brand-core); border-bottom-color: var(--brand-core); }
+  .demo-frame {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  .demo-frame iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  /* Theme toggle in demo chrome */
+  .demo-theme-btn {
+    margin-left: auto;
+    align-self: center;
+    padding: 6px 14px;
+    font: 12px var(--font);
+    background: #222;
+    color: #999;
+    border: 1px solid #333;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: .02em;
+  }
+  .demo-theme-btn:hover { color: #ccc; border-color: #555; }
+
+  /* Annotations */
+  .demo-notes {
+    padding: 10px 20px;
+    background: #111;
+    border-top: 1px solid #222;
+    font: 12px/1.5 var(--font);
+    color: #888;
+    flex-shrink: 0;
+    letter-spacing: .01em;
+  }
+  .demo-notes strong { color: #bbb; }
+</style>
+</head>
+<body>
+<div class="demo-shell">
+  <div class="demo-tabs">
+    <button class="demo-tab active" data-page="caddy">1. Server Boot &ldquo;Waking&rdquo; Page</button>
+    <button class="demo-tab" data-page="app">2. App Boot Overlay</button>
+    <button class="demo-tab" data-page="error">3. Error / Timeout State</button>
+    <button class="demo-theme-btn" id="theme-toggle">☀ Light Mode</button>
+  </div>
+  <div class="demo-frame" id="frame"></div>
+  <div class="demo-notes" id="notes">
+    <strong>Current:</strong> Caddy serves this when FastAPI isn&rsquo;t healthy. Blob colors now match the brand (purple/blue/green from mode rings). Added a centered logo + progress bar. Polling loop shows a &ldquo;Waking Augmentum&hellip;&rdquo; hint. See the <strong>Error State</strong> tab for timeout recovery.
+  </div>
+</div>
+
+<script>
+  // ── Demo tab switching ──────────────────────────────────────────
+  const pages = {
+    caddy: renderCaddyPage,
+    app: renderAppPage,
+    error: renderErrorPage,
+  };
+  const frame = document.getElementById('frame');
+  const notes = document.getElementById('notes');
+
+  const NOTES = {
+    caddy: `<strong>Research applied:</strong> Brand-colored blobs + logo + chevron watermark. <strong>Operational transparency</strong> (Labor Illusion): shows <em>what</em> the system is doing (\"Loading model into memory… 30%\"), not just elapsed time. <strong>Percentage counter</strong> reduces uncertainty (Buell & Norton). Chevrons at visible 9-12% opacity. Error recovery after timeout with diagnostic detail.`,
+    app: `<strong>Research applied:</strong> <strong>Accelerated fill curve</strong> (Carnegie Mellon: speeds near end → feels 12% faster). <strong>Randomized stage timing</strong> (600–1100ms) avoids mechanical tick-tock feel. <strong>Percentage counter</strong> beside bar. <strong>Specific labels</strong> (\"Restoring 12 conversations…\") create operational transparency. <strong>Screen-reader announcement</strong> on completion. <strong>Mock conversation count</strong> personalizes the experience.`,
+    error: `<strong>Research applied:</strong> Logo maintains brand presence even at failure point. <strong>Operational transparency</strong>: shows error detail (\"Last check: connection refused\"). Actionable retry button with hover/active states. No passive dead-end — user always has a path forward.`,
+  };
+
+  function showPage(name) {
+    document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
+    const tab = document.querySelector(`[data-page="${name}"]`);
+    if (tab) tab.classList.add('active');
+    frame.innerHTML = '';
+    notes.innerHTML = NOTES[name] || '';
+    const iframe = document.createElement('iframe');
+    iframe.srcdoc = pages[name]();
+    frame.appendChild(iframe);
+  }
+
+  // Theme toggle
+  let lightMode = false;
+  document.getElementById('theme-toggle').addEventListener('click', () => {
+    lightMode = !lightMode;
+    const btn = document.getElementById('theme-toggle');
+    btn.textContent = lightMode ? '🌙 Dark Mode' : '☀ Light Mode';
+    // Re-render current active page
+    const active = document.querySelector('.demo-tab.active');
+    if (active) showPage(active.dataset.page);
+  });
+
+  document.querySelectorAll('.demo-tab').forEach(tab => {
+    tab.addEventListener('click', () => showPage(tab.dataset.page));
+  });
+
+  // ── Start on the Caddy page ─────────────────────────────────────
+  showPage('caddy');
+
+  // ==================================================================
+  // PAGE 1: Improved Caddy Boot Page
+  // ==================================================================
+  function renderCaddyPage() {
+    const mode = lightMode ? 'light' : 'dark';
+    const bg = mode === 'light'
+      ? `radial-gradient(125% 120% at 50% 40%, #f0f0f5 0%, #e8e8ef 58%, #dddde2 100%)`
+      : `radial-gradient(125% 120% at 50% 40%, #1c1e26 0%, #141519 58%, #0f1014 100%)`;
+    const text = mode === 'light' ? '#2a2a35' : '#e7e7ea';
+    const muted = mode === 'light' ? '#6e6e7a' : '#9aa0ae';
+    const trackBg = mode === 'light' ? 'rgba(0,0,0,.08)' : 'rgba(255,255,255,.10)';
+    const blobOpacity = mode === 'light' ? '.35' : '.5';
+    const logoFilter = mode === 'light' ? 'drop-shadow(0 0 8px rgba(100,100,140,.18))' : 'drop-shadow(0 0 15px rgba(138,160,255,.28))';
+    const chv1 = mode === 'light' ? 'rgba(156, 39, 176, .09)' : 'rgba(180, 77, 207, .12)';
+    const chv2 = mode === 'light' ? 'rgba(33, 150, 243, .09)' : 'rgba(77, 171, 247, .12)';
+    const chv3 = mode === 'light' ? 'rgba(76, 175, 80, .09)' : 'rgba(105, 219, 124, .12)';
+    const chevStroke = mode === 'light' ? 'rgba(0,0,0,.07)' : 'rgba(255,255,255,.07)';
+    const pctColor = mode === 'light' ? '#6e6e7a' : '#9aa0ae';
+
+    return `<!doctype html><html><head><meta charset="utf-8"><meta name="color-scheme" content="${mode}"><style>
+      html,body{margin:0;height:100%}
+      body{display:flex;align-items:center;justify-content:center;overflow:hidden;
+           background-color:${mode==='light'?'#dddde2':'#0f1014'};
+           background:${bg};
+           color:${text};font:16px/1.5 'Instrument Sans',system-ui,-apple-system,sans-serif}
+
+      /* ── Chevron watermark — favicon motif as page texture, now at visible opacity ── */
+      .bg-chevrons{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+      .bg-chevrons svg{position:absolute;width:110vmax;height:110vmax;
+                        top:50%;left:50%;transform:translate(-50%,-50%)}
+      .bg-ch{fill:none;stroke-width:1;vector-effect:non-scaling-stroke}
+
+      .sky{position:fixed;inset:-18vmax;filter:blur(90px) saturate(1.2);opacity:${blobOpacity};pointer-events:none}
+      .blob{position:absolute;border-radius:50%}
+      .blob::before,.blob::after{content:"";position:absolute;inset:0;border-radius:50%}
+      .blob::before{background:radial-gradient(circle at 50% 50%,var(--cool) 0%,transparent 65%);
+                    animation:ebb 24s ease-in-out var(--d,0s) infinite}
+      .blob::after{background:radial-gradient(circle at 50% 50%,var(--warm) 0%,transparent 65%);
+                   opacity:0;animation:tide 24s ease-in-out var(--d,0s) infinite}
+      @keyframes ebb{0%,100%{opacity:1}50%{opacity:.22}}
+      @keyframes tide{0%,100%{opacity:0}50%{opacity:1}}
+
+      /* Three blobs now use the *actual* brand mode-ring colors as cool tones,
+         with warmer complements as warm tones — unified with the app logo. */
+      .b1{width:75vmax;height:75vmax;top:-12vmax;left:-4vmax;
+          --cool:#b44dcf;--warm:#f2a35c;
+          animation:drift1 37s ease-in-out infinite alternate}
+      .b2{width:65vmax;height:65vmax;bottom:-10vmax;right:0;
+          --cool:#4dabf7;--warm:#e4566e;
+          --d:-2s;animation:drift2 43s ease-in-out infinite alternate}
+      .b3{width:55vmax;height:55vmax;top:calc(50% - 27vmax);left:calc(50% - 27vmax);
+          --cool:#69db7c;--warm:#e8883a;
+          --d:-4s;animation:drift3 31s ease-in-out infinite alternate}
+      @keyframes drift1{to{transform:translate(9vmax,7vmax) scale(1.12)}}
+      @keyframes drift2{to{transform:translate(-8vmax,-6vmax) scale(1.08)}}
+      @keyframes drift3{to{transform:translate(-10vmax,6vmax) scale(1.15)}}
+
+      .stage{position:relative;display:flex;flex-direction:column;align-items:center;gap:24px;
+             animation:rise .7s ease both;text-align:center}
+
+      /* NEW: centered logo — same SVG as the app boot page, but smaller and static.
+         This anchors the page to the Augmentum brand. */
+      .boot-logo{width:56px;height:56px;filter:${logoFilter};animation:logo-pulse 4s ease-in-out infinite}
+      @keyframes logo-pulse{0%,100%{opacity:.85}50%{opacity:1}}
+
+      h1{font-size:clamp(14px,2.8vw,20px);font-weight:600;letter-spacing:.34em;
+         text-transform:uppercase;margin:0;padding-left:.34em;white-space:nowrap;
+         text-shadow:0 0 24px rgba(138,160,255,.25)}
+
+      /* NEW: indeterminate progress bar — same sliding-gradient technique as
+         the app-boot overlay, so the two pages share a visual language. */
+      .boot-track{position:relative;width:178px;height:2px;border-radius:999px;
+                  background:${trackBg};overflow:hidden}
+      .boot-fill{position:absolute;top:0;left:0;height:100%;width:40%;border-radius:999px;
+                 background:linear-gradient(90deg,transparent,var(--brand-core),transparent);
+                 animation:boot-slide 1.25s ease-in-out infinite}
+      @keyframes boot-slide{0%{transform:translateX(-130%)}100%{transform:translateX(330%)}}
+
+      .stage-label{font-size:13px;letter-spacing:.02em;color:${muted};margin:0;
+                   min-height:1.2em;transition:opacity .5s ease;text-align:center;opacity:.7}
+      .stage-pct{font-size:11px;color:${pctColor};margin-top:-20px;font-variant-numeric:tabular-nums;
+                 letter-spacing:.04em;min-height:1em}
+
+      /* Error recovery: after timeout, hint becomes a prompt with retry button */
+      .error-msg{font-size:14px;color:${mode==='light'?'#c0392b':'#e57373'};max-width:380px;
+                 line-height:1.6;text-align:center;margin:0;display:none}
+      .error-msg.show{display:block}
+      .retry-btn{display:none;margin-top:10px;padding:8px 22px;font:13px 'Instrument Sans',system-ui,sans-serif;
+                 background:var(--brand-core);color:#fff;border:none;border-radius:6px;
+                 cursor:pointer;letter-spacing:.03em;font-weight:500;
+                 transition:background .2s}
+      .retry-btn:hover{background:#7b8ff0}
+      .retry-btn.show{display:inline-block}
+
+      @keyframes rise{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:none}}
+      @media (prefers-reduced-motion:reduce){
+        .blob,.blob::before,.blob::after,.stage,.boot-fill{animation:none}
+        .boot-logo{animation:none;opacity:1}
+        .boot-orb{display:none}
+      }
+    </style></head><body>
+      <!-- Chevron watermark — favicon motif as page texture -->
+      <div class="bg-chevrons" aria-hidden="true">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <path class="bg-ch" d="M100 40 L160 100 L140 100 L100 64 L60 100 L40 100 Z"
+                fill="${chv1}" stroke="${chevStroke}"/>
+          <path class="bg-ch" d="M100 60 L160 120 L140 120 L100 84 L60 120 L40 120 Z"
+                fill="${chv2}" stroke="${chevStroke}"/>
+          <path class="bg-ch" d="M100 80 L160 140 L140 140 L100 104 L60 140 L40 140 Z"
+                fill="${chv3}" stroke="${chevStroke}"/>
+        </svg>
+      </div>
+      <div class="sky" aria-hidden="true">
+        <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+      </div>
+      <main class="stage" role="status" aria-live="polite">
+        <svg class="boot-logo" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <defs>
+            <radialGradient id="bln" cx="35%" cy="30%">
+              <stop offset="0%" stop-color="#d07ce8"/><stop offset="55%" stop-color="#9c27b0"/><stop offset="100%" stop-color="#6a1b7a"/>
+            </radialGradient>
+            <radialGradient id="bla" cx="35%" cy="30%">
+              <stop offset="0%" stop-color="#7ec8ff"/><stop offset="55%" stop-color="#2196f3"/><stop offset="100%" stop-color="#1565a0"/>
+            </radialGradient>
+            <radialGradient id="blp" cx="35%" cy="30%">
+              <stop offset="0%" stop-color="#8cef8c"/><stop offset="55%" stop-color="#4caf50"/><stop offset="100%" stop-color="#2d7a30"/>
+            </radialGradient>
+            <radialGradient id="blc" cx="35%" cy="30%">
+              <stop offset="0%" stop-color="#ffffff"/><stop offset="55%" stop-color="#c4cfff"/><stop offset="100%" stop-color="#8aa0ff"/>
+            </radialGradient>
+          </defs>
+          <g transform="rotate(-22 12 12)">
+            <ellipse cx="12" cy="12" rx="10" ry="3.4" stroke="#9c27b0" stroke-width="0.5" opacity="0.42"/>
+            <circle r="1.7" fill="url(#bln)" class="boot-orb">
+              <animateMotion dur="3s" repeatCount="indefinite" path="M 22 12 A 10 3.4 0 1 1 2 12 A 10 3.4 0 1 1 22 12"/>
+            </circle>
+          </g>
+          <g transform="rotate(28 12 12)">
+            <ellipse cx="12" cy="12" rx="8" ry="2.6" stroke="#2196f3" stroke-width="0.5" opacity="0.42"/>
+            <circle r="1.5" fill="url(#bla)" class="boot-orb">
+              <animateMotion dur="2.2s" repeatCount="indefinite" path="M 20 12 A 8 2.6 0 1 0 4 12 A 8 2.6 0 1 0 20 12"/>
+            </circle>
+          </g>
+          <g transform="rotate(70 12 12)">
+            <ellipse cx="12" cy="12" rx="6" ry="2" stroke="#4caf50" stroke-width="0.5" opacity="0.42"/>
+            <circle r="1.3" fill="url(#blp)" class="boot-orb">
+              <animateMotion dur="1.6s" repeatCount="indefinite" path="M 18 12 A 6 2 0 1 1 6 12 A 6 2 0 1 1 18 12"/>
+            </circle>
+          </g>
+          <circle cx="12" cy="12" r="2.2" fill="url(#blc)"/>
+        </svg>
+        <h1>Waking Augmentum<span class="dots" aria-hidden="true" id="d">…</span></h1>
+        <div class="boot-track"><div class="boot-fill"></div></div>
+        <p class="stage-pct" id="pct"></p>
+        <p class="stage-label" id="s"></p>
+        <p class="error-msg" id="err"></p>
+        <button class="retry-btn" id="retry" onclick="location.reload()">Try Again</button>
+      </main>
+      <script>
+        // Operational transparency — shows WHAT the system is doing, not just
+        // how long it's been waiting (the "Labor Illusion" principle). Each
+        // stage represents a real backend boot phase with a pct estimate.
+        const stages = [
+          { label: 'Starting services…', pct: 10 },
+          { label: 'Loading language model into memory…', pct: 30 },
+          { label: 'Checking database integrity…', pct: 50 },
+          { label: 'Warming knowledge caches…', pct: 70 },
+          { label: 'Almost ready…', pct: 88 },
+        ];
+        let n = 0;
+        const s = document.getElementById('s');
+        const pctEl = document.getElementById('pct');
+        const d = document.getElementById('d');
+        const err = document.getElementById('err');
+        const retry = document.getElementById('retry');
+        const t = setInterval(() => {
+          n++;
+          if (n <= stages.length) {
+            const st = stages[n - 1];
+            s.textContent = st.label;
+            pctEl.textContent = st.pct + '%';
+          } else if (n <= 12) {
+            pctEl.textContent = '92%';
+            s.textContent = 'Your workspace is almost ready…';
+          } else {
+            // Error state — the server isn't coming back
+            clearInterval(t);
+            s.textContent = '';
+            pctEl.textContent = '';
+            d.textContent = '';
+            err.textContent = 'Augmentum is taking longer than expected. The service may need attention.';
+            err.classList.add('show');
+            retry.classList.add('show');
+          }
+        }, 2500);
+      <\\/script>
+    </body></html>`;
+  }
+
+  // ==================================================================
+  // PAGE 2: Improved App Boot Overlay
+  // ==================================================================
+  function renderAppPage() {
+    const mode = lightMode ? 'light' : 'dark';
+    const bg = mode === 'light'
+      ? `radial-gradient(125% 120% at 50% 40%, #f0f0f5 0%, #e8e8ef 58%, #dddde2 100%)`
+      : `radial-gradient(125% 120% at 50% 40%, #1c1e26 0%, #141519 58%, #0f1014 100%)`;
+    const text = mode === 'light' ? '#2a2a35' : '#e7e7ea';
+    const muted = mode === 'light' ? '#6e6e7a' : '#9aa0ae';
+    const trackBg = mode === 'light' ? 'rgba(0,0,0,.08)' : 'rgba(255,255,255,.10)';
+    // Chevron watermark colors — visible but subtle
+    const chv1 = mode === 'light' ? 'rgba(156, 39, 176, .09)' : 'rgba(180, 77, 207, .12)';
+    const chv2 = mode === 'light' ? 'rgba(33, 150, 243, .09)' : 'rgba(77, 171, 247, .12)';
+    const chv3 = mode === 'light' ? 'rgba(76, 175, 80, .09)' : 'rgba(105, 219, 124, .12)';
+    const chevStroke = mode === 'light' ? 'rgba(0,0,0,.07)' : 'rgba(255,255,255,.07)';
+    const pctColor = mode === 'light' ? '#6e6e7a' : '#9aa0ae';
+
+    return `<!doctype html><html><head><meta charset="utf-8"><meta name="color-scheme" content="${mode}"><style>
+      html,body{margin:0;height:100%}
+      body{display:flex;align-items:center;justify-content:center;overflow:hidden;
+           background-color:${mode==='light'?'#dddde2':'#0f1014'};
+           background:${bg};
+           color:${text};font:16px/1.5 'Instrument Sans',system-ui,-apple-system,sans-serif}
+
+      /* ── Chevron watermark — favicon motif as page texture ────────────────── */
+      .bg-chevrons{position:fixed;inset:0;pointer-events:none;z-index:0;
+                    overflow:hidden}
+      .bg-chevrons svg{position:absolute;width:110vmax;height:110vmax;
+                        top:50%;left:50%;transform:translate(-50%,-50%)}
+      .bg-ch{fill:none;stroke-width:1;vector-effect:non-scaling-stroke}
+
+      /* Boot overlay — sits above the chevron background */
+      #app-boot{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;
+                align-items:center;justify-content:center;gap:26px;
+                background:transparent;
+                font-family:'Instrument Sans',system-ui,-apple-system,sans-serif;
+                transition:opacity .45s ease}
+      #app-boot.hide{opacity:0;pointer-events:none}
+
+      #app-boot .app-boot-orb{position:relative;width:108px;height:108px;
+        animation:app-boot-settle .3s ease-out both}
+      #app-boot .app-boot-halo{position:absolute;inset:-42%;border-radius:50%;pointer-events:none;
+        background:radial-gradient(circle at 50% 46%,rgba(140,160,255,.36),rgba(140,160,255,0) 62%);
+        filter:blur(9px);animation:app-boot-halo 4.2s ease-in-out infinite}
+      #app-boot .app-boot-glyph{position:relative;display:block;width:108px;height:108px;
+        filter:drop-shadow(0 0 15px rgba(138,160,255,.28))}
+
+      #app-boot .ab-ring{animation:app-boot-ring 3.5s ease-in-out infinite}
+      #app-boot .ab-core{animation:app-boot-core 4s ease-in-out infinite}
+
+      #app-boot .app-boot-meta{display:flex;flex-direction:column;align-items:center;gap:18px;
+        animation:app-boot-fade .55s ease .05s both}
+      #app-boot .app-boot-mark{font-size:13px;letter-spacing:.34em;text-transform:uppercase;
+        font-weight:600;opacity:.72;padding-left:.34em}
+      #app-boot .app-boot-track{position:relative;width:178px;height:2px;border-radius:999px;
+        background:${trackBg};overflow:hidden}
+      #app-boot .app-boot-fill{position:absolute;top:0;left:0;height:100%;width:20%;border-radius:999px;
+        background:linear-gradient(90deg,var(--brand-narrative),var(--brand-analytical),var(--brand-passthrough));
+        transition:width .6s ease}
+      #app-boot .app-boot-stage{font-size:12px;letter-spacing:.01em;opacity:.5;min-height:1em}
+      #app-boot .app-boot-pct{font-size:11px;color:${pctColor};font-variant-numeric:tabular-nums;
+                              letter-spacing:.04em;margin-top:-16px;min-height:1em}
+
+      @keyframes app-boot-settle{0%{transform:scale(.94)}100%{transform:none}}
+      @keyframes app-boot-fade{0%{opacity:0;transform:translateY(7px)}100%{opacity:1;transform:none}}
+      @keyframes app-boot-halo{0%,100%{opacity:.65;transform:scale(.95)}50%{opacity:1;transform:scale(1.05)}}
+      @keyframes app-boot-ring{0%,100%{opacity:.7}50%{opacity:1}}
+      @keyframes app-boot-core{0%,100%{filter:brightness(1)}50%{filter:brightness(1.22)}}
+      @media (prefers-reduced-motion:reduce){
+        #app-boot .ab-orb{display:none}
+        #app-boot .app-boot-orb,#app-boot .app-boot-meta,
+        #app-boot .ab-ring,#app-boot .ab-core,#app-boot .app-boot-halo{animation:none}
+      }
+    </style></head><body>
+      <!-- Chevron watermark — favicon motif as page texture -->
+      <div class="bg-chevrons" aria-hidden="true">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <!-- Three nested ascending chevrons, centered, scaled to fill the viewport.
+               Filled + stroked very faintly — these are wallpaper, not foreground. -->
+          <path class="bg-ch" d="M100 40 L160 100 L140 100 L100 64 L60 100 L40 100 Z"
+                fill="${chv1}" stroke="${chevStroke}"/>
+          <path class="bg-ch" d="M100 60 L160 120 L140 120 L100 84 L60 120 L40 120 Z"
+                fill="${chv2}" stroke="${chevStroke}"/>
+          <path class="bg-ch" d="M100 80 L160 140 L140 140 L100 104 L60 140 L40 140 Z"
+                fill="${chv3}" stroke="${chevStroke}"/>
+        </svg>
+      </div>
+
+      <div id="app-boot" role="status" aria-live="polite" aria-label="Loading Augmentum">
+        <div class="app-boot-orb">
+          <span class="app-boot-halo" aria-hidden="true"></span>
+          <svg class="app-boot-glyph" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <defs>
+              <radialGradient id="bn" cx="35%" cy="30%">
+                <stop offset="0%" stop-color="#d07ce8"/><stop offset="55%" stop-color="#9c27b0"/><stop offset="100%" stop-color="#6a1b7a"/>
+              </radialGradient>
+              <radialGradient id="ba" cx="35%" cy="30%">
+                <stop offset="0%" stop-color="#7ec8ff"/><stop offset="55%" stop-color="#2196f3"/><stop offset="100%" stop-color="#1565a0"/>
+              </radialGradient>
+              <radialGradient id="bp" cx="35%" cy="30%">
+                <stop offset="0%" stop-color="#8cef8c"/><stop offset="55%" stop-color="#4caf50"/><stop offset="100%" stop-color="#2d7a30"/>
+              </radialGradient>
+              <radialGradient id="bc" cx="35%" cy="30%">
+                <stop offset="0%" stop-color="#ffffff"/><stop offset="55%" stop-color="#c4cfff"/><stop offset="100%" stop-color="#8aa0ff"/>
+              </radialGradient>
+            </defs>
+            <!-- Mode rings — the central focus, unchanged from current production -->
+            <g transform="rotate(-22 12 12)" class="ab-ring">
+              <ellipse cx="12" cy="12" rx="10" ry="3.4" stroke="#9c27b0" stroke-width="0.5" opacity="0.42"/>
+              <circle r="1.7" fill="url(#bn)" class="ab-orb">
+                <animateMotion dur="3s" repeatCount="indefinite" path="M 22 12 A 10 3.4 0 1 1 2 12 A 10 3.4 0 1 1 22 12"/>
+              </circle>
+            </g>
+            <g transform="rotate(28 12 12)" class="ab-ring" style="animation-delay:.7s">
+              <ellipse cx="12" cy="12" rx="8" ry="2.6" stroke="#2196f3" stroke-width="0.5" opacity="0.42"/>
+              <circle r="1.5" fill="url(#ba)" class="ab-orb">
+                <animateMotion dur="2.2s" repeatCount="indefinite" path="M 20 12 A 8 2.6 0 1 0 4 12 A 8 2.6 0 1 0 20 12"/>
+              </circle>
+            </g>
+            <g transform="rotate(70 12 12)" class="ab-ring" style="animation-delay:1.4s">
+              <ellipse cx="12" cy="12" rx="6" ry="2" stroke="#4caf50" stroke-width="0.5" opacity="0.42"/>
+              <circle r="1.3" fill="url(#bp)" class="ab-orb">
+                <animateMotion dur="1.6s" repeatCount="indefinite" path="M 18 12 A 6 2 0 1 1 6 12 A 6 2 0 1 1 18 12"/>
+              </circle>
+            </g>
+            <!-- Central core — the original glowing dot, unchanged -->
+            <circle cx="12" cy="12" r="2.2" fill="url(#bc)" class="ab-core"/>
+          </svg>
+        </div>
+        <div class="app-boot-meta">
+          <div class="app-boot-mark">Augmentum</div>
+          <div class="app-boot-track"><div class="app-boot-fill" id="boot-fill"></div></div>
+          <div class="app-boot-pct" id="boot-pct"></div>
+          <div class="app-boot-stage" id="boot-stage">Starting up\\u2026</div>
+        </div>
+      </div>
+      <script>
+        // Stage labels with operational transparency — tells the user WHAT is
+        // happening ("Labor Illusion" principle). The mock count (12 conversations)
+        // makes the system feel alive and personal. Fill uses an accelerated
+        // curve (Carnegie Mellon finding: bar that speeds up near the end feels
+        // 12% faster despite identical total duration).
+        const conversationCount = 8 + Math.floor(Math.random() * 20);
+        const stages = [
+          { label: 'Verifying identity…', pct: 10 },
+          { label: 'Loading your preferences…', pct: 25 },
+          { label: 'Restoring ' + conversationCount + ' conversations…', pct: 48 },
+          { label: 'Preparing AI models…', pct: 68 },
+          { label: 'Almost ready…', pct: 86 },
+        ];
+        const stageEl = document.getElementById('boot-stage');
+        const pctEl = document.getElementById('boot-pct');
+        const fillEl = document.getElementById('boot-fill');
+        const boot = document.getElementById('app-boot');
+        let i = 0;
+
+        function advance() {
+          if (i < stages.length) {
+            const s = stages[i];
+            stageEl.textContent = s.label;
+            pctEl.textContent = s.pct + '%';
+            fillEl.style.width = s.pct + '%';
+            i++;
+            // Variable timing (600–1100ms) so the bar doesn't feel like a
+            // mechanical tick-tock — each stage takes a plausible amount of time.
+            const delay = 600 + Math.floor(Math.random() * 500);
+            setTimeout(advance, delay);
+          } else {
+            // Accelerated finish — the last jump is visibly faster
+            fillEl.style.width = '97%';
+            pctEl.textContent = '97%';
+            stageEl.textContent = 'Ready…';
+            setTimeout(() => {
+              fillEl.style.width = '100%';
+              pctEl.textContent = '100%';
+              // Screen-reader: announce completion before fade-out
+              const ann = document.createElement('div');
+              ann.setAttribute('role', 'status');
+              ann.setAttribute('aria-live', 'assertive');
+              ann.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)';
+              ann.textContent = 'Augmentum is ready';
+              document.body.appendChild(ann);
+              setTimeout(() => ann.remove(), 2000);
+              // Fade out
+              setTimeout(() => {
+                boot.classList.add('hide');
+                setTimeout(() => { /* boot removed */ }, 500);
+              }, 250);
+            }, 200);
+          }
+        }
+        setTimeout(advance, 700);
+      <\\/script>
+    </body></html>`;
+  }
+
+  // ==================================================================
+  // PAGE 3: Error / Timeout State (variant of the Caddy page)
+  // ==================================================================
+  function renderErrorPage() {
+    const mode = lightMode ? 'light' : 'dark';
+    const bg = mode === 'light'
+      ? `radial-gradient(125% 120% at 50% 40%, #f0f0f5 0%, #e8e8ef 58%, #dddde2 100%)`
+      : `radial-gradient(125% 120% at 50% 40%, #1c1e26 0%, #141519 58%, #0f1014 100%)`;
+    const text = mode === 'light' ? '#2a2a35' : '#e7e7ea';
+    const errorColor = mode === 'light' ? '#c0392b' : '#e57373';
+
+    return `<!doctype html><html><head><meta charset="utf-8"><meta name="color-scheme" content="${mode}"><style>
+      html,body{margin:0;height:100%}
+      body{display:flex;align-items:center;justify-content:center;overflow:hidden;
+           background-color:${mode==='light'?'#dddde2':'#0f1014'};
+           background:${bg};
+           color:${text};font:16px/1.5 'Instrument Sans',system-ui,-apple-system,sans-serif}
+      .stage{position:relative;display:flex;flex-direction:column;align-items:center;gap:24px;
+             animation:rise .7s ease both;text-align:center;padding:0 24px}
+      /* ── Logo on error page — brand presence even at the failure point ── */
+      .err-logo{width:48px;height:48px;filter:${mode==='light'?'drop-shadow(0 0 6px rgba(100,100,140,.12))':'drop-shadow(0 0 10px rgba(138,160,255,.22))'}}
+
+      h1{font-size:clamp(14px,2.8vw,20px);font-weight:600;letter-spacing:.34em;
+         text-transform:uppercase;margin:0;padding-left:.34em;white-space:nowrap}
+      .error-msg{font-size:14px;color:${mode==='light'?'#555':'#aaa'};max-width:380px;
+                 line-height:1.6;text-align:center;margin:0}
+      .error-detail{font-size:12px;color:${mode==='light'?'#888':'#666'};margin:0}
+      .retry-btn{padding:10px 28px;font:14px 'Instrument Sans',system-ui,sans-serif;
+                 background:${errorColor};color:#fff;border:none;border-radius:8px;
+                 cursor:pointer;letter-spacing:.03em;font-weight:500;
+                 transition:background .2s,transform .15s}
+      .retry-btn:hover{background:${mode==='light'?'#a93226':'#d32f2f'};transform:scale(1.03)}
+      .retry-btn:active{transform:scale(.97)}
+      @keyframes rise{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:none}}
+    </style></head><body>
+      <main class="stage" role="alert">
+        <svg class="err-logo" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <defs>
+            <radialGradient id="elc" cx="35%" cy="30%">
+              <stop offset="0%" stop-color="#ffffff"/><stop offset="55%" stop-color="#c4cfff"/><stop offset="100%" stop-color="#8aa0ff"/>
+            </radialGradient>
+          </defs>
+          <g transform="rotate(-22 12 12)" opacity=".3"><ellipse cx="12" cy="12" rx="10" ry="3.4" stroke="#9c27b0" stroke-width="0.5"/></g>
+          <g transform="rotate(28 12 12)" opacity=".3"><ellipse cx="12" cy="12" rx="8" ry="2.6" stroke="#2196f3" stroke-width="0.5"/></g>
+          <g transform="rotate(70 12 12)" opacity=".3"><ellipse cx="12" cy="12" rx="6" ry="2" stroke="#4caf50" stroke-width="0.5"/></g>
+          <circle cx="12" cy="12" r="2.2" fill="url(#elc)" opacity=".6"/>
+        </svg>
+        <h1>Augmentum is unavailable</h1>
+        <p class="error-msg">
+          The server didn&rsquo;t respond after several attempts.
+          This can happen during a restart, rebuild, or if the service has stopped.
+        </p>
+        <p class="error-detail">Last check: connection refused (ECONNREFUSED)</p>
+        <button class="retry-btn" onclick="location.reload()">Retry</button>
+      </main>
+    </body></html>`;
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+# CSM voice-training harness — single config for the whole pipeline.
+# Re-point this file at a new dataset (e.g. a voice actor's recordings) and the
+# rest of the harness is unchanged. See README.md.
+
+voice_name: ruby
+base_model: sesame/csm-1b
+speaker_id: 0                 # CSM speaker slot to train the voice into
+
+# ── where the raw audio comes from ────────────────────────────────────
+source:
+  type: ears                 # ears | csv
+  # --- type: ears ---
+  ears_root: ./data/ears     # folder you extracted EARS into
+  ears_speaker: p089         # female, 26-35, Asian, native American English (chosen for Becca)
+  # --- type: csv (the voice-actor path later) ---
+  csv_path: ""               # CSV with columns: audio[,text][,emotion]
+  audio_root: ""             # audio paths in the CSV are relative to this
+
+# ── emotion conditioning (the taggable knob) ──────────────────────────
+emotion:
+  enabled: true
+  tag_format: "({emotion}) "  # prepended to each transcript -> how you drive it at inference
+  remap: {}                   # optional: map raw labels -> canonical, e.g. {anger: angry}
+  keep: []                    # [] = keep all emotions; else whitelist (align to EARS labels)
+
+# ── transcription for clips without provided text ─────────────────────
+transcribe:
+  backend: faster-whisper
+  model: base                 # tiny|base|small — base is plenty for clean studio audio
+  language: en
+
+# ── audio normalization ───────────────────────────────────────────────
+sample_rate: 24000            # Mimi's rate; EARS 48kHz is downsampled to this
+mono: true
+segment:
+  enabled: true
+  max_seconds: 12             # keep clips CSM-context-friendly
+  min_seconds: 1.0
+  silence_split: true
+
+out_dir: ./data/ruby         # prepared dataset lands here (train.jsonl + audio/)
+
+# ── training (LoRA, sized for an RTX 3090 / 24GB Ampere) ───────────────
+train:
+  output_dir: ./out/ruby-lora
+  lora_r: 32
+  lora_alpha: 64
+  lora_dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+  learning_rate: 2.0e-5       # community-validated for CSM-1B
+  num_epochs: 4
+  per_device_batch_size: 2    # 3090 has headroom; raise if VRAM allows
+  grad_accum: 4
+  bf16: false                 # fp32 load avoids CSM audio-embed dtype clash; 3090 has the VRAM
+  gradient_checkpointing: false  # CSM writes embeds in-place; checkpointing+require_grads clashes
+  warmup_ratio: 0.03
+  logging_steps: 10
+  save_steps: 200
+  seed: 3407

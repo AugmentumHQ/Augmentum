@@ -1,0 +1,88 @@
+# vLLM + llama-swap fallback tier (OPTIONAL — Discover/marketplace install).
+#
+# Purpose: serve model architectures the bundled `llama-server` can't load —
+# brand-new archs (e.g. nanbeige) that upstream llama.cpp hasn't written a graph
+# for yet. GGUF can't carry an executable graph; safetensors + trust_remote_code
+# can (the arch's modeling_*.py ships in the repo and Transformers execs it).
+# vLLM runs any such HF arch via `--model-impl transformers --trust-remote-code`.
+#
+# NOT default-on. Opt-in only, GPU-only (like compose.gpu.yaml). A fresh install
+# never sees this — the model manager's safetensors toggle stays hidden until
+# this service is installed and healthy. See:
+#   docs/superpowers/specs/2026-07-22-unsupported-arch-serving-vllm-safetensors-design.md
+#
+# Model swapping: vLLM pins one model per process, so we DON'T expose vLLM
+# directly. The exposed service is **llama-swap** — a tiny Go OpenAI-compatible
+# proxy that maps each model name to the command that launches its vLLM upstream
+# and swaps on demand (ttl/groups manage VRAM against the chat + TTS models).
+# Augmentum registers ONE base URL (AUGMENTUM_VLLM_BASE_URL) and sends model
+# names; llama-swap does the rest. It manages ONLY these vLLM upstreams — the
+# GGUF Slots A/B/C stay with llama_server_manager, untouched.
+#
+# Config: config/llama-swap/llama-swap.yaml lists the installed safetensors
+# models. Augmentum appends an entry when a safetensors download completes
+# (Phase 3) and reloads llama-swap.
+
+services:
+  augmentum:
+    environment:
+      # llama-swap front door — Augmentum auto-registers this as the "vllm"
+      # OpenAI-compat backend (provider_registry).
+      - AUGMENTUM_VLLM_BASE_URL=http://vllm-swap:8080/v1
+    depends_on:
+      vllm-swap:
+        # service_started, NOT service_healthy: vllm-swap reports healthy only
+        # after it has LOADED a model — minutes. Gating augmentum's boot on that
+        # would strand the whole UI (same class as the classifier/ocr deadlock).
+        # The app registers the "vllm" backend lazily and reaches it over HTTP
+        # with fallback; it must never wait on it to start serving.
+        condition: service_started
+        required: false
+
+  vllm-swap:
+    # Built locally today from the combined llama-swap + vLLM Dockerfile. The
+    # single-click Discover install kicks this build (progress surfaced on the
+    # card). PUBLISH-LATER SEAM: once we push augmentum/vllm-swap:<tag>, drop the
+    # `build:` block and the install becomes a pull — identical UX, just faster.
+    build:
+      context: .
+      dockerfile: Dockerfile.vllm-swap
+      args:
+        VLLM_TAG: ${AUGMENTUM_VLLM_TAG:-v0.13.0}
+        LLAMA_SWAP_VERSION: ${AUGMENTUM_LLAMA_SWAP_VERSION:-241}
+    image: augmentum/vllm-swap:local
+    # ENTRYPOINT/CMD are baked into the image (llama-swap front door).
+    volumes:
+      - ./config/llama-swap:/config
+      # Shared HF cache so downloaded safetensors repos are visible to the
+      # vLLM upstreams llama-swap spawns.
+      - vllm_models:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      # First request cold-starts a vLLM upstream (loads safetensors from the
+      # cache); generous so the container isn't marked unhealthy meanwhile.
+      start_period: 600s
+    restart: unless-stopped
+    # Host-RAM backstop, and the loosest one in the stack by design. llama-swap
+    # SPAWNS its vLLM upstreams as child processes, so every swapped-in model
+    # is accounted to THIS cgroup: safetensors load staging, trust_remote_code
+    # Transformers graph construction, and CUDA host-side allocations, for
+    # whatever the largest configured model happens to be. A kill here looks
+    # to the user like the model crashed mid-swap. Unverified estimate — this
+    # service isn't running. Raise it before adding large safetensors models,
+    # or lower `ttl`/use groups in config/llama-swap/llama-swap.yaml so fewer
+    # upstreams are alive at once.
+    mem_limit: ${AUGMENTUM_VLLM_MEM_LIMIT:-0}
+
+volumes:
+  vllm_models:

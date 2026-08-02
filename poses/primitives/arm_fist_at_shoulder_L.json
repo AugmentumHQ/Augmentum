@@ -1,0 +1,31 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "arm_fist_at_shoulder_L",
+  "tags": [
+    "single-arm",
+    "L",
+    "stance",
+    "shoulder"
+  ],
+  "description": "Single-arm primitive: left arm in 'fist_at_shoulder_L' pose. Lands at region 'upper_arm_L' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+  "family": "per_arm",
+  "anchors": {
+    "leftHand": {
+      "type": "region-contact",
+      "region": "upper_arm_L",
+      "tolerance": 0.04,
+      "fingerStyle": "fist_at_shoulder_L"
+    },
+    "rightHand": {
+      "type": "free-space"
+    }
+  },
+  "body": {},
+  "provenance": {
+    "source": "auto-generated",
+    "generator": "scripts/generate_per_arm_primitives.py",
+    "wrapsAffordance": "fist_at_shoulder_L",
+    "consensusRegion": "upper_arm_L",
+    "createdAt": "2026-05-14"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "schema": "control.game.v1",
+  "id": "generic_nds",
+  "description": "Generic Nintendo DS game profile. SNES-shaped diamond (A east, B south, Y west, X north) plus L/R shoulders. Nintendo Western convention: A is confirm. The stylus / touch screen is not represented in v1 (pointer wire kind not yet wired through the BridgedAdapter).",
+  "applies_to_controllers": ["nds"],
+  "applies_to_log_schema": "nds_vision.v1",
+  "actions": {
+    "confirm": {
+      "binding": "face_east",
+      "hint": "Press A. Advance dialog, confirm menu choice, primary action."
+    },
+    "cancel": {
+      "binding": "face_south",
+      "hint": "Press B. Cancel menu, run, secondary action."
+    },
+    "special": {
+      "binding": "face_west",
+      "hint": "Press Y. Game-specific: secondary action, sub-attack, sprint."
+    },
+    "use_item": {
+      "binding": "face_north",
+      "hint": "Press X. Game-specific: tertiary action, inventory hotkey."
+    },
+    "menu": {
+      "binding": "start",
+      "hint": "Press Start. Open the pause menu, start the game from the title screen."
+    },
+    "back": {
+      "binding": "select",
+      "hint": "Press Select. Game-specific: secondary menu, character / mode swap."
+    },
+    "nav_up": {
+      "binding": "dpad_up",
+      "hint": "Walk / move up. In menus: cursor up."
+    },
+    "nav_down": {
+      "binding": "dpad_down",
+      "hint": "Walk / move down. In menus: cursor down."
+    },
+    "nav_left": {
+      "binding": "dpad_left",
+      "hint": "Walk / move left. In menus: cursor left."
+    },
+    "nav_right": {
+      "binding": "dpad_right",
+      "hint": "Walk / move right. In menus: cursor right."
+    }
+  },
+  "hardware_passthrough": ["shoulder_l", "shoulder_r"],
+  "notes": "Stylus support is the major omission of v1. Many NDS titles are stylus-driven (Brain Age, Hotel Dusk, Trauma Center); for those the agent runs vision-only with button-only inputs. Adding stylus requires a pointer wire kind through the BridgedAdapter — separate scope from this profile."
+}

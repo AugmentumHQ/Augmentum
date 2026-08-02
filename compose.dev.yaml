@@ -1,0 +1,50 @@
+# Dev overlay — re-adds local build + source bind mounts so changes to
+# ./augmentum/, ./ui/, ./tests/ are reflected in the running container
+# without rebuilding. Use with:
+#
+#   docker compose -f compose.yaml -f compose.dev.yaml up
+#
+# (The setup wizard adds this overlay to .augmentum.conf automatically when
+# you run setup.sh / setup.bat from a cloned repo.)
+#
+# Variant selection in dev mode:
+#   AUGMENTUM_VARIANT=cpu (default)  AUGMENTUM_DOCKERFILE=Dockerfile
+#   AUGMENTUM_VARIANT=gpu            AUGMENTUM_DOCKERFILE=Dockerfile.gpu
+#
+# The build directive here overwrites the image: from compose.yaml with a
+# locally-built image of the same tag, so production-style runs that pulled
+# from GHCR are not affected unless you explicitly run with this overlay.
+
+services:
+  augmentum:
+    build:
+      context: .
+      dockerfile: ${AUGMENTUM_DOCKERFILE:-Dockerfile}
+    volumes:
+      # ui/ is writable (not :ro) so the self-edit "apply to live" path can take
+      # accepted frontend (CSS/JS) changes live, the same way augmentum/ already
+      # can for backend changes. Both are reversible via self-edit checkpoints.
+      - ./ui:/app/ui
+      - ./augmentum:/app/augmentum
+      # Bind the entrypoint so its /home/augmentum ownership fix runs on
+      # every recreate without an image rebuild. Recreates reset the home
+      # dir to root:root 750, which blocks uid-1000 from ~/.cache and
+      # kills TTS + the embedder (2026-07-02). Redundant-but-harmless once
+      # the image is rebuilt with the fixed entrypoint baked in.
+      - ./entrypoint.sh:/entrypoint.sh:ro
+      - ./.augmentum:/app/.augmentum:ro
+      - ./.claude/skills:/app/.claude/skills:ro
+      - ./tests:/app/tests:ro
+    # SYS_PTRACE lets py-spy attach to the augmentum process while
+    # it's wedged so we can dump the asyncio loop's exact stack
+    # without having to restart and lose the state. Dev-only -- the
+    # production overlay doesn't add this, so the cap stays out of
+    # any non-development install.
+    cap_add:
+      - SYS_PTRACE
+
+  executor:
+    # Build the executor locally in dev instead of pulling the published
+    # image, so changes to ./executor take effect. Overwrites the image:
+    # from compose.yaml (same as the augmentum service above).
+    build: ./executor

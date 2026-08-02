@@ -1,0 +1,4971 @@
+/* ==========================================================================
+   Artifact Studio — overlay editor for documents, slides, grids, charts
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   Overlay Shell
+   --------------------------------------------------------------------------- */
+.studio-overlay {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: calc(var(--z-modal) + 5);
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 767px) {
+  .studio-overlay {
+    bottom: calc(var(--orb-bar-height) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+.studio-overlay.hidden {
+  display: none;
+}
+
+/* Opening animation */
+.studio-overlay.entering {
+  animation: studio-enter 0.25s ease-out;
+}
+
+@keyframes studio-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Closing animation */
+.studio-overlay.leaving {
+  animation: studio-leave 0.18s ease-in forwards;
+}
+
+@keyframes studio-leave {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(8px); }
+}
+
+/* ---------------------------------------------------------------------------
+   Header
+   --------------------------------------------------------------------------- */
+.studio-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+  flex-shrink: 0;
+  min-height: 48px;
+}
+
+.studio-artifact-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Unsaved changes dot — visible when .dirty class is on the name element */
+.studio-artifact-name .studio-dirty-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.studio-artifact-name.dirty .studio-dirty-dot {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.studio-format-badge {
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.studio-format-badge[data-format="pdf"]  { background: rgba(239,68,68,0.12); color: #ef4444; }
+.studio-format-badge[data-format="docx"] { background: rgba(59,130,246,0.12); color: #3b82f6; }
+.studio-format-badge[data-format="pptx"] { background: rgba(249,115,22,0.12); color: #f97316; }
+.studio-format-badge[data-format="xlsx"] { background: rgba(34,197,94,0.12);  color: var(--success, #22c55e); }
+.studio-format-badge[data-format="png"]  { background: rgba(168,85,247,0.12); color: #a855f7; }
+
+/* ---------------------------------------------------------------------------
+   Body (format-specific editors go here)
+   --------------------------------------------------------------------------- */
+.studio-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Artifact Session Shell — persistent workspace with responsive Build rail
+   --------------------------------------------------------------------------- */
+.studio-session-layout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  background: var(--bg);
+}
+
+/* No live agentic build => collapse to full-width editor. The Build sidebar
+   is only useful when a snapshot is actively binding artifact → steps; when
+   absent, the panel is just redundant metadata that duplicates header chrome,
+   and the tabs are dead UI. Hide both so the editor gets the whole width. */
+.studio-session-layout[data-has-snapshot="false"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+.studio-session-layout[data-has-snapshot="false"] .studio-session-panel,
+.studio-session-layout[data-has-snapshot="false"] .studio-session-tabs {
+  display: none;
+}
+
+/* L2: When the live preview is open, the editor and preview share width as a
+   2-pane layout. A 3rd workspace column compresses the editor to ~22% on a
+   1400px viewport (h1 wraps to 3 lines), so we hide the Build sidebar even
+   when a snapshot is active. */
+.studio-session-layout[data-preview-open="true"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+.studio-session-layout[data-preview-open="true"] .studio-session-panel,
+.studio-session-layout[data-preview-open="true"] .studio-session-tabs {
+  display: none;
+}
+
+/* Manual panel collapse — the user clicks the sidebar-toggle button in the
+   doc-editor toolbar. Collapses to single-column (panel hidden) regardless
+   of snapshot state. */
+.studio-session-layout[data-panel-collapsed="true"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+.studio-session-layout[data-panel-collapsed="true"] .studio-session-panel,
+.studio-session-layout[data-panel-collapsed="true"] .studio-session-tabs {
+  display: none;
+}
+
+.studio-session-tabs {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px 0;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+}
+
+.studio-session-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.14s ease, background 0.14s ease, color 0.14s ease;
+}
+
+.studio-session-tab.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--text-primary);
+}
+
+.studio-session-tab.has-live::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  margin-left: 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.studio-session-main {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.studio-session-main.has-preview {
+  flex-direction: row;
+}
+
+.studio-session-main > * {
+  min-height: 0;
+}
+
+.studio-session-panel {
+  min-width: 0;
+  min-height: 0;
+  border-left: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+}
+
+.studio-session-scroll {
+  height: 100%;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.studio-session-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--accent) 12%, transparent), transparent 42%),
+    linear-gradient(180deg, color-mix(in srgb, var(--surface) 88%, transparent), color-mix(in srgb, var(--bg-elevated) 92%, transparent));
+}
+
+.studio-session-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.studio-session-title {
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 650;
+  color: var(--text-primary);
+}
+
+.studio-session-subtitle {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.studio-session-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.studio-session-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.studio-session-chip.is-live {
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--border));
+  color: var(--accent);
+}
+
+.studio-session-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.studio-session-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.14s ease, background 0.14s ease, color 0.14s ease;
+}
+
+.studio-session-action:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.studio-session-action.primary {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--text-primary);
+}
+
+.studio-session-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.studio-session-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.studio-session-section-head h3 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.studio-session-section-head span {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.studio-session-empty {
+  padding: 14px;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border);
+  background: color-mix(in srgb, var(--surface) 50%, transparent);
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.studio-session-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.studio-session-step {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface) 64%, transparent);
+  overflow: hidden;
+}
+
+.studio-session-step[open] {
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+}
+
+.studio-session-step summary {
+  list-style: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+}
+
+.studio-session-step summary::-webkit-details-marker {
+  display: none;
+}
+
+.studio-session-step-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.studio-session-step-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.studio-session-step-label {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.studio-session-step-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.studio-session-step-output {
+  margin: 0;
+  padding: 0 14px 14px 56px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.studio-session-artifacts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.studio-session-artifact {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 62%, transparent);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.14s ease, background 0.14s ease, transform 0.14s ease;
+}
+
+.studio-session-artifact:hover,
+.studio-session-artifact.active {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+}
+
+.studio-session-artifact-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.studio-session-artifact-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.studio-overview-frame {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--surface);
+}
+
+.studio-overview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--bg-elevated) 86%, transparent);
+}
+
+.studio-overview-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.studio-overview-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.studio-overview-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.studio-overview-edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.studio-overview-iframe {
+  flex: 1;
+  min-height: 420px;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
+/* ---------------------------------------------------------------------------
+   Document Editor — white page on gray
+   --------------------------------------------------------------------------- */
+.studio-doc-editor {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--surface);
+  padding: var(--space-2xl) var(--space-md);
+  padding-bottom: var(--space-xl);
+}
+
+.studio-doc-page {
+  max-width: 760px;
+  margin: 0 auto;
+  background: var(--doc-bg, var(--bg));
+  color: var(--doc-text, var(--text-primary));
+  border-radius: var(--radius-md);
+  box-shadow: 0 1px 8px rgba(0,0,0,0.08);
+  padding: var(--doc-page-pad-block, 48px) var(--doc-page-pad-inline, 64px);
+  min-height: calc(100dvh - 200px);
+}
+
+/* Milkdown editor MUST fill the page container — entire chain needs to expand */
+.studio-doc-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.studio-doc-page > .crepe,
+.studio-doc-page > .milkdown,
+.studio-doc-page > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.studio-doc-page .crepe {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.studio-doc-page .milkdown {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.studio-doc-page .ProseMirror,
+.studio-doc-page .editor {
+  flex: 1;
+  min-height: 300px;
+  outline: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Ebook Editor
+   --------------------------------------------------------------------------- */
+/* E2: 2-column ebook layout — left rail of chapter chips + right scroll
+   pane with the editor proper. The rail's overflow is its own so the chip
+   list stays put while chapters scroll. */
+.studio-ebook-layout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  /* Three columns: TOC rail · editor · tool palette. The palette
+     (#studio-palette-mount) is the 3rd grid child — without a 3rd
+     column it wrapped onto a second row and its full-height right-rail
+     styling ballooned into an empty bottom band above 960px (where the
+     palette is in-flow). `auto` collapses to 0 when the palette goes
+     out-of-flow (absolute overlay ≤960px / bottom sheet ≤720px). */
+  grid-template-columns: 240px minmax(0, 1fr) auto;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.studio-ebook-toc {
+  border-right: 1px solid var(--border);
+  background: var(--bg-elevated);
+  overflow-y: auto;
+  padding: var(--space-md) 0;
+}
+
+.studio-ebook-toc-head {
+  padding: 0 var(--space-md) var(--space-sm);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.studio-ebook-toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.studio-ebook-toc-num {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+}
+
+.studio-ebook-toc-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Narrow viewports: drop the rail (chapters list takes up too much real
+   estate on tablets/mobile). User falls back to scrolling, same as before. */
+@media (max-width: 900px) {
+  .studio-ebook-layout { grid-template-columns: minmax(0, 1fr); }
+  .studio-ebook-toc { display: none; }
+}
+
+/* E1: image-URL picker — input + browse button inline, picker popover
+   shows recent image artifacts as thumbnails. */
+.studio-image-picker-input {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+}
+.studio-image-picker-input input {
+  flex: 1;
+  min-width: 0;
+}
+.studio-image-picker-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.14s ease, color 0.14s ease;
+}
+.studio-image-picker-btn:hover {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--text-primary);
+}
+
+.studio-image-picker-pop {
+  position: fixed;
+  z-index: 10050;
+  width: min(420px, 90vw);
+  max-height: 50vh;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.studio-image-picker-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+}
+.studio-image-picker-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 4px;
+}
+.studio-image-picker-body {
+  overflow: auto;
+  padding: 8px;
+}
+.studio-image-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 6px;
+}
+.studio-image-picker-tile {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0;
+  background: var(--bg-elevated);
+  cursor: pointer;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  transition: border-color 0.14s ease, transform 0.14s ease;
+}
+.studio-image-picker-tile:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.studio-image-picker-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.studio-image-picker-loading,
+.studio-image-picker-empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.studio-ebook-editor {
+  min-height: 0;
+  overflow-y: auto;
+  background: var(--surface);
+  padding: var(--space-xl) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.studio-ebook-meta,
+.studio-ebook-chapter {
+  width: min(920px, 100%);
+  margin: 0 auto;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: 0 1px 5px rgba(0,0,0,0.04);
+}
+
+.studio-ebook-meta {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr 1.2fr;
+  gap: var(--space-sm);
+}
+
+.studio-ebook-meta label,
+.studio-ebook-image-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.studio-ebook-meta input,
+.studio-ebook-chapter input,
+.studio-ebook-chapter textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-primary);
+  font: inherit;
+  padding: 10px 12px;
+}
+
+.studio-ebook-chapter textarea {
+  min-height: 220px;
+  resize: vertical;
+  line-height: 1.65;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.studio-ebook-meta input:focus,
+.studio-ebook-chapter input:focus,
+.studio-ebook-chapter textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.studio-ebook-chapters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.studio-ebook-chapter-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--space-sm);
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.studio-ebook-chapter-num {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.studio-ebook-remove {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.studio-ebook-remove:hover:not(:disabled) {
+  color: var(--error);
+  border-color: color-mix(in srgb, var(--error) 35%, var(--border));
+  background: color-mix(in srgb, var(--error) 8%, transparent);
+}
+
+.studio-ebook-remove:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.studio-ebook-image-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+@media (max-width: 760px) {
+  .studio-ebook-meta,
+  .studio-ebook-image-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Textarea fallback also fills */
+.studio-doc-page textarea {
+  flex: 1;
+  min-height: 300px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  resize: none;
+  outline: none;
+}
+
+/* Milkdown overrides inside the doc page.
+   All --doc-* vars are written by studio.js::_applyArtifactTheme() from the
+   active artifact theme + design block, so the editor mirrors what the
+   PDF/DOCX renderer produces. Fallbacks keep the page readable when the
+   theme list hasn't loaded yet (initial paint, themes endpoint down). */
+.studio-doc-page .milkdown,
+.studio-doc-page .editor {
+  font-family: var(--doc-font, Georgia, "Times New Roman", serif);
+  font-size: var(--doc-font-size, 1.05rem);
+  line-height: var(--doc-line-height, 1.75);
+  color: var(--doc-text, var(--text-primary));
+  outline: none;
+}
+
+.studio-doc-page h1 { font-size: 1.75rem; font-weight: 700; margin: 1.5em 0 0.5em; font-family: var(--doc-font, var(--font-sans)); color: var(--doc-accent-dark, var(--text-primary)); }
+.studio-doc-page h2 { font-size: 1.4rem;  font-weight: 600; margin: 1.3em 0 0.4em; font-family: var(--doc-font, var(--font-sans)); color: var(--doc-accent-dark, var(--text-primary)); }
+.studio-doc-page h3 { font-size: 1.15rem; font-weight: 600; margin: 1.2em 0 0.3em; font-family: var(--doc-font, var(--font-sans)); color: var(--doc-text, var(--text-primary)); }
+.studio-doc-page h4 { font-size: 1rem;    font-weight: 600; margin: 1em 0 0.3em;   font-family: var(--doc-font, var(--font-sans)); color: var(--doc-text, var(--text-primary)); }
+
+.studio-doc-page p { margin: 0 0 0.75em; }
+
+.studio-doc-page blockquote {
+  border-left: 3px solid var(--doc-accent, var(--accent));
+  margin: 1em 0;
+  padding: 0.5em 1em;
+  color: var(--doc-text-secondary, var(--text-secondary));
+  background: var(--doc-accent-light, color-mix(in srgb, var(--accent) 4%, var(--bg)));
+}
+
+.studio-doc-page pre {
+  background: var(--doc-surface, var(--bg-elevated));
+  border: 1px solid var(--doc-border, var(--border));
+  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 1em 0;
+}
+
+.studio-doc-page code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--doc-surface, var(--surface));
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.studio-doc-page pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+
+.studio-doc-page table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+}
+
+.studio-doc-page th,
+.studio-doc-page td {
+  border: 1px solid var(--doc-border, var(--border));
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.studio-doc-page th {
+  background: var(--doc-accent-dark, var(--bg-elevated));
+  color: var(--doc-bg, var(--text-primary));
+  font-weight: 600;
+  font-family: var(--doc-font, var(--font-sans));
+  font-size: var(--text-sm);
+}
+
+.studio-doc-page tr:nth-child(even) td {
+  background: var(--doc-surface, transparent);
+}
+
+.studio-doc-page img {
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+  margin: 1em 0;
+}
+
+.studio-doc-page a {
+  color: var(--doc-accent, var(--accent));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.studio-doc-page a:hover {
+  opacity: 0.8;
+}
+
+.studio-doc-page ul,
+.studio-doc-page ol {
+  margin: 0.5em 0 1em 1.5em;
+}
+
+.studio-doc-page li {
+  margin-bottom: 0.25em;
+}
+
+.studio-doc-page hr {
+  border: none;
+  border-top: 1px solid var(--doc-border, var(--border));
+  margin: 1.5em 0;
+}
+
+/* Selection + caret */
+.studio-doc-page .ProseMirror ::selection,
+.studio-doc-page .milkdown ::selection {
+  background: color-mix(in srgb, var(--doc-accent, var(--accent)) 22%, transparent);
+}
+
+.studio-doc-page .ProseMirror,
+.studio-doc-page .editor {
+  caret-color: var(--doc-accent, var(--accent));
+}
+
+/* Placeholder when empty */
+.studio-doc-page .ProseMirror p.is-editor-empty:first-child::before,
+.studio-doc-page .milkdown .editor > p:only-child:empty::before {
+  content: 'Start writing...';
+  color: var(--doc-text-muted, var(--text-muted));
+  font-style: italic;
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Formatting Toolbar
+   --------------------------------------------------------------------------- */
+.studio-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+
+.studio-toolbar-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 var(--space-xs);
+}
+
+.studio-toolbar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--duration-fast);
+}
+
+.studio-toolbar-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.studio-toolbar-btn.active {
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+
+.studio-toolbar-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------------------------------------------------------------------------
+   Header Action Buttons
+   --------------------------------------------------------------------------- */
+.studio-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-left: auto;
+  position: relative;
+}
+
+.studio-save-btn {
+  padding: 5px 14px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #fff;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity var(--duration-fast);
+}
+
+.studio-save-btn:hover {
+  opacity: 0.85;
+}
+
+.studio-save-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.studio-save-btn.dirty {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.studio-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.studio-icon-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.studio-icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---------------------------------------------------------------------------
+   AI Popover (mirrors browse-ai-popover pattern)
+   --------------------------------------------------------------------------- */
+.studio-ai-popover {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 260px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1);
+  z-index: var(--z-modal);
+  padding: var(--space-xs) 0;
+  animation: studio-popover-in var(--duration-fast) var(--ease-standard);
+}
+
+.studio-ai-popover.hidden {
+  display: none;
+}
+
+@keyframes studio-popover-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.studio-ai-popover-section {
+  padding: var(--space-xs) 0;
+}
+
+.studio-ai-popover-section + .studio-ai-popover-section {
+  border-top: 1px solid var(--border);
+}
+
+.studio-ai-popover-label {
+  padding: var(--space-xs) var(--space-md);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.studio-ai-popover-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px var(--space-md);
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background 0.1s;
+}
+
+.studio-ai-popover-item:hover {
+  background: var(--surface-hover);
+}
+
+.studio-ai-popover-item svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.studio-ai-popover-item:hover svg {
+  color: var(--accent);
+}
+
+.studio-ai-popover-item div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.studio-ai-popover-name {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.studio-ai-popover-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+/* ---------------------------------------------------------------------------
+   Inline AI Blocks (mirrors browse-ai-block pattern)
+   --------------------------------------------------------------------------- */
+.studio-ai-blocks {
+  padding: 0 var(--space-xl);
+}
+
+.studio-ai-blocks:empty {
+  display: none;
+}
+
+.studio-ai-block {
+  max-width: 760px;
+  margin: var(--space-lg) auto;
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--accent) 4%, var(--bg));
+  padding: var(--space-md) var(--space-lg);
+  animation: studio-ai-block-in 0.3s var(--ease-standard);
+  position: relative;
+}
+
+@keyframes studio-ai-block-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.studio-ai-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.studio-ai-block-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.studio-ai-block-actions {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.studio-ai-block-actions button {
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--duration-fast);
+}
+
+.studio-ai-block-actions button:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.studio-ai-block-content {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--text-primary);
+  /* Long answers must not grow unbounded and push the editor off-screen —
+     cap the height and let the answer scroll within its own card. */
+  max-height: min(50vh, 480px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Streaming cursor — class is on parent .studio-ai-block */
+.studio-ai-block-streaming .studio-ai-block-content::after {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 1em;
+  background: var(--accent);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: studio-cursor-blink 0.8s step-end infinite;
+}
+
+@keyframes studio-cursor-blink {
+  50% { opacity: 0; }
+}
+
+/* ---------------------------------------------------------------------------
+   Ask Bar (fixed at bottom of overlay, outside scroll)
+   --------------------------------------------------------------------------- */
+.studio-ask-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  border-top: 1px solid var(--border);
+  background: var(--bg-elevated);
+  flex-shrink: 0;
+}
+
+.studio-ask-bar input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 8px var(--space-md);
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  outline: none;
+  transition: border-color var(--duration-fast);
+}
+
+.studio-ask-bar input:focus {
+  border-color: var(--accent);
+}
+
+.studio-ask-bar input::placeholder {
+  color: var(--text-muted);
+}
+
+.studio-ask-bar button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity var(--duration-fast);
+}
+
+.studio-ask-bar button:hover {
+  opacity: 0.85;
+}
+
+.studio-ask-bar button svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* ---------------------------------------------------------------------------
+   Slide Editor Layout (Phase 2 placeholder)
+   --------------------------------------------------------------------------- */
+.studio-slide-editor {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.studio-slide-panel {
+  width: 200px;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  background: var(--bg-elevated);
+  padding: var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.studio-slide-thumb {
+  position: relative;
+  border-radius: var(--radius-sm);
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: var(--space-xs);
+  background: var(--surface);
+  transition: border-color var(--duration-fast), transform 0.12s, opacity 0.12s;
+  aspect-ratio: 16/9;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.studio-slide-thumb[draggable="true"] { cursor: grab; }
+.studio-slide-thumb.is-dragging { opacity: 0.4; transform: scale(0.97); cursor: grabbing; }
+.studio-slide-thumb.drop-above::before,
+.studio-slide-thumb.drop-below::after {
+  content: "";
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 50%, transparent);
+  pointer-events: none;
+}
+.studio-slide-thumb.drop-above::before { top: -3px; }
+.studio-slide-thumb.drop-below::after  { bottom: -3px; }
+.studio-slide-thumb-layout {
+  opacity: 0.4;
+  margin: 2px 0;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.studio-slide-thumb.active .studio-slide-thumb-layout { opacity: 0.85; color: var(--accent); }
+
+.studio-slide-thumb:hover {
+  border-color: var(--border);
+}
+
+.studio-slide-thumb.active {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.studio-slide-thumb-num {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.studio-slide-thumb-title {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.studio-slide-thumb-delete {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--duration-fast), color var(--duration-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.studio-slide-thumb:hover .studio-slide-thumb-delete,
+.studio-slide-thumb:focus-within .studio-slide-thumb-delete { opacity: 1; }
+
+.studio-slide-thumb-delete:hover {
+  color: var(--error);
+  background: var(--surface-hover);
+}
+/* Coarse-pointer devices never hover — show the × permanently so touch
+   users can actually delete slides from the side panel. */
+@media (hover: none) {
+  .studio-slide-thumb-delete { opacity: 0.7; }
+}
+
+.studio-slide-canvas-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-lg);
+  background: var(--surface);
+  overflow-y: auto;
+}
+
+.studio-slide-layout-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+  width: 100%;
+  max-width: 840px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  flex-wrap: wrap;
+}
+.studio-slide-layout-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-tertiary, var(--text-muted));
+  padding: 0 6px;
+}
+.studio-slide-layout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.studio-slide-layout-btn svg { color: var(--text-tertiary, var(--text-muted)); }
+.studio-slide-layout-btn:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--text-primary);
+}
+.studio-slide-layout-btn.active {
+  background: var(--accent);
+  color: var(--on-accent, #fff);
+  border-color: var(--accent);
+}
+.studio-slide-layout-btn.active svg { color: inherit; }
+.studio-slide-layout-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.studio-slide-layout-action:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+.studio-slide-canvas {
+  aspect-ratio: 16/9;
+  width: 100%;
+  max-width: 840px;
+  background: var(--bg);
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+  padding: 40px 56px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: var(--space-sm);
+}
+
+/* Layout-driven styles. data-layout on the canvas controls which fields
+   are visible + how they're sized. Switching layouts is pure CSS so the
+   cursor / selection survives the change. */
+.studio-slide-body2 { display: none; }
+
+/* Title slide — large centered title, small subtitle below. */
+.studio-slide-canvas[data-layout="title"] {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.studio-slide-canvas[data-layout="title"] .studio-slide-title {
+  font-size: 3rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: var(--space-md);
+}
+.studio-slide-canvas[data-layout="title"] .studio-slide-body {
+  flex: 0 0 auto;
+  text-align: center;
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  max-width: 80%;
+}
+
+/* Section-divider slide — headline only, body hidden. */
+.studio-slide-canvas[data-layout="section"] {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--accent) 6%, var(--bg)) 100%);
+}
+.studio-slide-canvas[data-layout="section"] .studio-slide-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: -0.02em;
+  margin-bottom: 0;
+}
+.studio-slide-canvas[data-layout="section"] .studio-slide-body { display: none; }
+
+/* Two-column — flex row, both columns edit independently. We place title
+   full width above, then two bodies side-by-side below. */
+.studio-slide-canvas[data-layout="two-column"] {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  gap: var(--space-sm) var(--space-lg);
+}
+.studio-slide-canvas[data-layout="two-column"] .studio-slide-title {
+  grid-column: 1 / -1;
+}
+.studio-slide-canvas[data-layout="two-column"] .studio-slide-body  { grid-column: 1; }
+.studio-slide-canvas[data-layout="two-column"] .studio-slide-body2 {
+  display: block;
+  grid-column: 2;
+  border-left: 1px dashed var(--border);
+  padding-left: var(--space-md);
+}
+
+/* Blank — title hidden, one big body. */
+.studio-slide-canvas[data-layout="blank"] .studio-slide-title { display: none; }
+
+/* ---------------------------------------------------------------------- */
+/* Slide sorter (macro reorganize — big grid, multi-select, drag reorder) */
+/* ---------------------------------------------------------------------- */
+/* When active, the sorter takes over the entire canvas-area. The side
+   panel keeps showing the currently-active slide as a live sync indicator —
+   hiding it would strip context and cost real estate we don't need here
+   since the sorter's own tiles are bigger. */
+.studio-slide-editor.sorter-mode .studio-slide-layout-bar,
+.studio-slide-editor.sorter-mode .studio-slide-canvas,
+.studio-slide-editor.sorter-mode .studio-slide-notes { display: none; }
+
+.studio-slide-sorter {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  background: var(--bg-elevated);
+}
+.studio-slide-sorter.hidden { display: none; }
+
+.studio-slide-sorter-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  font-size: var(--text-sm);
+}
+.studio-slide-sorter-title { font-weight: 600; color: var(--text-primary); }
+.studio-slide-sorter-sel   { color: var(--accent); font-variant-numeric: tabular-nums; }
+.studio-slide-sorter-hint {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  margin-left: auto;
+  margin-right: var(--space-sm);
+}
+
+.studio-slide-sorter-grid {
+  flex: 1;
+  overflow: auto;
+  padding: var(--space-lg);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-md);
+  outline: none;
+}
+
+.studio-sorter-tile {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  cursor: grab;
+  transition: border-color var(--duration-fast), transform 0.12s, box-shadow var(--duration-fast);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+}
+.studio-sorter-tile:hover { border-color: var(--border-strong, var(--border)); }
+.studio-sorter-tile.current  { border-color: color-mix(in srgb, var(--accent) 60%, transparent); }
+.studio-sorter-tile.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+.studio-sorter-tile.is-dragging { opacity: 0.4; cursor: grabbing; transform: scale(0.97); }
+/* Insertion marker — a vertical line on the drop edge. */
+.studio-sorter-tile.drop-before::before,
+.studio-sorter-tile.drop-after::after {
+  content: "";
+  position: absolute;
+  top: -4px; bottom: -4px;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 50%, transparent);
+  pointer-events: none;
+}
+.studio-sorter-tile.drop-before::before { left: -3px; }
+.studio-sorter-tile.drop-after::after   { right: -3px; }
+
+.studio-sorter-tile-num {
+  position: absolute;
+  top: 6px; left: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--bg);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  opacity: 0.85;
+  z-index: 1;
+}
+.studio-sorter-tile-preview {
+  flex: 1;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--bg);
+  overflow: hidden;
+}
+.studio-sorter-tile-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.studio-sorter-tile-body {
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  white-space: pre-wrap;
+}
+
+.studio-slide-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  outline: none;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  margin-bottom: var(--space-sm);
+  width: 100%;
+}
+
+.studio-slide-title::placeholder {
+  color: var(--text-muted);
+}
+
+.studio-slide-body {
+  flex: 1;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  outline: none;
+  white-space: pre-wrap;
+  min-height: 80px;
+  padding: var(--space-xs) 0;
+}
+
+/* Slide body placeholder when empty */
+.studio-slide-body:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text-muted);
+  pointer-events: none;
+  font-style: italic;
+}
+
+.studio-slide-notes {
+  width: 100%;
+  max-width: 840px;
+  margin-top: var(--space-md);
+}
+
+.studio-slide-notes textarea {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-style: italic;
+  font-family: inherit;
+  resize: none;
+  min-height: 36px;
+  outline: none;
+}
+
+.studio-slide-notes textarea:focus {
+  border-color: var(--accent);
+}
+
+.studio-slide-notes textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.studio-slide-add-btn {
+  width: 100%;
+  padding: var(--space-sm);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--duration-fast);
+  margin-top: var(--space-xs);
+}
+
+.studio-slide-add-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+/* ---------------------------------------------------------------------------
+   Grid Editor Layout (Phase 3 placeholder)
+   --------------------------------------------------------------------------- */
+.studio-grid-editor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.studio-grid-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 var(--space-md) var(--space-sm);
+}
+
+.studio-grid-tab {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.studio-grid-tab.active {
+  background: var(--bg);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--bg);
+}
+
+.studio-grid-table {
+  border-collapse: collapse;
+  width: 100%;
+  background: var(--bg);
+}
+
+.studio-grid-table th {
+  background: var(--bg-elevated);
+  font-weight: 600;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  user-select: none;
+}
+
+.studio-grid-table td {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  cursor: cell;
+  min-width: 80px;
+  outline: none;
+}
+
+.studio-grid-table td:focus {
+  box-shadow: inset 0 0 0 2px var(--accent);
+  z-index: 1;
+  position: relative;
+}
+
+/* Numeric columns (currency / percentage / formatted numbers) get
+   right-aligned + tabular figures so $1,234.56 and 12.3% line up cleanly
+   down a column. Common spreadsheet convention. */
+.studio-grid-table td.studio-grid-numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.studio-grid-row-num {
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  text-align: center;
+  width: 40px;
+  min-width: 40px;
+  font-weight: 500;
+  user-select: none;
+}
+
+.studio-grid-header-cell {
+  font-weight: 600;
+  background: var(--bg-elevated);
+}
+
+.studio-grid-table-wrap {
+  overflow: auto;
+  flex: 1;
+  padding: 0 var(--space-md) var(--space-md);
+}
+
+/* Formula bar — Excel-style A1 badge + fx label + single-line input. */
+.studio-grid-formula-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+  flex-shrink: 0;
+}
+.studio-grid-ref {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  user-select: none;
+}
+.studio-grid-fx {
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--text-secondary);
+  padding: 0 4px;
+  border-right: 1px solid var(--border);
+  padding-right: 10px;
+  user-select: none;
+}
+.studio-grid-formula-input {
+  flex: 1;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  outline: none;
+}
+.studio-grid-formula-input:focus {
+  border-color: var(--accent);
+  background: var(--bg);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+/* Column resize handles sit on the right edge of each header cell. They're
+   6px wide, invisible until hover, and use col-resize cursor. */
+.studio-grid-colhead {
+  position: relative;
+  padding: 0 !important;
+}
+.studio-grid-col-letter {
+  display: block;
+  padding: 6px 12px;
+  text-align: center;
+}
+.studio-grid-col-resize {
+  position: absolute;
+  top: 0;
+  right: -3px;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 2;
+  background: transparent;
+  transition: background 0.1s ease;
+}
+.studio-grid-col-resize:hover,
+.studio-grid-col-resize.is-dragging {
+  background: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+body.studio-grid-resizing { cursor: col-resize !important; user-select: none; }
+body.studio-grid-resizing * { cursor: col-resize !important; }
+
+/* Active row/col header highlight — subtle accent tint that tracks the
+   focused cell. Cheap spatial feedback, no extra DOM. */
+.studio-grid-colhead.active,
+.studio-grid-row-num.active {
+  background: color-mix(in srgb, var(--accent) 14%, var(--bg-elevated));
+  color: var(--accent);
+}
+
+/* Column header is clickable for sort. Add a cursor and a hover tint so
+   it's discoverable; the resize handle on the right edge still gets its
+   own cursor/hover from the .studio-grid-col-resize rule above. */
+.studio-grid-colhead { cursor: pointer; }
+.studio-grid-colhead:hover .studio-grid-col-letter { color: var(--accent); }
+.studio-grid-col-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+  color: var(--accent);
+  vertical-align: middle;
+}
+.studio-grid-colhead.is-sorted {
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg-elevated));
+}
+.studio-grid-colhead.is-sorted .studio-grid-col-letter { color: var(--accent); font-weight: 700; }
+
+/* Freeze the header strip (column letters + H row) during vertical scroll.
+   The original th rule already has position:sticky on the first header row;
+   we extend it so the H row also sticks one cell below. */
+.studio-grid-table thead tr:nth-child(2) th,
+.studio-grid-table thead tr:nth-child(2) td {
+  position: sticky;
+  top: 33px; /* height of the first sticky row (approx row-letter strip) */
+  z-index: 1;
+  background: var(--bg-elevated);
+}
+.studio-grid-table thead tr:nth-child(2) td.studio-grid-header-cell {
+  background: color-mix(in srgb, var(--accent) 3%, var(--bg-elevated));
+}
+
+/* Right-click context menu for rows/columns. */
+.studio-grid-menu {
+  position: fixed;
+  min-width: 180px;
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.35);
+  padding: 4px;
+  z-index: 1000;
+  animation: studio-grid-menu-in 0.12s ease-out;
+}
+@keyframes studio-grid-menu-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.studio-grid-menu-sep {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Chart Editor Layout (Phase 4 placeholder)
+   --------------------------------------------------------------------------- */
+.studio-chart-editor {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.studio-chart-config {
+  width: 280px;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: var(--space-md);
+  background: var(--bg-elevated);
+}
+
+.studio-chart-config label {
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  margin-top: var(--space-md);
+}
+
+.studio-chart-config label:first-child {
+  margin-top: 0;
+}
+
+.studio-chart-config input,
+.studio-chart-config select {
+  width: 100%;
+  padding: 6px var(--space-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  outline: none;
+}
+
+.studio-chart-config input:focus,
+.studio-chart-config select:focus {
+  border-color: var(--accent);
+}
+
+.studio-chart-preview-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-lg);
+  overflow-y: auto;
+}
+
+.studio-chart-canvas-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.studio-chart-canvas-wrap canvas {
+  max-width: 100%;
+  max-height: 60vh;
+}
+
+/* Data table in chart config should scroll independently */
+.studio-chart-config .studio-grid-table {
+  font-size: var(--text-xs);
+}
+
+.studio-chart-config .studio-grid-table td {
+  padding: 3px 6px;
+  min-width: 60px;
+}
+
+/* Chart data-table series headers — editable name + delete affordance.
+   The × reveals on row hover so the table doesn't look cluttered when at rest. */
+.studio-chart-data-table thead th.studio-chart-series-head {
+  position: relative;
+  padding-right: 18px;
+}
+.studio-chart-series-name {
+  display: inline-block;
+  padding: 1px 4px;
+  border-radius: 3px;
+  outline: none;
+  min-width: 48px;
+  cursor: text;
+}
+.studio-chart-series-name:hover   { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.studio-chart-series-name:focus   {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.studio-chart-series-del {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--duration-fast), color var(--duration-fast), background var(--duration-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.studio-chart-series-head:hover .studio-chart-series-del,
+.studio-chart-series-head:focus-within .studio-chart-series-del { opacity: 1; }
+.studio-chart-series-del:hover { color: var(--error); background: var(--surface-hover); }
+/* Touch devices have no hover state — revealing the delete button only on
+   hover meant users on phones/tablets literally could not remove a series.
+   Show it permanently on coarse pointers (touchscreens, TV remotes). */
+@media (hover: none) {
+  .studio-chart-series-del { opacity: 0.7; }
+}
+
+/* Action row under the data table — two pill buttons side by side. */
+.studio-chart-data-actions {
+  display: flex;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+/* ---------------------------------------------------------------------------
+   Loading Skeleton
+   --------------------------------------------------------------------------- */
+.studio-loading {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-2xl) var(--space-md);
+  gap: var(--space-md);
+}
+
+.studio-loading.hidden { display: none; }
+
+.studio-skeleton {
+  max-width: 760px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: 48px 64px;
+  background: var(--bg);
+  border-radius: var(--radius-md);
+  box-shadow: 0 1px 8px rgba(0,0,0,0.08);
+}
+
+.studio-skeleton__line {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--surface) 25%,
+    color-mix(in srgb, var(--surface) 60%, var(--border)) 50%,
+    var(--surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: studio-shimmer 1.5s ease-in-out infinite;
+}
+
+.studio-skeleton__line--title {
+  height: 22px;
+  width: 55%;
+  margin-bottom: var(--space-sm);
+}
+
+.studio-skeleton__line--subtitle {
+  height: 16px;
+  width: 35%;
+  margin-bottom: var(--space-md);
+}
+
+.studio-skeleton__line--short { width: 70%; }
+.studio-skeleton__line--long  { width: 95%; }
+.studio-skeleton__line--med   { width: 82%; }
+
+@keyframes studio-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ---------------------------------------------------------------------------
+   Legacy / Fallback States
+   --------------------------------------------------------------------------- */
+.studio-legacy-notice {
+  max-width: 500px;
+  margin: var(--space-2xl) auto;
+  padding: var(--space-xl) var(--space-2xl);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  animation: studio-fade-up 0.3s var(--ease-standard);
+}
+
+@keyframes studio-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.studio-legacy-notice h3 {
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+  font-size: 1.1rem;
+}
+
+.studio-legacy-notice p {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-sm);
+  line-height: 1.6;
+  max-width: 380px;
+}
+
+.studio-fallback-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin-bottom: var(--space-sm);
+}
+
+.studio-fallback-meta {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.studio-fallback-meta span {
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+}
+
+/* ---------------------------------------------------------------------------
+   Keyboard Shortcuts Overlay
+   --------------------------------------------------------------------------- */
+.studio-shortcuts-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-system-above);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  animation: studio-fade-in var(--duration-fast) var(--ease-standard);
+}
+
+.studio-shortcuts-overlay.hidden { display: none; }
+
+@keyframes studio-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.studio-shortcuts-dialog {
+  width: 440px;
+  max-width: 92vw;
+  max-height: 80vh;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+  overflow-y: auto;
+  animation: studio-popover-in 0.2s var(--ease-standard);
+}
+
+.studio-shortcuts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg-elevated);
+  z-index: 1;
+}
+
+.studio-shortcuts-header h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.studio-shortcuts-close {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.studio-shortcuts-close:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.studio-shortcuts-section {
+  padding: var(--space-sm) var(--space-lg);
+}
+
+.studio-shortcuts-section-title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: var(--space-xs) 0;
+  margin-top: var(--space-xs);
+}
+
+.studio-shortcuts-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+
+.studio-shortcuts-row span:first-child {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.studio-shortcuts-kbd {
+  display: flex;
+  gap: 4px;
+}
+
+.studio-shortcuts-kbd kbd {
+  padding: 2px 7px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+/* Shortcut hint badge in header */
+.studio-shortcut-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all var(--duration-fast);
+  opacity: 0.6;
+}
+
+.studio-shortcut-hint:hover {
+  opacity: 1;
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+/* ---------------------------------------------------------------------------
+   CSV Table Viewer
+   --------------------------------------------------------------------------- */
+.studio-csv-wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.studio-csv-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  flex-shrink: 0;
+}
+.studio-csv-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.studio-csv-btn:hover {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+.studio-csv-sep {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 4px;
+}
+.studio-csv-stats {
+  color: var(--text-tertiary, var(--text-secondary));
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.studio-csv-scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 0;
+}
+
+.studio-csv-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--text-sm);
+  font-family: var(--font-mono);
+}
+
+.studio-csv-table th {
+  background: var(--surface);
+  color: var(--text-primary);
+  font-weight: 600;
+  padding: 0;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  user-select: none;
+}
+.studio-csv-table th.is-sorted { background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+
+.studio-csv-header-label {
+  flex: 1;
+  outline: none;
+  min-width: 0;
+  cursor: text;
+}
+.studio-csv-header-label:focus { color: var(--accent); }
+.studio-csv-sort-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary, var(--text-secondary));
+  border-radius: 3px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.studio-csv-sort-btn:hover {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
+}
+.studio-csv-table th.is-sorted .studio-csv-sort-btn { color: var(--accent); }
+
+.studio-csv-table td.studio-csv-rownum,
+.studio-csv-table th.studio-csv-rownum {
+  width: 44px;
+  min-width: 44px;
+  text-align: center;
+  color: var(--text-tertiary, var(--text-secondary));
+  background: var(--surface);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+  border-right: 1px solid var(--border);
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+.studio-csv-table thead th.studio-csv-rownum { z-index: 3; }
+
+.studio-csv-cell {
+  padding: 6px 10px;
+  border-right: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-primary);
+  min-width: 80px;
+  max-width: 320px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  outline: none;
+  transition: box-shadow 0.08s ease;
+}
+.studio-csv-cell:focus {
+  box-shadow: inset 0 0 0 2px var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.studio-csv-table tbody tr:hover { background: color-mix(in srgb, var(--accent) 4%, transparent); }
+.studio-csv-table tbody tr:hover .studio-csv-rownum {
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+}
+
+/* ---------------------------------------------------------------------------
+   Theme Picker
+   --------------------------------------------------------------------------- */
+.studio-theme-picker {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 256px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  z-index: var(--z-modal);
+  padding: var(--space-sm);
+  animation: studio-popover-in var(--duration-fast) var(--ease-standard);
+}
+
+.studio-theme-picker.hidden {
+  display: none;
+}
+
+/* Convert dropdown — popover anchored to the header button, mirrors the
+   theme picker layout since it sits in the same row and follows the same
+   "button + menu" interaction. */
+.studio-convert-wrap { position: relative; display: inline-flex; }
+.studio-convert-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 160px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  z-index: var(--z-modal);
+  padding: 4px;
+  margin-top: 4px;
+  animation: studio-popover-in var(--duration-fast) var(--ease-standard);
+}
+.studio-convert-menu.hidden { display: none; }
+
+.studio-convert-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+.studio-convert-item:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.studio-convert-item-icon {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  width: 14px;
+  text-align: center;
+}
+.studio-convert-item-label { font-weight: 600; letter-spacing: 0.02em; }
+
+.studio-theme-picker-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: var(--space-xs) var(--space-xs);
+  margin-bottom: var(--space-xs);
+}
+
+.studio-theme-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: 8px var(--space-sm);
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--duration-fast);
+}
+
+.studio-theme-option:hover {
+  background: var(--surface-hover);
+}
+
+.studio-theme-option.active {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.studio-theme-swatch {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.studio-theme-swatch-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+.studio-theme-name {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  text-transform: capitalize;
+}
+
+/* Reading-comfort controls (ebook): font / size / line-spacing segmented
+   rows appended below the theme swatches in the same popover. */
+.studio-reading-heading {
+  margin-top: var(--space-sm);
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-sm);
+}
+.studio-reading-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 5px var(--space-xs);
+}
+.studio-reading-label {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  width: 48px;
+  flex-shrink: 0;
+}
+.studio-reading-segs {
+  display: flex;
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.studio-reading-seg {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 2px;
+  border: none;
+  border-left: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1.1;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.studio-reading-seg:first-child { border-left: none; }
+.studio-reading-seg:hover { background: var(--surface-hover); }
+.studio-reading-seg.active {
+  background: var(--accent-subtle);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------------------
+   Live Preview (split view or overlay)
+   --------------------------------------------------------------------------- */
+.studio-preview-pane {
+  width: 50%;
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.studio-preview-pane.hidden {
+  display: none;
+}
+
+.studio-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-xs) var(--space-md);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+  flex-shrink: 0;
+}
+
+.studio-preview-header span {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.studio-preview-iframe {
+  flex: 1;
+  border: none;
+  background: var(--surface);
+}
+
+.studio-preview-loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+/* When preview is open, document editor becomes split */
+.studio-doc-editor.with-preview {
+  width: 50%;
+  flex-shrink: 0;
+}
+
+/* Theme icon button */
+.studio-theme-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.studio-theme-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+/* Preview toggle button */
+.studio-preview-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--duration-fast);
+}
+
+.studio-preview-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+.studio-preview-btn.active {
+  background: var(--accent-subtle);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.studio-preview-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---------------------------------------------------------------------------
+   Present Mode (fullscreen slideshow for PPTX)
+   --------------------------------------------------------------------------- */
+.studio-present-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-fullscreen);
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: none;
+}
+
+.studio-present-overlay.hidden {
+  display: none;
+}
+
+.studio-present-slide {
+  width: 90vw;
+  max-width: 1280px;
+  aspect-ratio: 16/9;
+  background: var(--bg, #fff);
+  border-radius: 4px;
+  padding: 60px 80px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 60px rgba(0,0,0,0.5);
+}
+
+.studio-present-slide h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--text-primary, #1a1a2e);
+  margin-bottom: 1em;
+}
+
+.studio-present-slide .present-body {
+  flex: 1;
+  font-size: 1.5rem;
+  line-height: 1.6;
+  color: var(--text-primary, #1a1a2e);
+  white-space: pre-wrap;
+}
+
+.studio-present-counter {
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.4);
+  font-family: system-ui;
+  z-index: var(--z-system-above);
+}
+
+.studio-present-exit-hint {
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.3);
+  font-family: system-ui;
+  z-index: var(--z-system-above);
+  opacity: 1;
+  transition: opacity 2s;
+}
+
+.studio-present-exit-hint.fade {
+  opacity: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Word-count + reading-time chip
+   --------------------------------------------------------------------------- */
+.studio-word-count {
+  font-size: 11px;
+  color: var(--text-tertiary, var(--text-secondary));
+  font-variant-numeric: tabular-nums;
+  padding: 0 6px;
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------------
+   Heading-style picker — lightweight custom <select> styling
+   --------------------------------------------------------------------------- */
+.studio-heading-picker {
+  height: 26px;
+  padding: 0 22px 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: transparent url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 6px center;
+  color: var(--text-primary);
+  font-size: 12px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color 0.12s, background-color 0.12s;
+}
+.studio-heading-picker:hover { border-color: var(--accent); }
+.studio-heading-picker:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent); }
+
+/* ---------------------------------------------------------------------------
+   Outline panel (Document editor sidebar)
+   --------------------------------------------------------------------------- */
+.studio-outline-panel {
+  width: 240px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* Editor scrolls the page (align-items:flex-start above); pin the
+     outline to the top so it stays visible while the page scrolls past.
+     max-height keeps a long outline inside the viewport — its list
+     (.studio-outline-list) already scrolls internally. */
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  max-height: 100%;
+}
+.studio-outline-panel.hidden { display: none; }
+.studio-outline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+.studio-outline-close {
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.studio-outline-close:hover { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--text-primary); }
+.studio-outline-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+.studio-outline-item {
+  display: block;
+  padding: 5px 14px 5px 14px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  cursor: pointer;
+}
+.studio-outline-item:hover {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--text-primary);
+  border-left-color: var(--accent);
+}
+.studio-outline-item[data-level="1"] { padding-left: 14px; font-weight: 600; color: var(--text-primary); }
+.studio-outline-item[data-level="2"] { padding-left: 24px; }
+.studio-outline-item[data-level="3"] { padding-left: 34px; font-size: 11px; }
+.studio-outline-item[data-level="4"] { padding-left: 44px; font-size: 11px; color: var(--text-tertiary, var(--text-secondary)); }
+.studio-outline-item[data-level="5"] { padding-left: 54px; font-size: 11px; color: var(--text-tertiary, var(--text-secondary)); }
+.studio-outline-empty {
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-tertiary, var(--text-secondary));
+}
+
+/* Document editor flex layout adjusts when outline is visible.
+   The outline <aside> sits beside the page as a flex row. Two things
+   are load-bearing and were previously missing — their absence clipped
+   the whole document into the editor's own height with no scrollbar
+   (the "PDF stuck in the top half, no scroll" regression):
+     - overflow-y:auto — the editor IS the scroll container for the page.
+     - align-items:flex-start — otherwise the default `stretch` pins
+       .studio-doc-page to the editor's height, so a tall document
+       spills OUTSIDE the paper card instead of growing it. flex-start
+       lets the page grow to its content and the editor scrolls it.
+   The outline aside stays pinned via position:sticky (see below). */
+.studio-doc-editor {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.studio-doc-editor .studio-doc-page { flex: 1; }
+
+/* Focus mode — hide toolbar + header chrome, give writer a wider canvas. */
+.studio-focus-mode .studio-toolbar,
+.studio-focus-mode .studio-ai-popover,
+.studio-focus-mode #studio-outline-panel,
+.studio-focus-mode .studio-header-actions > *:not(#studio-save-btn):not(#studio-save-status):not(#studio-focus-mode-btn),
+.studio-focus-mode #studio-format-badge { display: none !important; }
+.studio-focus-mode .studio-artifact-name { color: var(--text-tertiary, var(--text-muted)); }
+.studio-focus-mode .studio-doc-page { max-width: 720px; margin: 0 auto; }
+
+/* ---------------------------------------------------------------------------
+   Save status chip — "Unsaved / Saving… / Saved just now / Saved 2m ago"
+   --------------------------------------------------------------------------- */
+.studio-save-status {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  color: var(--text-tertiary, var(--text-secondary));
+  padding: 0 8px;
+  user-select: none;
+  min-width: 0;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s ease;
+}
+.studio-save-status.is-dirty  { color: var(--warning, #eab308); }
+.studio-save-status.is-saving { color: var(--accent); }
+.studio-save-status.is-saving::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  animation: studio-save-spin 0.7s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.studio-save-status.is-saved  { color: var(--success, var(--text-tertiary, var(--text-secondary))); }
+@keyframes studio-save-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------------------------------------------------------------------------
+   Cast picker overlay (studio/cast.js)
+   --------------------------------------------------------------------------- */
+.studio-cast-picker {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 24px;
+}
+
+/* ---------------------------------------------------------------------------
+   Version history — right-edge drawer
+   --------------------------------------------------------------------------- */
+.studio-versions-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 10000;
+  display: flex;
+  justify-content: flex-end;
+  animation: studio-versions-fade 160ms ease-out;
+}
+@keyframes studio-versions-fade {
+  from { background: rgba(0, 0, 0, 0); }
+  to   { background: rgba(0, 0, 0, 0.45); }
+}
+.studio-versions-panel {
+  width: 360px;
+  max-width: 100%;
+  height: 100%;
+  background: #18181c;
+  border-left: 1px solid #2c2c33;
+  color: #e7e9ee;
+  display: flex;
+  flex-direction: column;
+  font: 13px/1.4 "Source Sans 3", "Inter", system-ui, sans-serif;
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.35);
+  animation: studio-versions-slide 200ms ease-out;
+}
+@keyframes studio-versions-slide {
+  from { transform: translateX(20px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+.studio-versions-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px 8px;
+}
+.studio-versions-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.studio-versions-close {
+  background: transparent;
+  border: none;
+  color: #999;
+  font-size: 22px;
+  line-height: 1;
+  padding: 2px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.studio-versions-close:hover { color: #fff; background: #2a2a32; }
+.studio-versions-sub {
+  padding: 0 18px 12px;
+  font-size: 12px;
+  color: #8a8a92;
+  border-bottom: 1px solid #25252c;
+}
+.studio-versions-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+.studio-versions-loading,
+.studio-versions-empty {
+  padding: 32px 18px;
+  text-align: center;
+  color: #8a8a92;
+}
+.studio-versions-empty-title {
+  font-size: 14px;
+  color: #c7c7cc;
+  margin-bottom: 4px;
+}
+.studio-versions-empty-sub {
+  font-size: 12px;
+  opacity: 0.7;
+}
+.studio-versions-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  border-bottom: 1px solid #1f1f25;
+  transition: background 0.12s ease;
+}
+.studio-versions-row:hover { background: #1d1d23; }
+.studio-versions-row-meta {
+  flex: 1;
+  min-width: 0;
+}
+.studio-versions-row-title {
+  font-weight: 500;
+  font-size: 13px;
+  color: #e7e9ee;
+}
+.studio-versions-row-time {
+  font-size: 11px;
+  color: #8a8a92;
+  margin-top: 2px;
+}
+.studio-versions-row-label {
+  font-size: 11px;
+  color: #6a6a72;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.studio-versions-restore-btn {
+  background: #2a2a32;
+  border: 1px solid #36363f;
+  color: #e7e9ee;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  flex-shrink: 0;
+}
+.studio-versions-restore-btn:hover:not(:disabled) {
+  background: #36363f;
+  border-color: #4a4a55;
+}
+.studio-versions-restore-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* ---------------------------------------------------------------------------
+   Find & Replace modal (shared across Doc/Notes/Slides/Grid/CSV editors)
+   --------------------------------------------------------------------------- */
+.studio-find-modal {
+  position: fixed;
+  top: 60px;
+  right: 24px;
+  width: 420px;
+  max-width: calc(100vw - 48px);
+  background: color-mix(in srgb, var(--surface, #1e1e26) 94%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.35);
+  z-index: 999;
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.studio-find-modal.is-open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.studio-find-modal[data-mode="find"] .studio-find-replace-row { display: none; }
+.studio-find-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 2px;
+}
+.studio-find-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  padding: 0 6px;
+}
+.studio-find-input {
+  flex: 1;
+  min-width: 0;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+.studio-find-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+.studio-find-counter {
+  font-size: 11px;
+  color: var(--text-tertiary, var(--text-secondary));
+  font-variant-numeric: tabular-nums;
+  padding: 0 6px;
+  min-width: 60px;
+  text-align: right;
+  user-select: none;
+}
+.studio-find-icon-btn {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  transition: background 0.12s, color 0.12s;
+}
+.studio-find-icon-btn:hover {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--text-primary);
+}
+.studio-find-icon-btn.active {
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+  color: var(--accent);
+}
+.studio-find-close:hover { color: var(--error, #ef4444); }
+.studio-find-btn {
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.studio-find-btn:hover {
+  background: var(--accent);
+  color: var(--on-accent, #fff);
+  border-color: var(--accent);
+}
+
+/* ---------------------------------------------------------------------------
+   Image Viewer — wheel-zoom + drag-pan + fit controls
+   --------------------------------------------------------------------------- */
+.studio-image-viewer {
+  position: relative;
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  background: color-mix(in srgb, var(--bg) 92%, #000);
+  outline: none;
+}
+.studio-image-stage {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  /* Checkerboard so transparent PNGs show their alpha channel. Two
+     linear-gradients layered at a 10px offset give us a cheap pattern. */
+  background-image:
+    linear-gradient(45deg, color-mix(in srgb, var(--bg) 86%, #000) 25%, transparent 25%),
+    linear-gradient(-45deg, color-mix(in srgb, var(--bg) 86%, #000) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, color-mix(in srgb, var(--bg) 86%, #000) 75%),
+    linear-gradient(-45deg, transparent 75%, color-mix(in srgb, var(--bg) 86%, #000) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+}
+.studio-image-stage.is-dragging { cursor: grabbing; }
+.studio-image-el {
+  will-change: transform;
+  transform-origin: center center;
+  max-width: none;
+  max-height: none;
+  user-select: none;
+  pointer-events: none;
+  image-rendering: -webkit-optimize-contrast;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  border-radius: 2px;
+}
+.studio-image-controls {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: color-mix(in srgb, var(--surface, #1a1a1a) 88%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  /* The row accumulated 13+ buttons over the Wave 1/2/3 passes (zoom trio,
+     fit trio, rotate pair, crop, upscale, remove-bg, inpaint, plus percent
+     readout and separators). On a narrow viewport the pill would overflow
+     the stage horizontally and get clipped by the stage's overflow:hidden,
+     so cap the width and allow a horizontal scroll inside the pill. */
+  max-width: calc(100% - 24px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* Hide scrollbar chrome — the row is touch-scrollable + trackpad-scrollable
+     without a visible scrollbar ruining the pill aesthetic. */
+  scrollbar-width: none;
+}
+.studio-image-controls::-webkit-scrollbar { display: none; }
+/* Prevent flex items from shrinking when the row hits its max-width — that
+   would squash icon buttons into unreadable slivers instead of scrolling. */
+.studio-image-controls > * { flex-shrink: 0; }
+.studio-image-ctrl {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.studio-image-ctrl:hover {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--text-primary);
+}
+.studio-image-ctrl.active {
+  background: var(--accent);
+  color: var(--on-accent, #fff);
+}
+.studio-image-ctrl.hidden { display: none; }
+.studio-image-ctrl--primary {
+  background: var(--accent);
+  color: var(--on-accent, #fff);
+  font-weight: 600;
+}
+.studio-image-ctrl--primary:hover {
+  background: color-mix(in srgb, var(--accent) 80%, #fff);
+  color: var(--on-accent, #fff);
+}
+.studio-image-ctrl--primary:disabled { opacity: 0.5; cursor: wait; }
+
+/* ---------------------------------------------------------------------------
+   Audio + video viewers — native media element on the left, sidebar with
+   metadata + actions on the right.
+   --------------------------------------------------------------------------- */
+.studio-media-viewer {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  min-height: 0;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--bg) 92%, #000);
+}
+.studio-media-stage {
+  position: relative;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  gap: var(--space-md);
+  overflow: auto;
+}
+
+/* Audio: a card with icon + filename above a native <audio>. The browser's
+   transport controls are what carry the UX weight — our job is to make
+   "there's a file here" instantly legible. */
+.studio-media-audio-card {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-2xl) var(--space-xl);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+.studio-media-audio-icon { color: var(--accent); opacity: 0.75; }
+.studio-media-audio-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  word-break: break-word;
+  text-align: center;
+}
+.studio-media-audio-ext {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.studio-media-audio { width: 100%; margin-top: var(--space-sm); }
+
+/* Video fills the stage up to its natural dimensions; the caption under it
+   surfaces the filename without cluttering the sidebar. */
+.studio-media-video {
+  max-width: 100%;
+  max-height: calc(100dvh - 220px);
+  background: #000;
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.studio-media-caption {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  text-align: center;
+  word-break: break-word;
+}
+
+/* Sidebar — 280px fixed-width. Three sections: file metadata, action
+   buttons, and a lazily-shown transcript panel once transcription runs. */
+.studio-media-sidebar {
+  border-left: 1px solid var(--border);
+  background: var(--bg-elevated);
+  overflow-y: auto;
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+.studio-media-sidebar h3 {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 0 var(--space-sm);
+}
+.studio-media-meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px var(--space-md);
+  margin: 0;
+  font-size: var(--text-sm);
+}
+.studio-media-meta dt { color: var(--text-muted); }
+.studio-media-meta dd { margin: 0; color: var(--text-primary); font-variant-numeric: tabular-nums; word-break: break-word; }
+
+.studio-media-action {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--duration-fast), border-color var(--duration-fast);
+  margin-bottom: 6px;
+}
+.studio-media-action:hover {
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+}
+.studio-media-action:disabled { opacity: 0.6; cursor: wait; }
+
+.studio-media-transcript {
+  max-height: 360px;
+  overflow-y: auto;
+  padding: var(--space-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  color: var(--text-primary);
+}
+
+/* Collapse to single-column when the Studio chrome leaves too little room
+   for the 280px sidebar — the sidebar slides below the stage. */
+@media (max-width: 900px) {
+  .studio-media-viewer { grid-template-columns: 1fr; }
+  .studio-media-sidebar { border-left: none; border-top: 1px solid var(--border); }
+
+  .studio-session-main.has-preview {
+    flex-direction: column;
+  }
+
+  .studio-preview-pane {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .studio-doc-editor.with-preview {
+    width: 100%;
+  }
+
+  .studio-session-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .studio-session-tabs {
+    display: flex;
+  }
+
+  .studio-session-panel {
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .studio-body[data-session-pane="artifact"] .studio-session-panel {
+    display: none;
+  }
+
+  .studio-body[data-session-pane="build"] .studio-session-main {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Crop overlay — shown while cropping an image.
+   Mask divs dim the area outside the selection; the rect is draggable with
+   8 resize handles on its edges and corners.
+   --------------------------------------------------------------------------- */
+.studio-image-viewer.is-cropping .studio-image-stage { cursor: default; }
+.studio-image-viewer.is-cropping #studio-image-hint { display: none; }
+
+/* Inpaint mode — the mounted mask editor owns the whole stage + its own
+   toolbar + prompt strip, so the regular image-controls pill would just
+   be an empty chrome element overlapping the editor. Hide it wholesale
+   until inpaint exits. */
+.studio-image-viewer.is-inpainting .studio-image-controls { display: none; }
+.studio-image-viewer.is-inpainting #studio-image-hint      { display: none; }
+
+.studio-crop-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+.studio-crop-overlay.hidden { display: none; }
+
+.studio-crop-mask {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.55);
+  pointer-events: auto;
+}
+
+.studio-crop-rect {
+  position: absolute;
+  border: 1px solid color-mix(in srgb, var(--accent) 90%, #fff);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.25) inset, 0 0 12px color-mix(in srgb, var(--accent) 40%, transparent);
+  cursor: move;
+  pointer-events: auto;
+  /* Rule-of-thirds guidelines — two vertical + two horizontal lines at
+     thirds inside the crop rect, rendered with a gradient for cheap. */
+  background-image:
+    linear-gradient(to right, transparent calc(33.333% - 0.5px), rgba(255,255,255,0.35) calc(33.333% - 0.5px) calc(33.333% + 0.5px), transparent calc(33.333% + 0.5px), transparent calc(66.666% - 0.5px), rgba(255,255,255,0.35) calc(66.666% - 0.5px) calc(66.666% + 0.5px), transparent calc(66.666% + 0.5px)),
+    linear-gradient(to bottom, transparent calc(33.333% - 0.5px), rgba(255,255,255,0.35) calc(33.333% - 0.5px) calc(33.333% + 0.5px), transparent calc(33.333% + 0.5px), transparent calc(66.666% - 0.5px), rgba(255,255,255,0.35) calc(66.666% - 0.5px) calc(66.666% + 0.5px), transparent calc(66.666% + 0.5px));
+}
+
+.studio-crop-handle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--accent) 90%, #000);
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+/* Edge handles are oriented to their axis — wider on their side.
+   Corners sit right on the corner; edges straddle the midpoint. */
+.studio-crop-handle[data-handle="nw"] { top: -6px;   left: -6px;   cursor: nwse-resize; }
+.studio-crop-handle[data-handle="n"]  { top: -6px;   left: calc(50% - 6px); cursor: ns-resize; }
+.studio-crop-handle[data-handle="ne"] { top: -6px;   right: -6px;  cursor: nesw-resize; }
+.studio-crop-handle[data-handle="e"]  { top: calc(50% - 6px); right: -6px; cursor: ew-resize; }
+.studio-crop-handle[data-handle="se"] { bottom: -6px; right: -6px; cursor: nwse-resize; }
+.studio-crop-handle[data-handle="s"]  { bottom: -6px; left: calc(50% - 6px); cursor: ns-resize; }
+.studio-crop-handle[data-handle="sw"] { bottom: -6px; left: -6px;  cursor: nesw-resize; }
+.studio-crop-handle[data-handle="w"]  { top: calc(50% - 6px); left: -6px; cursor: ew-resize; }
+.studio-image-pct {
+  min-width: 46px;
+  text-align: center;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+  padding: 0 4px;
+  user-select: none;
+}
+.studio-image-sep {
+  width: 1px;
+  height: 16px;
+  background: var(--border);
+  margin: 0 4px;
+}
+.studio-image-hint {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: color-mix(in srgb, var(--surface, #1a1a1a) 82%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 12px;
+  pointer-events: none;
+  opacity: 0;
+  animation: studio-image-hint 4s ease forwards;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+@keyframes studio-image-hint {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+  10%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+  70%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ---------------------------------------------------------------------------
+   Responsive
+   --------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  .studio-header {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    row-gap: 8px;
+  }
+
+  .studio-artifact-name {
+    flex: 1 1 auto;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .studio-header-actions {
+    grid-column: 1 / -1;
+    flex: 1 1 100%;
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+
+  .studio-format-badge {
+    display: none;
+  }
+
+  .studio-save-status {
+    display: none;
+  }
+
+  .studio-save-btn,
+  .studio-preview-btn {
+    min-height: 32px;
+  }
+
+  .studio-preview-btn {
+    display: none;
+  }
+
+  .studio-preview-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .studio-session-scroll {
+    padding: 12px;
+  }
+
+  .studio-session-hero {
+    padding: 14px;
+  }
+
+  .studio-overview-frame {
+    padding: 12px;
+  }
+
+  .studio-overview-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .studio-overview-iframe {
+    min-height: 320px;
+  }
+
+  .studio-doc-page {
+    padding: 24px 20px;
+    min-height: auto;
+  }
+
+  .studio-slide-panel {
+    width: 140px;
+  }
+
+  .studio-slide-canvas {
+    padding: 24px 32px;
+  }
+
+  .studio-chart-config {
+    width: 220px;
+  }
+
+  .studio-toolbar {
+    display: none; /* hide on mobile, use popover instead */
+  }
+
+  .studio-preview-pane {
+    max-height: 40vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .studio-save-btn {
+    padding: 5px 10px;
+  }
+}
+
+
+/* Row-number column width — pairs with .studio-grid-row-num. */
+.studio-grid-rownum-col { width: 40px; }
+
+
+/* ==========================================================================
+   Studio Unified Tool Palette (Phase 1)
+   --------------------------------------------------------------------------
+   Right-rail, 320px expanded / 48px icon-strip collapsed. Per-artifact-type
+   state in localStorage. Below 960px viewport collapses to icons + overlay
+   drawer; below 720px the drawer becomes a bottom sheet on tool tap.
+   ========================================================================== */
+
+.studio-palette {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  min-height: 0;
+  border-left: 1px solid var(--border);
+  background: var(--bg);
+  flex: 0 0 auto;
+  position: relative;
+  transition: width var(--duration-normal) var(--ease-out);
+}
+.studio-palette[data-state="expanded"] {
+  width: 320px;
+}
+.studio-palette[data-state="collapsed"] {
+  width: 48px;
+}
+
+/* Icon column — always visible, even when the drawer is collapsed.
+   This is what guarantees the "I always know where the tools are" promise. */
+.studio-palette-icons {
+  display: flex;
+  flex-direction: column;
+  width: 48px;
+  flex: 0 0 48px;
+  background: var(--bg-elevated);
+  border-right: 1px solid var(--border);
+  padding: var(--space-xs) 0;
+  gap: 2px;
+}
+.studio-palette-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  position: relative;
+  transition: color var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out);
+}
+.studio-palette-icon:hover {
+  color: var(--text-primary);
+  background: var(--surface);
+}
+.studio-palette-icon[aria-pressed="true"] {
+  color: var(--accent);
+  background: var(--surface);
+}
+.studio-palette-icon[aria-pressed="true"]::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 6px; bottom: 6px; width: 3px;
+  background: var(--accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.studio-palette-icon[disabled] {
+  color: var(--text-disabled, var(--text-muted));
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.studio-palette-icon svg {
+  width: 18px; height: 18px;
+}
+
+/* Drawer — the active tool's panel mounts here. */
+.studio-palette-drawer {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.studio-palette[data-state="collapsed"] .studio-palette-drawer {
+  display: none;
+}
+.studio-palette-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 0 0 auto;
+}
+.studio-palette-drawer-head .studio-palette-collapse {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+.studio-palette-drawer-head .studio-palette-collapse:hover {
+  background: var(--surface);
+  color: var(--text-primary);
+}
+.studio-palette-drawer-body {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: var(--space-md);
+}
+
+/* Responsive: below 960px the rail becomes overlay; below 720px bottom sheet. */
+@media (max-width: 960px) {
+  .studio-palette {
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    z-index: 200;
+    width: 48px;
+    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.18);
+  }
+  .studio-palette[data-state="expanded"] {
+    width: min(320px, 100vw);
+  }
+}
+@media (max-width: 720px) {
+  .studio-palette[data-state="expanded"] {
+    position: fixed;
+    left: 0; right: 0; bottom: 0; top: auto;
+    height: min(70vh, 540px);
+    width: auto;
+    flex-direction: column-reverse;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.18);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  .studio-palette[data-state="expanded"] .studio-palette-icons {
+    flex-direction: row;
+    width: auto;
+    height: 48px;
+    border-right: none;
+    border-top: 1px solid var(--border);
+    justify-content: space-around;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Image tool — 3 tabs (Library / Search / Generate)
+   -------------------------------------------------------------------------- */
+
+.studio-tool-image {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: var(--space-md);
+}
+
+.studio-tool-image-tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--surface);
+  padding: 3px;
+  border-radius: var(--radius-md);
+  flex: 0 0 auto;
+}
+.studio-tool-image-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out);
+}
+.studio-tool-image-tab[aria-selected="true"] {
+  background: var(--bg);
+  color: var(--text-primary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.studio-tool-image-tab:hover:not([aria-selected="true"]) {
+  color: var(--text-primary);
+}
+
+/* Search + Generate query/prompt fields */
+.studio-tool-image-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  flex: 0 0 auto;
+}
+.studio-tool-image-form input,
+.studio-tool-image-form textarea,
+.studio-tool-image-form select {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font: inherit;
+  color: var(--text-primary);
+}
+.studio-tool-image-form textarea {
+  min-height: 64px;
+  resize: vertical;
+}
+.studio-tool-image-form label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+  display: block;
+}
+.studio-tool-image-form-row {
+  display: flex;
+  gap: var(--space-sm);
+}
+.studio-tool-image-form-row > * {
+  flex: 1;
+}
+.studio-tool-image-action {
+  background: var(--accent);
+  color: var(--text-on-accent, white);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+.studio-tool-image-action:hover {
+  background: var(--accent-hover, var(--accent));
+}
+.studio-tool-image-action:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.studio-tool-image-action.secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+.studio-tool-image-action.secondary:hover {
+  background: var(--surface);
+}
+.studio-tool-image-action.danger {
+  background: transparent;
+  color: var(--error, #b54);
+  border: 1px solid var(--border);
+}
+.studio-tool-image-action.danger:hover {
+  background: color-mix(in srgb, var(--error, #b54) 8%, transparent);
+}
+
+/* Results grid (Library + Search tabs share this shape) */
+.studio-tool-image-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  flex: 1 1 auto;
+  overflow: auto;
+  align-content: start;
+}
+.studio-tool-image-tile {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg-elevated);
+  cursor: pointer;
+  padding: 0;
+  transition: border-color var(--duration-fast) var(--ease-out),
+              transform var(--duration-fast) var(--ease-out);
+}
+.studio-tool-image-tile:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.studio-tool-image-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.studio-tool-image-tile-caption {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+  color: white;
+  font-size: 10px;
+  padding: 14px 6px 4px;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.studio-tool-image-tile-append {
+  position: absolute;
+  top: 4px; right: 4px;
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  width: 22px; height: 22px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out);
+}
+.studio-tool-image-tile:hover .studio-tool-image-tile-append,
+.studio-tool-image-tile-append:focus-visible {
+  opacity: 1;
+}
+.studio-tool-image-tile-append:hover {
+  background: var(--accent);
+}
+
+.studio-tool-image-empty,
+.studio-tool-image-loading {
+  padding: var(--space-xl);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.studio-tool-image-loading::before {
+  content: '';
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 999px;
+  animation: studio-spin 0.75s linear infinite;
+  vertical-align: -3px;
+  margin-right: 8px;
+}
+@keyframes studio-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Generate tab — staged preview + Use/Save/Regenerate row */
+.studio-tool-image-staged {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  flex: 1 1 auto;
+  overflow: auto;
+}
+.studio-tool-image-staged-preview {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  max-height: 320px;
+}
+.studio-tool-image-staged-preview img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.studio-tool-image-staged-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.studio-tool-image-staged-actions .studio-tool-image-action {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.studio-tool-image-staged-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* --------------------------------------------------------------------------
+   Slide additional_images strip — primary + appended thumbnails
+   -------------------------------------------------------------------------- */
+
+.studio-slide-additional-strip {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.studio-slide-additional-strip-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  width: 100%;
+  margin-bottom: 2px;
+}
+.studio-slide-additional-thumb {
+  position: relative;
+  width: 56px; height: 56px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg-elevated);
+  cursor: pointer;
+  flex: 0 0 auto;
+  padding: 0;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+.studio-slide-additional-thumb[data-focused="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 24%, transparent);
+}
+.studio-slide-additional-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.studio-slide-additional-thumb-remove {
+  position: absolute;
+  top: 2px; right: 2px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  width: 16px; height: 16px;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+.studio-slide-additional-thumb:hover .studio-slide-additional-thumb-remove {
+  opacity: 1;
+}
+.studio-slide-additional-add {
+  width: 56px; height: 56px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  transition: border-color var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out);
+}
+.studio-slide-additional-add:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ==========================================================================
+   Studio Design Tool — palette tab
+   --------------------------------------------------------------------------
+   Single-column stack of control groups: theme swatches, font family,
+   font size, line height, density, accent override. Each group uses the
+   same shape (header label + segmented control) for muscle-memory
+   consistency. Visual register matches the Image tool tabs above.
+   ========================================================================== */
+
+.studio-tool-design {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: 0 2px;
+}
+
+.studio-tool-design-inherits {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.studio-tool-design-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.studio-tool-design-group-head {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.studio-tool-design-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: 6px;
+}
+
+.studio-tool-design-theme-swatch {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out),
+              transform var(--duration-fast) var(--ease-out);
+}
+
+.studio-tool-design-theme-swatch:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.studio-tool-design-theme-swatch.active {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+
+.studio-tool-design-theme-swatch-color {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.studio-tool-design-theme-swatch-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-transform: capitalize;
+  text-align: center;
+}
+
+/* Segmented controls — shared shape for font/size/line-height/density rows. */
+.studio-tool-design-seg {
+  display: flex;
+  gap: 2px;
+  background: var(--surface);
+  padding: 3px;
+  border-radius: var(--radius-md);
+}
+
+.studio-tool-design-seg-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 6px 4px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  transition: background var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out);
+  min-width: 0;
+}
+
+.studio-tool-design-seg-btn.active {
+  background: var(--bg);
+  color: var(--text-primary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.studio-tool-design-seg-btn:hover:not(.active) {
+  color: var(--text-primary);
+}
+
+.studio-tool-design-seg-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.studio-tool-design-seg-note {
+  font-size: 9px;
+  color: var(--text-muted);
+  line-height: 1.1;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.studio-tool-design-seg-btn.active .studio-tool-design-seg-note {
+  color: var(--text-secondary);
+}
+
+/* Accent override row */
+.studio-tool-design-accent-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.studio-tool-design-accent-input {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+  padding: 2px;
+  flex: 0 0 auto;
+}
+
+.studio-tool-design-accent-value {
+  flex: 1 1 auto;
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.studio-tool-design-reset {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out);
+}
+
+.studio-tool-design-reset:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.studio-tool-design-hint {
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Below 720px the palette is a bottom sheet — keep the seg buttons single-row
+   by allowing horizontal scroll. */
+@media (max-width: 720px) {
+  .studio-tool-design-seg {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+  .studio-tool-design-seg-btn {
+    flex: 0 0 auto;
+    min-width: 64px;
+  }
+}
+
+
+/* ==========================================================================
+   Studio Layout / Structure / AI tools - Phase 3
+   ========================================================================== */
+
+.studio-tool-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.studio-tool-layout-empty {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.45;
+  text-align: center;
+}
+
+.studio-tool-layout-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.studio-tool-layout-group-head {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.studio-tool-layout-cells {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 6px;
+}
+
+.studio-tool-layout-cell {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out),
+              transform var(--duration-fast) var(--ease-out);
+}
+
+.studio-tool-layout-cell:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.studio-tool-layout-cell.active {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+
+.studio-tool-layout-cell-icon {
+  color: var(--text-secondary);
+  display: block;
+  line-height: 0;
+}
+
+.studio-tool-layout-cell.active .studio-tool-layout-cell-icon {
+  color: var(--accent);
+}
+
+.studio-tool-layout-cell-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: capitalize;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.studio-tool-layout-cell-note {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.studio-tool-layout-select {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.studio-tool-layout-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+.studio-tool-layout-toggle input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.studio-tool-layout-help {
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.studio-tool-structure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.studio-tool-structure-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.studio-tool-structure-action {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out);
+}
+
+.studio-tool-structure-action:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.studio-tool-structure-empty {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.45;
+}
+
+.studio-tool-structure-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.studio-tool-structure-item {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text-secondary);
+  transition: background var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out);
+}
+
+.studio-tool-structure-item[data-level="2"] { padding-left: 18px; }
+.studio-tool-structure-item[data-level="3"] { padding-left: 30px; }
+.studio-tool-structure-item[data-level="4"] { padding-left: 42px; }
+
+.studio-tool-structure-item:hover {
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.studio-tool-structure-item.active {
+  background: var(--surface);
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.studio-tool-structure-item-marker {
+  flex: 0 0 auto;
+  font-size: 10px;
+  color: var(--text-muted);
+  width: 12px;
+  text-align: center;
+}
+
+.studio-tool-structure-item.active .studio-tool-structure-item-marker {
+  color: var(--accent);
+}
+
+.studio-tool-structure-item-label {
+  flex: 1 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.studio-tool-structure-item-badge {
+  flex: 0 0 auto;
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--surface);
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+
+.studio-tool-ai {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.studio-tool-ai-empty {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.studio-tool-ai-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.studio-tool-ai-group-head {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.studio-tool-ai-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font: inherit;
+  transition: border-color var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out),
+              transform var(--duration-fast) var(--ease-out);
+}
+
+.studio-tool-ai-item:hover {
+  border-color: var(--accent);
+  transform: translateX(2px);
+}
+
+.studio-tool-ai-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.studio-tool-ai-item-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.studio-tool-ai-translate-row {
+  background: var(--bg-elevated);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 6px;
+  align-items: center;
+}
+
+.studio-tool-ai-translate-row label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.studio-tool-ai-translate-input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.studio-tool-ai-translate-go {
+  background: var(--accent);
+  color: var(--text-on-accent, white);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.studio-tool-ai-translate-cancel {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.studio-slide-layout-bar.studio-slide-layout-bar-slim {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 4px 12px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.studio-slide-layout-bar.studio-slide-layout-bar-slim .studio-slide-layout-label {
+  font-style: italic;
+}

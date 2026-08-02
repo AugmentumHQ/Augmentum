@@ -1,0 +1,14 @@
+{
+  "known_broken": [
+    "GET /api/artifacts/build-status/stream",
+    "GET /api/builds/{build_id}/stream",
+    "GET /api/games/saves/{artifact_id}",
+    "GET /api/knowledge/install/{job_id}/progress",
+    "GET /api/marketplace/catalog",
+    "GET /api/marketplace/services",
+    "GET /api/marketplace/services/{service_id}/models",
+    "GET /api/marketplace/services/{service_id}/provider-status",
+    "GET /api/marketplace/services/{service_id}/status",
+    "GET /api/wake_word/corpora"
+  ]
+}
