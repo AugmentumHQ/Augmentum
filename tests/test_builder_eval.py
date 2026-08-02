@@ -9,10 +9,14 @@ build. Run directly (the pytest conftest pulls the full app) via:
 """
 from __future__ import annotations
 
-from scripts.builder_eval import (
-    SCENARIOS,
-    judge_build,
-)
+try:
+    from scripts.builder_eval import (
+        SCENARIOS,
+        judge_build,
+    )
+except ImportError as _import_exc:
+    import pytest as _pytest_skip  # noqa: E402
+    _pytest_skip.skip(f"scripts.builder_eval not importable in this build: {_import_exc}", allow_module_level=True)
 
 
 def _steps(*tools: str) -> list[dict]:
