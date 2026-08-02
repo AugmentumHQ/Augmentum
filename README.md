@@ -377,6 +377,19 @@ prebuilt images.
 > (`colima start --arch x86_64 --vm-type vz --vz-rosetta --cpu 4 --memory 8 --disk 60`)
 > or force the platform per command
 > (`DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose build`).
+>
+> **Straight talk on Mac / non-x86 hardware.** Augmentum has been developed and
+> tested overwhelmingly on **Linux and Windows/WSL2** — that's the hardware I
+> actually run. The macOS and ARM paths above are built to work and reasoned
+> through carefully, but they've had far less real-world mileage, so treat them
+> as *less battle-tested* until Mac users have driven them. If you're on a Mac
+> (Intel or Apple Silicon), an ARM SBC, or other alternative hardware, your
+> experience is genuinely valuable — it's exactly the blind spot I can't see from
+> here. Please [open an issue](https://github.com/AugmentumHQ/Augmentum/issues) or
+> [start a discussion](https://github.com/AugmentumHQ/Augmentum/discussions) with
+> what worked, what broke, and your setup. That feedback is how these paths reach
+> parity — and pointing a coding agent (above) at the repo with your error output
+> is a great way to both fix it locally and produce a clear report.
 
 ### If the first pull stalls or errors
 
