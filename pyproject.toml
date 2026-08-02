@@ -75,7 +75,7 @@ dependencies = [
     # resemblyzer + webrtcvad-wheels installed separately in Dockerfile
     # (resemblyzer pulls webrtcvad which needs gcc; we use --no-deps)
     "quickjs>=1.19.0",
-    "aiodocker>=0.23.0",
+    "aiodocker>=0.27.0",
     # Headless VT100 emulator for coder terminal sessions — renders PTY
     # output into the screen grid the agent snapshots (terminal_sessions.py).
     "pyte>=0.8.2",
