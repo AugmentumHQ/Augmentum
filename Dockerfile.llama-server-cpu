@@ -35,10 +35,17 @@ WORKDIR /build/llama.cpp
 # GGML_NATIVE=OFF builds a generic x86_64 binary so the published image
 # runs on any host — runtime CPU capability detection picks the best path
 # (AVX, AVX2, AVX-512, etc.) per instance.
+# Headless build (no embedded web UI). From ~b9931 llama.cpp adds the ui subdir
+# with the server target; BOTH knobs must be OFF or LLAMA_USE_PREBUILT_UI (ON
+# upstream) downloads a dist bundle that aborts the build when the `latest`
+# bucket is out of sync. Augmentum ships its own UI. (Mirrors the GPU sibling
+# Dockerfile.llama-server, which had this fix; the CPU one had drifted.)
 RUN cmake -B build \
       -DGGML_CUDA=OFF \
       -DGGML_NATIVE=OFF \
       -DLLAMA_CURL=ON \
+      -DLLAMA_BUILD_UI=OFF \
+      -DLLAMA_USE_PREBUILT_UI=OFF \
       -DCMAKE_BUILD_TYPE=Release \
     && cmake --build build --target llama-server -j$(nproc)
 

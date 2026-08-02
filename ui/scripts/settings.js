@@ -2182,7 +2182,7 @@ function createModal() {
           </div>
           <div class="settings-about-links">
             <a id="settings-about-repo" href="https://github.com/AugmentumHQ/Augmentum" target="_blank" rel="noopener">GitHub</a>
-            <a id="settings-about-sponsors" href="https://github.com/sponsors/AugmentumHQ" target="_blank" rel="noopener">Sponsor</a>
+            <!-- GitHub Sponsors link omitted until the org is enrolled (would 404). -->
             <a id="settings-about-tip" href="https://donate.stripe.com/dRm14pdwxcj5glcdQS0RG02" target="_blank" rel="noopener">Support development</a>
           </div>
           <p class="settings-about-foot">Free and open source. Same product whether you give nothing or anything at all.</p>

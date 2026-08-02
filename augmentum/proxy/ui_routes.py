@@ -140,7 +140,9 @@ async def get_about() -> JSONResponse:
         "version": augmentum_version,
         "license": "AGPL-3.0-or-later",
         "repo": "https://github.com/AugmentumHQ/Augmentum",
-        "sponsors": "https://github.com/sponsors/AugmentumHQ",
+        # "sponsors" (github.com/sponsors/AugmentumHQ) is omitted until the org
+        # is enrolled in GitHub Sponsors — it 404s otherwise. Stripe "tip" is
+        # the live support path; add "sponsors" back once enrolled.
         "tip": "https://donate.stripe.com/dRm14pdwxcj5glcdQS0RG02",
     })
 
