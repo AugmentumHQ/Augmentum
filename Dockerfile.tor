@@ -1,5 +1,5 @@
 # Minimal Tor SOCKS proxy sidecar for SearXNG egress anonymization.
-FROM alpine:3.20
+FROM alpine:3.24
 RUN apk add --no-cache tor curl && mkdir -p /var/lib/tor && chown -R tor:tor /var/lib/tor
 COPY config/tor/torrc /etc/tor/torrc
 USER tor
