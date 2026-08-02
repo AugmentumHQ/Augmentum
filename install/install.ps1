@@ -111,37 +111,13 @@ if ($currentPath -match "^([A-Za-z]):") {
 Write-Host ""
 Write-Host "Pulling Augmentum CPU variant from GHCR..." -ForegroundColor Cyan
 # Retry the pull: Docker Hub's CDN intermittently throws transient TLS handshake
-# timeouts on the public base images (caddy/searxng/etc.). A retry almost always
-# clears it (Docker resumes the layers it already has), so a first-time user
-# doesn't see a one-off network flake as an install failure. Built as a single-
-# quoted here-string so PowerShell leaves the bash $vars alone; only the path is
-# substituted in.
-$pullScript = @'
-cd "__WSLPATH__" || exit 1
-ok=0
-for attempt in 1 2 3 4 5; do
-  if docker compose pull; then ok=1; break; fi
-  if [ "$attempt" -lt 5 ]; then
-    echo "  Pull attempt $attempt didn't finish (often a transient Docker Hub CDN hiccup); retrying in $((attempt*5))s..."
-    sleep $((attempt*5))
-  fi
-done
-if [ "$ok" != 1 ]; then
-  echo "  Pull still failing after 5 attempts — a network issue, not Augmentum (the"
-  echo "  failing host is Docker Hub CDN, not our images)."
-  echo ""
-  echo "  MOST LIKELY FIX — MTU mismatch (very common on Docker Desktop / WSL2): if it"
-  echo "  fails on the SAME layer with a TLS handshake timeout, open Docker Desktop >"
-  echo "  Settings > Docker Engine, add  \"mtu\": 1400  to the JSON, Apply & Restart,"
-  echo "  then re-run: docker compose pull && docker compose up -d"
-  echo ""
-  echo "  Other causes: wedged WSL2 network (run wsl --shutdown from PowerShell, restart"
-  echo "  Docker, re-pull) or a proxy/firewall blocking *.docker.com."
-  exit 1
-fi
-docker compose up -d
-'@ -replace '__WSLPATH__', $wslPath
-wsl -d Ubuntu -- bash -c $pullScript
+# timeouts on the small public base images. A retry almost always clears it and
+# Docker resumes already-downloaded layers, so a first-time user does not see a
+# one-off network flake as an install failure. Kept as ONE line with only bash
+# single-quotes and no bash $-vars ($wslPath is substituted by PowerShell): a
+# multi-line/apostrophe'd script gets mangled passing through wsl.exe.
+$pull = "cd '$wslPath' && for i in 1 2 3 4 5; do docker compose pull && docker compose up -d && exit 0; echo 'pull attempt failed (often a transient Docker Hub CDN hiccup); retrying in 5s...'; sleep 5; done; echo 'Pull kept failing. Almost always an MTU issue on Docker Desktop/WSL2 (TLS handshake timeout on the same layer): open Docker Desktop, Settings, Docker Engine, add mtu 1400 to the JSON, Apply and Restart, then re-run docker compose pull'; exit 1"
+wsl -d Ubuntu -- bash -c $pull
 
 Write-Host ""
 Write-Host "=== Augmentum is starting ===" -ForegroundColor Green
