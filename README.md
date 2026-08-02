@@ -1,53 +1,101 @@
-# Augmentum
+<p align="center">
+  <img src="ui/icons/icon-192.png" alt="Augmentum logo" width="96" height="96">
+</p>
 
-A self-hosted, privacy-first personal AI hub. Augmentum brings chat, voice, 3D avatars, image generation, knowledge retrieval, browse, media library, and a coding agent into one box, all sharing a single local memory and persona layer. Drop-in compatible with the Ollama and OpenAI APIs, so existing clients can use it as a frontend; or use the bundled web UI.
+<h1 align="center">Augmentum</h1>
 
-The shared context layer — your conversations, generated artifacts, browse history, character interactions, code, media — stays on your hardware and grows with use. That's the part commercial AI products can't replicate, because they can't see across silos and you wouldn't upload everything to them anyway.
+<p align="center">
+  <strong>A self-hosted personal AI platform for chat, voice, avatars, tools, knowledge, media, and coding — all sharing one local memory.</strong>
+</p>
+
+<p align="center">
+  <a href="#run-it">Run it</a> ·
+  <a href="#what-it-can-do">What it can do</a> ·
+  <a href="#documentation">Docs</a> ·
+  <a href="#security">Security</a> ·
+  <a href="#support--continuity">Support</a>
+</p>
+
+<p align="center">
+  <code>AGPL-3.0</code>
+  <code>Docker Compose</code>
+  <code>Python 3.11</code>
+  <code>SQLite</code>
+  <code>OpenAI/Ollama-compatible</code>
+  <code>No telemetry</code>
+</p>
+
+Augmentum is not a proxy. It serves its own models, ships its own multi-surface
+web UI, and speaks Ollama / OpenAI-compatible APIs so existing clients can plug
+in. The shared context layer — conversations, generated artifacts, browse
+history, characters, code, media, and memory — stays on your hardware and grows
+with use.
 
 *Ad Augmentum* -- Toward Augmentation.
 
+## At a glance
+
+| Layer | What Augmentum brings together |
+| --- | --- |
+| **Interfaces** | Chat, voice, 3D VRM avatars, narrative sessions, browse, media, cast, and a full web UI |
+| **Intelligence** | Local model serving, routed processing modes, open tools, image generation, offline knowledge, and artifacts |
+| **Agency** | Coder workspaces, long-running agentic tasks, browser control, tests, terminals, and document generation |
+| **Continuity** | One local memory/persona layer shared across modes, users, devices, media, and generated work |
+| **Sovereignty** | Self-hosted Docker deployment, multi-tenant auth, local storage, no analytics, no telemetry, no phone-home |
+
 ## Why Augmentum
 
-The self-hosted AI world is full of great single-purpose tools: one thing serves
-models, another is a chat frontend, another does roleplay, another serves your
-media. None of them see each other. Augmentum's whole thesis is the opposite —
-your chat, code, voice, browse history, characters, generated documents, and
-media all live in **one local store that every surface reads from**, and every
-device on your network draws from **one shared pool of capabilities**. That
-cross-silo memory is the thing commercial AI structurally can't build (they can't
-see across their own products, and you wouldn't upload everything to them), and
-the thing other self-hosted tools don't try to. If you want the best-in-class
-version of any *one* feature, use the specialist. If you want a single, private
-AI that remembers everything and follows you across every device — nothing else
-attempts it.
+The self-hosted AI world is full of excellent single-purpose tools: one serves
+models, another is a chat frontend, another does roleplay, another manages
+media. Augmentum's thesis is different: your chat, code, voice, browse history,
+characters, generated documents, and media should live in **one local store that
+every surface can read from**, and every device on your network should draw from
+**one shared pool of capabilities**.
+
+If you want the best-in-class version of one isolated feature, use the
+specialist. If you want a single, private AI that remembers across silos and
+follows you across devices, Augmentum is built for that shape of life.
 
 ## Project status
 
-**Honest status: a capable but early, single-developer build.** Augmentum is
-written and **self-tested by one person**, used daily by its author — but it has
-**not yet had external peer review or a third-party security audit**. No second
-set of eyes has been on this code. Treat it as a serious beta: broad in scope and
-thoroughly exercised on one setup, but awaiting the review, testing, and bug
-reports that only a community can provide. That participation is exactly what the
-project needs next — issues and PRs are genuinely welcome.
+**Honest status: capable, broad, and early.** Augmentum is written and
+self-tested by one person, used daily by its author, and has not yet had external
+peer review or a third-party security audit. Treat it as a serious beta:
+substantial and usable on the author's setup, but still waiting for the review,
+testing, and bug reports that only a community can provide.
 
-It ships in two honest tiers:
-
-- **Proven** — the API and five processing modes, multi-tenant auth and
-  isolation, model serving, tools and artifacts, image generation, voice, cast,
-  and offline knowledge. These are battle-tested **on the author's hardware**
-  (one person, one set of machines) — not independently reviewed, and not
-  broadly validated across other setups. Treat "works" as "works on a setup like
-  the author's," and file issues for yours.
-- **Beta** (opt-in, most default OFF) — the autonomous companion, the game agent,
-  Connect (calls between instances), self-editing, language learning, VR/XR,
-  Fabric peering, game streaming, and the memory/dream loops. Each of these is
-  ambitious enough that it could run for millions of turns and still not be
-  "done" against where it's headed. They work; they're not finished. Each is
-  gated behind an explicit setting with an in-code reason, so a fresh install
-  can't wander into one by accident.
+| Tier | Included surfaces | Expectation |
+| --- | --- | --- |
+| **Proven on author hardware** | API compatibility, routed modes, multi-tenant auth, model serving, tools/artifacts, image generation, voice, cast, and offline knowledge | Works on the author's daily setup; broader hardware and deployment feedback is welcome |
+| **Opt-in beta** | Autonomous companion, game agent, Connect, self-editing, language learning, VR/XR, Fabric peering, game streaming, and memory/dream loops | Ambitious, functional, explicitly gated, and still unfinished |
 
 Licensed **AGPL-3.0** — self-host freely; network use carries the copyleft.
+
+## Run it
+
+Recommended path, CPU or NVIDIA GPU:
+
+```bash
+# macOS & Linux
+git clone https://github.com/AugmentumHQ/Augmentum augmentum
+cd augmentum
+./setup.sh
+```
+
+```powershell
+# Windows PowerShell
+git clone https://github.com/AugmentumHQ/Augmentum augmentum
+cd augmentum
+.\setup.bat
+```
+
+The setup wizard detects NVIDIA hardware, lets you choose CPU/GPU and optional
+services, writes `.env` + `.augmentum.conf`, then asks **Start Augmentum now?**
+with **yes** as the default.
+
+Then open **https://localhost:6443** and accept the local certificate warning
+once. Plain HTTP is also available at **http://localhost:6100/ui**. The first
+account you create becomes the admin; after that, registration closes.
 
 ## What it can do
 
@@ -215,12 +263,40 @@ own.
 
 ## Quick Start
 
-### Fastest path — one command
+### Recommended path — setup wizard
 
-The installer detects your OS and CPU, installs a container runtime if one is
-missing, pulls the published images, and starts everything — giving you the
-**CPU variant**. One command covers **every Mac and Linux machine** (Intel or
-ARM, Docker or not):
+This is the most reliable path right now. It uses a real repo checkout, lets the
+wizard choose sane CPU/GPU defaults from your hardware, writes `.env` +
+`.augmentum.conf`, and starts Augmentum when you accept the final default.
+
+Requires Docker with Compose. The standard option uses prebuilt images; the
+contributor option builds locally.
+
+```bash
+# macOS & Linux
+git clone https://github.com/AugmentumHQ/Augmentum augmentum
+cd augmentum
+./setup.sh
+```
+
+```powershell
+# Windows PowerShell
+git clone https://github.com/AugmentumHQ/Augmentum augmentum
+cd augmentum
+.\setup.bat
+```
+
+At the end, accept **Start Augmentum now? [Y/n]** to launch immediately. If you
+answer no, start later with `./start.sh -d` or `start.bat -d`.
+
+Open **https://localhost:6443** and accept the local certificate warning once.
+Plain HTTP is also available at **http://localhost:6100/ui**. The first account
+you create becomes the admin; after that, registration closes.
+
+### Pull-only installer (CPU-only, no clone)
+
+The one-line installer is useful when Docker/Colima/WSL bootstrap matters more
+than choosing GPU or optional services. It pulls the CPU image and starts it.
 
 ```bash
 # macOS & Linux — any CPU. Bootstraps Docker/Colima if it isn't already there.
@@ -232,10 +308,7 @@ curl -fsSL https://raw.githubusercontent.com/AugmentumHQ/Augmentum/main/install/
 irm https://raw.githubusercontent.com/AugmentumHQ/Augmentum/main/install/install.ps1 | iex
 ```
 
-That's the whole install. It handles Apple Silicon (Rosetta-accelerated VM),
-ARM Linux, and plain x86_64 the same way — you don't pick a script for your
-platform. For the GPU variant, or to choose which optional services run, use the
-manual install below — or `./setup.sh` from a clone (see "Cloned-repo install").
+For GPU, optional services, or later reconfiguration, use the setup wizard above.
 
 ### Manual install
 
@@ -269,17 +342,27 @@ Open `http://localhost:6100/ui` in a browser. On first launch, the setup screen 
 
 > **Note for LAN-exposed installs:** Augmentum binds to `127.0.0.1` by default — only the host machine can reach it. If you set `AUGMENTUM_BIND_HOST=0.0.0.0` to access Augmentum from another device on your network, **register the admin account immediately after first launch, before opening the UI on any other device**. Until the first admin exists, anyone reachable on your network could in principle claim that admin slot.
 
-### Cloned-repo install (for development or manual builds)
+### After setup
+
+Use these from the checkout:
 
 ```bash
-git clone https://github.com/AugmentumHQ/Augmentum augmentum && cd augmentum
-./setup.sh        # interactive wizard (or setup.bat on Windows)
-./start.sh -d     # builds locally + starts in detached mode
+./start.sh -d     # start in the background
+./start.sh logs   # watch logs
+./start.sh down   # stop
+./setup.sh        # reconfigure CPU/GPU/optional services
 ```
 
-This path uses `compose.dev.yaml` (live-edit bind mounts) and rebuilds the image from source.
+```powershell
+.\start.bat -d    # start in the background
+.\start.bat logs  # watch logs
+.\start.bat down  # stop
+.\setup.bat       # reconfigure CPU/GPU/optional services
+```
 
-Point your client at `http://localhost:6100` — drop-in compatible with Ollama and OpenAI APIs. Web UI at `http://localhost:6100/ui`.
+If you chose **Contributor** install, setup adds `compose.dev.yaml` for live-edit
+bind mounts and the first start builds the image from source. **Standard** uses
+prebuilt images.
 
 > **Apple Silicon / ARM note.** The published images are `linux/amd64` for now.
 > On Apple Silicon that means running under emulation — but the universal
