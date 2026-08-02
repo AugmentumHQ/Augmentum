@@ -21,8 +21,11 @@ FROM ubuntu:22.04@sha256:4f838adc7181d9039ac795a7d0aba05a9bd9ecd480d294483169c5d
 ARG LLAMA_CPP_VERSION=b9181
 ENV DEBIAN_FRONTEND=noninteractive
 
+# ca-certificates is required for the HTTPS `git clone` below — the ubuntu:22.04
+# base ships none, so without it the clone fails with "server certificate
+# verification failed. CAfile: none". (The final stage already installs it.)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        git cmake build-essential curl libcurl4-openssl-dev libgomp1 && \
+        ca-certificates git cmake build-essential curl libcurl4-openssl-dev libgomp1 && \
     rm -rf /var/lib/apt/lists/*
 
 RUN git clone --branch ${LLAMA_CPP_VERSION} --depth 1 \
