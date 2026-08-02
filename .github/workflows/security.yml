@@ -17,8 +17,21 @@ name: security
 on:
   push:
     branches: [main]
+    # Doc-only changes touch no deps or image contents — skip the scan (which
+    # includes an ~11-min CPU-image build for trivy). The weekly schedule below
+    # still catches newly-disclosed CVEs regardless of repo activity.
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.gitignore'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.gitignore'
   schedule:
     # Mondays 14:00 UTC = 10:00 ET, a couple of hours after Dependabot's
     # weekly run so any security PRs Dependabot opens land first.

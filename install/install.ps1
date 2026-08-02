@@ -110,7 +110,31 @@ if ($currentPath -match "^([A-Za-z]):") {
 
 Write-Host ""
 Write-Host "Pulling Augmentum CPU variant from GHCR..." -ForegroundColor Cyan
-wsl -d Ubuntu -- bash -c "cd '$wslPath' && docker compose pull && docker compose up -d"
+# Retry the pull: Docker Hub's CDN intermittently throws transient TLS handshake
+# timeouts on the public base images (caddy/searxng/etc.). A retry almost always
+# clears it (Docker resumes the layers it already has), so a first-time user
+# doesn't see a one-off network flake as an install failure. Built as a single-
+# quoted here-string so PowerShell leaves the bash $vars alone; only the path is
+# substituted in.
+$pullScript = @'
+cd "__WSLPATH__" || exit 1
+ok=0
+for attempt in 1 2 3 4 5; do
+  if docker compose pull; then ok=1; break; fi
+  if [ "$attempt" -lt 5 ]; then
+    echo "  Pull attempt $attempt didn't finish (often a transient Docker Hub CDN hiccup); retrying in $((attempt*5))s..."
+    sleep $((attempt*5))
+  fi
+done
+if [ "$ok" != 1 ]; then
+  echo "  Pull still failing after 5 attempts — almost always a network/CDN issue, not Augmentum."
+  echo "  Re-run 'docker compose pull' (it resumes). A wedged WSL2 network can cause this:"
+  echo "  'wsl --shutdown' from PowerShell, restart Docker, then retry."
+  exit 1
+fi
+docker compose up -d
+'@ -replace '__WSLPATH__', $wslPath
+wsl -d Ubuntu -- bash -c $pullScript
 
 Write-Host ""
 Write-Host "=== Augmentum is starting ===" -ForegroundColor Green

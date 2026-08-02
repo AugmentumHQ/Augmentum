@@ -113,7 +113,28 @@ fi
 # ==========================================================================
 echo ""
 echo "Pulling Augmentum CPU variant from GHCR..."
-docker compose pull
+# Retry the pull: Docker Hub's CDN (cloudfront) intermittently throws transient
+# TLS handshake timeouts on the public base images (caddy/searxng/etc.). A retry
+# almost always clears it, and Docker resumes already-downloaded layers — so a
+# first-time user never sees a one-off network flake as an "install failed".
+pull_ok=false
+for attempt in 1 2 3 4 5; do
+    if docker compose pull; then pull_ok=true; break; fi
+    if [ "$attempt" -lt 5 ]; then
+        wait_s=$((attempt * 5))
+        echo "  Pull attempt $attempt didn't finish (often a transient Docker Hub CDN hiccup)."
+        echo "  Retrying in ${wait_s}s... (Docker keeps the layers it already got)"
+        sleep "$wait_s"
+    fi
+done
+if [ "$pull_ok" != true ]; then
+    echo ""
+    echo "  Pull still failing after 5 attempts. This is almost always a network/CDN"
+    echo "  issue upstream, not Augmentum. Re-run 'docker compose pull' (it resumes)."
+    echo "  On WSL2, a wedged network stack can cause this — try 'wsl --shutdown'"
+    echo "  (from PowerShell), restart Docker, then re-run the pull."
+    exit 1
+fi
 echo ""
 echo "Starting services..."
 docker compose up -d

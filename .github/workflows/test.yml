@@ -18,8 +18,16 @@ on:
   push:
     branches: [main]
     tags: ['v*']
+    # Doc-only changes can't affect lint/tests — skip the suite for them.
+    paths-ignore: &doc-paths
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.github/**.md'
   pull_request:
     branches: [main]
+    paths-ignore: *doc-paths
   workflow_dispatch:
 
 permissions:

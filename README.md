@@ -378,6 +378,32 @@ prebuilt images.
 > or force the platform per command
 > (`DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose build`).
 
+### If the first pull stalls or errors
+
+The installers pull one large image (`augmentum`, several GB) plus a handful of
+small public base images (caddy, searxng, etc.). Occasionally Docker Hub's CDN
+throws a transient **`TLS handshake timeout`** on one of the small images — a
+network hiccup, not a broken install. The one-line installers **retry the pull
+automatically**, so you usually won't see it. If a pull still doesn't finish:
+
+```bash
+# From your augmentum directory (inside WSL on Windows). Docker resumes the
+# layers it already downloaded — you don't start over.
+docker compose pull
+docker compose up -d
+docker compose ps        # confirm every service is "Up"
+```
+
+If it keeps timing out, the cause is almost always local networking rather than
+Augmentum:
+
+- **WSL2 (Windows):** a wedged network stack causes repeated TLS timeouts. Run
+  `wsl --shutdown` from PowerShell, restart Docker Desktop, then re-pull.
+- **Behind a proxy / restrictive firewall:** make sure `ghcr.io` and
+  `*.docker.com` (including `production.cloudfront.docker.com`) are reachable.
+- **Slow link:** the `augmentum` image is large; give the pull time, and re-run
+  it if a layer drops — it resumes.
+
 ## Documentation
 
 Full guides live in **[`docs/`](docs/README.md)**. A few starting points:
