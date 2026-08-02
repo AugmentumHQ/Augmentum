@@ -142,6 +142,14 @@ jobs:
         # (v0.28.0/v0.30.0) referenced setup-trivy tags aquasecurity later
         # DELETED (v0.2.1/v0.2.2), which fails at "Set up job".
         uses: aquasecurity/trivy-action@v0.33.1
+        # Advisory scan — never block the build on it (findings are already
+        # exit-code:0; this extends that to operational flakes like the trivy
+        # vuln-DB pull rate-limiting on ghcr.io, which produced no SARIF and
+        # cascaded into the upload step). GITHUB_TOKEN authenticates the DB
+        # pull to raise the anonymous rate limit.
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           image-ref: augmentum:audit-${{ github.sha }}
           format: 'sarif'
@@ -156,19 +164,25 @@ jobs:
           ignore-unfixed: true
 
       - name: Upload Trivy SARIF
-        if: always()
+        # Only upload if the scan actually produced the file (a failed/rate-
+        # limited scan leaves no SARIF → the upload would error "Path does not
+        # exist"). continue-on-error covers the case where Code Scanning isn't
+        # enabled on the repo yet.
+        if: always() && hashFiles('trivy-results.sarif') != ''
+        continue-on-error: true
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
           category: trivy
 
       - name: Upload Trivy report as artifact
-        if: always()
+        if: always() && hashFiles('trivy-results.sarif') != ''
         uses: actions/upload-artifact@v4
         with:
           name: trivy-report
           path: trivy-results.sarif
           retention-days: 30
+          if-no-files-found: ignore
 
       # ──────────────────────────────────────────────────────────────
       # SBOM (CycloneDX) for the built image — uploaded as an artifact
@@ -177,6 +191,9 @@ jobs:
       # scanners (Snyk, Dependency-Track, Sonatype Lifecycle) prefer.
       # ──────────────────────────────────────────────────────────────
       - name: Generate CycloneDX SBOM (via trivy)
+        # Also advisory + also does a trivy DB pull, so it can hit the same
+        # rate-limit. Don't let it block the build.
+        continue-on-error: true
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
@@ -188,10 +205,12 @@ jobs:
             augmentum:audit-${{ github.sha }}
 
       - name: Upload SBOM as artifact
+        if: hashFiles('sbom-cyclonedx.json') != ''
         uses: actions/upload-artifact@v4
         with:
           name: sbom-cyclonedx
           path: sbom-cyclonedx.json
+          if-no-files-found: ignore
           # 90 days so a downstream consumer who only checks quarterly
           # can still pull the SBOM that matched a specific release.
           retention-days: 90
