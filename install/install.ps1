@@ -86,6 +86,11 @@ if (-not (Test-Path "compose.yaml")) {
     New-Item -ItemType Directory -Force -Path $targetDir | Out-Null
     Set-Location $targetDir
     Invoke-WebRequest -UseBasicParsing -Uri "$RawBase/compose.yaml" -OutFile "compose.yaml" -ErrorAction Stop
+    # compose.yaml bind-mounts repo config the pull-only install otherwise lacks.
+    # searxng needs its settings.yml — without it searxng mounts an empty dir,
+    # runs defaults that 403 the json API, and browse/search breaks.
+    New-Item -ItemType Directory -Force -Path "config/searxng" | Out-Null
+    Invoke-WebRequest -UseBasicParsing -Uri "$RawBase/config/searxng/settings.yml" -OutFile "config/searxng/settings.yml" -ErrorAction Stop
     if (-not (Test-Path ".env")) {
         @"
 AUGMENTUM_VARIANT=cpu

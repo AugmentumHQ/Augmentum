@@ -96,6 +96,12 @@ else
     mkdir -p "$TARGET_DIR"
     cd "$TARGET_DIR"
     curl -fsSL -o compose.yaml "$RAW_BASE/compose.yaml"
+    # compose.yaml bind-mounts repo config that a checkout-less pull-only install
+    # otherwise lacks. The base stack needs searxng's settings.yml — without it
+    # searxng mounts an empty dir, falls back to defaults that 403 the json API,
+    # and browse/search breaks. Fetch it into the mounted path.
+    mkdir -p config/searxng
+    curl -fsSL -o config/searxng/settings.yml "$RAW_BASE/config/searxng/settings.yml"
     if [ ! -f .env ]; then
         cat > .env <<'EOF'
 AUGMENTUM_VARIANT=cpu
