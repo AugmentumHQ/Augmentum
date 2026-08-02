@@ -10,8 +10,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from augmentum.bug_finder.generic_scanners import (
     GenericScannerSuiteResult,
     _normalize_severity,
@@ -21,7 +19,6 @@ from augmentum.bug_finder.generic_scanners import (
     run_generic_suite_timed,
     run_ruff,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers

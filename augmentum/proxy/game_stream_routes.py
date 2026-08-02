@@ -18,7 +18,8 @@ import os
 from ipaddress import ip_address, ip_network
 from typing import Any
 from urllib.error import HTTPError
-from urllib.request import Request as UrlRequest, urlopen
+from urllib.request import Request as UrlRequest
+from urllib.request import urlopen
 
 from fastapi import APIRouter, Request, WebSocket
 from fastapi.responses import JSONResponse

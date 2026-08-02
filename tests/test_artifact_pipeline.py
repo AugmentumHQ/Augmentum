@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import json
-import pytest
-
 import os
+
+import pytest
 
 from augmentum.tools.artifact_pipeline import (
     ArtifactRequest,
@@ -212,6 +212,7 @@ async def test_scan_context_working_memory():
 # Task 3: Research Phase
 # ---------------------------------------------------------------------------
 from unittest.mock import AsyncMock, MagicMock
+
 from augmentum.tools.artifact_pipeline import run_research, run_research_data
 
 
@@ -285,10 +286,10 @@ async def test_run_research_data_for_xlsx():
 # Task 4: Draft & Illustrate Phases
 # ---------------------------------------------------------------------------
 from augmentum.tools.artifact_pipeline import (
-    draft_sections,
-    draft_slides,
-    draft_sheet_structure,
     draft_chart_dataset,
+    draft_sections,
+    draft_sheet_structure,
+    draft_slides,
     run_illustrate,
 )
 
@@ -422,10 +423,10 @@ async def test_run_illustrate():
 # Task 5: Assemble Phases
 # ---------------------------------------------------------------------------
 from augmentum.tools.artifact_pipeline import (
-    assemble_sections,
-    assemble_slides,
-    assemble_sheets,
     assemble_chart,
+    assemble_sections,
+    assemble_sheets,
+    assemble_slides,
     parse_draft_sections,
     parse_draft_slides,
 )

@@ -31,7 +31,6 @@ from augmentum.fabric.extractors import (
     LLMCapabilityExtractor,
 )
 
-
 # ── LLM extractor ─────────────────────────────────────────────────
 
 

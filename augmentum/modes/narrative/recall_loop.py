@@ -609,7 +609,8 @@ def _replace_messages(
     """
     # InternalChatRequest is a dataclass; shallow attribute copy with
     # the new message list is enough.
-    from dataclasses import fields, replace as dataclass_replace
+    from dataclasses import fields
+    from dataclasses import replace as dataclass_replace
 
     changes: dict = {"messages": messages}
     if strip_tools:

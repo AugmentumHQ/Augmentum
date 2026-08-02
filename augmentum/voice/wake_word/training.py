@@ -255,7 +255,7 @@ async def synthesize_samples(
     voices: list[str],
     speeds: tuple[float, ...],
     samples_per_voice_per_speed: int,
-    ctx: "JobContext | None" = None,
+    ctx: JobContext | None = None,
     label_prefix: str = "synth",
 ) -> list[np.ndarray]:
     """Generate raw 1-second 16 kHz audio windows for a phrase.
@@ -515,7 +515,7 @@ async def train_wake_word_model(
     learning_rate: float = 1e-3,
     voices: list[str] | None = None,
     personal_samples_dir: Path | None = None,
-    ctx: "JobContext | None" = None,
+    ctx: JobContext | None = None,
 ) -> TrainResult:
     """Train a wake-word model for ``phrase`` and export ONNX.
 

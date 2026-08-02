@@ -42,8 +42,8 @@ def _rt(backend):
 
 @pytest.mark.asyncio
 async def test_aging_disabled_no_op(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.healing import age_unopened_notes
+    from augmentum.config import settings
     monkeypatch.setattr(settings, "companion_aging_enabled", False)
     backend = await _boot_backend()
     result = await age_unopened_notes(_rt(backend))
@@ -52,8 +52,8 @@ async def test_aging_disabled_no_op(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_aging_ages_old_unopened_notes(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.healing import age_unopened_notes
+    from augmentum.config import settings
     monkeypatch.setattr(settings, "companion_aging_enabled", True)
     monkeypatch.setattr(settings, "companion_aging_threshold_hours", 48)
 
@@ -91,8 +91,8 @@ async def test_aging_ages_old_unopened_notes(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_aging_skips_crystallized(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.healing import age_unopened_notes
+    from augmentum.config import settings
     monkeypatch.setattr(settings, "companion_aging_enabled", True)
 
     backend = await _boot_backend()
@@ -122,8 +122,8 @@ async def test_aging_skips_crystallized(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_daily_heal_disabled_no_op(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.healing import daily_heal
+    from augmentum.config import settings
     monkeypatch.setattr(settings, "companion_healing_enabled", False)
     backend = await _boot_backend()
     result = await daily_heal(_rt(backend))
@@ -132,8 +132,8 @@ async def test_daily_heal_disabled_no_op(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_daily_heal_soft_deletes_old_quarantined(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.healing import daily_heal
+    from augmentum.config import settings
     monkeypatch.setattr(settings, "companion_healing_enabled", True)
 
     backend = await _boot_backend()
@@ -160,8 +160,8 @@ async def test_daily_heal_soft_deletes_old_quarantined(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_daily_heal_applies_forgetting_curve(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.healing import daily_heal
+    from augmentum.config import settings
     monkeypatch.setattr(settings, "companion_healing_enabled", True)
 
     backend = await _boot_backend()
@@ -190,8 +190,8 @@ async def test_daily_heal_applies_forgetting_curve(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_daily_heal_skips_crystallized_in_forgetting(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.healing import daily_heal
+    from augmentum.config import settings
     monkeypatch.setattr(settings, "companion_healing_enabled", True)
 
     backend = await _boot_backend()
@@ -220,8 +220,8 @@ async def test_daily_heal_skips_crystallized_in_forgetting(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_weekly_consolidate_disabled_no_op(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.healing import weekly_consolidate
+    from augmentum.config import settings
     monkeypatch.setattr(settings, "companion_healing_enabled", False)
     backend = await _boot_backend()
     result = await weekly_consolidate(_rt(backend), user_id="usr_h")
@@ -230,8 +230,8 @@ async def test_weekly_consolidate_disabled_no_op(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_weekly_consolidate_archives_old_entries(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.healing import weekly_consolidate
+    from augmentum.config import settings
     monkeypatch.setattr(settings, "companion_healing_enabled", True)
 
     backend = await _boot_backend()
@@ -274,8 +274,8 @@ async def test_weekly_consolidate_archives_old_entries(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_drift_audit_disabled_no_op(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.healing import monthly_drift_audit
+    from augmentum.config import settings
     monkeypatch.setattr(settings, "companion_healing_enabled", False)
     backend = await _boot_backend()
     result = await monthly_drift_audit(_rt(backend), user_id="usr_h")
@@ -284,8 +284,8 @@ async def test_drift_audit_disabled_no_op(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_drift_audit_returns_snapshot(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.healing import monthly_drift_audit
+    from augmentum.config import settings
     monkeypatch.setattr(settings, "companion_healing_enabled", True)
 
     backend = await _boot_backend()
@@ -310,8 +310,8 @@ async def test_drift_audit_reports_other_tenants_and_isolation_holds(monkeypatch
     exist) and a user-scoped query returns only that user's rows. The
     old `cross_tenant_leakage` metric was tautologically 0 and couldn't
     observe a leak (audit 2026-06-17)."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.healing import monthly_drift_audit
+    from augmentum.config import settings
     monkeypatch.setattr(settings, "companion_healing_enabled", True)
 
     backend = await _boot_backend()

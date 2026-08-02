@@ -9,9 +9,7 @@ Pattern: 80 unique prompts + 20 strategic repeats to measure Hebbian learning.
 from __future__ import annotations
 
 import json
-import os
 import random
-import sys
 import time
 import urllib.request
 
@@ -250,7 +248,7 @@ def main():
     print(f"  Total tokens gen:   {total_tokens}")
     print(f"  Avg tok/s:          {avg_tps:.1f}")
     print(f"  Baseline tok/s:     {baseline_tps:.1f}")
-    print(f"")
+    print("")
     print(f"  ANM entries:        {initial_entries} -> {final_anm.get('entries', 0)}")
     print(f"  ANM observations:   {final_anm.get('observation_count', 0)}")
     print(f"  Total lookups:      {total_lookups} (across 100 prompts)")
@@ -262,13 +260,13 @@ def main():
     avg_lookups = total_lookups / len(results)
     avg_hits = total_hits / len(results)
     avg_preds = total_preds / len(results)
-    print(f"\n  Per-prompt averages:")
+    print("\n  Per-prompt averages:")
     print(f"    Lookups:          {avg_lookups:.1f}")
     print(f"    Hits:             {avg_hits:.1f}")
     print(f"    Predictions:      {avg_preds:.1f}")
 
     # Hit rate by phase (using per-prompt deltas)
-    print(f"\n  Hit rate by phase:")
+    print("\n  Hit rate by phase:")
     for boundary, label in sorted(phase_boundaries.items()):
         start = {20: 0, 50: 20, 80: 50, 100: 80}[boundary]
         phase = results[start:boundary]
@@ -283,7 +281,7 @@ def main():
     # Repeat vs novel breakdown
     repeat_results = [r for r in results if r["is_repeat"]]
     novel_results = [r for r in results if not r["is_repeat"]]
-    print(f"\n  Novel vs Repeat:")
+    print("\n  Novel vs Repeat:")
     for label, subset in [("Novel", novel_results), ("Repeat", repeat_results)]:
         if subset:
             sh = sum(r["prompt_hits"] for r in subset)
@@ -301,7 +299,7 @@ def main():
     # Conservative estimate: avg 2 tokens accepted per prediction (out of 5 drafted)
     # (100% accuracy on repeats, ~50% on novel shared patterns, blended ~40%)
     if total_preds > 0:
-        print(f"\n  Projected speculative speedup:")
+        print("\n  Projected speculative speedup:")
 
         for accept_rate_name, avg_accept in [("pessimistic (1 tok/pred)", 1),
                                               ("conservative (2 tok/pred)", 2),
@@ -330,7 +328,7 @@ def main():
             data=b"{}",
             headers={"Content-Type": "application/json"},
         ), timeout=10)
-        print(f"\n  ANM saved to disk.")
+        print("\n  ANM saved to disk.")
     except Exception:
         pass
 

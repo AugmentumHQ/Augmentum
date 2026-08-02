@@ -2,11 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
-from unittest.mock import AsyncMock, MagicMock
-
-from fastapi.testclient import TestClient
-
 
 class TestCloudImageProviderCRUD:
     def test_list_providers_no_db(self, client):

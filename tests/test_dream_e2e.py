@@ -7,15 +7,13 @@ Usage: .venv/Scripts/python -m pytest tests/test_dream_e2e.py -v -s
 """
 from __future__ import annotations
 
-import asyncio
 import json
-import os
-import pytest
+from datetime import UTC
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import aiosqlite
-
+import pytest
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -141,8 +139,8 @@ class TestDreamE2E:
     @pytest.mark.asyncio
     async def test_portrait_stored_via_journal_db(self, journal):
         """PortraitManager can store and retrieve a portrait using journal's _db."""
-        from augmentum.dream.portrait import PortraitManager
         from augmentum.dream.models import DreamPortrait
+        from augmentum.dream.portrait import PortraitManager
 
         mgr = PortraitManager(journal, settings_store=None)
 
@@ -213,8 +211,8 @@ class TestDreamE2E:
     @pytest.mark.asyncio
     async def test_inject_dream_context_into_messages(self, journal):
         """inject_dream_context correctly modifies the system message."""
+        from augmentum.dream.models import DreamEntry, DreamEntryType, DreamPortrait
         from augmentum.memory.integration import inject_dream_context
-        from augmentum.dream.models import DreamPortrait, DreamEntry, DreamEntryType
 
         portrait = DreamPortrait(
             id="p1", persona_id="default",
@@ -260,8 +258,8 @@ class TestDreamE2E:
     @pytest.mark.asyncio
     async def test_full_store_retrieve_inject_cycle(self, journal):
         """Full cycle: store entries → store portrait → retrieve → inject."""
-        from augmentum.dream.portrait import PortraitManager
         from augmentum.dream.models import DreamEntryType, DreamPortrait
+        from augmentum.dream.portrait import PortraitManager
         from augmentum.memory.integration import inject_dream_context
 
         # 1. Store some dream entries
@@ -316,8 +314,8 @@ class TestDreamE2E:
     @pytest.mark.asyncio
     async def test_checkpoint_save_and_restore(self, journal):
         """Checkpoint flow: save → modify → restore → verify."""
-        from augmentum.dream.portrait import PortraitManager
         from augmentum.dream.models import DreamPortrait
+        from augmentum.dream.portrait import PortraitManager
 
         mgr = PortraitManager(journal, settings_store=None)
 
@@ -361,8 +359,8 @@ class TestDreamE2E:
     @pytest.mark.asyncio
     async def test_reset_to_foundation(self, journal):
         """Reset deletes all dream data for a persona."""
-        from augmentum.dream.portrait import PortraitManager
         from augmentum.dream.models import DreamEntryType, DreamPortrait
+        from augmentum.dream.portrait import PortraitManager
 
         mgr = PortraitManager(journal, settings_store=None)
 
@@ -397,8 +395,9 @@ class TestDreamE2E:
     @pytest.mark.asyncio
     async def test_scheduler_trigger_conditions(self):
         """Scheduler eligibility logic with realistic parameters."""
+        from datetime import datetime, timedelta
+
         from augmentum.dream.scheduler import DreamScheduler
-        from datetime import datetime, timedelta, timezone
 
         scheduler = DreamScheduler(
             engine=AsyncMock(),
@@ -422,7 +421,7 @@ class TestDreamE2E:
         assert not scheduler._is_eligible()
 
         # Simulate 35 minutes of idle
-        scheduler._last_request_at = datetime.now(timezone.utc) - timedelta(minutes=35)
+        scheduler._last_request_at = datetime.now(UTC) - timedelta(minutes=35)
 
         # Now eligible
         assert scheduler._is_eligible()

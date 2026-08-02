@@ -20,11 +20,9 @@ import json
 import sys
 from pathlib import Path
 
-import aiosqlite
 import pytest
 
 from augmentum.state.backends.sqlite import SQLiteBackend
-
 
 # Import the migration script module (scripts/ has no __init__.py)
 _SCRIPT_PATH = Path(__file__).parent.parent / "scripts" / "migrate_narrative_branches.py"

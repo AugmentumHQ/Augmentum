@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import AsyncIterator
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -782,8 +781,8 @@ class TestSSOSStructuredSearch:
         )
 
     async def test_search_dedupes_by_url_via_metadata(self):
-        from augmentum.tools.intent import QueryIntent
         from augmentum.modes.passthrough.orchestrator import SSOSOrchestrator
+        from augmentum.tools.intent import QueryIntent
 
         # Two parallel queries return overlapping URLs.
         result_a = self._search_result(
@@ -829,10 +828,11 @@ class TestSSOSStructuredSearch:
         assert "[4]" not in text
 
     async def test_search_emits_tool_events(self):
-        from augmentum.tools.intent import QueryIntent
         from augmentum.modes.passthrough.orchestrator import (
-            SSOSOrchestrator, _EventEmitter,
+            SSOSOrchestrator,
+            _EventEmitter,
         )
+        from augmentum.tools.intent import QueryIntent
 
         result = self._search_result(
             {"title": "T", "url": "https://x.test/1", "snippet": "s"},
@@ -1089,10 +1089,12 @@ class TestSoftTriggerExecution:
         return tool
 
     async def test_run_named_tool_success_emits_events(self):
-        from augmentum.tools.base import ToolResult
         from augmentum.modes.passthrough.orchestrator import (
-            SSOSOrchestrator, ModelCapability, _EventEmitter,
+            ModelCapability,
+            SSOSOrchestrator,
+            _EventEmitter,
         )
+        from augmentum.tools.base import ToolResult
         result = ToolResult(
             success=True, output="results text",
             metadata={"results": [{"url": "u"}], "_private": "x"},
@@ -1116,10 +1118,11 @@ class TestSoftTriggerExecution:
         assert "results" in meta and "_private" not in meta
 
     async def test_run_named_tool_failure_returns_none(self):
-        from augmentum.tools.base import ToolResult
         from augmentum.modes.passthrough.orchestrator import (
-            SSOSOrchestrator, ModelCapability,
+            ModelCapability,
+            SSOSOrchestrator,
         )
+        from augmentum.tools.base import ToolResult
         registry = MagicMock()
         registry.get.return_value = self._tool(ToolResult(success=False, error="boom"))
         orch = SSOSOrchestrator(registry)
@@ -1133,7 +1136,8 @@ class TestSoftTriggerExecution:
 
     async def test_tool_synthesis_request_keys_on_capability(self):
         from augmentum.modes.passthrough.orchestrator import (
-            SSOSOrchestrator, ModelCapability,
+            ModelCapability,
+            SSOSOrchestrator,
         )
         orch = SSOSOrchestrator(MagicMock())
         original = _make_request("who was Ada Lovelace?")

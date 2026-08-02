@@ -43,10 +43,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import httpx
 
 from augmentum.tools.preferred_sources import (
-    AVOID,
     describe_source,
-    domain_quality,
-    get_topic_sites,
 )
 from augmentum.tools.web import (
     _build_search_query,

@@ -58,6 +58,7 @@ def test_unified_pipeline_has_ip_adapter_methods():
 
 def test_generate_signature_accepts_ip_adapter():
     import inspect
+
     from augmentum.image.pipeline_v2 import UnifiedPipeline
 
     sig = inspect.signature(UnifiedPipeline.generate)
@@ -69,6 +70,7 @@ def test_generate_signature_accepts_ip_adapter():
 
 def test_abstract_generate_signature_accepts_ip_adapter():
     import inspect
+
     from augmentum.image.pipeline import ImagePipeline
 
     sig = inspect.signature(ImagePipeline.generate)

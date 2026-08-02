@@ -14,7 +14,6 @@ Covers:
 from __future__ import annotations
 
 import time
-from unittest.mock import patch
 
 import pytest
 
@@ -63,8 +62,8 @@ def _add_thread_events(rt, *, user_id: str, count: int = 3, domain: str = "examp
 
 @pytest.mark.asyncio
 async def test_disabled_master_flag_blocks(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.wondering import maybe_write_wondering
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_topical_aggregator_enabled", False)
     backend, rt = await _boot_runtime_with_user("usr_w1")
@@ -78,8 +77,8 @@ async def test_disabled_master_flag_blocks(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_hush_blocks(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.wondering import maybe_write_wondering
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_topical_aggregator_enabled", True)
     # Hush window in the future → is_hushed_now returns True
@@ -94,8 +93,8 @@ async def test_hush_blocks(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_user_recently_active_blocks(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.wondering import maybe_write_wondering
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_topical_aggregator_enabled", True)
     monkeypatch.setattr(settings, "companion_journal_hushed_until", "")
@@ -113,8 +112,8 @@ async def test_user_recently_active_blocks(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_daily_cap_blocks_after_n(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.wondering import maybe_write_wondering
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_topical_aggregator_enabled", True)
     monkeypatch.setattr(settings, "companion_journal_hushed_until", "")
@@ -143,8 +142,8 @@ async def test_daily_cap_blocks_after_n(monkeypatch):
 @pytest.mark.asyncio
 async def test_thread_only_writes_at_early_confidence(monkeypatch):
     """Thread detected but no curiosity facet activation → confidence='early'."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.wondering import maybe_write_wondering
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_topical_aggregator_enabled", True)
     monkeypatch.setattr(settings, "companion_journal_hushed_until", "")
@@ -179,8 +178,8 @@ async def test_thread_only_writes_at_early_confidence(monkeypatch):
 @pytest.mark.asyncio
 async def test_thread_plus_curiosity_writes_at_normal(monkeypatch):
     """Thread + curiosity facet activation → confidence='normal'."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.wondering import maybe_write_wondering
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_topical_aggregator_enabled", True)
     monkeypatch.setattr(settings, "companion_journal_hushed_until", "")
@@ -219,8 +218,8 @@ async def test_thread_plus_curiosity_writes_at_normal(monkeypatch):
 @pytest.mark.asyncio
 async def test_topic_mute_blocks_matching_domain(monkeypatch):
     """When a mute matching the thread's domain exists, no write happens."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.wondering import maybe_write_wondering
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_topical_aggregator_enabled", True)
     monkeypatch.setattr(settings, "companion_journal_hushed_until", "")
@@ -250,8 +249,8 @@ async def test_topic_mute_blocks_matching_domain(monkeypatch):
 @pytest.mark.asyncio
 async def test_no_observed_state_returns_none(monkeypatch):
     """Missing observed_state shouldn't crash."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.wondering import maybe_write_wondering
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_topical_aggregator_enabled", True)
     monkeypatch.setattr(settings, "companion_journal_hushed_until", "")
@@ -266,8 +265,8 @@ async def test_no_observed_state_returns_none(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_empty_recent_deque_returns_none(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.wondering import maybe_write_wondering
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_topical_aggregator_enabled", True)
     monkeypatch.setattr(settings, "companion_journal_hushed_until", "")

@@ -213,8 +213,8 @@ class CompanionJournal:
         root_dir: Path,
         user_id: str,
         title_id: str,
-        seed: "JournalSections | None" = None,
-    ) -> "CompanionJournal":
+        seed: JournalSections | None = None,
+    ) -> CompanionJournal:
         """Load the on-disk journal if any, else return one seeded with defaults.
 
         Disk errors and malformed JSON degrade to ``seed`` (if provided)

@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import json
 import re
-from typing import Awaitable, Callable
+from collections.abc import Awaitable, Callable
 
 from augmentum.personality.vocabulary import SEED_FACETS
 from augmentum.utils.logging import get_logger

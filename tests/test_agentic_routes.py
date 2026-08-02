@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock, MagicMock
 
-from fastapi.testclient import TestClient
-
 
 def _mock_task_store():
     store = MagicMock()

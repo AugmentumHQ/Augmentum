@@ -16,7 +16,6 @@ import re
 
 from augmentum.memory.embeddings import EmbeddingService
 
-
 # ------------------------------------------------------------------
 # Result dataclass
 # ------------------------------------------------------------------

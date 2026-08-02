@@ -30,13 +30,13 @@ This module exposes:
 """
 from __future__ import annotations
 
-import asyncio
 import hashlib
 import hmac
 import os
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, Literal
+from typing import TYPE_CHECKING, Literal
 
 from augmentum.config import settings
 from augmentum.utils.logging import get_logger
@@ -147,7 +147,7 @@ def classify(text: str, *, surface: Surface = "free_chat") -> SafetyFloorResult:
 
 
 async def audit_event(
-    runtime: "CompanionRuntime",
+    runtime: CompanionRuntime,
     result: SafetyFloorResult,
     *,
     turn_id: str = "",

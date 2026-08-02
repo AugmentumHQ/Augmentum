@@ -20,7 +20,6 @@ from __future__ import annotations
 
 from augmentum.personality.models import Facet, FacetCategory
 
-
 SEED_FACETS: list[Facet] = [
     # ------------------------------------------------------------------
     # Affect — emotional weather. Commitment #6 (right to be unfinished)

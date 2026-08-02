@@ -36,8 +36,10 @@ from augmentum.game_stream.profiles import (
 from augmentum.game_stream.runtime import (
     ConcurrentStreamLimitError,
     GameStreamRuntime,
-    RuntimeError as GameStreamRuntimeError,
     StubContainerAdapter,
+)
+from augmentum.game_stream.runtime import (
+    RuntimeError as GameStreamRuntimeError,
 )
 
 __all__ = [

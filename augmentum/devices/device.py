@@ -18,7 +18,7 @@ from typing import Any
 
 def make_device_id(*, driver: str, native_id: str, user_id: str) -> str:
     """Deterministic device ID. Same triple → same ID across restarts."""
-    seed = f"{driver}|{native_id}|{user_id}".encode("utf-8")
+    seed = f"{driver}|{native_id}|{user_id}".encode()
     digest = hashlib.sha1(seed, usedforsecurity=False).hexdigest()  # noqa: S324
     return f"dev_{digest[:12]}"
 

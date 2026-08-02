@@ -19,7 +19,6 @@ from augmentum.state.narrative_state import (
     Entity,
     EntityState,
     EntityType,
-    Fact,
     LorebookEntry,
     PlotStatus,
     content_hash,

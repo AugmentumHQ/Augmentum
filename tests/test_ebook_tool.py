@@ -4,8 +4,6 @@ from __future__ import annotations
 import io
 import zipfile
 
-import pytest
-
 
 def _make_chapters(n: int = 3, with_images: bool = False) -> list[dict]:
     """Build N sample chapters for testing."""
@@ -209,8 +207,6 @@ class TestEpubRenderer:
         assert "@media (prefers-color-scheme: dark)" not in html
 
 
-import os
-import tempfile
 
 
 class TestEpubWithImages:
@@ -273,6 +269,7 @@ class TestEpubWithImages:
 
     def test_rgba_image_converted(self, tmp_path):
         from PIL import Image
+
         from augmentum.tools.artifact_ebook import _render_epub
 
         img_path = str(tmp_path / "rgba.png")

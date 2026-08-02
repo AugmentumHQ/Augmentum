@@ -30,7 +30,6 @@ from __future__ import annotations
 
 import pytest
 
-
 # ── Preset shape ─────────────────────────────────────────────────────
 
 
@@ -215,6 +214,7 @@ def test_apply_preset_unknown_raises():
 
 def _client_app():
     from fastapi import FastAPI
+
     from augmentum.proxy.companion_routes import router
 
     app = FastAPI()
@@ -280,6 +280,7 @@ async def test_intensity_endpoint_503_without_settings_store():
 @pytest.mark.asyncio
 async def test_status_surfaces_intensity_block(monkeypatch):
     from fastapi.testclient import TestClient
+
     from augmentum.config import settings as _settings
 
     # Off state — intensity block should still appear, current='off'
@@ -303,6 +304,7 @@ async def test_status_surfaces_intensity_block(monkeypatch):
 async def test_status_intensity_matches_when_balanced(monkeypatch):
     """Apply balanced flags via monkeypatch → status reports 'balanced'."""
     from fastapi.testclient import TestClient
+
     from augmentum.companion.intensity import PRESETS
     from augmentum.config import settings as _settings
 

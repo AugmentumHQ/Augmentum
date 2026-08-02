@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import struct
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import aiosqlite
 import pytest
@@ -457,7 +457,7 @@ class TestContentLibrary:
             cluster_id=None,
         )
         # Back-date the chunk
-        old_ts = (datetime.now(timezone.utc) - timedelta(days=400)).isoformat()
+        old_ts = (datetime.now(UTC) - timedelta(days=400)).isoformat()
         async with store._conn.execute(
             "UPDATE content_library SET created_at = ? WHERE chunk_id = ?",
             (old_ts, chunk["chunk_id"]),
@@ -481,7 +481,7 @@ class TestContentLibrary:
             cluster_id=None,
         )
         await store.increment_retrieved(chunk["chunk_id"])
-        old_ts = (datetime.now(timezone.utc) - timedelta(days=400)).isoformat()
+        old_ts = (datetime.now(UTC) - timedelta(days=400)).isoformat()
         async with store._conn.execute(
             "UPDATE content_library SET created_at = ? WHERE chunk_id = ?",
             (old_ts, chunk["chunk_id"]),

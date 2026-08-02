@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-import pytest
-
-from augmentum.tools.intent import classify_intent, QueryIntent
+from augmentum.tools.intent import classify_intent
 
 
 class TestSearchIntent:

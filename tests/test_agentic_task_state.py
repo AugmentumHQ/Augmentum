@@ -2,16 +2,12 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock
-
-import pytest
-
 from augmentum.modes.agentic.autonomy import (
-    needs_plan_approval,
-    needs_step_approval,
     build_approval_chunk,
     build_inform_chunk,
     build_plan_approval_chunk,
+    needs_plan_approval,
+    needs_step_approval,
 )
 from augmentum.modes.agentic.task_state import TaskState, TaskStatus
 

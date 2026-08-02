@@ -15,7 +15,6 @@ from collections.abc import AsyncIterator
 import pytest
 
 from augmentum.classifier.router import (
-    MODE_HEADER,
     MODE_MAP,
     MODE_PREFIXES,
     Mode,
@@ -33,7 +32,6 @@ from augmentum.models.base import (
 )
 from augmentum.modes.direct.handler import DirectHandler
 from augmentum.proxy.handler_factory import get_handler_for_mode
-
 
 # ----------------------------------------------------------------------
 # Recording backend — captures the messages it receives so tests can

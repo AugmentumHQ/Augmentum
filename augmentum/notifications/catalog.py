@@ -26,7 +26,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-
 IMPORTANCE_MIN = 0
 IMPORTANCE_LOW = 1
 IMPORTANCE_DEFAULT = 2

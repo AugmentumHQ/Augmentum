@@ -14,11 +14,8 @@ ComicSeriesStore / register_file wiring.
 from __future__ import annotations
 
 import asyncio
-import json
-from unittest.mock import AsyncMock, MagicMock, patch
 
 import aiosqlite
-import pytest
 
 from augmentum.media.comic_series_store import (
     ComicSeriesStore,

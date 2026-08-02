@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
-import json
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
 from augmentum.models.base import InternalChatRequest, Message
-from augmentum.models.openai_compat import OpenAIBackend, to_openai_chat_response, to_openai_models_response
+from augmentum.models.openai_compat import (
+    OpenAIBackend,
+    to_openai_chat_response,
+    to_openai_models_response,
+)
 
 
 def _make_backend(base_url="https://api.openai.com/v1", api_key="sk-test") -> tuple[OpenAIBackend, MagicMock]:

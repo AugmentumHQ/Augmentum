@@ -7,7 +7,6 @@ import pytest
 from augmentum.modes.coder.handler import CoderHandler
 from augmentum.modes.coder.runtime_truth import build_runtime_truth
 from augmentum.modes.coder.turn_context import TurnContext, build_turn_context
-
 from tests.test_coder_handler import (
     _ExtendedContainerManager,
     _FakeBackend,

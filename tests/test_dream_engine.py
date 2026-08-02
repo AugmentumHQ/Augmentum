@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 import json
-import pytest
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
+
 from augmentum.dream.engine import DreamEngine
 from augmentum.dream.models import DreamEntryType
 

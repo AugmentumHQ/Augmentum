@@ -9,7 +9,6 @@ from typing import Any
 
 from augmentum.utils.tokenizer import count_tokens_messages
 
-
 DEFAULT_CODER_COMPACT_TOKENS = 16_000
 DEFAULT_CODER_DIGEST_TOKENS = 40_000
 # Cap on the auto-derived compaction threshold. Bumped 192K → 256K on

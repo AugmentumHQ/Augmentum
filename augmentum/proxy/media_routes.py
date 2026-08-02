@@ -17,7 +17,7 @@ import json
 import re
 import time
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
@@ -27,6 +27,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, PlainTextResponse, Response, StreamingResponse
 from pydantic import BaseModel, Field
 
+from augmentum.auth.guards import is_admin
 from augmentum.media.detector import detect_servers
 from augmentum.media.library_store import get_media_library_store
 from augmentum.media.normalize import (
@@ -38,15 +39,21 @@ from augmentum.media.providers.audiobookshelf import AudiobookshelfProvider
 from augmentum.media.providers.base import (
     DEFAULT_PORTS,
     BrowseResult,
-    provider_supports_library_discovery,
     provider_supports_browse,
-    provider_supports_remote_general_control,
     provider_supports_remote_control,
+    provider_supports_remote_general_control,
 )
 from augmentum.media.providers.emby import EmbyProvider
 from augmentum.media.providers.jellyfin import JellyfinProvider
 from augmentum.media.providers.komga import KomgaProvider
+from augmentum.media.providers.librivox import (
+    ARCHIVE_COVER,
+    LibrivoxProvider,
+    normalise_details_to_catalog,
+    normalise_librivox_sections,
+)
 from augmentum.media.providers.suwayomi import SuwayomiProvider
+from augmentum.media.receivers import build_receiver_launch_plan, list_receiver_profiles
 from augmentum.media.receivers.dlna import (
     discover_dlna_receivers,
     launch_dlna_receiver,
@@ -54,15 +61,7 @@ from augmentum.media.receivers.dlna import (
     send_dlna_playstate_command,
     snapshot_dlna_receiver,
 )
-from augmentum.media.receivers import build_receiver_launch_plan, list_receiver_profiles
 from augmentum.media.receivers.runtime import ReceiverRuntime, TransportSession
-from augmentum.media.providers.librivox import (
-    ARCHIVE_COVER,
-    LibrivoxProvider,
-    normalise_details_to_catalog,
-    normalise_librivox_sections,
-)
-from augmentum.auth.guards import is_admin
 from augmentum.media.store import MediaServerStore, purge_server_data
 from augmentum.media.sync import sync_server
 from augmentum.state.backends.sqlite import SQLiteBackend
@@ -2554,7 +2553,7 @@ async def comic_page(file_id: str, request: Request):
         # IS the book_id; stream_path encodes the same thing via the
         # ``/file`` URL. We use external_id directly for clarity.
         page_suffix = (
-            f"/thumbnail" if want_thumb
+            "/thumbnail" if want_thumb
             else ("/raw" if want_raw else "")
         )
         upstream_url = (
@@ -2977,7 +2976,7 @@ async def media_details(
     if _local_pos > 0 and _last_write_iso:
         try:
             last_dt = datetime.fromisoformat(_last_write_iso.replace("Z", "+00:00"))
-            now_dt = datetime.now(timezone.utc)
+            now_dt = datetime.now(UTC)
             _local_is_fresh = (now_dt - last_dt).total_seconds() < 90.0
         except Exception:
             _local_is_fresh = False
@@ -4522,7 +4521,7 @@ async def update_progress(
     # Stamp the last-read time so the comics `continue` sort can order
     # series by how recently the user actually opened them. Distinct
     # from `fi.updated_at`, which also moves on catalog sync writes.
-    meta["last_read_at"] = datetime.now(timezone.utc).isoformat()
+    meta["last_read_at"] = datetime.now(UTC).isoformat()
     if episode_id:
         meta["selected_episode_id"] = episode_id
 
@@ -4727,7 +4726,7 @@ async def create_bookmark(
     if not entry:
         return JSONResponse({"error": "Not found"}, status_code=404)
     bookmark_id = f"bm_{uuid.uuid4().hex[:16]}"
-    created_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    created_at = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     row = (
         bookmark_id, uid, file_id, str(body.episode_id or "").strip(),
         max(0.0, float(body.position_s or 0)),

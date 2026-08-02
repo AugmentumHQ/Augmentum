@@ -28,6 +28,12 @@ substrates this layer composes over.
 
 from __future__ import annotations
 
+from augmentum.titles.bios_store import (
+    BiosRecord,
+    BiosServiceError,
+    BiosStatusEntry,
+    BiosStore,
+)
 from augmentum.titles.manifest import (
     KIND_EMULATOR_ROM,
     KIND_GIT_PROJECT,
@@ -39,15 +45,13 @@ from augmentum.titles.manifest import (
     is_title_kind,
 )
 from augmentum.titles.runtimes import (
+    AgspStreamedRuntime,
     BrowserIframeRuntime,
+    EmulatorBrowserRuntime,
     LaunchHandle,
     Runtime,
     RuntimeRegistry,
     runtime_registry,
-)
-from augmentum.titles.runtimes import (
-    AgspStreamedRuntime,
-    EmulatorBrowserRuntime,
 )
 from augmentum.titles.service import (
     TitleNotFound,
@@ -62,12 +66,6 @@ from augmentum.titles.sources import (
     SourceImportError,
     SourceRegistry,
     source_registry,
-)
-from augmentum.titles.bios_store import (
-    BiosRecord,
-    BiosServiceError,
-    BiosStatusEntry,
-    BiosStore,
 )
 from augmentum.titles.sources_js13k import Js13kSource
 from augmentum.titles.sources_rom import InternalRomSource

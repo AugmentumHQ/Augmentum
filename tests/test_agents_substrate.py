@@ -42,7 +42,6 @@ from augmentum.agents.registry import (
     _split_frontmatter,
 )
 from augmentum.agents.resolve import (
-    ResolvedModel,
     SubagentModelUnavailableError,
     parse_model_spec,
     resolve_subagent_model,
@@ -53,7 +52,6 @@ from augmentum.agents.tools import (
 )
 from augmentum.models.base import Message, Usage
 from augmentum.tools.base import Tool, ToolCategory, ToolResult
-
 
 # ---------------------------------------------------------------------------
 # Built-in roles

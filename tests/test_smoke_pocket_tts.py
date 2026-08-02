@@ -12,7 +12,6 @@ import struct
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Module shape
 # ---------------------------------------------------------------------------
@@ -20,11 +19,11 @@ import pytest
 
 def test_module_imports_and_constructs():
     from augmentum.voice.pocket_tts import (
-        PocketTTS,
-        VOICE_META,
         _DEFAULT_VOICE,
         _DEFAULT_VOICE_NAMES,
         _FALLBACK_VOICE_NAMES,
+        VOICE_META,
+        PocketTTS,
     )
     # Catalog is loaded from the installed package; in the test venv that
     # falls back to the hardcoded list. Either way, the floor is the 8

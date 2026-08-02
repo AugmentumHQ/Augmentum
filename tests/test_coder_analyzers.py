@@ -10,19 +10,16 @@ broken handler would raise at module import.
 from __future__ import annotations
 
 import sqlite3
-import tempfile
 from pathlib import Path
 
 import pytest
 
 from augmentum.coder.analyzers import (
-    AnalysisReport,
     analyze_file,
     is_analyzable,
     register_analyzer,
 )
-from augmentum.coder.analyzers.registry import _BY_EXT, _BY_MAGIC
-
+from augmentum.coder.analyzers.registry import _BY_EXT
 
 # ---------------------------------------------------------------------------
 # Registry contract

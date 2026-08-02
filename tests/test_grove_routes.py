@@ -5,8 +5,6 @@ from __future__ import annotations
 import json
 from unittest.mock import AsyncMock, MagicMock
 
-from fastapi.testclient import TestClient
-
 
 class TestSomaStations:
     def test_soma_stations(self, client):

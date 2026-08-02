@@ -38,7 +38,6 @@ from augmentum.connect.message_routing import (
 )
 from augmentum.connect.message_store import (
     get_message,
-    get_or_create_thread,
     get_thread,
 )
 from augmentum.connect.protocol import (
@@ -61,7 +60,6 @@ from augmentum.notifications import (
 )
 from augmentum.notifications.hub import NotificationHub
 from augmentum.notifications.store import get_notification
-
 
 CONNECT_MIGRATION = Path(
     "augmentum/state/migrations/219_connect_substrate.sql"

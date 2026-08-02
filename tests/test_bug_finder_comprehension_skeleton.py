@@ -14,21 +14,19 @@ contract the skeleton builder relies on. We cover:
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass, field
 from typing import Any
 
 import pytest
 
 from augmentum.bug_finder.comprehension_skeleton import (
+    _ROUTE_DECORATOR_RE,
     CodebaseSkeleton,
     RouteHint,
     SubsystemHint,
-    _ROUTE_DECORATOR_RE,
     _pick_candidate_pillar_files,
     build_skeleton,
 )
-
 
 # ---------------------------------------------------------------------------
 # Pure-helper tests

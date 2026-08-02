@@ -111,7 +111,7 @@ def _extract_one(archive: Any, idx: int) -> dict | None:
 def _extract_producer(
     archive: Any,
     total_entries: int,
-    out_queue: "queue.Queue",
+    out_queue: queue.Queue,
     skip_count: int,
     stop_event: threading.Event,
     stats: list,

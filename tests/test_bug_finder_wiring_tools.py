@@ -12,9 +12,9 @@ from pathlib import Path
 import pytest
 
 from augmentum.bug_finder.agent_tools import (
+    DETERMINISTIC_TOOL_NAMES,
     CalleesOfTool,
     DecoratorsOnTool,
-    DETERMINISTIC_TOOL_NAMES,
     GetConstantTool,
     IsReachableTool,
     MiddlewareChainTool,
@@ -51,9 +51,11 @@ def test_agents_tools_allowlist_includes_new_tools() -> None:
     new tool names so the detector / investigator are permitted to call
     them."""
     from augmentum.agents.tools import (
-        DETERMINISTIC_TOOL_NAMES as canonical,
         DETECTOR_TOOL_NAMES,
         INVESTIGATOR_TOOL_NAMES,
+    )
+    from augmentum.agents.tools import (
+        DETERMINISTIC_TOOL_NAMES as canonical,
     )
     expected = {
         "middleware_chain", "decorators_on", "get_constant",

@@ -4,10 +4,9 @@ from __future__ import annotations
 
 import pytest
 
-from augmentum.models.provider_profiles import PROFILES, get_profile, list_profiles, ProviderProfile
-from augmentum.models.converters.mistral import MistralConverter
 from augmentum.models.converters.cohere import CohereConverter
-
+from augmentum.models.converters.mistral import MistralConverter
+from augmentum.models.provider_profiles import get_profile, list_profiles
 
 # ---------------------------------------------------------------------------
 # ProviderProfile catalog tests

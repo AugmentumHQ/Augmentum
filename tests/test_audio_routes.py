@@ -2,10 +2,6 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
-
-from fastapi.testclient import TestClient
-
 
 def _setup_audio_db(app):
     """Set up the audio_providers table in the SQLite backend."""

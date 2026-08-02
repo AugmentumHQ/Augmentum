@@ -47,7 +47,6 @@ from augmentum.coder.identity import (
     serialize_manifest,
 )
 
-
 # ---------------------------------------------------------------------------
 # Container-manager fake. Each test maps absolute paths → file contents.
 # A read of an absent path raises (mirrors real container behaviour) so

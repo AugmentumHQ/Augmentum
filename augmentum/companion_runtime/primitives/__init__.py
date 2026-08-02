@@ -10,13 +10,6 @@ Same registry gating as subagents, with its own flag
 present — see TODO at the bottom of this module).
 """
 
-from augmentum.companion_runtime.primitives.base import (
-    PrimitiveBase,
-    PrimitiveContext,
-    PrimitiveResult,
-)
-from augmentum.companion_runtime.primitives.registry import PrimitiveRegistry
-
 # Auto-register all primitive adapters at package-import time.
 from augmentum.companion_runtime.primitives import (  # noqa: F401
     browse,
@@ -33,6 +26,12 @@ from augmentum.companion_runtime.primitives import (  # noqa: F401
     voice_mixer,
     xr_scene,
 )
+from augmentum.companion_runtime.primitives.base import (
+    PrimitiveBase,
+    PrimitiveContext,
+    PrimitiveResult,
+)
+from augmentum.companion_runtime.primitives.registry import PrimitiveRegistry
 
 __all__ = [
     "PrimitiveBase",

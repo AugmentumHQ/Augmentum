@@ -1,5 +1,11 @@
 """Stress test Gemma 4B with 3 advanced builds."""
-import asyncio, json, sys, re, time, urllib.request
+import asyncio
+import json
+import re
+import sys
+import time
+import urllib.request
+
 sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 sys.path.insert(0, '.')
 from augmentum.tools.artifact_application import ApplicationBuilderTool
@@ -115,7 +121,7 @@ async def main():
         # Feature checks
         passed = 0
         total = len(build['checks'])
-        print(f'\n  Feature checks:')
+        print('\n  Feature checks:')
         for name, check_fn in build['checks'].items():
             ok = check_fn(all_js, all_html, all_css)
             if ok: passed += 1

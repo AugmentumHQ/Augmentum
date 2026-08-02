@@ -5,7 +5,6 @@ from augmentum.tools.preferred_sources import (
     EXCELLENT,
     GOOD,
     UNKNOWN,
-    SourceInfo,
     describe_source,
     domain_quality,
     get_registry_stats,

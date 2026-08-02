@@ -21,7 +21,6 @@ from pathlib import Path
 
 import pytest
 
-
 _CONFIG = Path("augmentum/config.py")
 _RECOMMENDER = Path("augmentum/discovery/recommender.py")
 _CURATOR = Path("augmentum/companion_runtime/curator.py")

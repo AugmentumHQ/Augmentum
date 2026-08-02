@@ -11,29 +11,27 @@ from __future__ import annotations
 import json
 import time
 from collections.abc import AsyncIterator
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 import pytest
-import pytest_asyncio
 
 from augmentum.coder.state import CoderPhase, CoderState
-from augmentum.modes.coder.handler import (
-    CoderHandler,
-    _has_resumable_objective_state,
-    _extract_tool_calls_from_text,
-    _extract_tool_code_blocks,
-    _parse_plan_steps,
-    _strip_cot_tokens,
-)
-from augmentum.modes.coder.intent import TurnIntent, TurnIntentKind
-from augmentum.modes.coder.runtime_truth import RuntimeTruth
 from augmentum.models.base import (
     InternalChatRequest,
     InternalStreamChunk,
     Message,
 )
-
+from augmentum.modes.coder.handler import (
+    CoderHandler,
+    _extract_tool_calls_from_text,
+    _extract_tool_code_blocks,
+    _has_resumable_objective_state,
+    _parse_plan_steps,
+    _strip_cot_tokens,
+)
+from augmentum.modes.coder.intent import TurnIntent, TurnIntentKind
+from augmentum.modes.coder.runtime_truth import RuntimeTruth
 
 # ---------------------------------------------------------------------------
 # Fixtures

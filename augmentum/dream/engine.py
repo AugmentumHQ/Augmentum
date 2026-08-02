@@ -2,15 +2,15 @@
 from __future__ import annotations
 
 import json
-import uuid
 import time
-from datetime import datetime, timezone
+import uuid
+from datetime import UTC, datetime
 
 import structlog
 
-from augmentum.dream.models import DreamEntry, DreamEntryType, DreamCycle, ContextSegment
 from augmentum.dream.context import DreamContextBuilder
-from augmentum.dream.prompts import build_dream_prompt, DREAM_ANTI_PATTERNS
+from augmentum.dream.models import DreamCycle, DreamEntry, DreamEntryType
+from augmentum.dream.prompts import DREAM_ANTI_PATTERNS, build_dream_prompt
 
 log = structlog.get_logger(__name__)
 
@@ -57,7 +57,7 @@ class DreamEngine:
         """
         cycle_id = uuid.uuid4().hex[:16]
         cycle = DreamCycle(id=cycle_id, persona_id=persona_id, trigger_reason=trigger_reason)
-        cycle.started_at = datetime.now(timezone.utc).isoformat()
+        cycle.started_at = datetime.now(UTC).isoformat()
         start_time = time.monotonic()
 
         try:
@@ -65,7 +65,7 @@ class DreamEngine:
             memories = await self._select_dream_material(persona_id, user_id=user_id)
             if not memories:
                 cycle.status = "completed"
-                cycle.completed_at = datetime.now(timezone.utc).isoformat()
+                cycle.completed_at = datetime.now(UTC).isoformat()
                 cycle.duration_ms = int((time.monotonic() - start_time) * 1000)
                 await self._persist_cycle(cycle, user_id=user_id)
                 return cycle
@@ -125,7 +125,7 @@ class DreamEngine:
             log.error("dream_cycle_failed", error=str(e), exc_info=True)
 
         cycle.duration_ms = int((time.monotonic() - start_time) * 1000)
-        cycle.completed_at = datetime.now(timezone.utc).isoformat()
+        cycle.completed_at = datetime.now(UTC).isoformat()
         await self._persist_cycle(cycle, user_id=user_id)
         return cycle
 

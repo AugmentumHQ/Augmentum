@@ -12,15 +12,12 @@ to call it.
 
 from __future__ import annotations
 
-import asyncio
-import time
 from pathlib import Path
 
 import aiosqlite
 import pytest
 
 from augmentum.bug_finder.store import BugFinderRunStore
-
 
 # ---------------------------------------------------------------------------
 # Helpers

@@ -42,32 +42,7 @@ _TERM = re.compile(r"\b([A-Z][a-z']{2,}|[A-Z]{3,}[A-Z']*)\b")
 # Words that are capitalized for grammar or convention rather than because they
 # name something. Comic dialogue is short, exclamatory and sentence-initial-
 # heavy, so without this the list fills up with "What", "Don't", "Never".
-_STOP = frozenset("""
-about after again against all almost also always and another any are around
-because been before being both but came can cannot come could
-damn didn did does doing done don down
-each else even ever every everyone everything
-first for from
-get getting going gone good got
-had has have having hell her here hers herself him himself his how
-into its itself
-just
-know knew
-let like little look looking
-made make many maybe more most much must
-never new next nothing now
-off once one only other our out over own
-please
-really right
-same say see seen shall she should since some someone something still stop such sure
-take tell than that the their them then there these they thing think this those though
-through time too took
-under until
-very
-wait want was way well went were what when where which while who why will with would
-yeah yes yet you your yours yourself
-aah agh argh ahh gah grr hah heh hmm huh oof ooh tch ugh
-""".split())
+_STOP = frozenset(["about", "after", "again", "against", "all", "almost", "also", "always", "and", "another", "any", "are", "around", "because", "been", "before", "being", "both", "but", "came", "can", "cannot", "come", "could", "damn", "didn", "did", "does", "doing", "done", "don", "down", "each", "else", "even", "ever", "every", "everyone", "everything", "first", "for", "from", "get", "getting", "going", "gone", "good", "got", "had", "has", "have", "having", "hell", "her", "here", "hers", "herself", "him", "himself", "his", "how", "into", "its", "itself", "just", "know", "knew", "let", "like", "little", "look", "looking", "made", "make", "many", "maybe", "more", "most", "much", "must", "never", "new", "next", "nothing", "now", "off", "once", "one", "only", "other", "our", "out", "over", "own", "please", "really", "right", "same", "say", "see", "seen", "shall", "she", "should", "since", "some", "someone", "something", "still", "stop", "such", "sure", "take", "tell", "than", "that", "the", "their", "them", "then", "there", "these", "they", "thing", "think", "this", "those", "though", "through", "time", "too", "took", "under", "until", "very", "wait", "want", "was", "way", "well", "went", "were", "what", "when", "where", "which", "while", "who", "why", "will", "with", "would", "yeah", "yes", "yet", "you", "your", "yours", "yourself", "aah", "agh", "argh", "ahh", "gah", "grr", "hah", "heh", "hmm", "huh", "oof", "ooh", "tch", "ugh"])
 
 
 def _terms_in(text: str) -> set[str]:

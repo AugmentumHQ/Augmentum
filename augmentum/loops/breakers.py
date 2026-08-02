@@ -37,7 +37,6 @@ from dataclasses import dataclass, field
 
 from augmentum.loops.tier import BreakerSet, Intensity
 
-
 # ── Env helper (matches phase_act._env_int contract) ──────────────────
 
 
@@ -212,7 +211,7 @@ class BreakerRegistry:
         intensity: Intensity,
         *,
         max_iterations_override: int | None = None,
-    ) -> "BreakerRegistry":
+    ) -> BreakerRegistry:
         """Build a registry for one intensity tier.
 
         Resolves env overrides on each breaker, filters by the tier's

@@ -7,12 +7,7 @@ They use mock LLM responses to verify parsing, assembly, and pipeline flow.
 
 from __future__ import annotations
 
-import asyncio
-import json
-import re
-
 import pytest
-
 
 # ---------------------------------------------------------------------------
 # Import the modules under test
@@ -22,10 +17,10 @@ def _import_scaffolds():
     """Import scaffolds module (no heavy dependencies)."""
     from augmentum.tools.application_scaffolds import (
         SCAFFOLDS,
-        build_plan_prompt,
-        build_generate_prompt,
         build_fix_prompt,
+        build_generate_prompt,
         build_judge_prompt,
+        build_plan_prompt,
     )
     return SCAFFOLDS, build_plan_prompt, build_generate_prompt, build_fix_prompt, build_judge_prompt
 
@@ -35,8 +30,8 @@ def _import_tool():
     try:
         from augmentum.tools.artifact_application import (
             ApplicationBuilderTool,
-            PipelineContext,
             PassResult,
+            PipelineContext,
         )
         return ApplicationBuilderTool, PipelineContext, PassResult
     except ImportError:
@@ -472,17 +467,17 @@ const x = 42;
         # Missing class → TypeError
         errors = tool._execute_js_verify(
             'document.querySelector(".nonexistent").textContent = "fail";', html)
-        assert any("TypeError" in e for e in errors), f"Expected TypeError for .nonexistent"
+        assert any("TypeError" in e for e in errors), "Expected TypeError for .nonexistent"
 
         # Compound selector with missing part → TypeError
         errors = tool._execute_js_verify(
             'document.querySelector("#todo .item").click();', html)
-        assert any("TypeError" in e for e in errors), f"Expected TypeError for #todo .item"
+        assert any("TypeError" in e for e in errors), "Expected TypeError for #todo .item"
 
         # Tag selector exists → clean
         errors = tool._execute_js_verify(
             'document.querySelector("div").textContent;', html)
-        assert not errors, f"Expected clean for div tag"
+        assert not errors, "Expected clean for div tag"
 
     def test_parse_html_dom_extracts_structure(self):
         """HTML parser extracts IDs, classes, and tags accurately."""
@@ -1387,8 +1382,8 @@ class TestImproveScoreGate:
         than call-order. The pipeline makes intermediate calls we don't
         care about (plan sanity checks, etc.); routing by classification
         keeps the test robust to those. Returns (llm_fn, call_log)."""
-        from collections import deque
         import re as _re
+        from collections import deque
 
         from augmentum.tools.artifact_application import ApplicationBuilderTool  # noqa: F401
 
@@ -1870,7 +1865,8 @@ class TestDesignSystemPaletteWcag:
     ])
     def test_text_on_surface_meets_aa(self, mood):
         from augmentum.tools.application_design_system import (
-            _PALETTES, contrast_ratio,
+            _PALETTES,
+            contrast_ratio,
         )
         palette = _PALETTES[mood]
         ratio = contrast_ratio(palette["text"], palette["surface"])
@@ -1881,7 +1877,8 @@ class TestDesignSystemPaletteWcag:
     ])
     def test_accent_on_surface_meets_aa_large(self, mood):
         from augmentum.tools.application_design_system import (
-            _PALETTES, contrast_ratio,
+            _PALETTES,
+            contrast_ratio,
         )
         palette = _PALETTES[mood]
         # Accent is used for large UI (buttons, CTAs) — AA large is 3:1.
@@ -1916,7 +1913,8 @@ class TestDesignSystemContrastHelpers:
 
     def test_ensure_contrast_darkens_for_light_bg(self):
         from augmentum.tools.application_design_system import (
-            _ensure_contrast, contrast_ratio,
+            _ensure_contrast,
+            contrast_ratio,
         )
         # Light-gray text on white fails AA; _ensure_contrast should
         # darken it until the ratio clears 4.5:1.
@@ -1925,7 +1923,8 @@ class TestDesignSystemContrastHelpers:
 
     def test_ensure_contrast_lightens_for_dark_bg(self):
         from augmentum.tools.application_design_system import (
-            _ensure_contrast, contrast_ratio,
+            _ensure_contrast,
+            contrast_ratio,
         )
         adjusted = _ensure_contrast("#555555", "#0a0a0a")
         assert contrast_ratio(adjusted, "#0a0a0a") >= 4.5
@@ -2344,8 +2343,8 @@ class TestCdpClient:
     async def test_run_browser_verify_absorbs_chromium_not_available(self, monkeypatch):
         """Verifier must return [] (not crash) when chromium isn't
         installed — falls back to the quickjs path cleanly."""
-        from augmentum.tools.artifact_application import ApplicationBuilderTool
         import augmentum.tools.application_cdp as cdp
+        from augmentum.tools.artifact_application import ApplicationBuilderTool
 
         monkeypatch.setattr(cdp, "find_chromium", lambda: None)
         tool = ApplicationBuilderTool.__new__(ApplicationBuilderTool)
@@ -2356,8 +2355,8 @@ class TestCdpClient:
     async def test_run_browser_verify_absorbs_runtime_error(self, monkeypatch):
         """Transient CDP errors must not crash the build — they log
         and return []."""
-        from augmentum.tools.artifact_application import ApplicationBuilderTool
         import augmentum.tools.application_cdp as cdp
+        from augmentum.tools.artifact_application import ApplicationBuilderTool
 
         class BoomVerifier:
             async def __aenter__(self):

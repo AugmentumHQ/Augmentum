@@ -35,7 +35,6 @@ from augmentum.fabric.identity import FabricIdentity
 from augmentum.fabric.peer_auth import PairedPeer
 from augmentum.state.settings_store import SettingsStore
 
-
 # ── Pure helpers ──────────────────────────────────────────────────
 
 

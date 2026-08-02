@@ -21,20 +21,17 @@ import pytest
 
 from augmentum.bug_finder import pen_test
 from augmentum.bug_finder.agent_tools import (
-    HTTPAttackTool,
     PEN_TEST_TOOL_NAMES,
+    HTTPAttackTool,
     build_deterministic_tools,
     build_pen_test_tools,
 )
 from augmentum.bug_finder.pen_test import (
     ProbeRequest,
-    ProbeResponse,
-    append_probe_receipt,
     execute_probe,
     is_host_allowed,
     load_probe_receipts,
 )
-
 
 # ---------------------------------------------------------------------------
 # Host policy
@@ -162,7 +159,7 @@ async def test_external_host_admitted_with_override(
         def __init__(self, *_, **__) -> None:
             pass
 
-        async def __aenter__(self) -> "_StubClient":
+        async def __aenter__(self) -> _StubClient:
             return self
 
         async def __aexit__(self, *_) -> None:
@@ -219,7 +216,7 @@ async def test_large_response_captures_excerpt_and_marks_truncated(
         def __init__(self, *_, **__) -> None:
             pass
 
-        async def __aenter__(self) -> "_StubClient":
+        async def __aenter__(self) -> _StubClient:
             return self
 
         async def __aexit__(self, *_) -> None:
@@ -382,10 +379,12 @@ def test_pen_test_tool_names_not_in_deterministic_set() -> None:
     role is the one consuming it."""
     from augmentum.agents.tools import (
         DETERMINISTIC_TOOL_NAMES,
+    )
+    from augmentum.agents.tools import (
         PEN_TEST_TOOL_NAMES as canonical_pen_test,
     )
     assert canonical_pen_test.isdisjoint(DETERMINISTIC_TOOL_NAMES)
-    assert PEN_TEST_TOOL_NAMES == canonical_pen_test
+    assert canonical_pen_test == PEN_TEST_TOOL_NAMES
 
 
 def test_pen_test_tool_names_not_in_any_existing_role() -> None:
@@ -397,10 +396,12 @@ def test_pen_test_tool_names_not_in_any_existing_role() -> None:
         FIXER_TOOL_NAMES,
         INVESTIGATOR_TOOL_NAMES,
         LEAD_TOOL_NAMES,
-        PEN_TEST_TOOL_NAMES as canonical_pen_test,
         PLANNER_TOOL_NAMES,
         READ_ONLY_TOOL_NAMES,
         VERIFIER_TOOL_NAMES,
+    )
+    from augmentum.agents.tools import (
+        PEN_TEST_TOOL_NAMES as canonical_pen_test,
     )
     for role_names in (
         READ_ONLY_TOOL_NAMES,

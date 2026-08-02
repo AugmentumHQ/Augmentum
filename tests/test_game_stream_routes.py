@@ -19,7 +19,6 @@ import aiosqlite
 import pytest
 from fastapi.testclient import TestClient
 
-
 # Reuse the schema from the smoke-test file rather than duplicating SQL --
 # the migration is the source of truth, this is a behavioural test of the
 # routes layer.

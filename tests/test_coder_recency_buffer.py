@@ -13,9 +13,8 @@ and the safe empty-buffer fallback.
 """
 from __future__ import annotations
 
-from augmentum.modes.coder.handler import CoderHandler, _RECENCY_BUFFER_TURNS
 from augmentum.models.base import Message
-
+from augmentum.modes.coder.handler import _RECENCY_BUFFER_TURNS, CoderHandler
 from tests.test_coder_handler import (
     _ExtendedContainerManager,
     _FakeBackend,

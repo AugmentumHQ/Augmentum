@@ -26,7 +26,6 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-
 # How long after Becca's last TTS we treat a fresh utterance as a
 # "continuation" rather than a fresh address. Tuned to typical follow-up
 # rhythm — long enough for the user to react, short enough that random
@@ -279,7 +278,7 @@ def is_addressed(
     # weather". No explicit "you" but the structure is a request.
     # Lower confidence; tunable via threshold.
     if _WH_QUESTION_OPENER.match(text):
-        return AddressDecision(0.85 >= address_threshold, 0.85, "wh_question_opener")
+        return AddressDecision(address_threshold <= 0.85, 0.85, "wh_question_opener")
 
     if is_continuation and _CONTINUATION_PATTERN.match(text):
         return AddressDecision(True, 0.85, "continuation")

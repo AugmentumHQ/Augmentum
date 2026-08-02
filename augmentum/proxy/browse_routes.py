@@ -6,6 +6,7 @@ import asyncio
 import json
 import math
 import re
+from datetime import UTC
 from urllib.parse import quote_plus, urljoin, urlparse
 
 import httpx
@@ -961,7 +962,7 @@ def _render_product(obj: dict) -> dict | None:
     if not name:
         return None
 
-    parts = [f'<div class="browse-schema-card browse-schema-product">']
+    parts = ['<div class="browse-schema-card browse-schema-product">']
     # Image
     img = obj.get("image")
     if isinstance(img, list):
@@ -1035,7 +1036,7 @@ def _render_recipe(obj: dict) -> dict | None:
     if not name:
         return None
 
-    parts = [f'<div class="browse-schema-card browse-schema-recipe">']
+    parts = ['<div class="browse-schema-card browse-schema-recipe">']
     img = obj.get("image")
     if isinstance(img, list):
         img = img[0] if img else ""
@@ -1123,7 +1124,7 @@ def _render_event(obj: dict) -> dict | None:
     if not name:
         return None
 
-    parts = [f'<div class="browse-schema-card browse-schema-event">']
+    parts = ['<div class="browse-schema-card browse-schema-event">']
     parts.append('<div class="browse-schema-details">')
     parts.append(f'<h2 class="browse-schema-title">{_esc(name)}</h2>')
 
@@ -1169,7 +1170,7 @@ def _render_local_business(obj: dict) -> dict | None:
     if not name:
         return None
 
-    parts = [f'<div class="browse-schema-card browse-schema-business">']
+    parts = ['<div class="browse-schema-card browse-schema-business">']
     img = obj.get("image")
     if isinstance(img, list):
         img = img[0] if img else ""
@@ -1245,7 +1246,7 @@ def _render_job_posting(obj: dict) -> dict | None:
     if not title:
         return None
 
-    parts = [f'<div class="browse-schema-card browse-schema-job">']
+    parts = ['<div class="browse-schema-card browse-schema-job">']
     parts.append('<div class="browse-schema-details">')
     parts.append(f'<h2 class="browse-schema-title">{_esc(title)}</h2>')
 
@@ -2673,7 +2674,7 @@ async def _try_oembed_discovery(url: str, request) -> dict | None:
                     return {
                         "html": embed_html,
                         "text": data.get("title", title) or f"{site_name} video",
-                        "title": data.get("title", title) or f"Video",
+                        "title": data.get("title", title) or "Video",
                         "author": data.get("author_name", ""),
                         "date": "",
                         "sitename": site_name or data.get("provider_name", parsed.hostname or ""),
@@ -2709,7 +2710,7 @@ async def _try_oembed_discovery(url: str, request) -> dict | None:
         return {
             "html": embed_html,
             "text": title or f"Video from {parsed.hostname}",
-            "title": title or f"Video",
+            "title": title or "Video",
             "author": "",
             "date": "",
             "sitename": site_name or parsed.hostname or "",
@@ -3647,12 +3648,12 @@ def _reddit_iso_to_age(iso: str) -> str:
     if not iso:
         return ""
     try:
-        from datetime import datetime, timezone
         import time as _time
+        from datetime import datetime
         dt = datetime.fromisoformat(iso.replace("Z", "+00:00"))
         if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
-        delta = (datetime.now(timezone.utc) - dt).total_seconds()
+            dt = dt.replace(tzinfo=UTC)
+        delta = (datetime.now(UTC) - dt).total_seconds()
         if delta < 0:
             delta = 0
         return _reddit_age(_time.time() - delta)
@@ -5398,7 +5399,7 @@ def _try_render_feed(url: str, raw_html: str, fetch_meta: dict) -> dict | None:
             f'<h3 class="browse-feed-entry-title">{title_html}</h3>'
             + (f'<div class="browse-feed-entry-meta">{meta_line}</div>' if meta_line else "")
             + (f'<p class="browse-feed-entry-summary">{_esc(summary_text)}</p>' if summary_text else "")
-            + f'</article>'
+            + '</article>'
         )
         text_parts.append(f"{title}{f' — {summary_text}' if summary_text else ''}")
 
@@ -5586,7 +5587,7 @@ async def _try_arxiv_api(url: str, request) -> dict | None:
         f'<div class="browse-schema-meta">'
         f'<strong>arXiv:{_esc(bare_id)}</strong>'
         + (f' &middot; {_esc(published)}' if published else "")
-        + f'</div>'
+        + '</div>'
         + (f'<div class="browse-schema-tags">{cat_chips}</div>' if cat_chips else "")
         + (f'<div class="browse-schema-meta">{meta_html}</div>' if meta_html else "")
         + f'<h2>Abstract</h2>'
@@ -5816,7 +5817,7 @@ async def _try_discourse_api(url: str, request) -> dict | None:
             f'<span class="browse-discourse-post-author">{_esc(display_name)}'
             + (f' <span class="browse-discourse-post-username">@{_esc(username)}</span>'
                if display_name != username else "")
-            + f'</span>'
+            + '</span>'
             + (f' <span class="browse-discourse-post-date">{_esc(created)}</span>' if created else "")
             + (f' <span class="browse-discourse-post-no">#{post_no}</span>' if post_no else "")
             + f'</header>'
@@ -6130,7 +6131,7 @@ _TRACKING_PARAMS: frozenset[str] = frozenset({
     "tag", "linkCode", "camp", "creative", "creativeASIN", "ie", "qid",
     "psc", "th", "sprefix", "sr", "crid", "keywords",
     # Medium / Substack source tags
-    "source", "subId1", "subId2",
+    "subId1", "subId2",
 })
 
 
@@ -6149,7 +6150,7 @@ def _canonicalize_url(url: str) -> str:
         leaving alone matches user clicks)
     """
     try:
-        from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
+        from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
         p = urlparse(url)
     except Exception:
         return url
@@ -6158,9 +6159,7 @@ def _canonicalize_url(url: str) -> str:
 
     # --- Domain aliases ---
     if host in ("x.com", "www.x.com", "vxtwitter.com", "www.vxtwitter.com",
-                "fxtwitter.com", "www.fxtwitter.com", "fixupx.com"):
-        host = "twitter.com"
-    elif host in ("nitter.net",):
+                "fxtwitter.com", "www.fxtwitter.com", "fixupx.com") or host in ("nitter.net",):
         host = "twitter.com"
 
     # --- arXiv PDF → abstract page (ID contains dot: 2301.01234) ---
@@ -6487,7 +6486,6 @@ async def browse_fetch(request: Request, url: str = "") -> JSONResponse:
         related_html = ""
         if yt_title and http_client:
             try:
-                from augmentum.tools.youtube import _humanize_views, _humanize_date
                 query = re.sub(r"[^\w\s]", "", yt_title).strip().split()[:6]
                 search_resp = await http_client.get(
                     f"{settings.searxng_base_url.rstrip('/')}/search",
@@ -6602,14 +6600,14 @@ async def browse_fetch(request: Request, url: str = "") -> JSONResponse:
         return JSONResponse({
             "html": embed_html + related_html + transcript_html,
             "text": transcript_text or f"YouTube video: {yt_title}",
-            "title": yt_title or f"YouTube Video",
+            "title": yt_title or "YouTube Video",
             "author": yt_channel,
             "date": "",
             "sitename": "YouTube",
             "word_count": len(transcript_text.split()) if transcript_text else 0,
             "reading_time_min": max(1, len(transcript_text.split()) // 238) if transcript_text else 0,
             "url": url,
-            "favicon_url": f"/api/browse/image?url=https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dyoutube.com%26sz%3D32",
+            "favicon_url": "/api/browse/image?url=https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dyoutube.com%26sz%3D32",
             "source": "youtube-embed",
             "page_type": "video",
             "videos": [],

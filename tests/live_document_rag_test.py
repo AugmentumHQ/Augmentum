@@ -31,7 +31,6 @@ import argparse
 import asyncio
 import json
 import os
-import struct
 import sys
 import tempfile
 import time
@@ -53,7 +52,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from augmentum.models.base import (
     InternalChatRequest,
     InternalChatResponse,
-    InternalStreamChunk,
     Message,
     Usage,
 )
@@ -591,7 +589,7 @@ class LiveTestBackend:
                 else:
                     print(f"error: {err[:80]} ({attempt + 1}/{max_attempts})...", end=" ", flush=True)
                 await asyncio.sleep(wait_secs)
-            except Exception as exc:
+            except Exception:
                 print(f"timeout ({attempt + 1}/{max_attempts})...", end=" ", flush=True)
                 await asyncio.sleep(wait_secs)
         print("failed to load after all attempts.")
@@ -1043,7 +1041,7 @@ class LiveDocumentRAGTester:
                             raw_output=response,
                         )
 
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     self._add_result(
                         test_name=test_name, status=Status.FAIL,
                         category=q["category"], detail="Timeout",
@@ -1108,7 +1106,7 @@ class LiveDocumentRAGTester:
                         raw_output=response,
                     )
 
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 self._add_result(
                     test_name=test_name, status=Status.FAIL,
                     category=q["category"], detail="Timeout",
@@ -1199,7 +1197,7 @@ class LiveDocumentRAGTester:
                         raw_output=response,
                     )
 
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 self._add_result(
                     test_name=test_name, status=Status.FAIL,
                     category="negative_control", detail="Timeout",
@@ -1415,7 +1413,7 @@ class LiveDocumentRAGTester:
                     raw_output=turn2_content,
                 )
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             self._add_result(
                 test_name=test_name, status=Status.FAIL,
                 category="multi_turn", detail="Timeout",

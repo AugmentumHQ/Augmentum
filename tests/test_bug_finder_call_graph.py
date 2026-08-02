@@ -10,16 +10,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
 from augmentum.bug_finder.call_graph import (
-    CallGraph,
     build_from_directory,
     load_graph,
     render_call_graph_facts,
     save_graph,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers — write synthetic projects to a tmp dir

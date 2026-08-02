@@ -407,7 +407,7 @@ async def _draft_section(
     try:
         import asyncio
         response = await asyncio.wait_for(backend.chat(request), timeout=timeout)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         log.warning("consolidation_llm_timeout", section=section.number)
         return None
     except Exception:

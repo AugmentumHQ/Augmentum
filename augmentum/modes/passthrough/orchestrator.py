@@ -794,7 +794,7 @@ class SSOSOrchestrator:
                         metadata={}, dur_ms=dur_ms,
                     )
                 return f"Code execution failed:\n```\n{error}\n```"
-        except asyncio.TimeoutError:
+        except TimeoutError:
             if emit:
                 await emit.tool_complete(
                     "python_exec", success=False, snippet="timeout (30s)",
@@ -870,7 +870,7 @@ class SSOSOrchestrator:
                 return result.output
             else:
                 return f"Build failed: {result.error}"
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return "Application build timed out"
         except Exception:
             log.warning("ssos_build_app_error", exc_info=True)

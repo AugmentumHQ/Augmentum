@@ -223,8 +223,9 @@ class MoonshineSTTSession:
             return
 
         try:
-            from augmentum.voice.streaming_stt import TranscriptEvent
             from moonshine_voice import TranscriptEventListener
+
+            from augmentum.voice.streaming_stt import TranscriptEvent
 
             transcriber = self._shared_transcriber
             session_ref = self
@@ -335,7 +336,7 @@ class MoonshineSTTSession:
                     ),
                     timeout=5.0,
                 )
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 # to_thread workers can't be cancelled — the add_audio
                 # call keeps running but we stop waiting. Matches the
                 # previous t.join(timeout=5.0) + abandon semantics.

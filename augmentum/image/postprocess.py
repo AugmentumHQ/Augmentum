@@ -71,7 +71,6 @@ def _ensure_default_model() -> str:
 def _load_upscale_model(model_path: str | None = None):
     """Load an upscale model via spandrel. Caches globally."""
     global _upscale_model, _upscale_device
-    import torch
     import spandrel
 
     if model_path is None:
@@ -137,8 +136,8 @@ async def upscale_image(
     image_path: str, scale: int = 4, model_path: str | None = None,
 ) -> tuple[str, str, int, int]:
     """Upscale an image. Returns (new_image_id, new_file_path, width, height)."""
-    import torch
     import numpy as np
+    import torch
     from PIL import Image
 
     def _run():
@@ -181,7 +180,7 @@ async def remove_background(image_path: str) -> tuple[str, str, int, int]:
 
     def _run():
         global _rembg_session
-        from rembg import remove, new_session
+        from rembg import new_session, remove
 
         if _rembg_session is None:
             # Prefer the image-baked model (downloaded once at build time, lives

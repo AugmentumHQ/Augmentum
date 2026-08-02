@@ -115,7 +115,7 @@ async def test_correct_missing_row_returns_false():
 
 def test_valid_goals_match_router_vocabulary():
     # Guards against drift from architect/voice_router.py::_GOALS.
-    assert VALID_GOALS == frozenset(("act", "converse", "clarify", "idle", "drop"))
+    assert frozenset(("act", "converse", "clarify", "idle", "drop")) == VALID_GOALS
 
 
 @pytest.mark.asyncio

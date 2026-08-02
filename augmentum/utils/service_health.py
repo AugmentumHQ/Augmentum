@@ -3,9 +3,9 @@ from __future__ import annotations
 
 import asyncio
 import time
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from enum import Enum
-from typing import Callable, Awaitable
 
 from augmentum.utils.logging import get_logger
 
@@ -155,7 +155,7 @@ class ServiceHealthRegistry:
                         self.mark_success(name)
                     else:
                         self.mark_failure(name, "health check returned False")
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     svc.last_check = time.monotonic()
                     self.mark_failure(name, "health check timed out")
                 except Exception as exc:

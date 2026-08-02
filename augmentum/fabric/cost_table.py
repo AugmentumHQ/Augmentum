@@ -58,7 +58,7 @@ def _load_cost_table() -> dict[str, dict[str, Any]]:
     as cost-equal" rather than crashing.
     """
     try:
-        with open(_COST_JSON_PATH, "r", encoding="utf-8") as fh:
+        with open(_COST_JSON_PATH, encoding="utf-8") as fh:
             raw = json.load(fh)
     except FileNotFoundError:
         log.warning(

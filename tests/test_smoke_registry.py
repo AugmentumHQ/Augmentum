@@ -14,8 +14,8 @@ from augmentum.registry import (
     SettingsRegistry,
     get_registry,
 )
-from augmentum.registry.registry import RegistryError, _reset_for_tests
 from augmentum.registry import audit as registry_audit
+from augmentum.registry.registry import RegistryError, _reset_for_tests
 
 
 @pytest.fixture(autouse=True)

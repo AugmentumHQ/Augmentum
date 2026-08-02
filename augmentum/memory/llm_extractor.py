@@ -297,7 +297,7 @@ async def llm_extract_batch(
             existing_memories=existing_memories,
             user_messages=user_messages,
         )
-    except asyncio.TimeoutError:
+    except TimeoutError:
         log.warning("llm_extraction_timeout", mode=mode, turns=len(pairs), timeout_s=timeout, model=model)
         return []
     except Exception:

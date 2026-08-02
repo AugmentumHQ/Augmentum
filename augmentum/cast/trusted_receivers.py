@@ -22,9 +22,8 @@ from __future__ import annotations
 import json
 import re
 import secrets
-import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
 from augmentum.utils.logging import get_logger
@@ -36,7 +35,7 @@ log = get_logger(__name__)
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    return datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S")
 
 
 def _make_id() -> str:
@@ -170,7 +169,7 @@ _SELECT_COLS = (
 class TrustedReceiverStore:
     """User-scoped CRUD over the trusted_receivers table."""
 
-    def __init__(self, conn: "aiosqlite.Connection") -> None:
+    def __init__(self, conn: aiosqlite.Connection) -> None:
         self._conn = conn
 
     async def list_for_user(

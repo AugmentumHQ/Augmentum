@@ -13,15 +13,12 @@ end-to-end "real Wikipedia article" case.
 """
 from __future__ import annotations
 
-import pytest
-
 from augmentum.knowledge.zim_reader import (
-    extract_passages,
+    _chunk_section,
     _clean_html_for_text,
     _html_segment_to_text,
-    _chunk_section,
+    extract_passages,
 )
-
 
 # ---------------------------------------------------------------------------
 # Sanitization (_clean_html_for_text)

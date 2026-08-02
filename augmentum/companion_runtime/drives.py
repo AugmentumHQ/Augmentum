@@ -33,7 +33,7 @@ from __future__ import annotations
 import math
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from augmentum.utils.logging import get_logger
@@ -97,7 +97,7 @@ class DriveState:
                 t = datetime.strptime(
                     str(last).replace("T", " ").split(".", 1)[0],
                     "%Y-%m-%d %H:%M:%S",
-                ).replace(tzinfo=timezone.utc).timestamp()
+                ).replace(tzinfo=UTC).timestamp()
                 age_s = max(0.0, time.time() - t)
                 # Within 30s, dampening up to 0.5; falls off exponentially.
                 recency_dampening = 0.5 * math.exp(-age_s / 30.0)
@@ -210,7 +210,7 @@ async def decay(runtime: CompanionRuntime, *, user_id: str) -> DriveState:
         last_t = datetime.strptime(
             str(state.last_decay_at).replace("T", " ").split(".", 1)[0],
             "%Y-%m-%d %H:%M:%S",
-        ).replace(tzinfo=timezone.utc).timestamp()
+        ).replace(tzinfo=UTC).timestamp()
     except (ValueError, AttributeError):
         return state
 

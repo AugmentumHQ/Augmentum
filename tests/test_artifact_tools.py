@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
 from augmentum.tools.base import ToolCategory, ToolResult, format_output_with_warnings
-
 
 # ---------------------------------------------------------------------------
 # Shared fixtures
@@ -1033,6 +1031,7 @@ class TestXlsxFormulaInjection:
     def test_render_xlsx_neutralizes_payload_in_data(self):
         """End-to-end: dangerous payload survives openpyxl write as literal text."""
         from io import BytesIO
+
         from openpyxl import load_workbook
 
         from augmentum.tools.artifact_spreadsheet import _render_xlsx
@@ -1057,6 +1056,7 @@ class TestXlsxFormulaInjection:
 
     def test_render_xlsx_neutralizes_payload_in_header(self):
         from io import BytesIO
+
         from openpyxl import load_workbook
 
         from augmentum.tools.artifact_spreadsheet import _render_xlsx
@@ -1310,6 +1310,7 @@ class TestEbookAutoIllustrateReport:
     @pytest.mark.asyncio
     async def test_artifact_image_url_resolution_is_user_scoped(self, tmp_path):
         from PIL import Image as PILImage
+
         from augmentum.tools.artifact_ebook import EbookTool
 
         image_path = tmp_path / "scene.png"

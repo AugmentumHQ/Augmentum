@@ -8,8 +8,9 @@ during Phase 1B/1C migration.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Literal
+from typing import Any, Literal
 
 # Trust class for automated (Becca/agent/MCP) mutation. Read at
 # dispatch time by the ``setting.set`` Tool (Phase 4).

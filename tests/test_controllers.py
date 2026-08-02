@@ -10,12 +10,10 @@ Covers:
 from __future__ import annotations
 
 import asyncio
-import json
 
 import aiosqlite
 import pytest
 from fastapi.testclient import TestClient
-
 
 _SCHEMA_SQL = """
 CREATE TABLE users (id TEXT PRIMARY KEY);
@@ -144,7 +142,9 @@ async def test_store_delete_returns_truthiness():
 @pytest.mark.asyncio
 async def test_resolve_no_override_returns_defaults():
     from augmentum.controllers import (
-        ControllerService, ControllerStore, get_system_profile,
+        ControllerService,
+        ControllerStore,
+        get_system_profile,
     )
 
     conn = await _mkdb()

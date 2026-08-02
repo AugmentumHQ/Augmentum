@@ -27,7 +27,6 @@ from augmentum.tools.artifact_pipeline import (
     craft_initial_slide_queries,
 )
 
-
 # ---------------------------------------------------------------------------
 # Strip-fence helper
 # ---------------------------------------------------------------------------

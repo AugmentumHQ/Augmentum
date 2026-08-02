@@ -11,7 +11,7 @@ to defaults entirely.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from augmentum.controllers.defaults import (

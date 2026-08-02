@@ -22,8 +22,8 @@ Design spec: ``2026-05-14-companion-runtime-design-v2.md`` §9.
 from __future__ import annotations
 
 import asyncio
-import json
 import hashlib
+import json
 from typing import TYPE_CHECKING, Any
 
 from augmentum.companion_runtime.identity import _encode_embedding

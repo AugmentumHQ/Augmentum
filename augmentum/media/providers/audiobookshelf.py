@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import asyncio
 import re
-
 from typing import TYPE_CHECKING
 
 from augmentum.media.normalize import author_for_match
@@ -234,7 +233,7 @@ class AudiobookshelfProvider:
 
                 sem = asyncio.Semaphore(_DETAIL_FETCH_CONCURRENCY)
 
-                async def _bound_resolve(raw: dict):
+                async def _bound_resolve(raw: dict, sem=sem, lib_kind=lib_kind):
                     async with sem:
                         return await self._resolve_catalog_item(
                             base_url=url, token=token, raw=raw, lib_kind=lib_kind,
@@ -596,7 +595,7 @@ def _item_from_abs(raw: dict, *, lib_kind: str) -> CatalogItem | None:
     audio_files = media.get("audioFiles") or []
     library_files = raw.get("libraryFiles") or []
     is_file = bool(raw.get("isFile"))
-    num_audio_files = int((media.get("numAudioFiles") or 0))
+    num_audio_files = int(media.get("numAudioFiles") or 0)
 
     # --- Stream path derivation ------------------------------------------------
     # Three real shapes observed in the wild, tried in order:

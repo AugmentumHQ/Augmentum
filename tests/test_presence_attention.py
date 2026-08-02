@@ -9,6 +9,7 @@ history-table fallback intact.
 from __future__ import annotations
 
 import time
+from datetime import UTC
 
 import pytest
 
@@ -231,13 +232,13 @@ async def test_now_context_store_beats_table(monkeypatch):
 @pytest.mark.asyncio
 async def test_now_context_table_fallback(monkeypatch):
     """Empty store + fresh browse_history row → fallback populates page."""
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     async def _rows(conn, user_id, limit=1):
         return [{
             "domain": "example.test",
             "url": "https://example.test/a",
-            "last_visited": datetime.now(timezone.utc).isoformat(),
+            "last_visited": datetime.now(UTC).isoformat(),
         }]
 
     async def _no_plays(conn, user_id, limit=1, favourites_first=False):

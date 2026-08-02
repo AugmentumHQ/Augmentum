@@ -34,7 +34,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from augmentum.companion_runtime import affordances
 from augmentum.utils.logging import get_logger
@@ -128,7 +128,7 @@ def _classify_exit(session: ChannelSession, exit_reason: str) -> str:
 
 
 async def enter_channel(
-    runtime: "CompanionRuntime",
+    runtime: CompanionRuntime,
     *,
     channel: str,
     user_id: str,
@@ -188,7 +188,7 @@ async def enter_channel(
 
 
 async def exit_channel(
-    runtime: "CompanionRuntime",
+    runtime: CompanionRuntime,
     *,
     session_id: str,
     exit_reason: str = "user_explicit",
@@ -297,7 +297,7 @@ def return_microcopy_for(summary: ChannelSummary, session: ChannelSession | None
 
 # ── Internal helpers ─────────────────────────────────────────────────
 
-def _sessions(runtime: "CompanionRuntime") -> dict[str, ChannelSession]:
+def _sessions(runtime: CompanionRuntime) -> dict[str, ChannelSession]:
     """Lazy-init the per-runtime channel session map."""
     sessions = getattr(runtime, "_channel_sessions", None)
     if sessions is None:

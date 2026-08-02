@@ -13,7 +13,6 @@ from copy import deepcopy
 from typing import Any
 
 from augmentum.models.converters.utils import (
-    merge_consecutive_messages,
     prepend_name,
 )
 

@@ -1,12 +1,14 @@
 """Tests for dream API routes."""
 from __future__ import annotations
 
+from unittest.mock import AsyncMock, MagicMock
+
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from augmentum.proxy.dream_routes import router
+
 from augmentum.dream.models import DreamEntry, DreamEntryType, DreamPortrait
+from augmentum.proxy.dream_routes import router
 
 
 @pytest.fixture

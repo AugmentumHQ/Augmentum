@@ -7,8 +7,9 @@ from typing import TYPE_CHECKING
 from augmentum.utils.logging import get_logger
 
 if TYPE_CHECKING:
-    from augmentum.vfs.index import FileIndexService
     import aiosqlite
+
+    from augmentum.vfs.index import FileIndexService
 
 log = get_logger(__name__)
 

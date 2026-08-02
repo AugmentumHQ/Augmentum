@@ -5,7 +5,7 @@ import asyncio
 import math
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from augmentum.utils.logging import get_logger
 
@@ -55,7 +55,7 @@ class ClusterData:
             self.depth_level = 1
         elif self.depth_level > 5:
             self.depth_level = 5
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         if not self.created_at:
             self.created_at = now
         if not self.updated_at:

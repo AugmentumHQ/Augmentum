@@ -47,7 +47,6 @@ from augmentum.bug_finder.dev_tools import (  # re-export for caller convenience
     _make_rule_id,
 )
 
-
 _VALID_SEVS = frozenset({"critical", "high", "medium", "low", "info"})
 
 

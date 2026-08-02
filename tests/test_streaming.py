@@ -172,6 +172,7 @@ async def test_prime_stream_surfaces_connect_error_before_headers():
     sent. This is the whole point of the helper.
     """
     import httpx
+
     from augmentum.proxy.streaming import StreamPrimeError, prime_stream
 
     async def _gen():
@@ -206,6 +207,7 @@ async def test_prime_stream_propagates_cancellation():
     the asyncio loop needs the raw cancellation to unwind correctly.
     """
     import asyncio as _asyncio
+
     from augmentum.proxy.streaming import prime_stream
 
     async def _gen():
@@ -254,8 +256,8 @@ async def test_with_heartbeat_first_chunk_is_chat_dispatch_stage_start():
     so the client's content-watchdog suspends before its 15s timer ticks.
     The dispatch stage also carries a stable id for the matching
     stage_complete to pair with later."""
-    from augmentum.proxy.streaming import _with_heartbeat
     from augmentum.models.base import InternalStreamChunk
+    from augmentum.proxy.streaming import _with_heartbeat
 
     async def _empty():
         return
@@ -284,8 +286,8 @@ async def test_with_heartbeat_completes_dispatch_on_first_inner_chunk():
     must yield a stage_complete: chat_dispatch BEFORE forwarding the
     inner chunk so the JS active-stages set transitions cleanly into
     whatever stage the inner stream is starting (model_load, etc.)."""
-    from augmentum.proxy.streaming import _with_heartbeat
     from augmentum.models.base import InternalStreamChunk
+    from augmentum.proxy.streaming import _with_heartbeat
 
     async def _stream():
         yield InternalStreamChunk(
@@ -318,8 +320,8 @@ async def test_with_heartbeat_dispatch_complete_on_empty_stream():
     still emit a matching stage_complete so the frontend's set of
     active stages doesn't leak the dispatch entry across the request
     boundary."""
-    from augmentum.proxy.streaming import _with_heartbeat
     from augmentum.models.base import InternalStreamChunk
+    from augmentum.proxy.streaming import _with_heartbeat
 
     async def _empty():
         return
@@ -350,8 +352,10 @@ def test_load_progress_snapshot_uses_history_median_when_present():
 def test_load_progress_snapshot_falls_back_to_file_size_estimate():
     """First-load (empty history) — derive expected_s from file size
     using a conservative 25 MB/s throughput heuristic, floor 5s."""
+    import os
+    import tempfile
+
     from augmentum.models.llama_server_manager import LlamaServerManager
-    import tempfile, os
 
     mgr = LlamaServerManager.__new__(LlamaServerManager)
     mgr._load_duration_history = {}
@@ -370,8 +374,10 @@ def test_load_progress_snapshot_falls_back_to_file_size_estimate():
 
 def test_load_progress_snapshot_floor_for_tiny_models():
     """Even a 1MB model gets a 5s floor so the bar isn't 0s."""
+    import os
+    import tempfile
+
     from augmentum.models.llama_server_manager import LlamaServerManager
-    import tempfile, os
 
     mgr = LlamaServerManager.__new__(LlamaServerManager)
     mgr._load_duration_history = {}
@@ -386,8 +392,9 @@ def test_load_progress_snapshot_floor_for_tiny_models():
 
 
 def test_finalize_load_progress_records_duration_on_success():
-    from augmentum.models.llama_server_manager import LlamaServerManager
     import time
+
+    from augmentum.models.llama_server_manager import LlamaServerManager
     mgr = LlamaServerManager.__new__(LlamaServerManager)
     mgr._load_duration_history = {}
     mgr._load_progress = {
@@ -403,8 +410,9 @@ def test_finalize_load_progress_records_duration_on_success():
 
 
 def test_finalize_load_progress_no_record_on_failure():
-    from augmentum.models.llama_server_manager import LlamaServerManager
     import time
+
+    from augmentum.models.llama_server_manager import LlamaServerManager
     mgr = LlamaServerManager.__new__(LlamaServerManager)
     mgr._load_duration_history = {}
     mgr._load_progress = {
@@ -421,8 +429,9 @@ def test_finalize_load_progress_no_record_on_failure():
 def test_load_progress_history_capped_at_12_entries():
     """Median must track the current install, not absorb a long tail
     of one-off slow loads from past transient conditions."""
-    from augmentum.models.llama_server_manager import LlamaServerManager
     import time
+
+    from augmentum.models.llama_server_manager import LlamaServerManager
     mgr = LlamaServerManager.__new__(LlamaServerManager)
     mgr._load_duration_history = {"x": [1.0] * 15}  # over the cap
     mgr._load_progress = {

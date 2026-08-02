@@ -17,7 +17,6 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import secrets
-from pathlib import Path
 
 import pytest
 
@@ -306,7 +305,6 @@ class TestAttachmentResilience:
         exception."""
 
         import asyncio
-
         from pathlib import Path
 
         upload_id = _upload_one_file(

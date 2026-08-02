@@ -903,7 +903,7 @@ _SETTINGS_RESTORE_MAP: dict[str, type | Callable] = {
     # Narrative recall-tools — LLM-callable lookup layer (opt-in).
     "narrative_recall_tools_enabled": _parse_bool,
     "narrative_recall_tools_max_iters": int,
-    "narrative_lorebook_tools_enabled": _parse_bool,
+    # (narrative_lorebook_tools_enabled is registered earlier in this dict)
     "narrative_lorebook_native_tools_enabled": _parse_bool,
     "narrative_world_systems_enabled": _parse_bool,
     # Coder pause sweeping — already in config_routes; restore-map missing.
@@ -4405,6 +4405,9 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     _job_runner = getattr(app.state, "job_runner", None)
     if _job_runner:
         from augmentum.jobs import register_handler
+        from augmentum.jobs.handlers.addon_install import (
+            make_addon_install_handler,
+        )
         from augmentum.jobs.handlers.bug_finder_run import (
             make_bug_finder_run_handler,
         )
@@ -4413,6 +4416,9 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         )
         from augmentum.jobs.handlers.coder_research_run import (
             make_coder_research_run_handler,
+        )
+        from augmentum.jobs.handlers.comic_narration_synth import (
+            make_comic_narration_synth_handler,
         )
         from augmentum.jobs.handlers.file_caption import (
             make_file_caption_handler,
@@ -4429,17 +4435,11 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         from augmentum.jobs.handlers.journal_vec_backfill import (
             make_journal_vec_backfill_handler,
         )
-        from augmentum.jobs.handlers.media_server_detach import (
-            make_media_server_detach_handler,
-        )
-        from augmentum.jobs.handlers.service_install import (
-            make_service_install_handler,
-        )
-        from augmentum.jobs.handlers.addon_install import (
-            make_addon_install_handler,
-        )
         from augmentum.jobs.handlers.lang_pack_install import (
             make_lang_pack_install_handler,
+        )
+        from augmentum.jobs.handlers.media_server_detach import (
+            make_media_server_detach_handler,
         )
         from augmentum.jobs.handlers.media_sync import (
             make_media_sync_handler,
@@ -4447,8 +4447,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         from augmentum.jobs.handlers.narration_synth import (
             make_narration_synth_handler,
         )
-        from augmentum.jobs.handlers.comic_narration_synth import (
-            make_comic_narration_synth_handler,
+        from augmentum.jobs.handlers.service_install import (
+            make_service_install_handler,
         )
         from augmentum.jobs.handlers.wake_word_corpus_download import (
             make_wake_word_corpus_download_handler,
@@ -5460,8 +5460,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             )
             from augmentum.tools.notify import NotifyTool
             from augmentum.tools.recommend_now import RecommendNowTool
-            from augmentum.tools.schedule_action import ScheduleActionTool
             from augmentum.tools.schedule import ScheduleTool
+            from augmentum.tools.schedule_action import ScheduleActionTool
             from augmentum.tools.schedule_briefing import ScheduleBriefingTool
             from augmentum.tools.schedule_deadline import ScheduleDeadlineTool
             from augmentum.tools.schedule_reminder import ScheduleReminderTool
@@ -8539,6 +8539,7 @@ def create_app() -> FastAPI:
             return JSONResponse({"error": "no model backend for evolution"}, status_code=503)
 
         import uuid as _uuid
+
         from augmentum.models.base import InternalChatRequest, Message, response_text
         from augmentum.selfedit.evolve import run_evolve_session
 
@@ -8953,24 +8954,27 @@ def create_app() -> FastAPI:
 
     # Import and include routers
     from augmentum.proxy.agentic_routes import router as agentic_router
+    from augmentum.proxy.animations_routes import router as animations_router
     from augmentum.proxy.anthropic_routes import router as anthropic_router
     from augmentum.proxy.artifact_routes import router as artifact_router
     from augmentum.proxy.audio_routes import router as audio_router
-    from augmentum.proxy.canvas_routes import router as canvas_router
     from augmentum.proxy.auth_routes import router as auth_router
-    from augmentum.proxy.gate_routes import router as gate_router
-    from augmentum.proxy.lexicon_routes import router as lexicon_router
     from augmentum.proxy.avatar_routes import router as avatar_router
     from augmentum.proxy.balancer_routes import router as balancer_router
     from augmentum.proxy.browse_routes import router as browse_router
     from augmentum.proxy.bug_finder_routes import router as bug_finder_router
     from augmentum.proxy.build_routes import router as build_router
-    from augmentum.proxy.animations_routes import router as animations_router
     from augmentum.proxy.cache_routes import router as cache_router
-    from augmentum.proxy.dance_routes import router as dance_router
-    from augmentum.proxy.playlist_routes import router as playlist_router
+    from augmentum.proxy.canvas_routes import router as canvas_router
     from augmentum.proxy.capabilities_routes import router as capabilities_router
     from augmentum.proxy.cardsmith_routes import router as cardsmith_router
+    from augmentum.proxy.cast_game_proxy_routes import (
+        proxy_router as cast_game_proxy_router,
+    )
+    from augmentum.proxy.cast_game_proxy_routes import (
+        start_router as cast_game_proxy_start_router,
+    )
+    from augmentum.proxy.cast_games_routes import router as cast_games_router
     from augmentum.proxy.cast_routes import (
         pair_router as cast_pair_router,
     )
@@ -8983,28 +8987,21 @@ def create_app() -> FastAPI:
     from augmentum.proxy.cast_routes import (
         stream_auth_router as cast_stream_auth_router,
     )
-    from augmentum.proxy.cast_games_routes import router as cast_games_router
-    from augmentum.proxy.cast_game_proxy_routes import (
-        proxy_router as cast_game_proxy_router,
-    )
-    from augmentum.proxy.cast_game_proxy_routes import (
-        start_router as cast_game_proxy_start_router,
-    )
     from augmentum.proxy.character_routes import router as character_router
     from augmentum.proxy.chat_image_routes import router as chat_image_router
     from augmentum.proxy.chat_routes import router as chat_router
-    from augmentum.proxy.community_routes import router as community_router
     from augmentum.proxy.cloud_image_routes import router as cloud_image_router
     from augmentum.proxy.coder_permission_routes import router as coder_permission_router
     from augmentum.proxy.coder_review_routes import router as coder_review_router
     from augmentum.proxy.coder_routes import router as coder_router
     from augmentum.proxy.coder_subagents_routes import router as coder_subagents_router
+    from augmentum.proxy.comic_narration_routes import router as comic_narration_router
+    from augmentum.proxy.community_routes import router as community_router
     from augmentum.proxy.config_routes import router as config_router
-    from augmentum.proxy.external_coder_routes import router as external_coder_router
-    from augmentum.proxy.pi_run_routes import router as pi_run_router
-    from augmentum.proxy.settings_registry_routes import router as settings_registry_router
+    from augmentum.proxy.connect_routes import router as connect_router
     from augmentum.proxy.content_isolation_routes import router as content_isolation_router
     from augmentum.proxy.controllers_routes import router as controllers_router
+    from augmentum.proxy.dance_routes import router as dance_router
     from augmentum.proxy.device_routes import (
         cast_blob_router,
     )
@@ -9012,28 +9009,25 @@ def create_app() -> FastAPI:
         router as device_router,
     )
     from augmentum.proxy.discovery_routes import router as discovery_router
-    from augmentum.proxy.sync_routes import router as sync_router
     from augmentum.proxy.document_routes import router as document_router
     from augmentum.proxy.dream_routes import router as dream_router
     from augmentum.proxy.executor_routes import router as executor_router
-    from augmentum.proxy.connect_routes import router as connect_router
+    from augmentum.proxy.external_coder_routes import router as external_coder_router
     from augmentum.proxy.fabric_routes import router as fabric_router
-    from augmentum.proxy.portal_routes import router as portal_router
-    from augmentum.proxy.notifications_routes import (
-        router as notifications_router,
-    )
-    from augmentum.proxy.offers_routes import router as offers_router
     from augmentum.proxy.files_routes import router as files_router
     from augmentum.proxy.flow_routes import router as flow_router
     from augmentum.proxy.foundry_routes import router as foundry_router
     from augmentum.proxy.game_agent_routes import router as game_agent_router
     from augmentum.proxy.game_stream_routes import router as game_stream_router
     from augmentum.proxy.games_routes import router as games_router
+    from augmentum.proxy.gate_routes import router as gate_router
     from augmentum.proxy.grove_routes import router as grove_router
     from augmentum.proxy.image_routes import router as image_router
+    from augmentum.proxy.intent_capture_routes import router as intent_capture_router
     from augmentum.proxy.jobs_routes import router as jobs_router
     from augmentum.proxy.knowledge_routes import router as knowledge_router
     from augmentum.proxy.learning_routes import router as learning_router
+    from augmentum.proxy.lexicon_routes import router as lexicon_router
     from augmentum.proxy.library_routes import router as library_router
     from augmentum.proxy.library_save_routes import router as library_save_router
     from augmentum.proxy.livetv_routes import router as livetv_router
@@ -9045,29 +9039,36 @@ def create_app() -> FastAPI:
     from augmentum.proxy.mobile_pair_routes import router as mobile_pair_router
     from augmentum.proxy.model_routes import engine_router, llamacpp_router
     from augmentum.proxy.model_routes import router as model_router
-    from augmentum.proxy.comic_narration_routes import router as comic_narration_router
     from augmentum.proxy.narrative_routes import router as narrative_router
     from augmentum.proxy.note_intelligence_routes import router as note_intel_router
     from augmentum.proxy.notes_routes import router as notes_router
+    from augmentum.proxy.notifications_routes import (
+        router as notifications_router,
+    )
     from augmentum.proxy.observation_routes import router as observation_router
+    from augmentum.proxy.offers_routes import router as offers_router
     from augmentum.proxy.ollama_routes import router as ollama_router
     from augmentum.proxy.openai_routes import router as openai_router
     from augmentum.proxy.persona_routes import router as persona_router
+    from augmentum.proxy.pi_run_routes import router as pi_run_router
+    from augmentum.proxy.playlist_routes import router as playlist_router
+    from augmentum.proxy.portal_routes import router as portal_router
     from augmentum.proxy.power_routes import router as power_router
     from augmentum.proxy.presence_routes import router as presence_router
     from augmentum.proxy.provider_routes import router as provider_router
-    from augmentum.proxy.intent_capture_routes import router as intent_capture_router
     from augmentum.proxy.reasoning_routes import router as reasoning_router
     from augmentum.proxy.resource_routes import router as resource_router
     from augmentum.proxy.session_routes import router as session_router
+    from augmentum.proxy.settings_registry_routes import router as settings_registry_router
     from augmentum.proxy.studio_routes import router as studio_router
-    from augmentum.proxy.system_events import router as system_events_router
     from augmentum.proxy.surface_routes import (
         public_router as surface_public_router,
     )
     from augmentum.proxy.surface_routes import (
         router as surface_router,
     )
+    from augmentum.proxy.sync_routes import router as sync_router
+    from augmentum.proxy.system_events import router as system_events_router
     from augmentum.proxy.titles_bios_routes import router as titles_bios_router
     from augmentum.proxy.titles_marketplace_routes import router as titles_marketplace_router
     from augmentum.proxy.titles_routes import router as titles_router
@@ -9084,15 +9085,15 @@ def create_app() -> FastAPI:
     app.include_router(character_router)
     app.include_router(cardsmith_router)
     app.include_router(comic_narration_router)
-    from augmentum.proxy.companion_routes import router as companion_router
+    from augmentum.proxy.architect_routes import router as architect_router
+    from augmentum.proxy.calendar_routes import router as calendar_router
+    from augmentum.proxy.capability_routes import router as capability_router
     from augmentum.proxy.companion_growth_routes import (
         router as companion_growth_router,
     )
-    from augmentum.proxy.vision_routes import router as vision_api_router
-    from augmentum.proxy.architect_routes import router as architect_router
-    from augmentum.proxy.capability_routes import router as capability_router
+    from augmentum.proxy.companion_routes import router as companion_router
     from augmentum.proxy.perception_routes import router as perception_router
-    from augmentum.proxy.calendar_routes import router as calendar_router
+    from augmentum.proxy.vision_routes import router as vision_api_router
     app.include_router(companion_router)
     app.include_router(companion_growth_router)
     app.include_router(calendar_router)

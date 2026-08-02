@@ -14,8 +14,8 @@
 from __future__ import annotations
 
 from augmentum.companion_runtime.perception.affect import (
-    CandidateNotice,
     BaselineDistribution,
+    CandidateNotice,
     build_baseline,
     load_baseline,
     perceive,
@@ -32,8 +32,8 @@ from augmentum.companion_runtime.perception.companion_sink import (
     CompanionPerceptionSink,
 )
 from augmentum.companion_runtime.perception.fusion import (
-    FusionContext,
     Fuser,
+    FusionContext,
     clear_fusers,
     fuse,
     register_fuser,
@@ -56,15 +56,15 @@ from augmentum.companion_runtime.perception.live import (
     evaluate_user,
     perception_enabled,
 )
+from augmentum.companion_runtime.perception.pad import (
+    PAD,
+    project_pad,
+)
 from augmentum.companion_runtime.perception.pipeline import (
     PerceptionSink,
     dispatch,
     perceive_and_dispatch,
     run_perception,
-)
-from augmentum.companion_runtime.perception.pad import (
-    PAD,
-    project_pad,
 )
 from augmentum.companion_runtime.perception.topical import (
     Thread,

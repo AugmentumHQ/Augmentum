@@ -15,12 +15,10 @@ import asyncio
 import pytest
 
 from augmentum.tools.preferred_sources import (
+    _SOURCES,
     AVOID,
     EXCELLENT,
     GOOD,
-    SourceInfo,
-    _SOURCES,
-    get_source_info,
 )
 from augmentum.utils.safe_http import SafeHttpClient
 
@@ -49,7 +47,7 @@ async def _fetch(url: str, timeout: float = 15.0) -> tuple[bool, int, str]:
         if not text:
             return False, 0, "empty response"
         return True, len(text), text[:200]
-    except asyncio.TimeoutError:
+    except TimeoutError:
         return False, 0, f"timeout after {timeout}s"
     except Exception as exc:
         return False, 0, str(exc)
@@ -62,7 +60,7 @@ async def _extract_content(url: str, timeout: float = 15.0) -> tuple[bool, int, 
             _client.fetch(url),
             timeout=timeout,
         )
-    except asyncio.TimeoutError:
+    except TimeoutError:
         return False, 0, f"timeout after {timeout}s"
     except Exception as exc:
         return False, 0, str(exc)

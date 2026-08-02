@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import math
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from augmentum.discovery.clustering import SIGNAL_WEIGHT_MAP
 from augmentum.utils.logging import get_logger
@@ -86,7 +86,7 @@ def compute_frecency_from_signals(
     Returns (frecency_short, frecency_long).
     """
     if now is None:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
     # Group decay-weighted contributions by source domain before summing
     # so we can apply per-source saturation. Without grouping, a binge-
@@ -103,7 +103,7 @@ def compute_frecency_from_signals(
         try:
             created = datetime.fromisoformat(created_at_str)
             if created.tzinfo is None:
-                created = created.replace(tzinfo=timezone.utc)
+                created = created.replace(tzinfo=UTC)
         except (ValueError, TypeError):
             continue
 

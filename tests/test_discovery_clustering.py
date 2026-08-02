@@ -2,9 +2,7 @@
 from __future__ import annotations
 
 import math
-from datetime import datetime, timedelta, timezone
-
-import pytest
+from datetime import UTC, datetime, timedelta
 
 from augmentum.discovery.clustering import (
     ClusterData,
@@ -15,13 +13,11 @@ from augmentum.discovery.clustering import (
     extract_signal_text,
 )
 from augmentum.discovery.frecency import (
-    LONG_HALF_LIFE_DAYS,
     SHORT_HALF_LIFE_DAYS,
     compute_combined_frecency,
     compute_decay,
     compute_frecency_from_signals,
 )
-
 
 # -----------------------------------------------------------------------
 # ClusterData
@@ -233,7 +229,7 @@ class TestCombinedFrecency:
 
 class TestFrecencyFromSignals:
     def test_recent_signal(self) -> None:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         signals = [
             {
                 "signal_type": "page_visit",
@@ -246,7 +242,7 @@ class TestFrecencyFromSignals:
         assert math.isclose(long, 0.5, abs_tol=1e-6)
 
     def test_old_signal_has_lower_frecency(self) -> None:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         old = now - timedelta(days=30)
         signals = [
             {
@@ -267,7 +263,7 @@ class TestFrecencyFromSignals:
 
     def test_same_domain_signals_saturate(self) -> None:
         """10 signals from one domain should weigh ~3x, not 10x."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         signals = [
             {
                 "signal_type": "video_watch",  # weight 1.0
@@ -283,7 +279,7 @@ class TestFrecencyFromSignals:
 
     def test_diverse_domains_do_not_saturate(self) -> None:
         """5 signals from 5 different domains should weigh ~5x."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         signals = [
             {
                 "signal_type": "video_watch",
@@ -298,7 +294,7 @@ class TestFrecencyFromSignals:
 
     def test_mixed_saturation(self) -> None:
         """Big binge from one source + a few diverse signals — diverse ones survive."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         signals = [
             {"signal_type": "video_watch", "created_at": now.isoformat(),
              "source_domain": "binge.example"}

@@ -43,7 +43,6 @@ from augmentum.tools.parsing import inject_tool_schemas, parse_tool_calls
 from augmentum.tools.registry import ToolRegistry
 from augmentum.tools.web_search import WebSearchTool
 
-
 # ---------------------------------------------------------------------------
 # Backend
 # ---------------------------------------------------------------------------
@@ -222,7 +221,7 @@ async def run_scenario(
 
     try:
         response = await asyncio.wait_for(backend.chat(request), timeout=60.0)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         return "TIMEOUT", None, 60.0
     except Exception as exc:
         return f"ERROR: {exc}", None, time.monotonic() - start

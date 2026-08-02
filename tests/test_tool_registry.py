@@ -4,10 +4,8 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-import pytest
-
-from augmentum.tools.base import Tool, ToolCategory, ToolResult
-from augmentum.tools.registry import ToolRegistry, ToolMetrics
+from augmentum.tools.base import Tool, ToolCategory
+from augmentum.tools.registry import ToolMetrics, ToolRegistry
 
 
 def _make_tool(name: str, category: ToolCategory = ToolCategory.SEARCH) -> MagicMock:

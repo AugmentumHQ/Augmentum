@@ -32,36 +32,36 @@ from __future__ import annotations
 import pytest
 
 from augmentum.coder.models import FileEntry
-from augmentum.coder.state import CoderState, CoderPhase
+from augmentum.coder.state import CoderPhase, CoderState
 from augmentum.coder.tools import (
     TestRunTool as _TestRunTool,  # alias so pytest doesn't try to collect it
+)
+from augmentum.coder.tools import (
     _resolve_workspace_path,
     _shell_command_failure,
 )
+from augmentum.models.base import InternalStreamChunk, Message
+from augmentum.modes.analytical.tool_calling import ToolCallingTier
 from augmentum.modes.coder.handler import (
-    CoderHandler,
     _ACTION_STAGNATION_BREAK,
-    _classify_turn_intent,
-    _explicitly_requests_execution,
-    _HYBRID_MIN_TURN_PROSE_CHARS,
     _INSPECTION_COLD_START_GRACE,
     _READ_REPEAT_REFUSAL_CAP,
-    _is_explanatory_request,
-    _is_read_only_request,
+    CoderHandler,
+    _classify_turn_intent,
+    _explicitly_requests_execution,
     _generate_clarification,
     _has_content_loop,
     _has_unclaimed_code_block,
     _is_conversational_greeting,
+    _is_explanatory_request,
+    _is_read_only_request,
     _is_vague_improvement,
     _is_vague_request,
     _plan_is_question,
-    _strip_tool_json,
     _soft_failure_target,
+    _strip_tool_json,
 )
 from augmentum.modes.coder.intent import Tier, TierClassification
-from augmentum.modes.analytical.tool_calling import ToolCallingTier
-from augmentum.models.base import InternalStreamChunk, Message
-
 from tests.test_coder_handler import (
     _ExtendedContainerManager,
     _FakeBackend,
@@ -72,7 +72,6 @@ from tests.test_coder_handler import (
     _make_turn_context,
     _tc_delta,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fix 1a: tasks-completed termination
@@ -784,6 +783,7 @@ async def test_reset_for_new_request_prunes_stale_failures(monkeypatch):
     """At reset time, entries older than TTL get pruned automatically
     so a long pause doesn't carry ancient errors forward."""
     import time as _time
+
     from augmentum.coder.state import CoderPhase as _CoderPhase
     from augmentum.modes.coder.handler import CoderHandler as _Handler
 
@@ -1160,10 +1160,10 @@ def test_new_nudge_text_demands_narrative():
     you need" report.
     """
     from augmentum.modes.coder.phase_act import (
+        _NUDGE_MESSAGES,
         NUDGE_BAILOUT,
         NUDGE_INSISTENCE,
         NUDGE_NO_PROGRESS,
-        _NUDGE_MESSAGES,
     )
 
     # Each variant exists.
@@ -3930,6 +3930,7 @@ def test_container_exec_sets_workdir():
     commands fail silently. The bug this test covers was the root
     cause of the 2026-04-20 'every file_read returns ENOENT' trace."""
     import inspect
+
     from augmentum.coder import containers
     source = inspect.getsource(containers.ContainerManager._run_command)
     # The call to container.exec() inside _run_command must carry
@@ -4270,8 +4271,8 @@ def test_turn_summary_records_successful_shell_commands():
     <prior_turns> block can show what was built/installed/ran. Without
     this, a build turn looks like "nothing happened" to the next turn
     and the model re-runs env discovery."""
-    from augmentum.modes.coder.handler import CoderHandler
     from augmentum.models.base import Message
+    from augmentum.modes.coder.handler import CoderHandler
 
     handler = CoderHandler(
         None,

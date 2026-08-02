@@ -16,9 +16,9 @@ Requires LM Studio running on localhost:1234.
 from __future__ import annotations
 
 import re
-import pytest
-import httpx
 
+import httpx
+import pytest
 
 # ---------------------------------------------------------------------------
 # LM Studio client

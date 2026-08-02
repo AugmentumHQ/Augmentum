@@ -14,12 +14,10 @@ load-bearing contracts:
 """
 from __future__ import annotations
 
-import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
 import pytest
-
 
 # ── Helpers ───────────────────────────────────────────────────────
 
@@ -27,6 +25,7 @@ import pytest
 def _fake_identity():
     """Build a real FabricIdentity for signing tests."""
     import asyncio
+
     import aiosqlite
 
     async def _make():
@@ -53,7 +52,8 @@ async def test_tts_raises_when_identity_missing():
     empty generator; the user heard nothing. Helper raises typed error
     so the caller can convert to a 503 instead."""
     from augmentum.fabric.audio_client import (
-        RemoteAudioError, tts_stream_via_peer,
+        RemoteAudioError,
+        tts_stream_via_peer,
     )
 
     gen = tts_stream_via_peer(
@@ -72,7 +72,8 @@ async def test_tts_raises_when_identity_missing():
 @pytest.mark.asyncio
 async def test_tts_raises_when_user_id_empty():
     from augmentum.fabric.audio_client import (
-        RemoteAudioError, tts_stream_via_peer,
+        RemoteAudioError,
+        tts_stream_via_peer,
     )
 
     gen = tts_stream_via_peer(
@@ -92,6 +93,7 @@ async def test_tts_streams_bytes_back_with_signed_headers():
     """Happy path: opens an httpx stream to /api/fabric/tts with a
     signed envelope and yields each upstream chunk."""
     import aiosqlite
+
     from augmentum.fabric.audio_client import tts_stream_via_peer
     from augmentum.fabric.identity import FabricIdentity
     from augmentum.state.settings_store import SettingsStore
@@ -152,8 +154,10 @@ async def test_tts_transport_error_wrapped():
     """httpx.TransportError gets wrapped as RemoteAudioError so callers
     don't have to know about httpx internals."""
     import aiosqlite
+
     from augmentum.fabric.audio_client import (
-        RemoteAudioError, tts_stream_via_peer,
+        RemoteAudioError,
+        tts_stream_via_peer,
     )
     from augmentum.fabric.identity import FabricIdentity
     from augmentum.state.settings_store import SettingsStore
@@ -195,7 +199,8 @@ async def test_tts_transport_error_wrapped():
 @pytest.mark.asyncio
 async def test_stt_raises_when_identity_missing():
     from augmentum.fabric.audio_client import (
-        RemoteAudioError, stt_transcribe_via_peer,
+        RemoteAudioError,
+        stt_transcribe_via_peer,
     )
 
     with pytest.raises(RemoteAudioError):
@@ -212,6 +217,7 @@ async def test_stt_returns_text_with_signed_multipart():
     """Happy path: POSTs multipart/form-data to /api/fabric/stt with
     a signed envelope and returns the JSON ``text`` field."""
     import aiosqlite
+
     from augmentum.fabric.audio_client import stt_transcribe_via_peer
     from augmentum.fabric.identity import FabricIdentity
     from augmentum.state.settings_store import SettingsStore
@@ -267,8 +273,10 @@ async def test_stt_http_status_error_wrapped():
     """HTTPStatusError → RemoteAudioError. Caller maps to its own
     appropriate HTTP response code."""
     import aiosqlite
+
     from augmentum.fabric.audio_client import (
-        RemoteAudioError, stt_transcribe_via_peer,
+        RemoteAudioError,
+        stt_transcribe_via_peer,
     )
     from augmentum.fabric.identity import FabricIdentity
     from augmentum.state.settings_store import SettingsStore
@@ -316,6 +324,7 @@ async def test_tts_session_id_folded_into_signed_body():
     INSIDE the body (a header would be dropped by the receiver's
     body-only reconstruction). Pin that it lands in the signed bytes."""
     import aiosqlite
+
     from augmentum.fabric.audio_client import tts_stream_via_peer
     from augmentum.fabric.identity import FabricIdentity
     from augmentum.state.settings_store import SettingsStore
@@ -365,6 +374,7 @@ async def test_tts_no_session_id_means_no_field():
     """Default (no session) must NOT inject the key — keeps the body
     identical to pre-feature for non-CSM providers."""
     import aiosqlite
+
     from augmentum.fabric.audio_client import tts_stream_via_peer
     from augmentum.fabric.identity import FabricIdentity
     from augmentum.state.settings_store import SettingsStore
@@ -412,6 +422,7 @@ async def test_clone_upload_via_peer_posts_signed_multipart():
     multipart to /api/fabric/voice-clone so a remote CSM (which can't
     see the sender's /voices volume) gets the clone anchor."""
     import aiosqlite
+
     from augmentum.fabric.audio_client import clone_upload_via_peer
     from augmentum.fabric.identity import FabricIdentity
     from augmentum.state.settings_store import SettingsStore
@@ -463,7 +474,8 @@ async def test_clone_upload_via_peer_posts_signed_multipart():
 @pytest.mark.asyncio
 async def test_clone_upload_raises_without_identity():
     from augmentum.fabric.audio_client import (
-        RemoteAudioError, clone_upload_via_peer,
+        RemoteAudioError,
+        clone_upload_via_peer,
     )
 
     with pytest.raises(RemoteAudioError):
@@ -482,6 +494,7 @@ async def test_push_user_context_via_peer_posts_signed_multipart():
     signed multipart to /api/fabric/tts/user-context, with the session id
     as a form field (the receiver re-attaches it as X-Augmentum-Session)."""
     import aiosqlite
+
     from augmentum.fabric.audio_client import push_user_context_via_peer
     from augmentum.fabric.identity import FabricIdentity
     from augmentum.state.settings_store import SettingsStore
@@ -531,7 +544,8 @@ async def test_push_user_context_via_peer_posts_signed_multipart():
 @pytest.mark.asyncio
 async def test_push_user_context_raises_without_identity():
     from augmentum.fabric.audio_client import (
-        RemoteAudioError, push_user_context_via_peer,
+        RemoteAudioError,
+        push_user_context_via_peer,
     )
 
     with pytest.raises(RemoteAudioError):
@@ -562,6 +576,7 @@ async def test_push_user_context_local_csm_posts_wav():
     """Local CSM: POSTs the user clip (WAV-wrapped) to /v1/context/user_turn
     with the session id as the X-Augmentum-Session header the sidecar keys on."""
     from contextlib import asynccontextmanager
+
     import augmentum.proxy.audio_routes as ar
 
     client = MagicMock()
@@ -590,6 +605,7 @@ async def test_warmup_and_unload_via_peer_signed_posts():
     """Residency pings: warmup is an empty signed POST; unload carries the
     session id in a signed JSON body. Both hit the fabric data-plane paths."""
     import aiosqlite
+
     from augmentum.fabric.audio_client import unload_via_peer, warmup_via_peer
     from augmentum.fabric.identity import FabricIdentity
     from augmentum.state.settings_store import SettingsStore

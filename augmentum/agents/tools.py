@@ -19,7 +19,6 @@ from __future__ import annotations
 
 from augmentum.tools.base import Tool
 
-
 READ_ONLY_TOOL_NAMES: frozenset[str] = frozenset({
     "file_read",
     "file_list",

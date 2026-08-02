@@ -27,9 +27,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from augmentum.bug_finder.call_graph import CallGraph, CallSite
+from augmentum.bug_finder.call_graph import CallGraph
 from augmentum.bug_finder.patterns import Pattern
-
 
 # ---------------------------------------------------------------------------
 # Call graph queries

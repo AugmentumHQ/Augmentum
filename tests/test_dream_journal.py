@@ -1,11 +1,11 @@
 """Tests for Dream Journal CRUD operations."""
 from __future__ import annotations
 
-import pytest
 import aiosqlite
-from augmentum.dream.journal import DreamJournal
-from augmentum.dream.models import DreamEntry, DreamEntryType
+import pytest
 
+from augmentum.dream.journal import DreamJournal
+from augmentum.dream.models import DreamEntryType
 
 UID = "user_test"
 

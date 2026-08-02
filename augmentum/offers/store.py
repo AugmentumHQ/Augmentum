@@ -53,7 +53,7 @@ class OfferSuppression:
 
 
 async def set_suppression(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
     user_id: str,
     kind: str,
@@ -90,7 +90,7 @@ async def set_suppression(
 
 
 async def snooze(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
     user_id: str,
     kind: str,
@@ -122,7 +122,7 @@ async def snooze(
 
 
 async def never(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
     user_id: str,
     kind: str,
@@ -141,7 +141,7 @@ async def never(
 
 
 async def is_suppressed(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
     user_id: str,
     kind: str,
@@ -169,7 +169,7 @@ async def is_suppressed(
 
 
 async def list_suppressions(
-    conn: "aiosqlite.Connection", *, user_id: str,
+    conn: aiosqlite.Connection, *, user_id: str,
 ) -> list[OfferSuppression]:
     """All current suppressions for the user (active + expired)."""
 
@@ -199,7 +199,7 @@ async def list_suppressions(
 
 
 async def delete_suppression(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
     user_id: str,
     kind: str,
@@ -219,7 +219,7 @@ async def delete_suppression(
 
 
 async def sweep_expired_suppressions(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
 ) -> int:
     """Prune snooze rows whose ``suppressed_until`` is in the past.
 

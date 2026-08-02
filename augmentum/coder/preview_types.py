@@ -22,9 +22,8 @@ from __future__ import annotations
 
 import html
 import json
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
-
 
 # Renderer signature: (raw_bytes, base_href_or_empty) -> bytes_to_serve.
 # base_href is the URL prefix the iframe needs so relative paths inside

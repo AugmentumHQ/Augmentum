@@ -110,7 +110,7 @@ class CandidateNotice:
 # ── Baseline build ───────────────────────────────────────────────────
 
 async def build_baseline(
-    runtime: "CompanionRuntime",
+    runtime: CompanionRuntime,
     *,
     user_id: str,
     window_days: int,
@@ -211,7 +211,7 @@ async def build_baseline(
 
 
 async def load_baseline(
-    runtime: "CompanionRuntime",
+    runtime: CompanionRuntime,
     *,
     user_id: str,
     window_days: int,
@@ -245,7 +245,7 @@ async def load_baseline(
     )
 
 
-async def rebuild_all_baselines(runtime: "CompanionRuntime") -> dict[str, int]:
+async def rebuild_all_baselines(runtime: CompanionRuntime) -> dict[str, int]:
     """Nightly job — rebuild all three windows for every user that has
     any activations recorded with this companion. Returns
     ``{user_id: turn_count_30d}`` for monitoring.
@@ -318,7 +318,7 @@ def asymmetry(dist: BaselineDistribution) -> float:
 # ── Perception step ──────────────────────────────────────────────────
 
 async def perceive(
-    runtime: "CompanionRuntime",
+    runtime: CompanionRuntime,
     *,
     user_id: str,
 ) -> CandidateNotice | None:

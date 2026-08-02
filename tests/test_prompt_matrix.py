@@ -29,7 +29,6 @@ Output: results written to tests/matrix_results.json after each run.
 
 from __future__ import annotations
 
-import asyncio
 import json
 import os
 import re
@@ -175,8 +174,9 @@ class BuildMetrics:
 
 async def run_build(desc: str, scaffold: str, model: str, max_tokens: int = 8192) -> BuildMetrics:
     """Run a single build and collect metrics."""
-    from augmentum.tools.artifact_application import ApplicationBuilderTool
     import urllib.request
+
+    from augmentum.tools.artifact_application import ApplicationBuilderTool
 
     metrics = BuildMetrics()
 
@@ -306,13 +306,13 @@ class TestPromptMatrix:
             status = "PASS" if m["success"] else "FAIL"
             print(f"  {status} | {m['file_count']} files | {m['total_lines']} lines | {m['build_time_s']}s | {m['llm_calls']} LLM calls | Score {m['score']}")
             if m["verify_clean"]:
-                print(f"  Verify: CLEAN")
+                print("  Verify: CLEAN")
             elif m["verify_errors"]:
                 print(f"  Verify: {m['verify_errors']} errors {'(rolled back)' if m['verify_rollback'] else '(fixed)'}")
             if m["has_duplicate_classes"]:
-                print(f"  WARNING: Duplicate class definitions found")
+                print("  WARNING: Duplicate class definitions found")
             if m["has_empty_files"]:
-                print(f"  WARNING: Empty files detected")
+                print("  WARNING: Empty files detected")
             if not m["success"]:
                 print(f"  Error: {m['error'][:100]}")
 

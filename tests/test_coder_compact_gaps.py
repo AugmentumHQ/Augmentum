@@ -24,12 +24,9 @@ Run: python -m pytest tests/test_coder_compact_gaps.py -v
 """
 from __future__ import annotations
 
-import pytest
-
-from augmentum.modes.coder.handler import CoderHandler
 from augmentum.models.base import Message
-from augmentum.utils.tokenizer import count_tokens, count_tokens_messages
-
+from augmentum.modes.coder.handler import CoderHandler
+from augmentum.utils.tokenizer import count_tokens_messages
 from tests.test_coder_handler import _ExtendedContainerManager, _FakeBackend
 
 

@@ -11,7 +11,6 @@ from __future__ import annotations
 
 from augmentum.fabric.capabilities import (
     KIND_IMAGE_GENERATION,
-    KIND_KNOWLEDGE_SEARCH,
     KIND_LLM_INFERENCE,
     ImageGenerationCapability,
     KnowledgeSearchCapability,

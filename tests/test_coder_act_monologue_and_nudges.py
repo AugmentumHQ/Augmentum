@@ -20,10 +20,9 @@ from __future__ import annotations
 
 import pytest
 
+from augmentum.models.base import InternalStreamChunk
 from augmentum.modes.coder.handler import CoderHandler
 from augmentum.modes.coder.phase_act import _strip_act_monologue
-from augmentum.models.base import InternalStreamChunk, Message
-
 from tests.test_coder_handler import (
     _ExtendedContainerManager,
     _FakeBackend,
@@ -33,7 +32,6 @@ from tests.test_coder_handler import (
     _make_request,
     _tc_delta,
 )
-
 
 # ---------------------------------------------------------------------------
 # Monologue stripper

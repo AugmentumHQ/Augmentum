@@ -7,7 +7,6 @@ from augmentum.companion_runtime import curator
 from augmentum.companion_runtime import standing_tasks as st
 from augmentum.companion_runtime.standing_tasks import _attach_read_through
 
-
 # ── Subreddit routing ───────────────────────────────────────────────────
 
 def test_detect_subreddit_matches_r_prefix():

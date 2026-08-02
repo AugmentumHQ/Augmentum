@@ -508,7 +508,7 @@ async def stream_build_run(build_id: str, request: Request):
             if ev is not None:
                 try:
                     await asyncio.wait_for(ev.wait(), timeout=heartbeat)
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     pass
                 ev.clear()
             else:

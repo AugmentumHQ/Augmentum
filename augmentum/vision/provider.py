@@ -32,7 +32,7 @@ from __future__ import annotations
 import asyncio
 import base64
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from augmentum.utils.logging import get_logger
@@ -95,6 +95,7 @@ def _ensure_stb_decodable(data: bytes) -> bytes | None:
         return data
     try:
         import io
+
         from PIL import Image
         img = Image.open(io.BytesIO(data))
         if img.mode not in ("RGB", "RGBA", "L"):

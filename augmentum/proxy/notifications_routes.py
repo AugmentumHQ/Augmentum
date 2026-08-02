@@ -46,7 +46,6 @@ from augmentum.notifications.store import (
 from augmentum.state.backends.sqlite import SQLiteBackend
 from augmentum.utils.logging import get_logger
 
-
 log = get_logger(__name__)
 
 

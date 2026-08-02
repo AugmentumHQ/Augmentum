@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
-
-import pytest
+from unittest.mock import AsyncMock, patch
 
 from augmentum.tools.web_fetch import WebFetchTool, _strip_html_tags, _truncate_at_paragraph
 from augmentum.utils.safe_http import SafeHttpError

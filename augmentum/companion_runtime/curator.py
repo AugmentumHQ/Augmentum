@@ -37,7 +37,6 @@ on app.state via the FastAPI lifespan).
 from __future__ import annotations
 
 import hashlib
-import json
 import re
 import time
 from dataclasses import dataclass
@@ -716,7 +715,6 @@ _ADULT_URL_PATH_FRAGMENTS: tuple[str, ...] = (
 # reach upstream engines. We re-export under the historical local name
 # so the rest of curator.py (and its tests) keep working without
 # rewiring.
-from augmentum.discovery.safety import NSFW_TOKENS as _NSFW_CLUSTER_TOKENS  # noqa: E402
 
 # Quality thresholds for the editorial pick. These are HIGHER than the
 # legacy per-topic loop's `_MIN_RELEVANCE_SCORE` because that loop
@@ -1440,7 +1438,7 @@ def _parse_sqlite_dt(s: str) -> float | None:
     if not s:
         return None
     try:
-        from datetime import datetime, timezone
+        from datetime import datetime
         s = s.strip()
         if "T" not in s:
             s = s.replace(" ", "T")

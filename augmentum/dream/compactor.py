@@ -40,7 +40,6 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import json
-import uuid
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
@@ -139,7 +138,7 @@ class DreamCompactor:
     # Backend resolution
     # ------------------------------------------------------------------
 
-    async def _resolve_backend(self) -> "ModelBackend | None":
+    async def _resolve_backend(self) -> ModelBackend | None:
         """Resolve the LLM backend via the same role chain MemoryCompactor uses.
 
         Tries the dream-specific override first, falls through to the
@@ -228,7 +227,7 @@ class DreamCompactor:
         self,
         user_id: str,
         persona_id: str,
-        backend: "ModelBackend",
+        backend: ModelBackend,
     ) -> int:
         """Pairwise similarity scan; LLM-merge near-duplicates.
 
@@ -301,7 +300,7 @@ class DreamCompactor:
         self,
         a: DreamEntry,
         b: DreamEntry,
-        backend: "ModelBackend",
+        backend: ModelBackend,
     ) -> str | None:
         """LLM-merge two near-duplicate entries; return new content or None."""
         from augmentum.models.base import InternalChatRequest, Message
@@ -334,7 +333,7 @@ class DreamCompactor:
         self,
         user_id: str,
         persona_id: str,
-        backend: "ModelBackend",
+        backend: ModelBackend,
     ) -> tuple[int, int]:
         """Greedy cluster, LLM-summarize, replace cluster with one new entry.
 
@@ -423,7 +422,7 @@ class DreamCompactor:
     async def _llm_summarize_cluster(
         self,
         members: list[DreamEntry],
-        backend: "ModelBackend",
+        backend: ModelBackend,
     ) -> str | None:
         from augmentum.models.base import InternalChatRequest, Message
 

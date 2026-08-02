@@ -32,7 +32,6 @@ from augmentum.bug_finder.adapters.base import (
     FrameworkAdapter,
 )
 
-
 # Decorator attributes that indicate a route registration.
 _ROUTE_VERBS = (
     "get", "post", "put", "delete", "patch",

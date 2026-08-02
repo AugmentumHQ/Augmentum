@@ -89,7 +89,7 @@ class EnvelopeError(ValueError):
 class GatewayKeys:
     """The instance-side key material for the guest gateway."""
 
-    identity: "FabricIdentity"
+    identity: FabricIdentity
     seal_private: X25519PrivateKey
 
     @property
@@ -117,7 +117,7 @@ class GatewayKeys:
         }
 
 
-async def get_gateway_keys(store: "SettingsStore") -> GatewayKeys:
+async def get_gateway_keys(store: SettingsStore) -> GatewayKeys:
     """Load (or mint on first use) the instance gateway keys.
 
     Reuses the durable fabric Ed25519 identity as the signing anchor; mints a

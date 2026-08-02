@@ -17,8 +17,8 @@ own FastAPI routes.
 
 from __future__ import annotations
 
-from augmentum.contracts.discover import RouteSpec, discover_routes
 from augmentum.contracts.diagnose import Dossier, ProbeResult, build_dossier, classify
+from augmentum.contracts.discover import RouteSpec, discover_routes
 
 __all__ = [
     "RouteSpec",

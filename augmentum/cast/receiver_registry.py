@@ -21,9 +21,9 @@ from __future__ import annotations
 import asyncio
 import secrets
 import time
-from collections.abc import Awaitable, Callable
+from collections.abc import AsyncIterator, Awaitable, Callable
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, AsyncIterator
+from typing import TYPE_CHECKING, Any
 
 from augmentum.cast.receiver_protocol import (
     ReceiverCmd,
@@ -45,7 +45,7 @@ log = get_logger(__name__)
 class ConnectedReceiver:
     registration_id: str
     user_id: str
-    ws: "WebSocket"
+    ws: WebSocket
     info: dict[str, Any] = field(default_factory=dict)
     connected_at: float = 0.0
     last_event_at: float = 0.0
@@ -97,8 +97,8 @@ class ReceiverRegistry:
     def __init__(
         self,
         *,
-        trusted_store: "TrustedReceiverStore | None" = None,
-        event_store: "CastEventStore | None" = None,
+        trusted_store: TrustedReceiverStore | None = None,
+        event_store: CastEventStore | None = None,
         stream_session_stopper: Callable[[str, str], Awaitable[Any]] | None = None,
     ) -> None:
         self._receivers: dict[str, ConnectedReceiver] = {}
@@ -123,16 +123,16 @@ class ReceiverRegistry:
     # ── Store accessors (used by routes for higher-level features) ─
 
     @property
-    def trusted_store(self) -> "TrustedReceiverStore | None":
+    def trusted_store(self) -> TrustedReceiverStore | None:
         return self._trusted_store
 
     @property
-    def event_store(self) -> "CastEventStore | None":
+    def event_store(self) -> CastEventStore | None:
         return self._event_store
 
     # ── Attach / detach ──────────────────────────────────────────
 
-    def attach(self, *, ws: "WebSocket", user_id: str) -> ConnectedReceiver:
+    def attach(self, *, ws: WebSocket, user_id: str) -> ConnectedReceiver:
         """Register a freshly-connected WebSocket. The caller has
         already accepted the WS handshake."""
         now = time.time()
@@ -528,7 +528,8 @@ class ReceiverRegistry:
             # send may fail if the WS is already gone — that's fine,
             # the subsequent close() is what actually matters.
             from augmentum.cast.receiver_protocol import (
-                CMD_REVOKED, ReceiverCmd,
+                CMD_REVOKED,
+                ReceiverCmd,
             )
             try:
                 await self._send_to(receiver, ReceiverCmd(

@@ -4,15 +4,13 @@ from __future__ import annotations
 import asyncio
 import sqlite3
 import struct
-import tempfile
 from contextlib import contextmanager
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
 import sqlite_vec
 
-from augmentum.knowledge.packs import PackManager, PackMeta, PackResult
+from augmentum.knowledge.packs import PackManager, PackResult
 
 DIM = 768
 

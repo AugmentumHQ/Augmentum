@@ -4,8 +4,6 @@ from __future__ import annotations
 
 import importlib
 
-import pytest
-
 
 class TestVoiceModuleImports:
     """Every module under augmentum/voice/ must import without error."""

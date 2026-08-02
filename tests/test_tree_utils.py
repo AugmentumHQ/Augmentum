@@ -1,6 +1,7 @@
 """Tests for session tree linearization."""
 from __future__ import annotations
-from augmentum.state.tree_utils import linearize_to_node, find_node_by_evidence
+
+from augmentum.state.tree_utils import find_node_by_evidence, linearize_to_node
 
 
 def _make_tree():

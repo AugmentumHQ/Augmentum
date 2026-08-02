@@ -1,8 +1,6 @@
 """Tests for the Promise runtime (augmentum/promises/)."""
 from __future__ import annotations
 
-import asyncio
-
 import pytest
 
 from augmentum.promises import (
@@ -23,7 +21,6 @@ from augmentum.promises import (
     shell_verifier,
 )
 from augmentum.promises.verify import default_verify_fns
-
 
 # ---------------------------------------------------------------------------
 # Models — serialization round-trip

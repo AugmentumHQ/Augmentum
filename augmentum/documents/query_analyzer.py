@@ -160,7 +160,7 @@ class QueryAnalyzer:
                 self._llm_classify(query, doc_names),
                 timeout=settings.document_rag_query_analysis_timeout,
             )
-        except asyncio.TimeoutError:
+        except TimeoutError:
             log.warning("query_analyzer_timeout", query=query[:60])
             result = QueryAnalysis(
                 strategy="direct", queries=[query],

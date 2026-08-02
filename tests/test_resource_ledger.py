@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import unittest
 from dataclasses import dataclass
 from datetime import datetime
@@ -804,8 +803,8 @@ class TestResourceRoutes(unittest.TestCase):
     def test_status_endpoint(self):
         """GET /api/resources/status returns gpu/ram/models."""
         async def _run():
-            from fastapi.testclient import TestClient
             from fastapi import FastAPI
+            from fastapi.testclient import TestClient
 
             app = FastAPI()
 
@@ -852,8 +851,8 @@ class TestResourceRoutes(unittest.TestCase):
 
     def test_status_no_ledger(self):
         """GET /api/resources/status returns 503 when no ledger."""
-        from fastapi.testclient import TestClient
         from fastapi import FastAPI
+        from fastapi.testclient import TestClient
 
         app = FastAPI()
 
@@ -867,8 +866,8 @@ class TestResourceRoutes(unittest.TestCase):
 
     def test_profiles_endpoint(self):
         """GET /api/resources/profiles returns list."""
-        from fastapi.testclient import TestClient
         from fastapi import FastAPI
+        from fastapi.testclient import TestClient
 
         app = FastAPI()
 
@@ -894,8 +893,8 @@ class TestResourceRoutes(unittest.TestCase):
 
     def test_history_endpoint(self):
         """GET /api/resources/history returns snapshots list."""
-        from fastapi.testclient import TestClient
         from fastapi import FastAPI
+        from fastapi.testclient import TestClient
 
         app = FastAPI()
 
@@ -922,8 +921,8 @@ class TestResourceRoutes(unittest.TestCase):
 
     def test_check_endpoint(self):
         """GET /api/resources/check/{model} returns fit check."""
-        from fastapi.testclient import TestClient
         from fastapi import FastAPI
+        from fastapi.testclient import TestClient
 
         app = FastAPI()
 

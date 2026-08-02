@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -12,7 +12,6 @@ from augmentum.models.base import (
     InternalStreamChunk,
     Message,
 )
-
 
 # ---------------------------------------------------------------------------
 # Autonomy level logic
@@ -187,8 +186,8 @@ class TestHandlerAutonomy:
     @pytest.mark.asyncio
     async def test_level_1_pauses_for_plan_approval(self, mock_backend, mock_task_store):
         """Autonomy level 1 should pause after generating plan."""
-        from augmentum.modes.agentic.handler import AgenticHandler
         from augmentum.config import settings
+        from augmentum.modes.agentic.handler import AgenticHandler
 
         # Override config for this test
         original = settings.agentic_default_autonomy
@@ -232,8 +231,8 @@ class TestHandlerAutonomy:
     @pytest.mark.asyncio
     async def test_level_4_no_plan_approval(self, mock_backend, mock_task_store):
         """Autonomy level 4 should execute without pausing."""
-        from augmentum.modes.agentic.handler import AgenticHandler
         from augmentum.config import settings
+        from augmentum.modes.agentic.handler import AgenticHandler
 
         original = settings.agentic_default_autonomy
         object.__setattr__(settings, "agentic_default_autonomy", 4)
@@ -272,7 +271,6 @@ class TestHandlerAutonomy:
         """After approval, task should resume execution."""
         from augmentum.modes.agentic.handler import AgenticHandler
         from augmentum.modes.agentic.task_state import TaskState, TaskStatus
-        from augmentum.config import settings
 
         # Simulate a task that was paused for approval
         paused_task = TaskState(
@@ -384,7 +382,7 @@ class TestFlowStepAutonomy:
 
     @pytest.fixture
     def mock_flow_store(self):
-        from augmentum.reasoning.models import ReasoningFlow, FlowStep
+        from augmentum.reasoning.models import FlowStep, ReasoningFlow
 
         flow = ReasoningFlow(
             id="flow_agentic_1",

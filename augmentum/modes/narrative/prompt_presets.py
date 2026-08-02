@@ -14,7 +14,8 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, replace as dataclass_replace
+from dataclasses import dataclass
+from dataclasses import replace as dataclass_replace
 
 from augmentum.models.base import InternalChatRequest, Message
 from augmentum.utils.logging import get_logger

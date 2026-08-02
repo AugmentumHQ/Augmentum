@@ -18,8 +18,7 @@ import urllib.request
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "services", "engine"))
 sys.path.insert(0, os.path.expanduser("~/AppData/Roaming/Python/Python311/site-packages"))
 
-import numpy as np
-from activation_map import ActivationMap, fingerprint_logits
+from activation_map import ActivationMap
 
 ENGINE_URL = "http://localhost:8090"
 

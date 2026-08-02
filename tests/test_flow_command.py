@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import unittest
 
-from augmentum.classifier.router import ClassificationResult, Mode, RequestClassifier
+from augmentum.classifier.router import Mode, RequestClassifier
 from augmentum.models.base import InternalChatRequest, Message
 
 
@@ -168,6 +168,7 @@ CREATE TABLE IF NOT EXISTS reasoning_flow_steps (
 
 async def _make_store():
     import aiosqlite
+
     from augmentum.reasoning.store import FlowStore
 
     db = await aiosqlite.connect(":memory:")

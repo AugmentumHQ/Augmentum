@@ -31,7 +31,7 @@ import json
 import shutil
 import subprocess
 import time
-from typing import Sequence
+from collections.abc import Sequence
 
 from augmentum.tools.application_cdp import find_chromium
 from augmentum.utils.chromium import HEADLESS_WEBGL_ARGS

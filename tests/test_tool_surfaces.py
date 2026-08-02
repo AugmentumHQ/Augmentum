@@ -9,13 +9,12 @@ primitive-layer-design.md``.
 from __future__ import annotations
 
 import asyncio
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import MagicMock
 
 import pytest
 
 from augmentum.tools.base import SurfaceExposure, Tool, ToolCategory, ToolResult
 from augmentum.tools.registry import ToolRegistry
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -167,12 +166,12 @@ class TestGetForSurface:
 
 class TestVoiceManifestDerivation:
     def test_static_buckets_preserved_when_unbound(self, unbind_voice_registry):
+        import augmentum.intent.manifest as manifest
         from augmentum.intent.manifest import (
             VOICE_TOOLS_CORE,
             VOICE_TOOLS_INTERACTIVE,
             all_voice_tools,
         )
-        import augmentum.intent.manifest as manifest
 
         manifest._registry = None
         all_set = all_voice_tools()

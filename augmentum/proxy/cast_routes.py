@@ -16,11 +16,11 @@ import time
 from collections import OrderedDict
 from collections.abc import Iterable
 from dataclasses import asdict
+from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request, WebSocket, WebSocketDisconnect
-from fastapi.responses import RedirectResponse, Response, FileResponse
-from pathlib import Path
+from fastapi.responses import FileResponse, RedirectResponse, Response
 from pydantic import BaseModel, Field
 
 from augmentum.cast.executors import execute_local_render
@@ -36,13 +36,17 @@ from augmentum.cast.receiver_protocol import (
     is_valid_slot,
 )
 from augmentum.cast.render import RenderJob
-from augmentum.cast.trusted_receivers import normalise_ipv4, normalise_mac
-from augmentum.cast.wol import derive_broadcast, wake_receiver
 from augmentum.cast.surface import (
     cast_surface as _cast_surface,
+)
+from augmentum.cast.surface import (
     close_surface as _close_surface,
+)
+from augmentum.cast.surface import (
     patch_surface_state as _patch_surface,
 )
+from augmentum.cast.trusted_receivers import normalise_ipv4, normalise_mac
+from augmentum.cast.wol import derive_broadcast, wake_receiver
 from augmentum.fabric.capabilities import (
     KIND_CAST_RENDER,
     CapabilityBase,
@@ -1712,7 +1716,7 @@ def _collapse_comics_to_series(
     don't know how to group) fall through as their own tiles.
 
     Capped at ``limit`` tiles so the rail stays compact."""
-    series_rep: "OrderedDict[tuple[str, str], Any]" = OrderedDict()
+    series_rep: OrderedDict[tuple[str, str], Any] = OrderedDict()
     series_count: dict[tuple[str, str], int] = {}
     one_shots: list[Any] = []
     for entry in entries:
@@ -2568,10 +2572,10 @@ async def cast_render_stream_start(
     if raw_target.startswith(("http://", "https://")):
         absolute_target = raw_target
     else:
-        from augmentum.proxy.game_stream_routes import _stream_probe_host
         # Augmentum's HTTPS edge port. Pulled from settings so a
         # non-default deployment routes correctly.
         from augmentum.config import settings as _settings
+        from augmentum.proxy.game_stream_routes import _stream_probe_host
         edge_port = int(getattr(_settings, "https_port", 6443) or 6443)
         if not raw_target.startswith("/"):
             raw_target = "/" + raw_target
@@ -2599,8 +2603,8 @@ async def cast_render_stream_start(
         redeem_token = redeem_store.mint(
             session_token=raw_session, user_id=user.id, next_url=absolute_target,
         )
-        from augmentum.proxy.game_stream_routes import _stream_probe_host
         from augmentum.config import settings as _settings
+        from augmentum.proxy.game_stream_routes import _stream_probe_host
         edge_port = int(getattr(_settings, "https_port", 6443) or 6443)
         absolute_target = (
             f"https://{_stream_probe_host()}:{edge_port}"

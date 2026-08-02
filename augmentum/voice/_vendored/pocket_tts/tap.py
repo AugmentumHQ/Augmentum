@@ -43,7 +43,8 @@ Usage::
 from __future__ import annotations
 
 import logging
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from augmentum.voice._vendored.pocket_tts.upstream_pin import (
     REQUIRED_UPSTREAM_METHODS,
@@ -179,7 +180,11 @@ def _build_tapped_class() -> Any | None:
             # the class itself wouldn't have been built in that case.
             import queue  # noqa: F401  — used implicitly by the queue.put pattern
             import time
-            from pocket_tts.models.mimi import init_states, increment_steps  # type: ignore[import-untyped]
+
+            from pocket_tts.models.mimi import (  # type: ignore[import-untyped]
+                increment_steps,
+                init_states,
+            )
 
             callback = self.mimi_codes_callback
             chunk_index = 0

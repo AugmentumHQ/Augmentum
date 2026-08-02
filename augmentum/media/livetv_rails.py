@@ -34,11 +34,10 @@ result back to the UI.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Iterable
 
 from augmentum.media.providers.base import CatalogItem
-
 
 # ── Network-name hints ────────────────────────────────────────────
 # Conservative on purpose — each list short enough to scan, every

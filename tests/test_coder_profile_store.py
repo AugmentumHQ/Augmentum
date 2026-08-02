@@ -12,7 +12,6 @@ import pytest
 
 from augmentum.coder.profile import CoderProfileStore, ProfileEntry
 
-
 _SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS coder_profile (
     id                TEXT PRIMARY KEY,

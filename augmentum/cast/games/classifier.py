@@ -29,16 +29,15 @@ from augmentum.cast.games.models import (
     CLASSIFIED_DEFAULT,
     CastProfile,
     HostCapabilities,
-    STRATEGY_PROXY,
-    STRATEGY_SHIM,
 )
+from augmentum.cast.games.registry import CastProfileRegistry
+
 # Importing strategies registers the defaults.
 from augmentum.cast.games.strategies import (  # noqa: F401  (side-effect import)
     CastStrategy,
     StrategyRegistry,
     strategy_registry,
 )
-from augmentum.cast.games.registry import CastProfileRegistry
 from augmentum.utils.logging import get_logger
 
 log = get_logger(__name__)

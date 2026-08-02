@@ -33,13 +33,11 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
-import math
 import re
 import sys
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 # Force UTF-8 stdout on Windows
 if sys.platform == "win32":
@@ -54,25 +52,20 @@ import httpx
 from augmentum.models.base import (
     InternalChatRequest,
     InternalChatResponse,
-    InternalStreamChunk,
     Message,
-    ModelBackend,
-    Usage,
 )
 from augmentum.models.openai_compat import OpenAIBackend
-from augmentum.tools.base import Tool, ToolCategory, ToolResult
-from augmentum.tools.parsing import (
-    ParsedToolCall,
-    build_text_tool_prompt,
-    coerce_and_execute,
-    parse_tool_calls,
-)
 from augmentum.modes.analytical.tool_calling import (
     ToolCallingTier,
     select_tier,
     tools_to_native_format,
 )
-
+from augmentum.tools.base import Tool, ToolCategory, ToolResult
+from augmentum.tools.parsing import (
+    build_text_tool_prompt,
+    coerce_and_execute,
+    parse_tool_calls,
+)
 
 # ---------------------------------------------------------------------------
 # Real tools (hit real APIs)
@@ -372,7 +365,7 @@ def build_task_suite() -> list[TestTask]:
                     for n in re.findall(r"[\d,]+\.?\d*", answer.replace(",", ""))
                     if _safe_float(n.replace(",", "")) is not None
                 ),
-                explanation=f"Expected ~1,079,251,200 km",
+                explanation="Expected ~1,079,251,200 km",
                 partial_credit=0.5 if any(tc["name"] == "calculator" for tc in tc) else 0.0,
             ),
         ),
@@ -1042,7 +1035,7 @@ async def main():
 
     print(f"\n  Tools: {', '.join(t.name for t in tools)}")
     print(f"  Tasks: {len(tasks)}")
-    print(f"  Strategies: single_shot, react, rewoo")
+    print("  Strategies: single_shot, react, rewoo")
     print(f"  Total runs: {len(models) * len(tasks) * 3}")
 
     # Create backend

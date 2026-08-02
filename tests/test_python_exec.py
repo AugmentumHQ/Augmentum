@@ -5,9 +5,8 @@ from __future__ import annotations
 from unittest.mock import AsyncMock, MagicMock
 
 import httpx
-import pytest
 
-from augmentum.tools.python_exec import PythonExecTool, _BLOCKED_PATTERNS
+from augmentum.tools.python_exec import PythonExecTool
 
 
 def _make_tool(client: MagicMock | None = None) -> PythonExecTool:

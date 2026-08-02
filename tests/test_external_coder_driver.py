@@ -585,8 +585,8 @@ async def test_run_stream_persists_run_and_captures_session(monkeypatch):
 
 
 async def test_run_stream_resume_uses_prior_session(monkeypatch):
-    from augmentum.proxy import external_coder_routes as r
     from augmentum.coder.external import run_store as rs
+    from augmentum.proxy import external_coder_routes as r
 
     monkeypatch.setattr(r.cts, "load_token", _async_return("sk-ant-oat01-tok"))
     monkeypatch.setattr(r, "_ensure_claude_cli", _async_return(None))
@@ -638,8 +638,8 @@ async def test_run_stream_resume_missing_run_404(monkeypatch):
 
 
 def test_build_claude_argv_resume_prepends_flag():
-    from augmentum.coder.external.claude_cli import build_claude_argv
     from augmentum.coder.external.base import ExternalTask
+    from augmentum.coder.external.claude_cli import build_claude_argv
     argv = build_claude_argv(ExternalTask(prompt="hi"), resume_session_id="sess-1")
     assert argv[:3] == ["claude", "--resume", "sess-1"]
     # No resume → no flag.
@@ -650,6 +650,7 @@ def test_build_claude_argv_resume_prepends_flag():
 
 async def test_run_manager_survives_viewer_leaving():
     import asyncio
+
     from augmentum.coder.external.run_manager import RunManager
     mgr = RunManager()
     run = mgr.create("r1", workspace_id="w", user_id="u", task="t")
@@ -673,6 +674,7 @@ async def test_run_manager_survives_viewer_leaving():
 
 async def test_run_manager_stop_cancels():
     import asyncio
+
     from augmentum.coder.external.run_manager import RunManager
     mgr = RunManager()
     run = mgr.create("r2", workspace_id="w", user_id="u", task="t")
@@ -688,8 +690,8 @@ async def test_run_manager_stop_cancels():
 
 
 async def test_attach_replays_finished_run():
-    from augmentum.proxy import external_coder_routes as r
     from augmentum.coder.external import run_store as rs
+    from augmentum.proxy import external_coder_routes as r
     conn = await _mk_runs_db()
     try:
         await rs.create_run(conn, run_id="done1", user_id="u1", workspace_id="ws1", task="did a thing")
@@ -707,8 +709,8 @@ async def test_attach_replays_finished_run():
 
 
 async def test_stop_endpoint_marks_cancelled():
-    from augmentum.proxy import external_coder_routes as r
     from augmentum.coder.external import run_store as rs
+    from augmentum.proxy import external_coder_routes as r
     conn = await _mk_runs_db()
     try:
         await rs.create_run(conn, run_id="liverun", user_id="u1", workspace_id="ws1", task="t")

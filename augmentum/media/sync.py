@@ -25,8 +25,9 @@ happy path small; stale-cleanup is a follow-up.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Any, Awaitable, Callable
+from collections.abc import Awaitable, Callable
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any
 
 from augmentum.media.comic_series_store import get_comic_series_store
 from augmentum.media.library_store import get_media_library_store
@@ -484,7 +485,7 @@ async def sync_server(
         # and item_count set against rows that were never committed.
         await bulk.flush()
 
-    now_iso = datetime.now(tz=timezone.utc).isoformat()
+    now_iso = datetime.now(tz=UTC).isoformat()
     summary = _sync_success_detail(
         indexed=indexed,
         total_seen=total_items,

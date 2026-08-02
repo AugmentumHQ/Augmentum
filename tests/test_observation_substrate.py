@@ -7,11 +7,9 @@ doesn't depend on the bundled binary being present on the dev box.
 
 from __future__ import annotations
 
-import asyncio
 import json
-import os
 from pathlib import Path
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import aiosqlite
 import pytest
@@ -21,7 +19,6 @@ from augmentum.observation.fingerprint import (
     normalize_prefix,
 )
 from augmentum.observation.store import ObservationStore
-
 
 # ---------------------------------------------------------------------------
 # Schema bootstrap — apply the real migration so drift is caught here.

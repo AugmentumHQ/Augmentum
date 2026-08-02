@@ -237,7 +237,7 @@ mutation FetchChapterPages($input: FetchChapterPagesInput!) {
 
 def _encode_basic(username: str, password: str) -> str:
     """Return ``base64(user:pass)`` for the HTTP Basic header."""
-    raw = f"{username}:{password}".encode("utf-8")
+    raw = f"{username}:{password}".encode()
     return base64.b64encode(raw).decode("ascii")
 
 

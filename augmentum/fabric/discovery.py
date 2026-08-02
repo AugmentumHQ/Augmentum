@@ -49,8 +49,8 @@ from __future__ import annotations
 import asyncio
 import ipaddress
 import time
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Iterable
 
 import httpx
 
@@ -322,7 +322,7 @@ async def sweep_subnet(
                 asyncio.gather(*tasks, return_exceptions=True),
                 timeout=max(2.0, float(timeout_s)),
             )
-        except asyncio.TimeoutError:
+        except TimeoutError:
             for t in tasks:
                 if not t.done():
                     t.cancel()

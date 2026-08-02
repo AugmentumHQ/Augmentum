@@ -23,7 +23,6 @@ from augmentum.models.base import (
 )
 from augmentum.modes.analytical.engine import (
     _CONFIDENCE_THRESHOLD,
-    _MAX_TOOL_CALLS_PER_PHASE,
     AnalyticalEngine,
 )
 from augmentum.modes.analytical.tool_calling import (
@@ -89,7 +88,6 @@ _RESPOND_VOICE_GUARD = (
 )
 
 if TYPE_CHECKING:
-    from augmentum.modes.analytical.prompts import get_native_tool_prompt_section
     from augmentum.models.provider_registry import ProviderRegistry
     from augmentum.tools.registry import ToolRegistry
 
@@ -100,7 +98,7 @@ async def _resolve_step_backend(
     step: FlowStep,
     default_backend: ModelBackend,
     default_model: str,
-    provider_registry: "ProviderRegistry | None",
+    provider_registry: ProviderRegistry | None,
 ) -> tuple[ModelBackend, str]:
     """Resolve the backend and model for a step, respecting model_override."""
     if not step.model_override:
@@ -224,9 +222,7 @@ def filter_steps_by_complexity(
     for step in steps:
         if not step.enabled:
             continue
-        if not step.complexity_gate:
-            result.append(step)
-        elif complexity in step.complexity_gate:
+        if not step.complexity_gate or complexity in step.complexity_gate:
             result.append(step)
     return result
 
@@ -322,7 +318,7 @@ def _translate_step_tool_choice(
 
 def _resolve_tools_for_step(
     step: FlowStep,
-    tool_registry: "ToolRegistry | None",
+    tool_registry: ToolRegistry | None,
     *,
     exclude: frozenset[str] | None = None,
 ) -> list:
@@ -389,8 +385,8 @@ async def execute_flow_stream(
     model: str,
     query: str,
     *,
-    tool_registry: "ToolRegistry | None" = None,
-    provider_registry: "ProviderRegistry | None" = None,
+    tool_registry: ToolRegistry | None = None,
+    provider_registry: ProviderRegistry | None = None,
     conversation_context: str = "",
     search_context: str = "",
     user_system: str = "",
@@ -1105,7 +1101,7 @@ async def _tool_loop_nonstreaming(
     step_name: str,
     complexity: str,
     tool_exclude: frozenset[str] | None,
-    tool_registry: "ToolRegistry | None",
+    tool_registry: ToolRegistry | None,
     tool_choice: str | dict | None = None,
 ) -> str:
     """Run non-streaming tool loop for tier 1/2. Returns final output."""
@@ -1123,7 +1119,7 @@ async def _tool_loop_nonstreaming(
         )
         try:
             response = await asyncio.wait_for(backend.chat(req), timeout=_timeout)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             log.warning("tool_loop_llm_timeout", step=step_name, timeout=_timeout)
             return f"{_STEP_ERROR_PREFIX}LLM call timed out after {_timeout}s during tool loop."
         output = response.message.content if response.message else ""
@@ -1206,7 +1202,7 @@ async def _tool_loop_nonstreaming(
     )
     try:
         response = await asyncio.wait_for(backend.chat(req), timeout=_timeout)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         log.warning("tool_loop_final_llm_timeout", step=step_name, timeout=_timeout)
         return f"{_STEP_ERROR_PREFIX}LLM call timed out after {_timeout}s."
     output = response.message.content if response.message else ""
@@ -1230,7 +1226,7 @@ async def _tool_loop_with_chunks(
     structured_schema: dict | None,
     max_calls: int,
     tool_exclude: frozenset[str] | None,
-    tool_registry: "ToolRegistry | None",
+    tool_registry: ToolRegistry | None,
     tool_choice: str | dict | None = None,
 ) -> str:
     """Run tool loop returning final output (chunks yielded by caller)."""

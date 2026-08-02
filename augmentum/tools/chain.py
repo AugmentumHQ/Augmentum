@@ -1132,7 +1132,7 @@ async def execute_chain(
         # Execute wave in parallel (semaphore caps concurrency)
         sem = asyncio.Semaphore(settings.passthrough_chain_max_parallel)
 
-        async def _guarded(step: ChainStep) -> StepResult:
+        async def _guarded(step: ChainStep, sem=sem) -> StepResult:
             async with sem:
                 return await execute_step(
                     step, results, backend, tool_registry,

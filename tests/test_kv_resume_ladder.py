@@ -31,7 +31,6 @@ from augmentum.models.kv_resume import KVResumeLadder
 from augmentum.models.kv_session_manifest import KVSessionManifest
 from augmentum.models.llama_cpp import LlamaCppBackend
 
-
 # ---------------------------------------------------------------------------
 # helpers
 # ---------------------------------------------------------------------------

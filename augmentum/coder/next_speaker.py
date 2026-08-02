@@ -33,7 +33,8 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass, replace as _dataclass_replace
+from dataclasses import dataclass
+from dataclasses import replace as _dataclass_replace
 from typing import TYPE_CHECKING
 
 from augmentum.models.base import InternalChatRequest, Message
@@ -106,7 +107,7 @@ def _last_assistant_text(messages: list[Message]) -> str:
 
 
 async def check_next_speaker(
-    backend: "Backend",
+    backend: Backend,
     *,
     source_request: InternalChatRequest,
     messages: list[Message],

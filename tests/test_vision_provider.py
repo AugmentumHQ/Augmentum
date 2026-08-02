@@ -95,8 +95,9 @@ async def test_primary_vision_provider_no_app_state():
 @pytest.mark.asyncio
 async def test_primary_vision_provider_no_llama_manager():
     """app_state without llama_manager → not available."""
-    from augmentum.vision.provider import PrimaryVisionProvider
     from types import SimpleNamespace
+
+    from augmentum.vision.provider import PrimaryVisionProvider
     p = PrimaryVisionProvider(app_state=SimpleNamespace())
     assert await p.is_available() is False
 
@@ -104,8 +105,9 @@ async def test_primary_vision_provider_no_llama_manager():
 @pytest.mark.asyncio
 async def test_primary_vision_provider_text_only_model():
     """Loaded primary without mmproj → not available (text-only)."""
-    from augmentum.vision.provider import PrimaryVisionProvider
     from types import SimpleNamespace
+
+    from augmentum.vision.provider import PrimaryVisionProvider
     mgr = SimpleNamespace(
         state=SimpleNamespace(name="READY"),
         current_mmproj_path="",  # text-only model
@@ -118,8 +120,9 @@ async def test_primary_vision_provider_text_only_model():
 @pytest.mark.asyncio
 async def test_primary_vision_provider_vl_capable():
     """Loaded primary with paired mmproj → available."""
-    from augmentum.vision.provider import PrimaryVisionProvider
     from types import SimpleNamespace
+
+    from augmentum.vision.provider import PrimaryVisionProvider
     mgr = SimpleNamespace(
         state=SimpleNamespace(name="READY"),
         current_mmproj_path="/models/some/mmproj.gguf",
@@ -166,7 +169,9 @@ def test_ensure_stb_decodable_transcodes_webp_to_png():
     pinned 2026-06-08 after 9 hourly caption failures on a single
     WebP in the file_index."""
     import io
+
     from PIL import Image
+
     from augmentum.vision.provider import _ensure_stb_decodable
 
     # Build a tiny real WebP in memory.
@@ -221,8 +226,8 @@ async def test_classifier_vision_payload_uses_gemma_params_and_instruct():
     """Gemma path posts its recommended sampling + thinking OFF (instruct,
     low-latency captioning role)."""
     from augmentum.vision.provider import (
-        ClassifierVisionProvider,
         _CAPTION_SAMPLING,
+        ClassifierVisionProvider,
     )
     http = _CapturingHttp()
     prov = ClassifierVisionProvider("http://classifier:9099/v1", http)

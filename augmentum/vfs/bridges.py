@@ -6,8 +6,8 @@ import mimetypes
 import os
 from typing import TYPE_CHECKING
 
-from augmentum.vfs.models import VFSNode
 from augmentum.utils.logging import get_logger
+from augmentum.vfs.models import VFSNode
 
 if TYPE_CHECKING:
     import aiosqlite

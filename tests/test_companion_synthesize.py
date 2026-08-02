@@ -22,12 +22,15 @@ import pytest
 
 
 def test_time_of_day_tone_mapping():
-    from augmentum.tools.synthesize import (
-        _time_of_day_tone,
-        _TONE_OVERNIGHT, _TONE_MIDDAY, _TONE_EVENING,
-    )
     # Build timestamps in local time
     import datetime
+
+    from augmentum.tools.synthesize import (
+        _TONE_EVENING,
+        _TONE_MIDDAY,
+        _TONE_OVERNIGHT,
+        _time_of_day_tone,
+    )
     today = datetime.date.today()
 
     def _ts(hour: int) -> float:
@@ -58,7 +61,7 @@ def test_entity_tokens_empty_input():
 
 
 def test_build_system_prompt_includes_rules():
-    from augmentum.tools.synthesize import _build_system_prompt, _TONE_MIDDAY
+    from augmentum.tools.synthesize import _TONE_MIDDAY, _build_system_prompt
     prompt = _build_system_prompt(persona_kernel="", tone=_TONE_MIDDAY)
     # Contract rules present
     assert "empty string if no real connection exists" in prompt.lower()
@@ -67,8 +70,8 @@ def test_build_system_prompt_includes_rules():
 
 
 def test_build_user_prompt_includes_moments():
-    from augmentum.tools.synthesize import _build_user_prompt
     from augmentum.resolver.core import Moment
+    from augmentum.tools.synthesize import _build_user_prompt
 
     moments = [
         Moment(id="m1", kind="file", score=0.5,
@@ -97,8 +100,8 @@ async def test_synthesize_empty_input_short_circuits():
 @pytest.mark.asyncio
 async def test_synthesize_backend_failure_returns_empty():
     """When tiers.utility raises (no provider configured), result is empty."""
-    from augmentum.tools.synthesize import synthesize
     from augmentum.resolver.core import Moment
+    from augmentum.tools.synthesize import synthesize
 
     runtime = MagicMock()
     runtime._app_state = MagicMock()
@@ -118,8 +121,8 @@ async def test_synthesize_backend_failure_returns_empty():
 @pytest.mark.asyncio
 async def test_synthesize_empty_llm_output_is_contract_compliant():
     """Empty model output is the 'no real connection' contract, not a failure."""
-    from augmentum.tools.synthesize import synthesize
     from augmentum.resolver.core import Moment
+    from augmentum.tools.synthesize import synthesize
 
     # Build a fake backend whose chat returns empty content
     fake_response = MagicMock()
@@ -157,8 +160,8 @@ async def test_synthesize_empty_llm_output_is_contract_compliant():
 @pytest.mark.asyncio
 async def test_synthesize_grounded_when_entities_match():
     """When LLM output references items from input, grounded=True."""
-    from augmentum.tools.synthesize import synthesize
     from augmentum.resolver.core import Moment
+    from augmentum.tools.synthesize import synthesize
 
     fake_response = MagicMock()
     fake_response.content = 'The "Prefix Paper" connects to your April KV work.'
@@ -195,8 +198,8 @@ async def test_synthesize_grounded_when_entities_match():
 @pytest.mark.asyncio
 async def test_synthesize_ungrounded_when_entities_invented():
     """When LLM output references items NOT in input, grounded=False."""
-    from augmentum.tools.synthesize import synthesize
     from augmentum.resolver.core import Moment
+    from augmentum.tools.synthesize import synthesize
 
     fake_response = MagicMock()
     fake_response.content = (

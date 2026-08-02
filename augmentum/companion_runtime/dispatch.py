@@ -25,11 +25,10 @@ pattern.
 from __future__ import annotations
 
 import asyncio
-import math
 import re
 import time
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from augmentum.utils.logging import get_logger
 
@@ -340,7 +339,7 @@ async def _consult_tiebreaker(
 
     try:
         text = await asyncio.wait_for(_call(), timeout=TIE_BREAKER_TIMEOUT_S)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         # Working-as-designed — the tiebreaker LLM is fast-or-skip, and a
         # timeout cleanly falls back to top-1. Was firing as ``warning`` at
         # ~40/day; debug keeps the signal available without flooding the

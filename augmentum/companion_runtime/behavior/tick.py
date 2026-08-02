@@ -81,7 +81,7 @@ class TickLoop:
             self._subscription = None
         try:
             await asyncio.wait_for(self._task, timeout=2.0)
-        except (asyncio.TimeoutError, asyncio.CancelledError):
+        except (TimeoutError, asyncio.CancelledError):
             self._task.cancel()
         self._task = None
         log.info("companion_tick_stopped", companion_id=self.runtime.companion_id)
@@ -104,7 +104,7 @@ class TickLoop:
                 budget_s = self._current_budget_s()
                 try:
                     await asyncio.wait_for(self._wake_event.wait(), timeout=budget_s)
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     pass
                 self._wake_event.clear()
                 # Coalesce a burst of events into one tick.
@@ -157,7 +157,7 @@ class TickLoop:
         while not self._stop_event.is_set():
             try:
                 event = await asyncio.wait_for(sub.queue.get(), timeout=1.0)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 continue
             except Exception:
                 break

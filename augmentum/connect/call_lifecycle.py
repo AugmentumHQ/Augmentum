@@ -48,7 +48,6 @@ from augmentum.notifications import (
 )
 from augmentum.utils.logging import get_logger
 
-
 if TYPE_CHECKING:
     from augmentum.connect.hub import ConnectHub
     from augmentum.notifications import NotificationHub
@@ -67,8 +66,8 @@ _TIMERS: dict[str, asyncio.Task[None]] = {}
 def arm_invite_timer(
     *,
     conn: Any,
-    connect_hub: "ConnectHub",
-    notification_hub: "NotificationHub",
+    connect_hub: ConnectHub,
+    notification_hub: NotificationHub,
     call_id: str,
     initiator_user_id: str,
     initiator_did: str,
@@ -188,8 +187,8 @@ async def recover_stale_invites_on_startup(
 async def _wait_then_maybe_mark_missed(
     *,
     conn: Any,
-    connect_hub: "ConnectHub",
-    notification_hub: "NotificationHub",
+    connect_hub: ConnectHub,
+    notification_hub: NotificationHub,
     call_id: str,
     initiator_user_id: str,
     initiator_did: str,
@@ -231,8 +230,8 @@ async def _wait_then_maybe_mark_missed(
 async def _mark_missed(
     *,
     conn: Any,
-    connect_hub: "ConnectHub",
-    notification_hub: "NotificationHub",
+    connect_hub: ConnectHub,
+    notification_hub: NotificationHub,
     call_id: str,
     initiator_user_id: str,
     initiator_did: str,

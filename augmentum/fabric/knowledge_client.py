@@ -52,7 +52,7 @@ class RemoteSearchError(Exception):
 async def search_remote_packs(
     *,
     http_client: httpx.AsyncClient,
-    identity: "FabricIdentity",
+    identity: FabricIdentity,
     user_id: str,
     peer_addr: str,
     query: str,

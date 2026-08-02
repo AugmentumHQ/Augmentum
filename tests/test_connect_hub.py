@@ -8,9 +8,6 @@ outbound queue.
 
 from __future__ import annotations
 
-import asyncio
-from typing import Any
-
 import pytest
 
 from augmentum.connect.hub import ConnectHub

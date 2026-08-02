@@ -233,7 +233,7 @@ async def classify_with_llm(
 
     try:
         resp = await asyncio.wait_for(backend.chat(req), timeout=timeout_s)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         elapsed = int((_time.monotonic() - started_at) * 1000)
         log.info("address_llm_timeout", ms=elapsed, model=resolved_model)
         return LlmAddressDecision("UNSURE", elapsed, resolved_model, reason="timeout")

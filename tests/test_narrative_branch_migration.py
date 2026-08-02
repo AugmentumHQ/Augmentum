@@ -19,7 +19,6 @@ import pytest
 
 from augmentum.state.backends.sqlite import SQLiteBackend
 
-
 _MIGRATION_DIR = Path(__file__).parent.parent / "augmentum" / "state" / "migrations"
 
 

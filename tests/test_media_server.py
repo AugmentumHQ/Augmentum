@@ -12,7 +12,6 @@ Live-server tests live separately under tests/live/ when we wire them.
 from __future__ import annotations
 
 import asyncio
-import json
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -20,13 +19,14 @@ import aiosqlite
 import pytest
 
 from augmentum.media.providers.audiobookshelf import (
-    AudiobookshelfProvider, _item_from_abs,
+    AudiobookshelfProvider,
+    _item_from_abs,
 )
-from augmentum.media.providers.base import CatalogItem, DEFAULT_PORTS, ProviderInfo
-from augmentum.media.sync import sync_server
+from augmentum.media.providers.base import DEFAULT_PORTS, CatalogItem, ProviderInfo
 from augmentum.media.providers.emby import EmbyProvider
 from augmentum.media.providers.jellyfin import JellyfinProvider
 from augmentum.media.store import MediaServerStore, _normalize_base_url
+from augmentum.media.sync import sync_server
 from augmentum.vfs.adapters.media_server import MediaServerAdapter
 
 
@@ -1620,7 +1620,8 @@ class TestTokensMatchAsRelated:
 
     def test_exact_match_matches(self):
         from augmentum.media.normalize import (
-            normalize_name, tokens_match_as_related,
+            normalize_name,
+            tokens_match_as_related,
         )
         a = normalize_name("Brandon Sanderson")
         b = normalize_name("Brandon Sanderson")
@@ -1629,7 +1630,8 @@ class TestTokensMatchAsRelated:
     def test_extra_token_on_one_side_matches(self):
         """Seed has a junk token appended (common uploader error)."""
         from augmentum.media.normalize import (
-            normalize_name, tokens_match_as_related,
+            normalize_name,
+            tokens_match_as_related,
         )
         seed = normalize_name("JF Brink TheFirstDefier")
         other = normalize_name("JF Brink")
@@ -1641,7 +1643,8 @@ class TestTokensMatchAsRelated:
         """A co-authored book should surface the solo titles of each
         author, not show "no other books"."""
         from augmentum.media.normalize import (
-            normalize_name, tokens_match_as_related,
+            normalize_name,
+            tokens_match_as_related,
         )
         coauth = normalize_name("Jane Austen, Charles Dickens")
         solo = normalize_name("Jane Austen")
@@ -1652,7 +1655,8 @@ class TestTokensMatchAsRelated:
         surname — neither is a subset of the other. They're different
         people and must not appear as "Also by"."""
         from augmentum.media.normalize import (
-            normalize_name, tokens_match_as_related,
+            normalize_name,
+            tokens_match_as_related,
         )
         a = normalize_name("Jane Smith")
         b = normalize_name("John Smith")
@@ -1699,7 +1703,9 @@ class TestMediaStatusFilter:
 
     def test_filters_in_progress(self):
         async def go():
-            import aiosqlite, json
+            import json
+
+            import aiosqlite
             conn = await aiosqlite.connect(":memory:")
             await conn.executescript("""
                 CREATE TABLE users (id TEXT PRIMARY KEY);
@@ -1757,7 +1763,8 @@ class TestMediaStatusFilter:
     def test_unknown_status_falls_through(self):
         """Unknown values are silently ignored (not injected)."""
         async def go():
-            import aiosqlite, json
+
+            import aiosqlite
             conn = await aiosqlite.connect(":memory:")
             await conn.executescript("""
                 CREATE TABLE users (id TEXT PRIMARY KEY);

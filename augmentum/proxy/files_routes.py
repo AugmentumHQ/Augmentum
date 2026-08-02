@@ -2083,7 +2083,6 @@ async def render_file(file_id: str, request: Request):
     """
     import os
 
-    from fastapi import HTTPException
     from fastapi.responses import FileResponse, HTMLResponse
 
     idx = _get_index(request)
@@ -2132,7 +2131,11 @@ async def render_file(file_id: str, request: Request):
     display_name = entry.name
 
     from augmentum.proxy.artifact_routes import (
-        _docx_to_html, _epub_to_html, _pptx_to_html, _preview_shell, _xlsx_to_html,
+        _docx_to_html,
+        _epub_to_html,
+        _pptx_to_html,
+        _preview_shell,
+        _xlsx_to_html,
     )
 
     if ext == "pdf":
@@ -2388,10 +2391,13 @@ async def tts_studio_synthesize(request: Request):
     else:
         # Long text: chunk + stitch — requires a built-in engine (Kokoro /
         # Pocket TTS) since they yield well-formed per-segment WAV.
-        from augmentum.proxy.audio_routes import _BUILTIN_TTS_IDS, resolve_voice_provider
         from augmentum.jobs.handlers.narration_synth import (
-            _chunk_text, _concat_wav, _engine_wav_blobs, _resolve_synth_engine,
+            _chunk_text,
+            _concat_wav,
+            _engine_wav_blobs,
+            _resolve_synth_engine,
         )
+        from augmentum.proxy.audio_routes import _BUILTIN_TTS_IDS, resolve_voice_provider
         provider, _ = await resolve_voice_provider(backend.conn, voice or "")
         engine_id = provider.get("id") if provider else ""
         if engine_id not in _BUILTIN_TTS_IDS:

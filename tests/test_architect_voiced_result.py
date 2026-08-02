@@ -15,7 +15,6 @@ from augmentum.architect.router import _voiced_result
 from augmentum.intent.action import ActionResult, SessionContext
 from augmentum.intent.builtin.media import _media_play, _media_recommend
 
-
 # ── _voiced_result: the gate ────────────────────────────────────────────────
 
 def test_override_wins_when_fulfilled():

@@ -17,9 +17,12 @@ from augmentum.models.base import (
     Usage,
     is_vision_model_name,
 )
-from augmentum.utils.thinking import detect_reasoning_family
 from augmentum.utils.logging import get_logger
-from augmentum.utils.thinking import ThinkingStreamBuffer, normalize_thinking
+from augmentum.utils.thinking import (
+    ThinkingStreamBuffer,
+    detect_reasoning_family,
+    normalize_thinking,
+)
 
 if TYPE_CHECKING:
     import httpx

@@ -35,7 +35,6 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
-
 # Tools the partner is permitted to call. Registered as regular tools
 # in the global registry (so any character could use them), but the
 # partner card's system prompt only mentions these — narrative-mode

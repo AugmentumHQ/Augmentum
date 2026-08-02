@@ -7,9 +7,7 @@ SQLite and can coexist alongside local GPU generation.
 
 from __future__ import annotations
 
-import asyncio
 import base64
-import contextlib
 import uuid
 from typing import Any
 
@@ -687,7 +685,7 @@ async def cloud_edit(body: CloudEditRequest, request: Request):
     except httpx.HTTPStatusError as exc:
         detail = sanitize_error_detail(exc.response.text[:500]) if exc.response else str(exc)
         raise HTTPException(exc.response.status_code, f"Cloud image edit error: {detail}")
-    except httpx.RequestError as exc:
+    except httpx.RequestError:
         raise HTTPException(502, "Could not reach cloud image provider")
 
 

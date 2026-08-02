@@ -1,5 +1,6 @@
 """200-prompt test suite for tool filter accuracy."""
 import sys
+
 sys.path.insert(0, ".")
 
 from collections import Counter

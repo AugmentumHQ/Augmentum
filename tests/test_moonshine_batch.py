@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import sys
 import time
+
 import numpy as np
 
 
@@ -45,7 +46,7 @@ def main():
     # ---------------------------------------------------------------
     test_step("Import moonshine_voice")
     try:
-        from moonshine_voice import Transcriber, get_model_for_language, TranscriptEventListener
+        from moonshine_voice import Transcriber, TranscriptEventListener, get_model_for_language
         print("OK: moonshine_voice imported")
         print(f"   Transcriber: {Transcriber}")
         print(f"   get_model_for_language: {get_model_for_language}")
@@ -131,7 +132,7 @@ def main():
                 text = (event.line.text or "").strip()
                 print(f"    [LISTENER] on_line_text_changed: '{text}'")
             def on_line_started(self, event):
-                print(f"    [LISTENER] on_line_started")
+                print("    [LISTENER] on_line_started")
 
         t.add_listener(TestListener())
 
@@ -163,9 +164,9 @@ def main():
     # ---------------------------------------------------------------
     test_step("Test with real WAV audio (if ffmpeg available)")
     try:
+        import os
         import subprocess
         import tempfile
-        import os
 
         # Generate a WAV with ffmpeg's built-in tone generator
         wav_path = tempfile.mktemp(suffix=".wav")
@@ -226,6 +227,7 @@ def main():
         print(f"   PCM16: {len(pcm16)} bytes, {len(pcm16)/(16000*2):.1f}s")
 
         import asyncio
+
         from augmentum.proxy.audio_routes import _moonshine_batch_transcribe
 
         async def _test():

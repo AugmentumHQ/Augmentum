@@ -16,10 +16,7 @@ Two distinct leaks were surfaced in the real-world session:
 """
 from __future__ import annotations
 
-import pytest
-
 from augmentum.modes.coder.phase_plan import _PLAN_MARKER_RE
-
 
 # ---------------------------------------------------------------------------
 # Plan-phase marker regex

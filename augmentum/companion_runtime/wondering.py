@@ -28,7 +28,6 @@ Uses ``safe_journal`` so every write is validated + provenance-tagged.
 
 from __future__ import annotations
 
-import time
 from typing import TYPE_CHECKING
 
 from augmentum.utils.logging import get_logger

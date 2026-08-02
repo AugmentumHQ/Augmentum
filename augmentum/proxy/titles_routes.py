@@ -23,13 +23,14 @@ import zlib
 from typing import Any
 
 from fastapi import APIRouter, File, Form, Request, UploadFile
+from fastapi.responses import JSONResponse
+
 # Starlette's UploadFile is the *parent* of fastapi.UploadFile in the
 # current FastAPI/Starlette pinned here. request.form() returns the
 # parent class directly, so an isinstance check against the FastAPI
 # subclass returns False and silently skips every file. Import the
 # parent class under an alias so the runtime guard accepts both.
 from starlette.datastructures import UploadFile as _StarletteUploadFile
-from fastapi.responses import JSONResponse
 
 from augmentum.config import settings
 from augmentum.titles import (

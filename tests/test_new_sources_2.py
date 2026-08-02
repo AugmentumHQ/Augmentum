@@ -170,10 +170,10 @@ async def main():
                 st = _status(content, chars)
                 preview = content[:60].replace("\n", " ")
                 return (domain, st, chars, cats, ctype, fresh, preview)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 return (domain, "TIMEOUT", 0, cats, ctype, fresh, "")
-            except Exception as e:
-                return (domain, "ERROR", 0, cats, ctype, fresh, str(e)[:60])
+            except Exception as exc:
+                return (domain, "ERROR", 0, cats, ctype, fresh, str(exc)[:60])
 
         results = await asyncio.gather(*[test_one(e) for e in batch])
         for domain, st, chars, cats, ctype, fresh, preview in results:
@@ -189,7 +189,7 @@ async def main():
 
     print(f"\n{'='*80}")
     print(f"PASSED: {len(ok)}  |  FAILED: {len(fail)}")
-    print(f"\nFAILED:")
+    print("\nFAILED:")
     for d, st in fail:
         print(f"  {d:<40} ({st})")
 

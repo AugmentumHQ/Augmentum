@@ -15,7 +15,7 @@ lifetime.
 
 from __future__ import annotations
 
-from typing import Iterable
+from collections.abc import Iterable
 
 from augmentum.utils.logging import get_logger
 

@@ -15,13 +15,10 @@ Two time bombs the architecture review flagged as latent-but-real:
 from __future__ import annotations
 
 import asyncio
-import base64
-import hashlib
 import time
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-
 
 # ── X-Fabric-Hop-Count ────────────────────────────────────────────
 
@@ -118,7 +115,8 @@ async def test_middleware_508s_when_hop_count_at_max():
     No backend dispatch, no auth user provisioning, just the refusal.
     """
     from augmentum.fabric.peer_middleware import (
-        FabricPeerMiddleware, _FABRIC_MAX_HOP_COUNT,
+        _FABRIC_MAX_HOP_COUNT,
+        FabricPeerMiddleware,
     )
 
     # downstream app shouldn't be invoked
@@ -237,6 +235,7 @@ async def test_sweeper_detaches_stale_peer():
     """A peer whose last_seen is older than HEARTBEAT_TIMEOUT_S gets
     auto-detached (state.connected → False, capabilities cleared)."""
     import aiosqlite
+
     from augmentum.fabric.coordinator import FabricCoordinator, PeerLiveState
     from augmentum.fabric.identity import FabricIdentity
     from augmentum.fabric.peer_auth import PairedPeer
@@ -295,6 +294,7 @@ async def test_sweeper_leaves_fresh_peer_alone():
     detached. Pin so the sweeper doesn't flap connections on the
     normal heartbeat cadence."""
     import aiosqlite
+
     from augmentum.fabric.coordinator import FabricCoordinator, PeerLiveState
     from augmentum.fabric.identity import FabricIdentity
     from augmentum.fabric.peer_auth import PairedPeer
@@ -345,6 +345,7 @@ async def test_sweeper_ignores_never_seen_peers():
     here means we never got a hello — possibly registered but no
     socket yet. The detach would be redundant."""
     import aiosqlite
+
     from augmentum.fabric.coordinator import FabricCoordinator, PeerLiveState
     from augmentum.fabric.identity import FabricIdentity
     from augmentum.fabric.peer_auth import PairedPeer
@@ -387,6 +388,7 @@ async def test_sweeper_ignores_never_seen_peers():
 async def test_sweeper_skips_disconnected_peers():
     """Already-disconnected peers don't need to be detached again."""
     import aiosqlite
+
     from augmentum.fabric.coordinator import FabricCoordinator, PeerLiveState
     from augmentum.fabric.identity import FabricIdentity
     from augmentum.fabric.peer_auth import PairedPeer
@@ -431,6 +433,7 @@ async def test_start_stop_sweeper_lifecycle():
     """start_heartbeat_sweeper is idempotent; stop_heartbeat_sweeper
     cleans up the background task on shutdown."""
     import aiosqlite
+
     from augmentum.fabric.coordinator import FabricCoordinator
     from augmentum.fabric.identity import FabricIdentity
     from augmentum.state.settings_store import SettingsStore
@@ -463,7 +466,7 @@ async def test_start_stop_sweeper_lifecycle():
         # Give the cancellation a turn to propagate
         try:
             await asyncio.wait_for(task1, timeout=0.5)
-        except (asyncio.CancelledError, asyncio.TimeoutError):
+        except (TimeoutError, asyncio.CancelledError):
             pass
         assert task1.cancelled() or task1.done()
     finally:

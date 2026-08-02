@@ -37,7 +37,7 @@ from typing import TYPE_CHECKING, Any
 from augmentum.utils.logging import get_logger
 
 if TYPE_CHECKING:
-    import aiosqlite
+    pass
 
 
 log = get_logger(__name__)
@@ -78,8 +78,8 @@ def _generate_keypair() -> tuple[str, str]:
     """Create a fresh P-256 keypair and return ``(public, private)``
     base64url-encoded strings."""
 
-    from cryptography.hazmat.primitives.asymmetric import ec
     from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import ec
 
     private_key = ec.generate_private_key(ec.SECP256R1())
 

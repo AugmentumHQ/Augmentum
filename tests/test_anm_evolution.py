@@ -18,7 +18,6 @@ import hashlib
 import json
 import os
 import sys
-import struct
 import tempfile
 import time
 import urllib.request
@@ -351,7 +350,7 @@ def main():
             if effective_tokens > 0:
                 speedup = total_gen_tokens / effective_tokens
                 projected = baseline_tps * speedup
-                print(f"\n  Projected with speculative execution:")
+                print("\n  Projected with speculative execution:")
                 print(f"    Tokens generated:    {total_gen_tokens}")
                 print(f"    Decode steps saved:  {window_draft_tokens} ({window_draft_tokens/total_gen_tokens*100:.1f}%)")
                 print(f"    Speedup factor:      {speedup:.2f}x")

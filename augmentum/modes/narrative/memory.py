@@ -16,13 +16,11 @@ LLM call.
 from __future__ import annotations
 
 import contextlib
-import json
 import re
 from dataclasses import dataclass, field
 from enum import Enum
 
 from augmentum.modes.narrative.card_parser import CharacterCard
-
 
 # Refusal detection — uses compound phrases to avoid false positives
 # on normal dialogue like "I can't believe you did that!"

@@ -135,7 +135,9 @@ class TestAnalysisCache:
 
     def test_cache_stores_and_retrieves(self):
         from augmentum.documents.query_analyzer import (
-            QueryAnalysis, _analysis_cache, _cache_key,
+            QueryAnalysis,
+            _analysis_cache,
+            _cache_key,
         )
 
         _analysis_cache.clear()

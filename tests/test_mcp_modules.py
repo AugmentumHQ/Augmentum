@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
-from augmentum.mcp.bridge import MCPToolWrapper, _DEFAULT_CATEGORY
+from augmentum.mcp.bridge import _DEFAULT_CATEGORY, MCPToolWrapper
 from augmentum.mcp.client import MCPClientManager, MCPServerConnection, ToolInfo
-from augmentum.tools.base import ToolCategory, ToolResult
 
 
 class TestMCPClientManager:

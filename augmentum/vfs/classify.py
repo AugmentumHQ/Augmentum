@@ -12,7 +12,6 @@ or chat_images produced it.
 
 from __future__ import annotations
 
-
 _IMAGE_EXTS = frozenset({
     "png", "jpg", "jpeg", "gif", "webp", "svg", "bmp", "ico", "tif", "tiff", "avif", "heic",
 })

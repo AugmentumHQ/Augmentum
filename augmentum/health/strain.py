@@ -105,8 +105,8 @@ class StrainMonitor:
 
     def __init__(
         self,
-        conn: "aiosqlite.Connection | None",
-        app: "FastAPI",
+        conn: aiosqlite.Connection | None,
+        app: FastAPI,
         *,
         db_path: str | None = None,
     ) -> None:
@@ -118,7 +118,7 @@ class StrainMonitor:
         self._app = app
         self._last_prune = 0.0
 
-    async def _conn(self) -> "aiosqlite.Connection | None":
+    async def _conn(self) -> aiosqlite.Connection | None:
         """Return the connection to write samples on.
 
         Prefers the sampler's PRIVATE connection (opened lazily from

@@ -19,10 +19,10 @@ from typing import Any
 from urllib.parse import quote
 
 from augmentum.cast.games.models import (
+    STRATEGY_SHIM,
     CastProfile,
     HostCapabilities,
     PreparedCast,
-    STRATEGY_SHIM,
 )
 from augmentum.cast.games.strategies.base import CastStrategy
 

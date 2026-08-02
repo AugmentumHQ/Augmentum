@@ -1,13 +1,10 @@
 """Dream System API routes."""
 from __future__ import annotations
 
-import dataclasses
-
+import structlog
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-
-import structlog
 
 log = structlog.get_logger(__name__)
 

@@ -29,6 +29,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import httpx
 
 from augmentum.modes.narrative.memory import (
+    MEMORY_CATEGORIES,
+    STATE_FIELDS,
     CardType,
     MemoryEntry,
     StateSnapshot,
@@ -36,8 +38,6 @@ from augmentum.modes.narrative.memory import (
     build_compaction_prompt,
     build_state_memory_prompt,
     parse_state_memory_response,
-    STATE_FIELDS,
-    MEMORY_CATEGORIES,
 )
 
 # ---------------------------------------------------------------------------
@@ -511,7 +511,7 @@ def print_report(results: list[EvalResult]) -> None:
 
             # Final state
             if r.final_state:
-                print(f"  Final STATE:")
+                print("  Final STATE:")
                 for k, v in r.final_state.items():
                     print(f"    {k}: {v[:80]}{'...' if len(v) > 80 else ''}")
 
@@ -595,7 +595,7 @@ async def main():
             if not path.exists():
                 print(f"WARNING: Conversation file not found: {path}")
 
-        print(f"\nEvaluation plan:")
+        print("\nEvaluation plan:")
         print(f"  Models: {', '.join(models)}")
         print(f"  Conversations: {len(convos)}")
         print(f"  Chunk size: {args.chunks}")

@@ -12,7 +12,6 @@ See ``docs/superpowers/specs/2026-05-05-multi-slot-kv-design.md``.
 from __future__ import annotations
 
 import json
-import logging
 
 import httpx
 import pytest

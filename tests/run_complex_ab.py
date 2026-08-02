@@ -1,11 +1,18 @@
 """Run complex builds that stretch beyond reference coverage."""
 from __future__ import annotations
-import asyncio, json, sys, time, re, urllib.request
+
+import asyncio
+import json
+import re
+import sys
+import time
+import urllib.request
+
 sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 sys.path.insert(0, '.')
 
-from augmentum.tools.artifact_application import ApplicationBuilderTool
 from augmentum.tools import application_references
+from augmentum.tools.artifact_application import ApplicationBuilderTool
 
 MODEL = ''
 try:
@@ -130,7 +137,7 @@ async def main():
 
         passed = 0
         total = len(build['checks'])
-        print(f'\n  Feature checks:')
+        print('\n  Feature checks:')
         for name, check_fn in build['checks'].items():
             ok = check_fn(all_js, all_code)
             if ok: passed += 1

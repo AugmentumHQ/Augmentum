@@ -9,20 +9,19 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from augmentum.proxy.cloud_image_routes import (
+    _KNOWN_CLOUD_MODELS,
     CloudEditRequest,
     CloudGenerateRequest,
     ImageProviderCreate,
     ImageProviderUpdate,
     _build_headers,
     _detect_provider_type,
+    _fetch_cloud_models,
     _is_bfl,
     _is_fal,
     _is_stability,
-    _KNOWN_CLOUD_MODELS,
-    _fetch_cloud_models,
     _save_cloud_image,
 )
-
 
 # ---------------------------------------------------------------------------
 # Provider type detection

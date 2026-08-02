@@ -19,7 +19,6 @@ from augmentum.personality.graph import (
 )
 from augmentum.personality.store import COOCCURRENCE_FLOOR, PersonalityStore
 
-
 _MIGRATION = (
     Path(__file__).resolve().parent.parent
     / "augmentum"

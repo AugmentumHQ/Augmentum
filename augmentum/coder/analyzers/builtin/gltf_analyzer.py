@@ -7,8 +7,6 @@ metadata, and the VRM extension contents when present.
 
 from __future__ import annotations
 
-import json
-
 from augmentum.coder.analyzers.registry import (
     AnalysisReport,
     register_analyzer,

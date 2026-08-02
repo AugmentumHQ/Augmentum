@@ -23,17 +23,13 @@ Run: python -m pytest tests/test_coder_context_preservation.py -v
 """
 from __future__ import annotations
 
-import json
-from collections.abc import AsyncIterator
-
 import pytest
 
-from augmentum.modes.coder.handler import CoderHandler
 from augmentum.models.base import (
-    InternalChatRequest,
     InternalStreamChunk,
     Message,
 )
+from augmentum.modes.coder.handler import CoderHandler
 
 # Reuse the existing test scaffolding rather than rebuild _FakeTool,
 # _FakeChunk, etc. Keeps the two test modules in lockstep.
@@ -46,7 +42,6 @@ from tests.test_coder_handler import (
     _make_request,
     _tc_delta,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fix #1 — fanout-drop synthesis

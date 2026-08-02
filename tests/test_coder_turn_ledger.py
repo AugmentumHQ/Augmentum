@@ -6,7 +6,6 @@ import pytest
 from augmentum.coder.ledger import CoderTurnLedger, CoderTurnLedgerStore
 from augmentum.models.base import InternalStreamChunk
 
-
 # Mirrors the live table post-migration 200 (workspace_id → project_id)
 # plus the priming/cost columns finish_run writes. Keep in sync with
 # tests/test_oracle_telemetry.py.

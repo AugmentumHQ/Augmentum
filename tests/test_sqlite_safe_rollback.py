@@ -16,7 +16,6 @@ write blocks.
 from __future__ import annotations
 
 import sqlite3
-import tempfile
 from pathlib import Path
 
 import aiosqlite
@@ -28,7 +27,6 @@ from augmentum.state.backends.sqlite import (
     savepoint,
     transactional_write,
 )
-
 
 # ─────────────────────────────────────────────────────────────────────
 # Helpers

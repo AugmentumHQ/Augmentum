@@ -27,8 +27,8 @@ asset paths anyway (which our HTML rewrite already covered via
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from html.parser import HTMLParser
-from typing import Callable
 from urllib.parse import urljoin, urlparse
 
 from augmentum.utils.logging import get_logger

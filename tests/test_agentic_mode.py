@@ -2,19 +2,17 @@
 
 from __future__ import annotations
 
-import json
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from augmentum.classifier.router import Mode, MODE_MAP, MODE_PREFIXES
+from augmentum.classifier.router import MODE_MAP, MODE_PREFIXES, Mode
 from augmentum.models.base import (
     InternalChatRequest,
     InternalChatResponse,
     InternalStreamChunk,
     Message,
 )
-
 
 # ---------------------------------------------------------------------------
 # Mode / Classifier
@@ -249,7 +247,7 @@ class TestTaskStore:
 
     @pytest.mark.asyncio
     async def test_get_returns_task(self, mock_db):
-        from augmentum.modes.agentic.task_state import TaskState, TaskStatus, TaskStore
+        from augmentum.modes.agentic.task_state import TaskStatus, TaskStore
 
         cursor = mock_db.execute.return_value
         cursor.fetchone = AsyncMock(return_value=(
@@ -435,7 +433,6 @@ class TestAgenticCheckpoints:
 
     @pytest.fixture
     def mock_task_store(self):
-        from augmentum.modes.agentic.task_state import TaskState, TaskStatus
 
         store = AsyncMock()
         store.create = AsyncMock(side_effect=lambda t: t)
@@ -596,8 +593,8 @@ class TestAgenticCheckpoints:
 
 class TestHandlerFactory:
     def test_agentic_mode_creates_handler(self):
-        from augmentum.proxy.handler_factory import get_handler_for_mode
         from augmentum.modes.agentic.handler import AgenticHandler
+        from augmentum.proxy.handler_factory import get_handler_for_mode
 
         backend = AsyncMock()
         app_state = MagicMock()

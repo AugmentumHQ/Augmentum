@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from augmentum.devices.capability import ActionSchema, Capability
 
-
 _AUDIO_PLAY_ACTIONS: tuple[ActionSchema, ...] = (
     ActionSchema(
         name="play",

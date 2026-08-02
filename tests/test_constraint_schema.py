@@ -3,7 +3,14 @@ from __future__ import annotations
 
 import pytest
 
-from augmentum.tools.constraint_schema import AppSpec, Element, Constraint, parse_spec, validate_spec, sort_constraints
+from augmentum.tools.constraint_schema import (
+    AppSpec,
+    Constraint,
+    Element,
+    parse_spec,
+    sort_constraints,
+    validate_spec,
+)
 
 
 class TestConstraintDataclasses:

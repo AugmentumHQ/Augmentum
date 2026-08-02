@@ -20,7 +20,6 @@ we deliberately stay out of in unit tests.
 from __future__ import annotations
 
 import base64
-import re
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -28,15 +27,14 @@ import pytest
 
 from augmentum.bug_finder.fuzz.harness import Harness
 from augmentum.bug_finder.fuzz.runner import (
+    _DEFAULT_SEEDS,
     FuzzCrash,
     FuzzRunResult,
-    _DEFAULT_SEEDS,
     _extract_exception,
     _find_trace_block,
     _safe_chunk_id,
     run_fuzz_harness,
 )
-
 
 # ---------------------------------------------------------------------------
 # _extract_exception

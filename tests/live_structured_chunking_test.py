@@ -849,7 +849,7 @@ async def run_test(
                 try:
                     print(f"    [{qid}] searching...", end="", flush=True)
                     context = await harness.search_for_context(q["query"], doc_id, limit=3)
-                    print(f" asking LLM...", end="", flush=True)
+                    print(" asking LLM...", end="", flush=True)
 
                     if verbose:
                         print(f"\n    Context ({len(context)} chars): {context[:200]}...")
@@ -886,7 +886,7 @@ async def run_test(
                         passed=passed, detail=", ".join(missing) if missing else "",
                     ))
 
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     print(f"\n    \u2717 {qid}: TIMEOUT")
                     all_results.append(QuestionResult(
                         question_id=qid, config_name=cfg_name, doc_name=doc_name,
@@ -955,7 +955,7 @@ def print_summary(results: list[QuestionResult], model: str) -> None:
     print(f"\n  Best config: {best_label} ({best_pct:.0f}%)")
 
     # --- By doc type breakdown ---
-    print(f"\n  --- By Document Type ---")
+    print("\n  --- By Document Type ---")
     for dt in doc_types:
         dt_results = [r for r in results if r.doc_type == dt]
         for cfg in configs:
@@ -968,7 +968,7 @@ def print_summary(results: list[QuestionResult], model: str) -> None:
             print(f"    {dt:>13s} | {label:<35s} | {passed}/{total} | {chunks}c/{parents}p")
 
     # --- Parent vs No-Parent comparison ---
-    print(f"\n  --- Parent vs No-Parent Delta ---")
+    print("\n  --- Parent vs No-Parent Delta ---")
     if "default" in config_totals and "no_parent" in config_totals:
         for dt in doc_types:
             def_results = [r for r in results if r.config_name == "default" and r.doc_type == dt]
@@ -981,7 +981,7 @@ def print_summary(results: list[QuestionResult], model: str) -> None:
             print(f"    {dt:>13s}: Default {def_passed}/{total} vs No-Parent {np_passed}/{total} ({sign}{delta})")
 
     # --- Chunk count table ---
-    print(f"\n  --- Chunk Counts ---")
+    print("\n  --- Chunk Counts ---")
     docs = sorted(set(r.doc_name for r in results))
     print(f"  {'Config':<35s}", end="")
     for doc in docs:

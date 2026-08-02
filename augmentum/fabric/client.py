@@ -115,8 +115,8 @@ class FabricClient:
 
     def __init__(
         self,
-        identity: "FabricIdentity",
-        coordinator: "FabricCoordinator",
+        identity: FabricIdentity,
+        coordinator: FabricCoordinator,
         http_client: httpx.AsyncClient,
     ) -> None:
         self._identity = identity
@@ -141,7 +141,7 @@ class FabricClient:
                 # without needing an explicit signal. Cheap polling.
                 try:
                     await asyncio.wait_for(self._stopping.wait(), timeout=1.0)
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     pass
         except asyncio.CancelledError:
             pass
@@ -221,7 +221,7 @@ class FabricClient:
             # Backoff window. Sleep is interruptible via _stopping.
             try:
                 await asyncio.wait_for(self._stopping.wait(), timeout=backoff)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 pass
             backoff = min(_RECONNECT_BACKOFF_MAX_S, backoff * _RECONNECT_BACKOFF_FACTOR)
 

@@ -26,7 +26,6 @@ import pytest
 # that resolves the shared REGISTRY.
 import augmentum.architect  # noqa: F401
 
-
 SLICE2_VERB_IDS = (
     "media.play",
     "search.knowledge", "search.local",

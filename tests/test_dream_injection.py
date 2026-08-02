@@ -2,7 +2,8 @@
 from __future__ import annotations
 
 import pytest
-from augmentum.dream.models import DreamPortrait, DreamEntry, DreamEntryType
+
+from augmentum.dream.models import DreamEntry, DreamEntryType, DreamPortrait
 
 
 @pytest.mark.asyncio

@@ -4,8 +4,6 @@ from __future__ import annotations
 
 import importlib
 
-import pytest
-
 
 class TestDreamModuleImports:
     """Every module under augmentum/dream/ must import without error."""

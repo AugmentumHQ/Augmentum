@@ -20,11 +20,10 @@ from unittest.mock import AsyncMock, MagicMock
 import aiosqlite
 import pytest
 
-from augmentum.offers.catalog import base
 # Importing the offers package wires up every catalog kind via
 # augmentum/offers/catalog/__init__.py's side-effect imports.
 from augmentum.offers import catalog as _catalog_root  # noqa: F401
-
+from augmentum.offers.catalog import base
 
 MIG_221 = Path("augmentum/state/migrations/221_notification_substrate.sql").read_text()
 MIG_224 = Path("augmentum/state/migrations/224_offer_suppressions.sql").read_text()
@@ -232,8 +231,9 @@ class TestPreviewContracts:
             object.__setattr__(settings, "mcp_servers", prev_servers)
 
     async def test_mcp_server_previews_skipped_when_installed(self) -> None:
-        from augmentum.config import settings
         import json
+
+        from augmentum.config import settings
         prev_servers = getattr(settings, "mcp_servers", "")
         object.__setattr__(
             settings, "mcp_servers",

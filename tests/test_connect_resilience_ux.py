@@ -45,7 +45,6 @@ from augmentum.connect.protocol import (
 )
 from augmentum.notifications.hub import NotificationHub
 
-
 CONNECT_MIGRATION = Path(
     "augmentum/state/migrations/219_connect_substrate.sql"
 ).read_text(encoding="utf-8")

@@ -6,7 +6,7 @@ user-scoped: every method accepts ``user_id`` and filters by it.
 
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from typing import TYPE_CHECKING, Any
 
 from augmentum.calendar.caldav_client import CalendarEvent
@@ -184,7 +184,7 @@ async def purge_old_events(
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def _dt_to_str(dt: date | datetime | None) -> str:

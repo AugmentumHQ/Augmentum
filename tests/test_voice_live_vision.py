@@ -224,9 +224,9 @@ def test_ensure_live_camera_framing_inserts_and_merges():
     """The reality anchor lands as a system message for the VL-direct path,
     merges into an existing system message, and is idempotent."""
     from augmentum.models.base import (
+        LIVE_CAMERA_SYSTEM_NOTE,
         InternalChatRequest,
         Message,
-        LIVE_CAMERA_SYSTEM_NOTE,
         ensure_live_camera_framing,
     )
     # No system message → one is inserted at the front.

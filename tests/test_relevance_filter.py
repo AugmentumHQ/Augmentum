@@ -2,15 +2,12 @@
 
 from __future__ import annotations
 
-import pytest
-
 from augmentum.search.relevance import (
-    filter_results,
-    score_relevance,
     _extract_keywords,
     _parse_result_block,
+    filter_results,
+    score_relevance,
 )
-
 
 # ---------------------------------------------------------------------------
 # _extract_keywords

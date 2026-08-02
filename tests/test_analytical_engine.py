@@ -1260,7 +1260,7 @@ class TestMultiPhasePrefixReuse:
         conv = "\n## Conversation History\nUser: hi\nAssistant: hi\n"
         full = build_shared_prefix(dt, query, conv, include_conversation=True)
         verify = build_shared_prefix(dt, query, conv, include_conversation=False)
-        assert full.startswith(verify.rstrip("\n---\n"))
+        assert full.startswith(verify.removesuffix("\n\n---\n"))
 
     def test_datetime_drift_breaks_prefix_sharing(self):
         """Two phases called with DIFFERENT datetime_ctx strings no longer

@@ -202,7 +202,6 @@ def make_narration_synth_handler(app):
     """Build the ``narration_synth`` handler bound to runtime services."""
 
     async def handler(ctx: JobContext) -> dict[str, Any]:
-        import asyncio as _aio
 
         from augmentum.config import settings
         from augmentum.state.narration_store import NarrationStore

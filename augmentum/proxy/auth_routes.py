@@ -7,7 +7,7 @@ import re
 from fastapi import APIRouter, Request
 from starlette.responses import JSONResponse
 
-from augmentum.auth.passwords import verify_password, verify_dummy
+from augmentum.auth.passwords import verify_dummy, verify_password
 from augmentum.connect.rate_limit import KeyedRateLimiter
 from augmentum.utils.logging import get_logger
 

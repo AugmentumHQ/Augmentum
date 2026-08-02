@@ -92,7 +92,7 @@ def _is_loopback_host(host: str) -> bool:
     return False
 
 
-def _visible_scheme_from_request(request: "Request") -> str:
+def _visible_scheme_from_request(request: Request) -> str:
     forwarded = request.headers.get("x-forwarded-proto", "").split(",", 1)[0].strip()
     if forwarded in {"http", "https"}:
         return forwarded
@@ -144,7 +144,7 @@ class PublicHostResolver:
 
     # ---- learning ------------------------------------------------------------
 
-    def observe_request(self, request: "Request") -> None:
+    def observe_request(self, request: Request) -> None:
         """Remember the host of any non-loopback request.
 
         Called from middleware on every request. Cheap — early-exits on
@@ -205,7 +205,7 @@ class PublicHostResolver:
 
     # ---- query ---------------------------------------------------------------
 
-    def public_host(self, request: "Request | None" = None) -> str:
+    def public_host(self, request: Request | None = None) -> str:
         """Best-known LAN-reachable host:port. Empty if nothing known yet."""
         with self._lock:
             configured = self._configured
@@ -225,7 +225,7 @@ class PublicHostResolver:
         self,
         path: str,
         *,
-        request: "Request | None" = None,
+        request: Request | None = None,
         scheme: str = "",
     ) -> str:
         """Build a fully-qualified URL using the best-known public host.
@@ -252,7 +252,7 @@ class PublicHostResolver:
     # ---- helpers -------------------------------------------------------------
 
     @staticmethod
-    def _extract_host(request: "Request") -> str:
+    def _extract_host(request: Request) -> str:
         """Pull a Host value from the request, preferring proxy-set headers."""
         for header in ("x-forwarded-host", "host"):
             value = request.headers.get(header, "")

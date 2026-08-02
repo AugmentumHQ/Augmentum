@@ -33,9 +33,8 @@ import pytest
 
 from augmentum.coder.state import CoderState
 from augmentum.coder.tools import FinishTaskTool
+from augmentum.models.base import InternalStreamChunk
 from augmentum.modes.coder.handler import CoderHandler
-from augmentum.models.base import InternalStreamChunk, Message
-
 from tests.test_coder_handler import (
     _ExtendedContainerManager,
     _FakeChunk,
@@ -44,7 +43,6 @@ from tests.test_coder_handler import (
     _make_request,
     _tc_delta,
 )
-
 
 # ---------------------------------------------------------------------------
 # Tool-level behaviour

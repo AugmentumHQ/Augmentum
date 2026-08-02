@@ -22,7 +22,6 @@ from augmentum.loops.ledger import (
     ObservationLedger,
 )
 
-
 # ── Validation errors ─────────────────────────────────────────────────
 
 

@@ -120,18 +120,17 @@ async def _fetch_index(url: str) -> dict | None:
             timeout=httpx.Timeout(_FETCH_TIMEOUT_S),
             follow_redirects=True,
             headers={"User-Agent": "Augmentum/1.0 (discover-community-feed)"},
-        ) as client:
-            async with client.stream("GET", url) as resp:
-                resp.raise_for_status()
-                buf = bytearray()
-                async for chunk in resp.aiter_bytes(chunk_size=64 * 1024):
-                    buf.extend(chunk)
-                    if len(buf) > _MAX_INDEX_BYTES:
-                        log.warning(
-                            "community_feed_too_large",
-                            url=url, max_bytes=_MAX_INDEX_BYTES,
-                        )
-                        return None
+        ) as client, client.stream("GET", url) as resp:
+            resp.raise_for_status()
+            buf = bytearray()
+            async for chunk in resp.aiter_bytes(chunk_size=64 * 1024):
+                buf.extend(chunk)
+                if len(buf) > _MAX_INDEX_BYTES:
+                    log.warning(
+                        "community_feed_too_large",
+                        url=url, max_bytes=_MAX_INDEX_BYTES,
+                    )
+                    return None
         return json.loads(bytes(buf).decode("utf-8"))
     except json.JSONDecodeError as exc:
         log.warning("community_feed_parse_failed", url=url, error=str(exc)[:200])

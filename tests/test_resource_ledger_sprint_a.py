@@ -19,11 +19,6 @@ Invariants pinned here:
 """
 from __future__ import annotations
 
-import asyncio
-import json
-import os
-import tempfile
-from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
@@ -31,17 +26,15 @@ import aiosqlite
 import pytest
 
 from augmentum.resource.ledger import (
-    DiskDestination,
-    InventoryEntry,
     JobStatus,
     ResourceLedger,
-    ResourceSnapshot,
     _can_fit,
     _dir_mtimes,
     _probe_disk_batch,
+)
+from augmentum.resource.ledger import (
     invalidate as invalidate_helper,
 )
-
 
 # ── _can_fit ──────────────────────────────────────────────────────
 

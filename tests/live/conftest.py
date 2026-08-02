@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import pytest
 import httpx
+import pytest
 
 
 def _probe_service(url: str, timeout: float = 2.0) -> bool:

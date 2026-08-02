@@ -22,9 +22,8 @@ from __future__ import annotations
 
 import pytest
 
-from augmentum.modes.coder.handler import CoderHandler
 from augmentum.models.base import InternalStreamChunk
-
+from augmentum.modes.coder.handler import CoderHandler
 from tests.test_coder_handler import (
     _ExtendedContainerManager,
     _FakeChunk,

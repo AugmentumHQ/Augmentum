@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import pytest
-
 
 class TestNoteTagsLogic:
     def test_dedup_tags(self):

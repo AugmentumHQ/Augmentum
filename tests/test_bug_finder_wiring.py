@@ -10,10 +10,6 @@ from __future__ import annotations
 from pathlib import Path
 
 from augmentum.bug_finder.wiring import (
-    ConstantBinding,
-    DecoratorInfo,
-    MiddlewareEntry,
-    OriginTrace,
     decorators_on,
     extract_middleware_chain,
     get_constant,

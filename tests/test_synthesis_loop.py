@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from augmentum.tools.constraint_schema import AppSpec, Element, Constraint
+from augmentum.tools.constraint_schema import AppSpec, Constraint, Element
 from augmentum.tools.synthesis_loop import SynthesisLoop, SynthesisResult
 
 

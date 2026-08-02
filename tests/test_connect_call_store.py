@@ -25,7 +25,6 @@ from augmentum.connect.call_store import (
     set_quality_rating,
 )
 
-
 CONNECT_MIGRATION = Path(
     "augmentum/state/migrations/219_connect_substrate.sql"
 ).read_text()

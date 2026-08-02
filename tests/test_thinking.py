@@ -451,7 +451,7 @@ class TestThinkingStreamBufferFuzz:
     _BUFFER_CAP = 16
 
     def _generate_deltas(
-        self, rng: "object", length: int, max_chunk: int,
+        self, rng: object, length: int, max_chunk: int,
     ) -> list[str]:
         """Generate a list of streaming deltas of total ``length`` chars.
 

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from augmentum.devices.capability import ActionSchema, Capability
 
-
 CAPABILITIES: tuple[Capability, ...] = (
     Capability(
         id="sensor.read_state@1",

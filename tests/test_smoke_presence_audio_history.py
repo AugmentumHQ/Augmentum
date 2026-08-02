@@ -253,6 +253,7 @@ class TestMultiTenant:
 class TestMimiSerialization:
     def test_serialize_deserialize_roundtrip(self):
         import numpy as np
+
         from augmentum.companion.presence.audio_history import (
             deserialize_mimi_tokens,
             serialize_mimi_tokens,
@@ -270,6 +271,7 @@ class TestMimiSerialization:
 
     def test_serialize_requires_2d(self):
         import numpy as np
+
         from augmentum.companion.presence.audio_history import (
             serialize_mimi_tokens,
         )
@@ -279,6 +281,7 @@ class TestMimiSerialization:
     def test_stored_mimi_blob_round_trips_via_store(self, store, db):
         """Future capture path: when tokens are supplied, they store + reload."""
         import numpy as np
+
         from augmentum.companion.presence.audio_history import (
             deserialize_mimi_tokens,
             serialize_mimi_tokens,

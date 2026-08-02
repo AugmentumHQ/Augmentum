@@ -40,7 +40,7 @@ class PowerStateStore:
             else:
                 cache = {}
                 try:
-                    setattr(settings_store, "_augmentum_power_json_cache", cache)
+                    settings_store._augmentum_power_json_cache = cache
                 except Exception:
                     pass
         # Shared per underlying SettingsStore instance. ``power_routes`` creates

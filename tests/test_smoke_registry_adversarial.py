@@ -7,13 +7,12 @@ attempts, edge cases the friendly tests don't exercise.
 from __future__ import annotations
 
 import json
-from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
 from augmentum.registry import Setting, SettingsRegistry
-from augmentum.registry.registry import RegistryError, _reset_for_tests, get_registry
 from augmentum.registry.builtin import load_into_default_registry
+from augmentum.registry.registry import RegistryError, _reset_for_tests, get_registry
 
 
 def _config_pristine_defaults() -> dict[str, object]:
@@ -230,7 +229,7 @@ async def test_admin_only_cannot_be_bypassed_with_truthy_string_admin() -> None:
     r = await tool.execute(
         key="engine_use_jinja_template",
         value=False,
-        _context={"is_admin": "true"},  # noqa: technically truthy
+        _context={"is_admin": "true"},  # NB: the string "true" is technically truthy
     )
     # This documents the accepted behavior: trusted callers only.
     assert r.success or "admin" in (r.error or "").lower()
@@ -459,7 +458,7 @@ async def test_failing_on_change_does_not_roll_back_write() -> None:
     assert result.success
     assert crashes == [(False, True)]
     # Verify the write applied despite the callback crash.
-    assert getattr(_settings, "crash_test_bool") is True
+    assert _settings.crash_test_bool is True
 
 
 # ===================== Registry consistency invariants =====================

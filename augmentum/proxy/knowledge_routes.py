@@ -2844,7 +2844,7 @@ async def serve_zim_metadata(pack_id: str, request: Request):
         mtime_ns = 0
     build_date = getattr(zp.meta, "build_date", "") or ""
     etag = '"' + hashlib.sha1(
-        f"meta:{pack_id}:{build_date}:{mtime_ns}".encode("utf-8"),
+        f"meta:{pack_id}:{build_date}:{mtime_ns}".encode(),
     ).hexdigest()[:16] + '"'
     cache_control = "private, max-age=3600"
 
@@ -2887,7 +2887,7 @@ async def serve_zim_illustration(pack_id: str, request: Request, size: int = 48)
     except OSError:
         mtime_ns = 0
     etag = '"' + hashlib.sha1(
-        f"illu:{pack_id}:{size}:{mtime_ns}".encode("utf-8"),
+        f"illu:{pack_id}:{size}:{mtime_ns}".encode(),
     ).hexdigest()[:16] + '"'
     # Illustrations are baked into the ZIM and never change for a given
     # pack mtime — immutable cache is safe and shaves a round-trip on
@@ -3619,28 +3619,27 @@ async def _run_install(
         async with httpx.AsyncClient(
             follow_redirects=True,
             timeout=httpx.Timeout(connect=30.0, read=120.0, write=60.0, pool=30.0),
-        ) as client:
-            async with client.stream("GET", download_url, headers=dl_headers) as resp:
-                # 206 = partial content (resume), 200 = full content (no resume support)
-                if resp.status_code == 206:
-                    # Server supports resume — content-range tells us the total
-                    cr = resp.headers.get("content-range", "")
-                    if "/" in cr:
-                        job.total = int(cr.split("/")[-1])
-                    job.current = start_byte
-                elif resp.status_code == 200:
-                    # Server doesn't support resume — start over
-                    start_byte = 0
-                    job.total = int(resp.headers.get("content-length", 0))
-                    job.current = 0
-                else:
-                    resp.raise_for_status()
+        ) as client, client.stream("GET", download_url, headers=dl_headers) as resp:
+            # 206 = partial content (resume), 200 = full content (no resume support)
+            if resp.status_code == 206:
+                # Server supports resume — content-range tells us the total
+                cr = resp.headers.get("content-range", "")
+                if "/" in cr:
+                    job.total = int(cr.split("/")[-1])
+                job.current = start_byte
+            elif resp.status_code == 200:
+                # Server doesn't support resume — start over
+                start_byte = 0
+                job.total = int(resp.headers.get("content-length", 0))
+                job.current = 0
+            else:
+                resp.raise_for_status()
 
-                mode = "ab" if start_byte > 0 else "wb"
-                with open(zim_path, mode) as f:
-                    async for chunk in resp.aiter_bytes(64 * 1024):
-                        f.write(chunk)
-                        job.current += len(chunk)
+            mode = "ab" if start_byte > 0 else "wb"
+            with open(zim_path, mode) as f:
+                async for chunk in resp.aiter_bytes(64 * 1024):
+                    f.write(chunk)
+                    job.current += len(chunk)
 
         log.info("knowledge_install_downloaded", path=str(zim_path), bytes=job.current)
 
@@ -3799,7 +3798,7 @@ async def _run_resume(
                 pass
             try:
                 await asyncio.wait_for(proc.wait(), timeout=0.1)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 pass
 
         stdout, stderr = await proc.communicate()
@@ -3923,7 +3922,7 @@ async def _run_embed_zim(
                 pass
             try:
                 await asyncio.wait_for(proc.wait(), timeout=0.1)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 pass
 
         stdout, stderr = await proc.communicate()

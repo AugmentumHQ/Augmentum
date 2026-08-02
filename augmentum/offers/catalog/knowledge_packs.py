@@ -75,7 +75,7 @@ def _make_lang_entry(spec) -> CatalogEntry:  # type: ignore[no-untyped-def]
             },
         )
 
-    async def _accept(payload: dict[str, Any], request: "Request") -> dict[str, Any]:
+    async def _accept(payload: dict[str, Any], request: Request) -> dict[str, Any]:
         # Reach into app.state to: (a) check whether already installed,
         # (b) enqueue the install job. Mirrors the /api/learning/packs/
         # {lang}/install route's logic exactly.
@@ -205,7 +205,7 @@ def _make_zim_entry(record: dict[str, Any]) -> CatalogEntry:
             },
         )
 
-    async def _accept(payload: dict[str, Any], request: "Request") -> dict[str, Any]:
+    async def _accept(payload: dict[str, Any], request: Request) -> dict[str, Any]:
         # ZIM downloads are huge and the canonical source is Kiwix.
         # We don't kick off an auto-download — we just return the
         # URL so the chip renders an Open link.

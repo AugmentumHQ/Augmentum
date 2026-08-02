@@ -24,7 +24,6 @@ from augmentum.offers.store import (
     sweep_expired_suppressions,
 )
 
-
 MIGRATION = (
     Path("augmentum/state/migrations/224_offer_suppressions.sql").read_text()
 )

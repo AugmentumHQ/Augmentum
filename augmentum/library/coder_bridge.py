@@ -17,7 +17,6 @@ modules together inline.
 
 from __future__ import annotations
 
-import io
 import tarfile
 from dataclasses import dataclass
 from pathlib import Path

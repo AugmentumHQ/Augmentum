@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import contextlib
 import json
 import uuid
 from dataclasses import dataclass, field
@@ -712,7 +711,7 @@ class NarrativePersistence:
         if not entries:
             return
 
-        def _v2_row(entry: "LorebookEntry") -> tuple:
+        def _v2_row(entry: LorebookEntry) -> tuple:
             row = [
                 entry.id,
                 session_id,

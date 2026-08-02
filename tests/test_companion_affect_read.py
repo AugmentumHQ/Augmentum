@@ -27,6 +27,7 @@ import pytest
 
 def _client_app():
     from fastapi import FastAPI
+
     from augmentum.proxy.companion_routes import router
 
     app = FastAPI()
@@ -53,6 +54,7 @@ def _attach_tracker(app, *, owner_user_id: str = ""):
 @pytest.mark.asyncio
 async def test_affect_read_runtime_off(monkeypatch):
     from fastapi.testclient import TestClient
+
     from augmentum.config import settings as _settings
 
     monkeypatch.setattr(_settings, "companion_runtime_enabled", False)
@@ -69,6 +71,7 @@ async def test_affect_read_runtime_off(monkeypatch):
 @pytest.mark.asyncio
 async def test_affect_read_no_runtime_attached(monkeypatch):
     from fastapi.testclient import TestClient
+
     from augmentum.config import settings as _settings
 
     monkeypatch.setattr(_settings, "companion_runtime_enabled", True)
@@ -84,6 +87,7 @@ async def test_affect_read_no_runtime_attached(monkeypatch):
 @pytest.mark.asyncio
 async def test_affect_read_returns_confident_observation(monkeypatch):
     from fastapi.testclient import TestClient
+
     from augmentum.config import settings as _settings
 
     monkeypatch.setattr(_settings, "companion_runtime_enabled", True)
@@ -121,6 +125,7 @@ async def test_affect_read_returns_confident_observation(monkeypatch):
 async def test_affect_read_phrase_in_her_register(monkeypatch):
     """The phrase should read like her, not like jargon."""
     from fastapi.testclient import TestClient
+
     from augmentum.config import settings as _settings
 
     monkeypatch.setattr(_settings, "companion_runtime_enabled", True)
@@ -150,6 +155,7 @@ async def test_affect_read_filters_low_confidence(monkeypatch):
     """A read that's decayed past the visibility threshold returns null.
     She doesn't pretend to know what's decayed."""
     from fastapi.testclient import TestClient
+
     from augmentum.companion_runtime.perception.user_affect import UserAffectTracker
     from augmentum.config import settings as _settings
 
@@ -185,6 +191,7 @@ async def test_affect_read_hedged_flag(monkeypatch):
     """Reads with confidence < 0.6 carry hedged:true so the widget
     can append the 'could be wrong' suffix."""
     from fastapi.testclient import TestClient
+
     from augmentum.companion_runtime.perception.user_affect import UserAffectTracker
     from augmentum.config import settings as _settings
 
@@ -218,6 +225,7 @@ async def test_affect_read_hedged_flag(monkeypatch):
 @pytest.mark.asyncio
 async def test_affect_read_never_500(monkeypatch):
     from fastapi.testclient import TestClient
+
     from augmentum.config import settings as _settings
 
     monkeypatch.setattr(_settings, "companion_runtime_enabled", True)

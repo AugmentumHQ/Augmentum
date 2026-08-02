@@ -11,8 +11,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from augmentum.auth.models import AuthSession, User, WsTicket, is_reserved_username
-from augmentum.auth.passwords import hash_password, verify_password, verify_dummy
+from augmentum.auth.models import User, WsTicket, is_reserved_username
+from augmentum.auth.passwords import hash_password
 from augmentum.config import settings
 from augmentum.utils.logging import get_logger
 

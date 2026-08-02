@@ -16,9 +16,7 @@ from __future__ import annotations
 import asyncio
 import json
 import time
-import uuid
 from dataclasses import dataclass, field
-from typing import Literal
 
 import httpx
 import pytest
@@ -959,7 +957,7 @@ class TestConcurrentRequests:
                 messages = [{"role": "user", "content": f"Respond with just the number {i + 1}."}]
                 payload = {"model": model, "messages": messages, "stream": False}
 
-                async def send(idx: int, m: str):
+                async def send(idx: int, m: str, payload=payload):
                     resp = await ac.post("/api/chat", json=payload)
                     if resp.status_code == 200:
                         data = resp.json()
@@ -1255,7 +1253,7 @@ class Test4BModels:
 
             all_results.append(model_results)
 
-        print(f"\n4B Model Results:")
+        print("\n4B Model Results:")
         for result in all_results:
             passed = sum(1 for s in result["scenarios"] if s["passed"])
             print(f"  {result['model']}: {passed}/{len(result['scenarios'])} passed")
@@ -1367,7 +1365,7 @@ class Test4BModels:
             assert direct_correct, f"Direct response wrong: {direct_content}"
             # Augmentum may fail if model not registered, so just log
             if not augmentum_correct:
-                print(f"Warning: Augmentum response differs from direct")
+                print("Warning: Augmentum response differs from direct")
 
 
 # ============================================================================

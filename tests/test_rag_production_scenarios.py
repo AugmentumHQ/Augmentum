@@ -14,9 +14,7 @@ from __future__ import annotations
 
 import contextlib
 import os
-import re
 import tempfile
-import time
 
 import aiosqlite
 import pytest
@@ -375,8 +373,8 @@ class TestScoringWithFiltering:
     @pytest.mark.asyncio
     async def test_score_gate_on_filtered_results(self, store):
         """Score gate should properly classify filtered results."""
-        from augmentum.documents.scoring import score_gate, cliff_detect
         from augmentum.documents.dedup import deduplicate
+        from augmentum.documents.scoring import cliff_detect, score_gate
 
         ds, docs, conn = store
         results = await ds.search(

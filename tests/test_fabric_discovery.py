@@ -28,7 +28,6 @@ from augmentum.fabric.identity import FabricIdentity
 from augmentum.proxy.fabric_routes import fabric_discover, fabric_hello
 from augmentum.state.settings_store import SettingsStore
 
-
 # ── enumerate_hosts ───────────────────────────────────────────────
 
 

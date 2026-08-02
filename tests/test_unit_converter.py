@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from augmentum.tools.unit_converter import UnitConverterTool, convert, _convert_temperature
+from augmentum.tools.unit_converter import UnitConverterTool, _convert_temperature, convert
 
 
 class TestTemperatureConversion:

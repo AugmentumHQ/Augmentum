@@ -41,8 +41,8 @@ async def execute_local_render(
     *,
     node_id: str = "",
     user_id: str = "",
-    html_renderer: "HTMLRenderer | None" = None,
-    output_store: "RenderOutputStore | None" = None,
+    html_renderer: HTMLRenderer | None = None,
+    output_store: RenderOutputStore | None = None,
 ) -> RenderResult:
     """Run a render job on this node.
 
@@ -87,8 +87,8 @@ async def _render_html_branch(
     *,
     node_id: str,
     user_id: str,
-    html_renderer: "HTMLRenderer",
-    output_store: "RenderOutputStore",
+    html_renderer: HTMLRenderer,
+    output_store: RenderOutputStore,
 ) -> RenderResult:
     """Real HTML → PNG path. Payload keys understood:
 

@@ -7,7 +7,6 @@ pin the logic that previously drifted silently.
 """
 from __future__ import annotations
 
-
 # ── NSFW matcher: phrase pass + conservative-FP property ──────────────
 
 def test_nsfw_phrase_match():
@@ -78,8 +77,8 @@ def test_curator_clean_rec_passes():
 # ── Dismiss signal contract (the worse-than-reported boost bug) ───────
 
 def test_dismiss_maps_to_negative_kind():
-    from augmentum.proxy.companion_routes import _NOTE_FEEDBACK_KINDS
     from augmentum.companion_runtime.feedback import KIND_WEIGHTS
+    from augmentum.proxy.companion_routes import _NOTE_FEEDBACK_KINDS
     assert _NOTE_FEEDBACK_KINDS["dismiss"] == "dismissed"
     # The whole point: dismiss must be a NEGATIVE signal, not the +0.2
     # "acknowledged" the UI was posting before the fix.
@@ -100,6 +99,7 @@ def test_pad_emit_registered_for_restore():
 
 def test_consolidate_reports_not_wired():
     import asyncio
+
     from augmentum.companion.companion import Companion
 
     # consolidate() does no DB work; a bare instance is enough to assert

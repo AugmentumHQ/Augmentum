@@ -17,6 +17,8 @@ from typing import Any
 from fastapi import FastAPI, Request
 from fastapi.exception_handlers import (
     http_exception_handler as _default_http_handler,
+)
+from fastapi.exception_handlers import (
     request_validation_exception_handler as _default_validation_handler,
 )
 from fastapi.exceptions import RequestValidationError

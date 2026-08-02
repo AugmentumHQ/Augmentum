@@ -6,7 +6,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # RerankService tests
 # ---------------------------------------------------------------------------
@@ -89,7 +88,7 @@ class TestRerankService:
         assert reranked[0]["id"] == "a"
 
     def test_reset(self):
-        from augmentum.memory.reranker import RerankService, _UNLOADED
+        from augmentum.memory.reranker import _UNLOADED, RerankService
 
         RerankService._model = "fake"
         RerankService._model_name = "fake-model"
@@ -249,7 +248,6 @@ class TestContextualRetrieval:
     @pytest.mark.asyncio
     async def test_generate_contexts_with_backend(self):
         from augmentum.documents.contextual import generate_chunk_contexts
-        from augmentum.models.base import Message
 
         mock_backend = MagicMock()
         mock_response = MagicMock()

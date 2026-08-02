@@ -4,10 +4,9 @@ from __future__ import annotations
 import time
 from collections import defaultdict, deque
 
+import structlog
 from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
-
-import structlog
 
 log = structlog.get_logger(__name__)
 

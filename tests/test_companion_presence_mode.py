@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import pytest
 
-
 # ── presence_mode helper ─────────────────────────────────────────────
 
 
@@ -84,9 +83,10 @@ def test_pip_allowed_not_silent(monkeypatch):
 
 
 async def _boot_runtime_with_user(user_id: str = "usr_pm"):
+    from collections import deque
+
     from augmentum.companion_runtime.runtime import CompanionRuntime
     from augmentum.state.backends.sqlite import SQLiteBackend
-    from collections import deque
     backend = SQLiteBackend(":memory:")
     await backend.connect()
     await backend.conn.execute(
@@ -124,8 +124,8 @@ def _add_thread_events(rt, *, user_id: str):
 async def test_silent_mode_blocks_wondering(monkeypatch):
     """Silent presence_mode → wondering generator returns None even with
     a valid thread present."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.wondering import maybe_write_wondering
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_topical_aggregator_enabled", True)
     monkeypatch.setattr(settings, "companion_journal_hushed_until", "")
@@ -141,8 +141,8 @@ async def test_silent_mode_blocks_wondering(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_gentle_mode_allows_wondering(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.wondering import maybe_write_wondering
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_topical_aggregator_enabled", True)
     monkeypatch.setattr(settings, "companion_journal_hushed_until", "")
@@ -163,8 +163,8 @@ async def test_gentle_mode_allows_wondering(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_silent_mode_blocks_pre_context(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.pre_context import maybe_inject_notes_context
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_pre_context_enabled", True)
     monkeypatch.setattr(settings, "companion_presence_mode", "silent")
@@ -189,8 +189,8 @@ async def test_silent_mode_blocks_pre_context(monkeypatch):
 @pytest.mark.asyncio
 async def test_gentle_mode_blocks_pre_context(monkeypatch):
     """Pre-context is engaged-only. Gentle should NOT inject."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.pre_context import maybe_inject_notes_context
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_pre_context_enabled", True)
     monkeypatch.setattr(settings, "companion_presence_mode", "gentle")
@@ -213,8 +213,8 @@ async def test_gentle_mode_blocks_pre_context(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_engaged_mode_allows_pre_context(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.pre_context import maybe_inject_notes_context
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_pre_context_enabled", True)
     monkeypatch.setattr(settings, "companion_presence_mode", "engaged")

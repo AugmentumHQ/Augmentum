@@ -25,17 +25,15 @@ silent overwrite.
 from __future__ import annotations
 
 import asyncio
-import json
 import time
 from typing import TYPE_CHECKING
 
 from augmentum.coder.observations import (
+    _LEDGER_SOFT_CAP,
     CATEGORIES,
     CONFIDENCES,
     Observation,
-    _LEDGER_SOFT_CAP,
     append_observation,
-    parse_jsonl,
     read_ledger,
     serialize_observations,
 )
@@ -90,7 +88,7 @@ async def _get_workspace_lock(workspace_id: str) -> asyncio.Lock:
 
 
 async def _stat_objective(
-    cm: "ContainerManager", workspace_id: str,
+    cm: ContainerManager, workspace_id: str,
 ) -> float:
     """Best-effort mtime read. Returns 0.0 on miss/error."""
     try:
@@ -115,7 +113,7 @@ async def _stat_objective(
 
 
 async def read_objective(
-    cm: "ContainerManager", workspace_id: str,
+    cm: ContainerManager, workspace_id: str,
 ) -> dict:
     """Read ``objective.md`` + current mtime.
 
@@ -158,7 +156,7 @@ async def read_objective(
 
 
 async def write_objective(
-    cm: "ContainerManager",
+    cm: ContainerManager,
     workspace_id: str,
     *,
     content: str,
@@ -240,7 +238,7 @@ def _obs_to_dict(obs: Observation, idx: int) -> dict:
 
 
 async def list_observations(
-    cm: "ContainerManager",
+    cm: ContainerManager,
     workspace_id: str,
     *,
     categories: list[str] | None = None,
@@ -296,7 +294,7 @@ def _validate_observation_input(
 
 
 async def create_observation(
-    cm: "ContainerManager",
+    cm: ContainerManager,
     workspace_id: str,
     *,
     user_id: str,
@@ -340,7 +338,7 @@ async def create_observation(
 
 
 async def update_observation(
-    cm: "ContainerManager",
+    cm: ContainerManager,
     workspace_id: str,
     idx: int,
     *,
@@ -391,7 +389,7 @@ async def update_observation(
 
 
 async def delete_observation(
-    cm: "ContainerManager",
+    cm: ContainerManager,
     workspace_id: str,
     idx: int,
 ) -> bool:

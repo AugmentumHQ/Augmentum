@@ -18,7 +18,8 @@ from __future__ import annotations
 
 import asyncio
 import sqlite3
-from typing import Any, Awaitable, Callable, TypeVar
+from collections.abc import Awaitable, Callable
+from typing import TypeVar
 
 import aiosqlite
 

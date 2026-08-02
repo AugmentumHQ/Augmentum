@@ -20,9 +20,7 @@ Environment:
 """
 from __future__ import annotations
 
-import asyncio
 import json
-import math
 import os
 import sys
 import time
@@ -292,7 +290,7 @@ class TestChatCompletions:
             results.append(resp.json()["choices"][0]["message"]["content"])
         # With temp=0 and same seed, outputs should be identical
         assert results[0] == results[1], f"Determinism failed: {results}"
-        print(f"  Deterministic: OK")
+        print("  Deterministic: OK")
 
     def test_max_tokens_respected(self, client):
         """max_tokens limits output length."""
@@ -537,7 +535,7 @@ class TestEmbeddings:
         sim_unrelated = cosine(embeddings[0], embeddings[2])
         # Some models return near-identical embeddings for all inputs (pooling issue)
         if sim_related == sim_unrelated == 1.0:
-            print(f"  Similarity: all 1.0 (model pooling returns identical vectors — skip comparison)")
+            print("  Similarity: all 1.0 (model pooling returns identical vectors — skip comparison)")
             pytest.skip("Model returns identical embeddings for all inputs (pooling limitation)")
         assert sim_related > sim_unrelated, \
             f"Similar texts should have higher similarity: related={sim_related:.3f} vs unrelated={sim_unrelated:.3f}"
@@ -738,7 +736,7 @@ class TestSessionPersistence:
         restore_resp = client.post("/v1/session/restore", json={"session_id": "continuity_test"})
         restore_data = restore_resp.json()
         if restore_resp.status_code == 502:
-            print(f"  Restore: 502 (LlamaState API mismatch — testing with messages only)")
+            print("  Restore: 502 (LlamaState API mismatch — testing with messages only)")
         else:
             print(f"  Restored context: {restore_data.get('status', 'unknown')}")
 
@@ -785,7 +783,7 @@ class TestTurboQuant:
 
     def test_turboquant_roundtrip_quality(self):
         """TurboQuant quantize → dequantize matches paper MSE."""
-        from turboquant import TurboQuantizer, benchmark_quality
+        from turboquant import benchmark_quality
 
         results = benchmark_quality(n_samples=10000)
 

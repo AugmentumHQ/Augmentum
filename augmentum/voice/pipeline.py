@@ -27,7 +27,7 @@ from augmentum.utils.http_client import normalize_base_url
 from augmentum.utils.logging import get_logger
 
 if TYPE_CHECKING:
-    from starlette.websockets import WebSocket
+    pass
 
 log = get_logger(__name__)
 
@@ -743,12 +743,5 @@ async def warmup_tts(conn, voice: str = "", *, user_id: str = "") -> None:
 
 
 # Re-export from tts module for backward compatibility
-from augmentum.voice.tts import (  # noqa: E402, F811
-    prefetch_tts_audio,
-    send_prefetched_audio,
-    stream_tts_sentence,
-)
-
 # Re-export from text_cleaning module — single source of truth.
 # The canonical implementation lives in augmentum/voice/text_cleaning.py.
-from augmentum.voice.text_cleaning import clean_for_tts  # noqa: E402, F811

@@ -16,9 +16,6 @@ What we're protecting:
 
 from __future__ import annotations
 
-import asyncio
-from unittest.mock import AsyncMock, MagicMock
-
 import pytest
 
 
@@ -154,6 +151,7 @@ class TestNoteAppend:
 class TestCaptureMode:
     async def test_start_sets_flag_and_deadline(self):
         import time
+
         from augmentum.intent import REGISTRY
         from augmentum.intent.dispatch import get_referent_cache
         app = _AppState()

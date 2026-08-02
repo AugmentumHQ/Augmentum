@@ -29,7 +29,6 @@ from augmentum.coder.workspace_kernel import (
     WorkspaceKernel,
 )
 
-
 # ---------------------------------------------------------------------------
 # Fakes — minimal container manager mirroring the surface the
 # observations helpers touch.

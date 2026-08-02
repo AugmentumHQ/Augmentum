@@ -227,9 +227,9 @@ def test_lore_core_hysteresis():
 
 
 def test_core_lore_inserted_in_both_live_and_stable():
+    from augmentum.models.base import InternalChatRequest, Message
     from augmentum.modes.narrative.context_builder import BuiltContext
     from augmentum.modes.narrative.engine import NarrativeEngine
-    from augmentum.models.base import InternalChatRequest, Message
 
     eng = NarrativeEngine(session_id="t", context_budget=0)
     req = InternalChatRequest(model="m", messages=[

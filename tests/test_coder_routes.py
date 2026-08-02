@@ -126,8 +126,8 @@ def test_coder_mode_exists():
 
 
 def test_handler_factory_returns_coder():
-    from augmentum.proxy.handler_factory import get_handler_for_mode
     from augmentum.modes.coder.handler import CoderHandler
+    from augmentum.proxy.handler_factory import get_handler_for_mode
 
     backend = AsyncMock()
     app_state = type("State", (), {})()

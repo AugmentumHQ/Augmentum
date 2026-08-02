@@ -65,7 +65,7 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[3]
 
 
-def _discover_manifests() -> list["PowerManifest"]:
+def _discover_manifests() -> list[PowerManifest]:
     """Scan ``.augmentum/powers/<dir>/POWER.md`` and parse manifests.
 
     Catches per-manifest parse errors so one broken POWER.md doesn't
@@ -78,7 +78,7 @@ def _discover_manifests() -> list["PowerManifest"]:
     if not root.is_dir():
         return []
 
-    manifests: list["PowerManifest"] = []
+    manifests: list[PowerManifest] = []
     for child in sorted(root.iterdir(), key=lambda p: p.name.lower()):
         if not child.is_dir():
             continue
@@ -98,7 +98,7 @@ def _discover_manifests() -> list["PowerManifest"]:
 # ── Per-power entry factory ──────────────────────────────────────
 
 
-def _make_entry(manifest: "PowerManifest") -> CatalogEntry:
+def _make_entry(manifest: PowerManifest) -> CatalogEntry:
     power_id = manifest.id
     display = manifest.display_name or manifest.slug
     description = manifest.description or ""
@@ -124,7 +124,7 @@ def _make_entry(manifest: "PowerManifest") -> CatalogEntry:
             },
         )
 
-    async def _accept(payload: dict[str, Any], request: "Request") -> dict[str, Any]:
+    async def _accept(payload: dict[str, Any], request: Request) -> dict[str, Any]:
         store = getattr(request.app.state, "power_state_store", None)
         user = request.scope.get("user")
         user_id = getattr(user, "id", "") if user is not None else ""

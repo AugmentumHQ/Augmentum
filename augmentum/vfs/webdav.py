@@ -6,8 +6,8 @@ import asyncio
 import io
 from typing import TYPE_CHECKING
 
-from wsgidav.dav_provider import DAVCollection, DAVNonCollection, DAVProvider
 from wsgidav.dav_error import HTTP_FORBIDDEN, HTTP_NOT_FOUND, DAVError
+from wsgidav.dav_provider import DAVCollection, DAVNonCollection, DAVProvider
 
 from augmentum.utils.logging import get_logger
 

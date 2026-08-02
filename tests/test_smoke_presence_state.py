@@ -15,16 +15,15 @@ import time
 import pytest
 
 from augmentum.companion.presence.state import (
+    VALID_TRANSITIONS,
     PendingAction,
     PresenceContext,
     PresenceEvent,
     PresenceState,
     StateTransition,
-    VALID_TRANSITIONS,
     is_valid_transition,
     next_state,
 )
-
 
 # ── Transition table integrity ───────────────────────────────────
 

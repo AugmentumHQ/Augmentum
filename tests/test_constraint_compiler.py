@@ -1,15 +1,12 @@
 """Tests for constraint-to-test compiler — spec → QuickJS test scripts."""
 from __future__ import annotations
 
-import pytest
-
-from augmentum.tools.constraint_schema import AppSpec, Element, Constraint
 from augmentum.tools.constraint_compiler import (
     compile_tests,
-    generate_skeleton,
     generate_css_foundation,
-    TestCompilationResult,
+    generate_skeleton,
 )
+from augmentum.tools.constraint_schema import AppSpec, Constraint, Element
 
 
 def _make_spec(**overrides) -> AppSpec:

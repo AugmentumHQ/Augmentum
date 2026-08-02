@@ -293,7 +293,7 @@ class EmbyCompatBase:
         user_id = await self._resolve_user_id(base_url, token)
         if not user_id:
             return []
-        now = _dt.datetime.now(_dt.timezone.utc)
+        now = _dt.datetime.now(_dt.UTC)
         end = now + _dt.timedelta(hours=max(0.5, float(hours_ahead)))
         params: dict[str, Any] = {
             "UserId": user_id,

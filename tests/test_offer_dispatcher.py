@@ -27,7 +27,6 @@ from augmentum.offers.dispatcher import (
 )
 from augmentum.offers.store import never, snooze
 
-
 # Apply both migrations — 221 owns the notifications table, 224 owns
 # the suppressions table. The dispatcher touches both.
 MIG_221 = Path("augmentum/state/migrations/221_notification_substrate.sql").read_text()

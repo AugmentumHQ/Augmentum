@@ -41,7 +41,6 @@ import json
 import re
 import zipfile
 from typing import Any
-from urllib.parse import urlparse
 
 from augmentum.games.models import GameBrowseResult
 from augmentum.utils.logging import get_logger

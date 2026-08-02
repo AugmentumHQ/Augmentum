@@ -32,6 +32,7 @@ def _identity_pair():
     protocol.py knows nothing about identity persistence.
     """
     import base64
+
     from cryptography.hazmat.primitives import serialization
 
     priv = Ed25519PrivateKey.generate()
@@ -105,6 +106,7 @@ def test_unknown_msg_type_rejected():
     # Manually craft an envelope with an unknown msg_type using the
     # canonical-bytes helper directly (build() refuses the unknown type).
     import base64
+
     from augmentum.fabric.protocol import _canonical_bytes
     canonical = _canonical_bytes(
         protocol_version=PROTOCOL_VERSION,
@@ -152,6 +154,7 @@ def test_payload_must_be_dict():
     priv, pub_b64 = _identity_pair()
     # Manually craft an envelope with a non-dict payload.
     import base64
+
     from augmentum.fabric.protocol import _canonical_bytes
     canonical = _canonical_bytes(
         protocol_version=PROTOCOL_VERSION, msg_type="hello",

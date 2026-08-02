@@ -14,7 +14,6 @@ from __future__ import annotations
 import asyncio
 
 import aiosqlite
-import pytest
 
 from augmentum.ocr import _union_bbox
 from augmentum.ocr.assembly import _parse as parse_assembly

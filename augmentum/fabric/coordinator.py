@@ -19,6 +19,7 @@ from __future__ import annotations
 import asyncio
 import time
 from dataclasses import dataclass, field
+from datetime import UTC
 from typing import TYPE_CHECKING, Any
 
 from augmentum.fabric.capabilities import CapabilityBase, deserialise_list
@@ -58,7 +59,7 @@ class PeerLiveState:
     # peer is registered but no transport is up. We hold a reference
     # so broadcast/dispatch code can find the right socket without
     # walking a separate connection map.
-    socket: "WebSocket | None" = field(default=None, repr=False)
+    socket: WebSocket | None = field(default=None, repr=False)
 
 
 class FabricCoordinator:
@@ -96,7 +97,7 @@ class FabricCoordinator:
     # next sweep sees them as live again.
     HEARTBEAT_SWEEP_INTERVAL_S = 5.0
 
-    def __init__(self, identity: "FabricIdentity", db: "aiosqlite.Connection") -> None:
+    def __init__(self, identity: FabricIdentity, db: aiosqlite.Connection) -> None:
         self._identity = identity
         self._db = db
         self._peers: dict[str, PeerLiveState] = {}
@@ -106,7 +107,7 @@ class FabricCoordinator:
         # is stale beyond HEARTBEAT_TIMEOUT_S. Started by
         # ``start_heartbeat_sweeper()`` from lifespan; stopped on
         # shutdown. None when never started or when explicitly stopped.
-        self._heartbeat_sweep_task: "asyncio.Task | None" = None
+        self._heartbeat_sweep_task: asyncio.Task | None = None
         # Capability extractors registered by lifespan startup. Each
         # exposes async collect() -> list[CapabilityBase]. We don't
         # type-narrow on the extractor class because the discipline is
@@ -352,7 +353,7 @@ class FabricCoordinator:
 
     # ── Connection management ─────────────────────────────────────
 
-    async def attach_connection(self, node_id: str, websocket: "WebSocket") -> bool:
+    async def attach_connection(self, node_id: str, websocket: WebSocket) -> bool:
         """Bind a freshly-authenticated WebSocket to a peer.
 
         Returns True on success; False if the node_id isn't registered
@@ -440,9 +441,9 @@ class FabricCoordinator:
         # because the DB has its own concurrency model + busy_timeout;
         # holding the asyncio lock across the SQL would serialise
         # disconnect events unnecessarily.
-        from datetime import datetime, timezone
         import dataclasses
-        now_iso = datetime.now(timezone.utc).isoformat(sep=" ", timespec="seconds")
+        from datetime import datetime
+        now_iso = datetime.now(UTC).isoformat(sep=" ", timespec="seconds")
         try:
             await self._db.execute(
                 "UPDATE fabric_nodes SET last_seen_at = ? WHERE id = ?",
@@ -770,7 +771,7 @@ class FabricCoordinator:
 
     # ── In-flight cross-peer request registry (Phase 9.3) ─────────
 
-    def register_inflight(self, request_id: str, task: "asyncio.Task | Any") -> None:
+    def register_inflight(self, request_id: str, task: asyncio.Task | Any) -> None:
         """Track an in-flight cross-peer request by request_id.
 
         Called by FabricPeerMiddleware right after the signed

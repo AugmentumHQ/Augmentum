@@ -26,9 +26,9 @@ import httpx
 import pytest
 
 from augmentum.cast.games.models import (
+    STRATEGY_PROXY,
     CastProfile,
     HostCapabilities,
-    STRATEGY_PROXY,
 )
 from augmentum.cast.games.proxy.fetcher import (
     BLOCKED_RESPONSE_HEADERS,
@@ -42,11 +42,10 @@ from augmentum.cast.games.proxy.fetcher import (
     strip_response_headers,
 )
 from augmentum.cast.games.proxy.rewriter import (
-    DEFAULT_CDN_ALLOWLIST,
     inject_adapter_loader,
     make_url_rewriter,
-    rewrite_css,
     rewrite_csp,
+    rewrite_css,
     rewrite_html,
 )
 from augmentum.cast.games.proxy.session_store import ProxySessionStore

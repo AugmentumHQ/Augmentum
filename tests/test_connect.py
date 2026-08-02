@@ -8,8 +8,6 @@ visibility window).
 
 from __future__ import annotations
 
-import asyncio
-
 import pytest
 
 from augmentum.config import settings

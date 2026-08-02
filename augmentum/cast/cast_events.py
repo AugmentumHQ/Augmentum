@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import secrets
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
 from augmentum.utils.logging import get_logger
@@ -33,7 +33,7 @@ END_REASON_ENDED = "ended"                   # natural surface end (e.g. video f
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    return datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S")
 
 
 def _make_id() -> str:
@@ -89,7 +89,7 @@ def _row_to_event(row: Any) -> CastEvent:
 
 
 class CastEventStore:
-    def __init__(self, conn: "aiosqlite.Connection") -> None:
+    def __init__(self, conn: aiosqlite.Connection) -> None:
         self._conn = conn
 
     async def record_start(

@@ -73,7 +73,6 @@ async def _install(request: Any, manifest: Any, sd: Any, user_id: str) -> None:
         # Record last_synced_at in the managed_services config_json so the
         # prompt-compose re-sync gate knows the cache is fresh.
         try:
-            import json
             import time
             mgr = getattr(request.app.state, "service_manager", None)
             if mgr is not None and hasattr(mgr, "read_config_json"):

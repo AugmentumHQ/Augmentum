@@ -4,9 +4,8 @@ from __future__ import annotations
 import asyncio
 import json
 import uuid
-from datetime import UTC, datetime, timedelta
-
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime, timedelta
 
 import aiosqlite
 

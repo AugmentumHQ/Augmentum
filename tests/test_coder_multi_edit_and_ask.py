@@ -14,9 +14,7 @@ from __future__ import annotations
 
 import asyncio
 
-import pytest
-
-from augmentum.coder.editing import apply_edit, _try_unicode, _unicode_fold
+from augmentum.coder.editing import _try_unicode, _unicode_fold, apply_edit
 from augmentum.coder.state import CoderState
 from augmentum.coder.tools import (
     ALL_CODER_TOOLS,
@@ -24,7 +22,6 @@ from augmentum.coder.tools import (
     CodeMultiEditTool,
     create_coder_tools,
 )
-
 
 # --- Stub container manager ---------------------------------------------
 

@@ -35,20 +35,25 @@ import asyncio
 import json
 import time
 import uuid
-from dataclasses import dataclass, replace as dataclass_replace
-from typing import TYPE_CHECKING, Any, AsyncIterator
+from collections.abc import AsyncIterator
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any
 
-from augmentum.config import settings
-from augmentum.companion_runtime import affordances, tiers, tools as tool_bridge
+from augmentum.companion_runtime import affordances, tiers
+from augmentum.companion_runtime import tools as tool_bridge
 from augmentum.companion_runtime.prompt_compose import (
     ComposedPrompt,
     compose_becca_prompt,
 )
+from augmentum.companion_runtime.runtime import Intent
 from augmentum.companion_runtime.state import FocusValue
 from augmentum.companion_runtime.tool_protocol import (
-    Promise, TagSieve, ToolCall, ToolResult,
+    Promise,
+    TagSieve,
+    ToolCall,
+    ToolResult,
 )
-from augmentum.companion_runtime.runtime import Intent
+from augmentum.config import settings
 from augmentum.utils.bg_tasks import track
 from augmentum.utils.logging import get_logger
 
@@ -98,7 +103,7 @@ class _AsyncStringWriter:
     buffer: list[str]
 
     @classmethod
-    def empty(cls) -> "_AsyncStringWriter":
+    def empty(cls) -> _AsyncStringWriter:
         return cls(buffer=[])
 
     async def write(self, text: str) -> None:
@@ -173,7 +178,7 @@ class BeccaVoice:
     fresh by the route adapter on each chat turn.
     """
 
-    def __init__(self, runtime: "CompanionRuntime") -> None:
+    def __init__(self, runtime: CompanionRuntime) -> None:
         self._runtime = runtime
         self._bus = runtime.bus
 
@@ -181,8 +186,8 @@ class BeccaVoice:
 
     async def handle_chat(
         self,
-        internal_req: "InternalChatRequest",
-        request: "Request",
+        internal_req: InternalChatRequest,
+        request: Request,
         *,
         classification: Any,
         user_id: str,
@@ -227,7 +232,7 @@ class BeccaVoice:
 
     # ── Triage ──────────────────────────────────────────────────────
 
-    async def _triage(self, internal_req: "InternalChatRequest", classification: Any) -> str:
+    async def _triage(self, internal_req: InternalChatRequest, classification: Any) -> str:
         """Return one of:
             PURE_EQ | MIXED | IQ_HEAVY |
             CHANNEL_CODER | CHANNEL_NARRATIVE | CHANNEL_AGENTIC |
@@ -296,7 +301,7 @@ class BeccaVoice:
         # (4) Default
         return "PURE_EQ"
 
-    def _refusal_category(self, triage: str, internal_req: "InternalChatRequest") -> str:
+    def _refusal_category(self, triage: str, internal_req: InternalChatRequest) -> str:
         """Map the categorical classifier output to the addendum key
         used by ``affordances.refusal_addendum_for``. Defaults to
         harm_uplift on ambiguity — it's the safer assumption."""
@@ -320,7 +325,7 @@ class BeccaVoice:
 
     def _intent_from_request(
         self,
-        req: "InternalChatRequest",
+        req: InternalChatRequest,
         *,
         user_id: str,
         meta: dict[str, Any],
@@ -652,7 +657,11 @@ class BeccaVoice:
             app_state = getattr(self._runtime, "_app_state", None)
             from augmentum.models.base import (
                 InternalChatRequest as ProxyReq,
+            )
+            from augmentum.models.base import (
                 Message as ProxyMsg,
+            )
+            from augmentum.models.base import (
                 apply_vision_pipeline,
             )
             vreq = ProxyReq(
@@ -1200,6 +1209,8 @@ class BeccaVoice:
         try:
             from augmentum.models.base import (
                 InternalChatRequest as ProxyReq,
+            )
+            from augmentum.models.base import (
                 Message as ProxyMsg,
             )
         except Exception as exc:
@@ -1304,6 +1315,8 @@ class BeccaVoice:
             backend, model_name = await tiers.primary(self._runtime)
             from augmentum.models.base import (
                 InternalChatRequest as ProxyReq,
+            )
+            from augmentum.models.base import (
                 Message as ProxyMsg,
             )
         except Exception:  # noqa: BLE001 — pre-start, safe to fall back
@@ -1574,7 +1587,7 @@ class BeccaVoice:
         timeout_s = 30.0 if tier_pref == "primary" else 20.0
         try:
             resp = await asyncio.wait_for(chat(req), timeout=timeout_s)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             log.info("voice_deliver_timeout", tool=result.tool, tier=tier_pref)
             return affordances.failure_for(failure_fallback_kind) if not result.ok else ""
         except Exception:
@@ -1786,8 +1799,9 @@ class BeccaVoice:
            ``<think>...`` with no closer; this guard strips that
            orphan so TTS doesn't read reasoning aloud.
         """
-        from augmentum.companion_runtime.tool_protocol import TAG_RE
         import re as _re
+
+        from augmentum.companion_runtime.tool_protocol import TAG_RE
 
         cleaned = text
         # Strip complete <think>...</think> blocks (in case backend
@@ -1934,7 +1948,7 @@ class BeccaVoice:
                 return ""
             try:
                 resp = await asyncio.wait_for(chat(req), timeout=12.0)
-            except (asyncio.TimeoutError, Exception):
+            except (TimeoutError, Exception):
                 return ""
             from augmentum.models.base import response_text
             return response_text(resp)
@@ -1994,7 +2008,7 @@ class BeccaVoice:
 
     def _build_streaming_response(
         self, intent: Intent, *, wire_format: str = "ollama",
-    ) -> "StreamingResponse":
+    ) -> StreamingResponse:
         """Return a StreamingResponse matching the route's wire format.
 
         ``wire_format`` is one of "ollama" (NDJSON for /api/chat) or
@@ -2022,7 +2036,7 @@ class BeccaVoice:
 
         return StreamingResponse(_gen(), media_type=media)
 
-    async def _build_blocking_response(self, intent: Intent) -> "JSONResponse":
+    async def _build_blocking_response(self, intent: Intent) -> JSONResponse:
         """Run ``self.stream`` to completion in memory and return JSON."""
         from fastapi.responses import JSONResponse
 
@@ -2036,7 +2050,7 @@ class BeccaVoice:
             "handled_by": "becca",
         })
 
-    async def _safe_stream(self, intent: Intent, writer: "_StreamingWriter") -> None:
+    async def _safe_stream(self, intent: Intent, writer: _StreamingWriter) -> None:
         """Wrap ``self.stream`` so exceptions don't kill the async gen."""
         try:
             await self.stream(intent, out=writer)

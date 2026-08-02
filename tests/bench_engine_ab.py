@@ -11,7 +11,6 @@ from __future__ import annotations
 import json
 import time
 import urllib.request
-import sys
 
 ENGINE_URL = "http://localhost:8090"
 
@@ -128,7 +127,7 @@ def run_benchmark():
 
     # Engine config
     config = get_engine_config()
-    print(f"Engine config:")
+    print("Engine config:")
     print(f"  KV cache: {config.get('kv_cache_type', '?')}")
     print(f"  Features: {config.get('features', {})}")
     print()
@@ -155,7 +154,7 @@ def run_benchmark():
         print(f"OK ({load_ms}ms, pool={'hit' if pool_hit else 'miss'})")
 
         # Warmup
-        print(f"  Warmup...", end=" ", flush=True)
+        print("  Warmup...", end=" ", flush=True)
         bench_generate(n_tokens=20, runs=1)
         print("done")
 
@@ -191,7 +190,7 @@ def run_benchmark():
             print(f"{name:<25} {data['type']:<6} {data['load_ms']}ms{'':<3} {data['avg_tok_s']}")
     print()
     print(f"Config: KV={config.get('kv_cache_type', '?')}")
-    print(f"To compare: change ENGINE_KV_CACHE_TYPE, ENGINE_EXPERT_CACHE, etc. and re-run")
+    print("To compare: change ENGINE_KV_CACHE_TYPE, ENGINE_EXPERT_CACHE, etc. and re-run")
 
     # Save results
     out_file = "tests/bench_results.json"

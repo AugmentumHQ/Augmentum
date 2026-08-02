@@ -30,17 +30,13 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, AsyncIterator
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from augmentum.coder.prompts import ACT_SYSTEM, EDIT_FORMAT_INSTRUCTIONS
 from augmentum.utils.logging import get_logger
 
 if TYPE_CHECKING:
-    from augmentum.coder.containers import ContainerManager
-    from augmentum.coder.state import CoderState
-    from augmentum.models.base import InternalStreamChunk, ModelBackend
-    from augmentum.tools.base import Tool
+    pass
 
 log = get_logger(__name__)
 

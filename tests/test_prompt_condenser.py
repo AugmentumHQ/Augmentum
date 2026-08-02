@@ -3,9 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-from unittest.mock import MagicMock, AsyncMock, patch
-
-import pytest
+from unittest.mock import AsyncMock, MagicMock
 
 from augmentum.image.prompt_condenser import (
     condense_prompt,
@@ -13,7 +11,6 @@ from augmentum.image.prompt_condenser import (
     estimate_tokens,
     needs_condensing,
 )
-
 
 # =====================================================================
 # Token limit detection

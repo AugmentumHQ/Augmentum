@@ -2,10 +2,53 @@ target-version = "py311"
 line-length = 100
 
 [lint]
-select = ["E", "F", "W", "I", "UP", "B", "SIM"]
-ignore = ["E501"]
+# Curated for this codebase (see ignore rationale below). We keep the
+# correctness-critical families fully live — F (pyflakes: undefined names,
+# unused/duplicate imports, duplicate dict keys), I (import order), W, and the
+# safe pyupgrade/bugbear-correctness rules — and drop the purely-stylistic
+# checks that fight the code's established, deliberate conventions.
+select = ["E", "F", "W", "I", "UP", "B"]
+# NOTE: SIM (flake8-simplify) is intentionally NOT selected. Its flagship rule
+# SIM105 rewrites `try/except: pass` into `contextlib.suppress`, which CLAUDE.md
+# explicitly FORBIDS on save/load paths (silent failure). The rest of SIM is
+# style-only with no bug-catching value, so we omit the whole family.
+ignore = [
+    "E501",  # line length — enforced loosely; long log strings / URLs are fine
+    # --- pycodestyle style we don't enforce (deliberate, readable in context) ---
+    "E402",  # module-import-not-at-top — many deliberate late imports break cycles
+    "E701",  # multiple-statements-on-one-line (colon) — compact guards are idiomatic here
+    "E702",  # multiple-statements-on-one-line (semicolon)
+    "E722",  # bare-except — a few intentional broad catches at trust boundaries
+    "E731",  # lambda-assignment — occasional local convenience
+    "E741",  # ambiguous-variable-name (l/I/O) — only in narrow, obvious scopes
+    # --- flake8-bugbear opinions (not bugs in our usage) ---
+    "B007",  # unused-loop-control-variable — often intentional
+    "B008",  # function-call-in-default-argument — this IS the FastAPI Depends()/File() pattern
+    "B904",  # raise-without-from-inside-except — chaining not consistently applied; cosmetic
+    "B905",  # zip-without-explicit-strict — behavior is correct without strict=
+    # --- pyupgrade migrations deferred (behavior-adjacent, not worth churn now) ---
+    "UP031",  # printf-string-formatting — 2 sites, low value
+    "UP042",  # replace-str-enum — changing Enum base classes is behavior-adjacent
+    # --- pyflakes: kept live EXCEPT this one ---
+    "F841",  # unused-variable — frequently intentional (unpacking / kept-for-clarity)
+]
 
 [lint.per-file-ignores]
+# Test-assertion style we don't enforce in the test suite: B017 (asserting a
+# blind `Exception` is a legitimate "this must fail somehow" check) and B011
+# (`assert False` — tests never run under `python -O`, so it's equivalent to
+# raising AssertionError). Real bug classes (B023 closures, B005 strip misuse,
+# all F-codes) stay enforced in tests too.
+"tests/**" = ["B017", "B011"]
+# This package __init__ imports the builtin analyzers purely for their
+# @register_analyzer import-time side effects — the bound names are meant to be
+# unused. (isort's combine-as-imports default keeps them as separate statements,
+# so a single inline noqa can't cover them; a per-file ignore is cleaner.)
+"augmentum/coder/analyzers/__init__.py" = ["F401"]
+# The builtin-verb import order here is deliberate and load-bearing — the
+# modules register side effects on import in a specific sequence. isort (I001)
+# must never reorder it. See the module header and CLAUDE.md.
+"augmentum/intent/__init__.py" = ["I001"]
 # Coder phase modules resolve handler helpers at runtime via _LiveProxy /
 # _bind_handler_helpers() (names injected into module globals — see
 # augmentum/modes/coder/README.md). F821 can't see that; everywhere else

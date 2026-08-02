@@ -14,7 +14,6 @@ from augmentum.personality.labeler import (
     parse_labeler_response,
 )
 
-
 # ----------------------------------------------------------------------
 # Prompt construction
 # ----------------------------------------------------------------------

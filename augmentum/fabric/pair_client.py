@@ -73,7 +73,6 @@ from typing import TYPE_CHECKING
 import httpx
 
 from augmentum.fabric.peer_auth import (
-    PairRequest,
     build_pair_request,
     persist_remote_node,
 )
@@ -104,7 +103,7 @@ class OutboundPairError(Exception):
 
 async def initiate_pair_with_remote(
     *,
-    identity: "FabricIdentity",
+    identity: FabricIdentity,
     hostname: str,
     remote_url: str,
     expected_fingerprint: str,
@@ -112,9 +111,9 @@ async def initiate_pair_with_remote(
     own_addr: str = "",
     role: str = "peer",
     icon: str = "",
-    db: "aiosqlite.Connection",
+    db: aiosqlite.Connection,
     http_client: httpx.AsyncClient | None = None,
-) -> "PairedPeer":
+) -> PairedPeer:
     """Run one half of the pair handshake from THIS node out to the remote.
 
     On success, the remote has us in their fabric_nodes AND we have

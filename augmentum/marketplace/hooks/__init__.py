@@ -80,11 +80,13 @@ KNOWN_INTEGRATION_HOOKS: dict[str, HookEntry] = {}
 
 # ── Import hooks so they self-register ────────────────────────────────────
 
-from augmentum.marketplace.hooks import media_connect  # noqa: E402, F401
-from augmentum.marketplace.hooks import provider_bridge  # noqa: E402, F401
-from augmentum.marketplace.hooks import notifications  # noqa: E402, F401
-from augmentum.marketplace.hooks import calendar  # noqa: E402, F401
-from augmentum.marketplace.hooks import augmentum_backend  # noqa: E402, F401
+from augmentum.marketplace.hooks import (
+    augmentum_backend,  # noqa: E402, F401
+    calendar,  # noqa: E402, F401
+    media_connect,  # noqa: E402, F401
+    notifications,  # noqa: E402, F401
+    provider_bridge,  # noqa: E402, F401
+)
 
 __all__ = [
     "KNOWN_INTEGRATION_HOOKS",

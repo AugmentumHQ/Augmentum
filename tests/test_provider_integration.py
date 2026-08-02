@@ -8,10 +8,7 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock
 
-import pytest
-
 from augmentum.models.base import InternalChatRequest, Message
-
 
 # ---------------------------------------------------------------------------
 # Helpers

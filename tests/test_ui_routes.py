@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 from unittest.mock import AsyncMock, MagicMock
 
-
 # ---------------------------------------------------------------------------
 # GET /api/ui/status
 # ---------------------------------------------------------------------------
@@ -82,7 +81,6 @@ class TestGenerateTitle:
     def test_long_message_fallback(self, client):
         """If backend fails, falls back to truncation."""
         # Make backend.chat raise
-        from augmentum.models.base import ModelBackend
 
         original = client.app.state.provider_registry.default_backend
         broken_backend = MagicMock()

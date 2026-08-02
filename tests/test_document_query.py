@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from augmentum.documents.query_analyzer import (
     QueryAnalysis,
@@ -11,9 +11,11 @@ from augmentum.documents.query_analyzer import (
 )
 from augmentum.documents.query_expansion import (
     expand_query_terms,
+)
+from augmentum.documents.query_expansion import (
     reset as reset_expansion,
 )
-from augmentum.documents.span_filter import _split_sentences, _cosine_similarity
+from augmentum.documents.span_filter import _cosine_similarity, _split_sentences
 
 
 class TestQueryAnalyzer:

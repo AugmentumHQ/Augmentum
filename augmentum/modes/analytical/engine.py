@@ -28,7 +28,6 @@ from augmentum.models.base import (
     Message,
     ModelBackend,
 )
-from augmentum.modes.analytical.auto_verify import run_auto_verification
 from augmentum.modes.analytical.prompts import (
     SEARCH_CONTEXT_SECTION,
     SEARCH_QUERY_PROMPT,

@@ -2,15 +2,13 @@
 
 from __future__ import annotations
 
-import contextlib
 import json
 import secrets
-from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
+from augmentum.utils.logging import get_logger
 from augmentum.vfs.classify import derive_kind
 from augmentum.vfs.models import FileEntry
-from augmentum.utils.logging import get_logger
 
 if TYPE_CHECKING:
     import aiosqlite
@@ -918,15 +916,15 @@ class FileIndexService:
         """
         try:
             over = max(limit * 3, limit)
-            sql = """
-                SELECT {cols}, vec.distance AS _vec_distance
+            sql = f"""
+                SELECT {_ENTRY_COLUMNS_FI}, vec.distance AS _vec_distance
                 FROM file_index_vec vec
                 INNER JOIN file_index fi ON fi.id = vec.file_id
                 WHERE vec.embedding MATCH ? AND vec.k = ?
                   AND fi.user_id = ?
                   AND fi.is_trashed = 0
                 ORDER BY vec.distance
-            """.format(cols=_ENTRY_COLUMNS_FI)
+            """
             cursor = await self._db.execute(sql, (embedding, over, user_id))
             rows = await cursor.fetchall()
         except Exception:

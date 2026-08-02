@@ -15,9 +15,10 @@ import json
 import sqlite3
 import struct
 import zipfile
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from augmentum.utils.logging import get_logger
 from augmentum.utils.safe_archive import ensure_zip_sane
@@ -109,6 +110,7 @@ async def import_to_augpack(
         progress_cb("embedding", 0, len(chunks))
 
     import asyncio
+
     from augmentum.memory.embeddings import EmbeddingService
 
     texts = [c.content for c in chunks]
@@ -371,7 +373,8 @@ def _extract_epub(data: bytes, filename: str, source: str) -> list[ImportChunk]:
 def _extract_document(data: bytes, filename: str, source: str) -> list[ImportChunk]:
     """Extract using the existing document chunker (PDF, DOCX, HTML, MD, TXT)."""
     import mimetypes
-    from augmentum.documents.chunker import extract_text, section_split, chunk_sections
+
+    from augmentum.documents.chunker import chunk_sections, extract_text, section_split
 
     mime, _ = mimetypes.guess_type(filename)
     if not mime:

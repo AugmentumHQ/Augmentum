@@ -67,7 +67,7 @@ class RemoteAudioError(RuntimeError):
 async def tts_stream_via_peer(
     *,
     http_client_factory,
-    identity: "FabricIdentity",
+    identity: FabricIdentity,
     user_id: str,
     peer_base_url: str,
     payload: dict[str, Any],
@@ -118,17 +118,16 @@ async def tts_stream_via_peer(
     headers["Content-Type"] = "application/json"
 
     try:
-        async with http_client_factory(peer_base_url) as client:
-            async with client.stream(
-                "POST",
-                f"{peer_base_url}{path}",
-                content=body_bytes,
-                headers=headers,
-                timeout=_TTS_STREAM_TIMEOUT_S,
-            ) as upstream:
-                upstream.raise_for_status()
-                async for chunk in upstream.aiter_bytes(chunk_size=4096):
-                    yield chunk
+        async with http_client_factory(peer_base_url) as client, client.stream(
+            "POST",
+            f"{peer_base_url}{path}",
+            content=body_bytes,
+            headers=headers,
+            timeout=_TTS_STREAM_TIMEOUT_S,
+        ) as upstream:
+            upstream.raise_for_status()
+            async for chunk in upstream.aiter_bytes(chunk_size=4096):
+                yield chunk
     except httpx.HTTPStatusError as exc:
         log.warning(
             "fabric_tts_upstream_status",
@@ -154,7 +153,7 @@ async def tts_stream_via_peer(
 async def stt_transcribe_via_peer(
     *,
     http_client_factory,
-    identity: "FabricIdentity",
+    identity: FabricIdentity,
     user_id: str,
     peer_base_url: str,
     audio_bytes: bytes,
@@ -246,7 +245,7 @@ async def stt_transcribe_via_peer(
 async def clone_upload_via_peer(
     *,
     http_client_factory,
-    identity: "FabricIdentity",
+    identity: FabricIdentity,
     user_id: str,
     peer_base_url: str,
     audio_bytes: bytes,
@@ -332,7 +331,7 @@ async def clone_upload_via_peer(
 async def push_user_context_via_peer(
     *,
     http_client_factory,
-    identity: "FabricIdentity",
+    identity: FabricIdentity,
     user_id: str,
     peer_base_url: str,
     audio_bytes: bytes,

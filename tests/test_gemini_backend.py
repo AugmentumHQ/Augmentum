@@ -2,17 +2,12 @@
 
 from __future__ import annotations
 
-import json
-
-import pytest
-
 from augmentum.models.converters.gemini import (
     GeminiConverter,
     convert_response,
     get_safety_settings,
     get_thinking_config,
 )
-
 
 # ===================================================================
 # TestGeminiMessageConversion

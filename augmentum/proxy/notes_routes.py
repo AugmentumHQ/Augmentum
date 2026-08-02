@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import uuid
+from datetime import UTC
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
@@ -72,9 +73,9 @@ async def create_note(request: Request) -> JSONResponse:
     except Exception:
         return JSONResponse({"error": "Invalid JSON body"}, status_code=400)
 
-    from datetime import datetime, timezone
+    from datetime import datetime
 
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(UTC).isoformat()
     note = {
         "id": uuid.uuid4().hex[:12],
         "title": body.get("title", "Untitled"),

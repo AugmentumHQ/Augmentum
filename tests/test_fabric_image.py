@@ -31,7 +31,6 @@ from augmentum.fabric.image_client import (
 from augmentum.fabric.peer_auth import PairedPeer
 from augmentum.state.settings_store import SettingsStore
 
-
 # ── Helpers ───────────────────────────────────────────────────────
 
 
@@ -317,6 +316,7 @@ async def test_route_helper_treats_disk_only_models_as_local():
     the local host couldn't dial. Fix unions both sources.
     """
     from unittest.mock import MagicMock as _MM
+
     from fastapi import Request as _Req
 
     from augmentum.image.schemas import GenerateRequest

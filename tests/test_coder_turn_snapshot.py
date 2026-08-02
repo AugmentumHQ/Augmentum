@@ -32,13 +32,10 @@ from __future__ import annotations
 import pytest
 
 from augmentum.coder.turn_snapshot import (
-    DiffEntry,
     TurnSnapshot,
     _classify_status,
     _unified_diff,
-    _SIZE_LIMIT_BYTES,
 )
-
 
 # ---------------------------------------------------------------------------
 # Stub container manager

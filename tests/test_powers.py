@@ -7,7 +7,6 @@ import pytest
 
 from augmentum.powers import PowerRegistry, PowerStateStore, select_controller_power
 from augmentum.state.settings_store import SettingsStore
-
 from tests.test_coder_handler import _FakeBackend, _FakeChunk, _make_request
 
 

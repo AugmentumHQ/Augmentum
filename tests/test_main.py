@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 
 class TestMain:
@@ -51,6 +51,7 @@ class TestDunderMain:
         # __main__.py calls main() at import time, so we must mock uvicorn
         with patch("augmentum.main.uvicorn"):
             import importlib
+
             import augmentum.__main__  # noqa: F401
             importlib.reload(augmentum.__main__)
 

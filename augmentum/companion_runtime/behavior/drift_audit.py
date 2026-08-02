@@ -25,7 +25,7 @@ Design spec: docs/superpowers/specs/2026-05-14-companion-runtime-design-v2.md §
 from __future__ import annotations
 
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from augmentum.companion_runtime.identity import DriftCeilingExceeded
@@ -53,12 +53,12 @@ def _parse_db_timestamp(s: str | None) -> float | None:
         # Accept both space and 'T' separators, with or without microseconds.
         norm = s.replace("T", " ").split(".", 1)[0]
         dt = datetime.strptime(norm, "%Y-%m-%d %H:%M:%S")
-        return dt.replace(tzinfo=timezone.utc).timestamp()
+        return dt.replace(tzinfo=UTC).timestamp()
     except Exception:
         return None
 
 
-async def run_if_due(runtime: "CompanionRuntime") -> bool:
+async def run_if_due(runtime: CompanionRuntime) -> bool:
     """Run a drift-audit rehearsal if the interval has elapsed.
 
     Returns True when a rehearsal actually fired (and updated

@@ -2,12 +2,9 @@
 
 from __future__ import annotations
 
-import re
-
 import pytest
 
 from augmentum.models.base import InternalChatRequest, Message
-
 
 # ── Macro Expansion ────────────────────────────────────────────────────
 
@@ -595,6 +592,7 @@ class TestGroupStore:
         rows across tenants when uid is missing — auth middleware guarantees
         a uid on /api/narrative/*, so an empty uid here means a regression."""
         import pytest
+
         from augmentum.modes.narrative.group_manager import GroupStore
         store = GroupStore(db_conn)
 

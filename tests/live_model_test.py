@@ -57,14 +57,12 @@ from augmentum.modes.analytical.tool_calling import (
     ToolCallingTier,
     build_structured_output_schema,
     coerce_tool_params,
-    extract_structured_text,
     parse_json_tool_calls,
     parse_native_tool_calls_all,
     parse_python_style_tool_call,
     parse_react_tool_call,
     parse_structured_output,
     parse_xml_tool_call,
-    select_tier,
     tools_to_native_format,
 )
 from augmentum.tools.base import Tool, ToolCategory, ToolResult
@@ -75,11 +73,9 @@ from augmentum.tools.chain import (
     ToolChainPlanner,
     build_synthesis_prompt,
     detect_complexity,
-    execute_chain,
     execute_step,
     parse_plan_from_json,
     parse_plan_from_response,
-    resolve_templates,
 )
 from augmentum.tools.registry import ToolRegistry
 from augmentum.utils.logging import get_logger
@@ -388,9 +384,7 @@ class LiveTestBackend(_OpenAIBackend):
 
         # Format constraint (Tier 2 / JSON mode)
         if request.format:
-            if isinstance(request.format, dict):
-                payload["response_format"] = {"type": "json_object"}
-            elif request.format == "json":
+            if isinstance(request.format, dict) or request.format == "json":
                 payload["response_format"] = {"type": "json_object"}
 
         # Think control
@@ -1213,7 +1207,7 @@ class LiveModelTester:
                 self._add_result(
                     test_name=test_name, status=Status.FAIL,
                     elapsed_ms=elapsed, think=think,
-                    detail=f"No plan parsed (tried json+text on content+thinking)",
+                    detail="No plan parsed (tried json+text on content+thinking)",
                     raw_output=raw[:500],
                 )
                 return
@@ -1314,7 +1308,7 @@ class LiveModelTester:
                     detail=f"All {total} steps failed",
                 )
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             elapsed = (time.monotonic() - start) * 1000
             self._add_result(
                 test_name=test_name, status=Status.FAIL,

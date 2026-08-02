@@ -19,7 +19,6 @@ from augmentum.coder.containers import (
     _resolve_memory_swap,
 )
 
-
 # Minimal project_checkouts schema — just the columns the reaper +
 # always-on setter touch. The real migration adds many more, but a
 # focused subset keeps the test fast and the schema readable. Mirrors
@@ -1146,7 +1145,8 @@ async def test_import_archive_into_extracts_at_root(conn, mock_docker):
     assert call.kwargs["path"] == "/"
     sent = call.kwargs["data"]
     # Verify the bytes Docker received are valid raw tar (i.e. gunzip'd).
-    import io as _io, tarfile as _tarfile
+    import io as _io
+    import tarfile as _tarfile
     with _tarfile.open(fileobj=_io.BytesIO(sent), mode="r") as tar:
         names = tar.getnames()
     assert "workspace/main.py" in names

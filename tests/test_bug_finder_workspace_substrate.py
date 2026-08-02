@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import time
 from pathlib import Path
 
@@ -26,7 +25,6 @@ from augmentum.bug_finder.workspace_substrate import (
     unresolved_workspace_patterns,
     upsert_pattern,
 )
-
 
 # ---------------------------------------------------------------------------
 # Layout

@@ -16,7 +16,6 @@ Regression target: the empty-args loop documented in
 
 from __future__ import annotations
 
-import asyncio
 from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from typing import Any
@@ -27,8 +26,8 @@ import pytest
 from augmentum.models.base import InternalChatRequest, Message
 from augmentum.modes.analytical.tool_calling import ToolCallingTier
 from augmentum.modes.coder.handler import (
-    CoderHandler,
     _TRUNCATION_REASON_EMPTY_ARGS,
+    CoderHandler,
     _build_truncation_error,
 )
 

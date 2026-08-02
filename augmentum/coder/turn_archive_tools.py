@@ -23,14 +23,14 @@ state as authoritative. The framing matches the design spec
 from __future__ import annotations
 
 import time
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from augmentum.coder.tools import _CoderTool, _truncate
 from augmentum.tools.base import ToolCategory, ToolResult
 from augmentum.utils.logging import get_logger
 
 if TYPE_CHECKING:
-    import aiosqlite
+    pass
 
 log = get_logger(__name__)
 

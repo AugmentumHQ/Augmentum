@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from augmentum.utils.metrics import (
     ACTIVE_SESSIONS,
+    REGISTRY,
+    REQUEST_COUNT,
+    REQUEST_DURATION,
     Counter,
     Gauge,
     Histogram,
     MetricsRegistry,
-    REGISTRY,
-    REQUEST_COUNT,
-    REQUEST_DURATION,
 )
 
 

@@ -12,7 +12,6 @@ verify both paths produce identical content during the migration period.
 from __future__ import annotations
 
 import asyncio
-import json
 
 import pytest
 

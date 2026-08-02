@@ -10,7 +10,7 @@ import httpx
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-from augmentum.dream.prompts import build_dream_prompt, build_portrait_prompt, DREAM_ANTI_PATTERNS
+from augmentum.dream.prompts import DREAM_ANTI_PATTERNS, build_dream_prompt, build_portrait_prompt
 
 PERSONA = (
     "You are Aria, a warm, adaptive AI companion designed to walk alongside "
@@ -154,7 +154,7 @@ def main():
                 print(f"    {raw[:300]}")
 
         # --- Portrait ---
-        print(f"\n> PORTRAIT")
+        print("\n> PORTRAIT")
         raw2, dur2 = call(model, portrait_sys, portrait_usr)
         if not raw2:
             print(f"  EMPTY ({dur2:.1f}s)")

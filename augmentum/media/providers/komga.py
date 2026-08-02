@@ -69,7 +69,7 @@ _AUTHOR_ROLE_PRIORITY = (
 
 def _encode_basic(username: str, password: str) -> str:
     """Return the ``base64(user:pass)`` value for an HTTP Basic header."""
-    raw = f"{username}:{password}".encode("utf-8")
+    raw = f"{username}:{password}".encode()
     return base64.b64encode(raw).decode("ascii")
 
 

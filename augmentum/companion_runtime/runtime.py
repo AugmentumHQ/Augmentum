@@ -253,8 +253,8 @@ class CompanionRuntime:
             # inert until their flag flips (companion_subagent_registry_active /
             # companion_primitive_registry_active).
             try:
-                import augmentum.companion_runtime.subagents as _sa_pkg  # noqa: F401
                 import augmentum.companion_runtime.primitives as _pr_pkg  # noqa: F401
+                import augmentum.companion_runtime.subagents as _sa_pkg  # noqa: F401
             except Exception:
                 log.warning("companion_adapter_import_failed", exc_info=True)
 
@@ -424,7 +424,7 @@ class CompanionRuntime:
                 self._tick_task.cancel()
                 try:
                     await asyncio.wait_for(self._tick_task, timeout=grace_seconds)
-                except (asyncio.CancelledError, asyncio.TimeoutError):
+                except (TimeoutError, asyncio.CancelledError):
                     pass
 
             self._started = False
@@ -688,7 +688,7 @@ class CompanionRuntime:
         # track(): hold a strong ref so the GC can't drop the publish
         # mid-flight, and log if it raises (audit 2026-06-17).
         track(self.bus.publish(PresenceEvent(
-            topic=f"state.transition",
+            topic="state.transition",
             payload={"from": from_v, "to": to_v, "reason": reason},
             source_companion_id=self.companion_id,
         )), name="bus_state_transition")

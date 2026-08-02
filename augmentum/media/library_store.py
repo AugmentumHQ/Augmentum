@@ -8,7 +8,6 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from augmentum.media.library_classification import (
-    ClassifiedLibrary,
     classify_library,
 )
 from augmentum.media.providers.base import LibraryView
@@ -17,15 +16,15 @@ if TYPE_CHECKING:
     import aiosqlite
 
 
-_library_store: "MediaLibraryStore | None" = None
+_library_store: MediaLibraryStore | None = None
 
 
-def set_media_library_store(store: "MediaLibraryStore") -> None:
+def set_media_library_store(store: MediaLibraryStore) -> None:
     global _library_store
     _library_store = store
 
 
-def get_media_library_store() -> "MediaLibraryStore | None":
+def get_media_library_store() -> MediaLibraryStore | None:
     return _library_store
 
 

@@ -32,7 +32,6 @@ from augmentum.models.base import (
 )
 from augmentum.modes.narrative.recall_loop import stream_with_recall_tools
 
-
 # ---------------------------------------------------------------------------
 # Mock backend
 # ---------------------------------------------------------------------------

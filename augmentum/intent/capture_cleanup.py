@@ -31,7 +31,7 @@ metadata) pick up the change.
 from __future__ import annotations
 
 import asyncio
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from augmentum.config import settings
@@ -121,7 +121,7 @@ async def cleanup_captured_text(
 
     try:
         resp = await asyncio.wait_for(backend.chat(req), timeout=timeout_s)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         log.info(
             "capture_cleanup_timeout",
             model=resolved_model,
@@ -208,7 +208,7 @@ async def apply_cleanup_to_note(
             note_id,
             {
                 "content": new_content,
-                "updated_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(UTC).isoformat(),
             },
             user_id=user_id,
         )

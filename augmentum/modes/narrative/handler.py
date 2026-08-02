@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import contextlib
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
@@ -523,7 +522,7 @@ class NarrativeHandler(ModeHandler):
         )
         try:
             resp = await asyncio.wait_for(self._backend.chat(director_req), timeout=10.0)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             log.warning("group_speaker_llm_timeout")
             return None
         except Exception as exc:  # noqa: BLE001
@@ -1123,7 +1122,7 @@ class NarrativeHandler(ModeHandler):
         Uses ``narrative_memory_model`` if configured, otherwise the default backend.
         """
         try:
-            from augmentum.modes.narrative.memory import parse_state_memory_response, CardType
+            from augmentum.modes.narrative.memory import CardType, parse_state_memory_response
 
             # Resolve summary backend — use dedicated model if configured.
             # ``resolve_backend_for_model`` returns ``tuple[ModelBackend, str]``
@@ -1184,7 +1183,8 @@ class NarrativeHandler(ModeHandler):
         try:
             from augmentum.config import settings as cfg
             from augmentum.modes.narrative.memory import (
-                CardType, build_compaction_prompt, parse_state_memory_response,
+                CardType,
+                build_compaction_prompt,
             )
 
             async with self._engine.processing_lock:
@@ -1224,6 +1224,7 @@ class NarrativeHandler(ModeHandler):
 
             if response.message and response.message.content:
                 import re
+
                 from augmentum.modes.narrative.memory import MemoryEntry
 
                 compacted: list[MemoryEntry] = []
@@ -2067,7 +2068,6 @@ class NarrativeHandler(ModeHandler):
         try:
             from augmentum.config import settings
             from augmentum.image.distiller import (
-                UserPersona,
                 _extract_conversation_rounds,
                 build_scene_context,
                 distill_scene,
@@ -2262,7 +2262,6 @@ class NarrativeHandler(ModeHandler):
                 from augmentum.proxy.cloud_image_routes import (
                     CloudGenerateRequest,
                     _fetch_cloud_models,
-                    _get_conn as _cloud_get_conn,
                 )
                 from augmentum.state.backends.sqlite import SQLiteBackend
 
@@ -2294,12 +2293,12 @@ class NarrativeHandler(ModeHandler):
                 # Route to cloud generation
                 from augmentum.proxy.cloud_image_routes import (
                     CloudGenerateRequest,
-                    _generate_openai_compat,
-                    _generate_stability,
-                    _generate_bfl,
-                    _generate_fal,
                     _build_headers,
                     _detect_provider_type,
+                    _generate_bfl,
+                    _generate_fal,
+                    _generate_openai_compat,
+                    _generate_stability,
                 )
                 from augmentum.utils.http_client import normalize_base_url
                 cloud_base = normalize_base_url(cloud_provider["base_url"])
@@ -2685,8 +2684,8 @@ class NarrativeHandler(ModeHandler):
             # Apply prompt preset (jailbreak, author's note, post-history)
             preset = await self._resolve_preset()
             if preset:
-                from augmentum.modes.narrative.prompt_presets import apply_preset
                 from augmentum.modes.narrative.macro_expander import expand_messages
+                from augmentum.modes.narrative.prompt_presets import apply_preset
                 augmented = apply_preset(result.augmented_request, preset)
                 # Expand macros in the injected preset fields
                 expand_messages(
@@ -2853,7 +2852,8 @@ class NarrativeHandler(ModeHandler):
                 _wm = self._world_manifest()
                 if _wm is not None and _wm.has("sheet"):
                     from augmentum.modes.narrative.world_system import (
-                        match_sheet_command, sheet_text,
+                        match_sheet_command,
+                        sheet_text,
                     )
                     _last_user = next(
                         (m.content for m in reversed(request.messages)
@@ -2992,8 +2992,8 @@ class NarrativeHandler(ModeHandler):
                 # Apply prompt preset (jailbreak, author's note, post-history)
                 preset = await self._resolve_preset()
                 if preset:
-                    from augmentum.modes.narrative.prompt_presets import apply_preset
                     from augmentum.modes.narrative.macro_expander import expand_messages
+                    from augmentum.modes.narrative.prompt_presets import apply_preset
                     augmented = apply_preset(result.augmented_request, preset)
                     expand_messages(
                         augmented.messages,
@@ -3140,8 +3140,8 @@ class NarrativeHandler(ModeHandler):
 
             if _has_recall:
                 from augmentum.modes.narrative.recall_schemas import (
-                    RECALL_TOOL_SCHEMAS,
                     RECALL_TOOL_NAMES,
+                    RECALL_TOOL_SCHEMAS,
                     dispatch_recall_tool,
                 )
                 existing_tools += with_silent_suffix(RECALL_TOOL_SCHEMAS)
@@ -3149,9 +3149,9 @@ class NarrativeHandler(ModeHandler):
 
             if _has_lorebook:
                 from augmentum.modes.narrative.lorebook_schemas import (
-                    LOREBOOK_TOOL_SCHEMAS,
-                    LOREBOOK_TOOL_NAMES,
                     LOREBOOK_MUTATING_TOOLS,
+                    LOREBOOK_TOOL_NAMES,
+                    LOREBOOK_TOOL_SCHEMAS,
                     dispatch_lorebook_tool,
                 )
                 existing_tools += with_silent_suffix(LOREBOOK_TOOL_SCHEMAS)
@@ -3160,9 +3160,9 @@ class NarrativeHandler(ModeHandler):
 
             if _has_lorebook_native:
                 from augmentum.modes.narrative.lorebook_native_schemas import (
-                    LOREBOOK_NATIVE_TOOL_SCHEMAS,
-                    LOREBOOK_NATIVE_TOOL_NAMES,
                     LOREBOOK_NATIVE_MUTATING_TOOLS,
+                    LOREBOOK_NATIVE_TOOL_NAMES,
+                    LOREBOOK_NATIVE_TOOL_SCHEMAS,
                     dispatch_lorebook_native_tool,
                 )
                 existing_tools += with_silent_suffix(LOREBOOK_NATIVE_TOOL_SCHEMAS)
@@ -3171,8 +3171,8 @@ class NarrativeHandler(ModeHandler):
 
             if _has_world:
                 from augmentum.modes.narrative.world_native_schemas import (
-                    WORLD_NATIVE_TOOL_NAMES,
                     WORLD_NATIVE_MUTATING_TOOLS,
+                    WORLD_NATIVE_TOOL_NAMES,
                     dispatch_world_native_tool,
                     schemas_for_manifest,
                 )

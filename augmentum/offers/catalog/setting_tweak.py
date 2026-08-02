@@ -164,7 +164,7 @@ def _make_entry(spec: _TweakSpec) -> CatalogEntry:
             },
         )
 
-    async def _accept(payload: dict[str, Any], request: "Request") -> dict[str, Any]:
+    async def _accept(payload: dict[str, Any], request: Request) -> dict[str, Any]:
         store = getattr(request.app.state, "settings_store", None)
         user = request.scope.get("user")
         user_id = getattr(user, "id", "") if user is not None else ""

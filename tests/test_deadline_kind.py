@@ -2,7 +2,7 @@
 runner's days-remaining message and day-of completion."""
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -14,7 +14,7 @@ from augmentum.tools.schedule_deadline import _DEFAULT_OFFSETS, _normalize_offse
 
 
 def _today():
-    return datetime.now(timezone.utc).date()
+    return datetime.now(UTC).date()
 
 
 # ── Schedule resolution (deadline mode in _compute_next_run_at) ──────────

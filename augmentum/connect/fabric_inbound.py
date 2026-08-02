@@ -47,8 +47,8 @@ from augmentum.connect.protocol import (
     MSG_TEXT_DELETE,
     MSG_TEXT_DELIVERED,
     MSG_TEXT_EDIT,
-    MSG_TEXT_READ,
     MSG_TEXT_REACT,
+    MSG_TEXT_READ,
     MSG_TEXT_SEND,
     MSG_TYPING_START,
     MSG_TYPING_STOP,
@@ -122,10 +122,10 @@ def _normalise_source_did(
 
 
 async def apply_inbound_fabric_envelope(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
-    connect_hub: "ConnectHub | None",
-    notification_hub: "NotificationHub | None",
+    connect_hub: ConnectHub | None,
+    notification_hub: NotificationHub | None,
     fabric_payload: dict[str, Any],
     coordinator: Any = None,
     sender_node_id: str = "",
@@ -286,10 +286,10 @@ async def apply_inbound_fabric_envelope(
 
 
 async def _dispatch_text_verb(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
-    connect_hub: "ConnectHub | None",
-    notification_hub: "NotificationHub | None",
+    connect_hub: ConnectHub | None,
+    notification_hub: NotificationHub | None,
     env: ConnectEnvelope,
     source_did: str,
     target_user_id: str,
@@ -309,7 +309,6 @@ async def _dispatch_text_verb(
         get_message,
         get_or_create_thread,
         insert_message,
-        mark_thread_read,
         soft_delete_message,
         stamp_delivered,
     )
@@ -317,16 +316,16 @@ async def _dispatch_text_verb(
         EVENT_TEXT_DELETE,
         EVENT_TEXT_DELIVERED,
         EVENT_TEXT_EDIT,
+        EVENT_TEXT_REACT,
         EVENT_TEXT_READ,
         EVENT_TEXT_RECEIVED,
-        EVENT_TEXT_REACT,
         EVENT_TYPING_START,
         EVENT_TYPING_STOP,
         MSG_TEXT_DELETE,
         MSG_TEXT_DELIVERED,
         MSG_TEXT_EDIT,
-        MSG_TEXT_READ,
         MSG_TEXT_REACT,
+        MSG_TEXT_READ,
         MSG_TEXT_SEND,
         MSG_TYPING_START,
         MSG_TYPING_STOP,
@@ -636,10 +635,10 @@ async def _dispatch_text_verb(
 
 
 async def _dispatch_call_verb(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
-    connect_hub: "ConnectHub | None",
-    notification_hub: "NotificationHub | None",
+    connect_hub: ConnectHub | None,
+    notification_hub: NotificationHub | None,
     env: ConnectEnvelope,
     source_did: str,
     target_user_id: str,

@@ -25,10 +25,9 @@ class TestIntentPackageImports:
 
     def test_package_imports(self):
         from augmentum.intent import (
-            Action, ActionFanout, ActionResult, ActionTool,
-            IntentMatch, REGISTRY, ReferentCache, SessionContext,
-            dispatch, get_referent_cache, list_actions, match_intent,
-            register_action, register_action_tools, serialize_action_event,
+            Action,
+            match_intent,
+            register_action,
         )
         # Smoke: every export is a real symbol
         assert Action is not None
@@ -200,8 +199,8 @@ class TestReferentCache:
         assert a is not b
 
     def test_handles_missing_app_state(self):
-        from augmentum.intent.dispatch import get_referent_cache
         from augmentum.intent.action import ReferentCache
+        from augmentum.intent.dispatch import get_referent_cache
 
         cache = get_referent_cache(None, "u", "s")
         # Returns a fresh ReferentCache rather than raising.
@@ -219,11 +218,11 @@ class TestReferentCacheEviction:
         # get the actual module object (needed for monkeypatch).
         import importlib
         dispatch_mod = importlib.import_module("augmentum.intent.dispatch")
-        from augmentum.intent.dispatch import (
-            _evict_stale_referents,
-            REFERENT_TTL_SECONDS,
-        )
         from augmentum.intent.action import ReferentCache
+        from augmentum.intent.dispatch import (
+            REFERENT_TTL_SECONDS,
+            _evict_stale_referents,
+        )
 
         store: dict = {}
         now = 1000.0

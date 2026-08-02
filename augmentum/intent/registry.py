@@ -142,6 +142,7 @@ def register_action(
     compiled_templates: list = []
     if templates:
         import re as _re
+
         from augmentum.intent.templates import compile_template
         _question_prefix = _re.compile(
             r"^\s*(?:\[[^\]]*\]\s*)*"  # leading optional groups

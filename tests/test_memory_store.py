@@ -2,12 +2,7 @@
 
 from __future__ import annotations
 
-import json
-import uuid
-from datetime import UTC, datetime
-from unittest.mock import AsyncMock, MagicMock, patch
-
-import pytest
+from unittest.mock import MagicMock, patch
 
 from augmentum.memory.models import ExtractedFact, Memory, MemoryTier, MemoryType, SourceType
 from augmentum.state.backends.sqlite import SQLiteBackend

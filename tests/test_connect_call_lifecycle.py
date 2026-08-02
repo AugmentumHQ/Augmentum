@@ -10,7 +10,6 @@ from __future__ import annotations
 import asyncio
 import json
 from pathlib import Path
-from typing import Any
 
 import aiosqlite
 import pytest
@@ -30,7 +29,6 @@ from augmentum.connect.protocol import (
     EVENT_HANGUP,
 )
 from augmentum.notifications.hub import NotificationHub
-
 
 CONNECT_MIGRATION = Path(
     "augmentum/state/migrations/219_connect_substrate.sql"

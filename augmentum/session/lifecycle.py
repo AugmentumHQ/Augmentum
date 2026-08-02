@@ -8,10 +8,9 @@ and has access to both the state manager and the engine backend.
 """
 from __future__ import annotations
 
-import asyncio
 import time
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Optional
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from augmentum.utils.logging import get_logger
 
@@ -56,8 +55,8 @@ class SessionLifecycle:
 
     def __init__(
         self,
-        state_manager: Optional[StateManager] = None,
-        provider_registry: Optional[ProviderRegistry] = None,
+        state_manager: StateManager | None = None,
+        provider_registry: ProviderRegistry | None = None,
         auto_save_interval: int = 300,  # save active session every 5 minutes
     ):
         self._state_manager = state_manager

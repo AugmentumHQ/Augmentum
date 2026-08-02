@@ -24,7 +24,7 @@ def hash_tool_call(tool_name: str, args: dict[str, Any]) -> str:
     so equivalent calls produce matching hashes across process restarts.
     """
     canonical = json.dumps(args or {}, sort_keys=True, default=str, ensure_ascii=False)
-    return hashlib.sha256(f"{tool_name}\x00{canonical}".encode("utf-8")).hexdigest()
+    return hashlib.sha256(f"{tool_name}\x00{canonical}".encode()).hexdigest()
 
 
 class TaskStatus(str, Enum):

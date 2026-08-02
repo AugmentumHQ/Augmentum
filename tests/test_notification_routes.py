@@ -8,10 +8,10 @@ manually mount the router to verify its logic in isolation.
 from __future__ import annotations
 
 import asyncio
+from unittest.mock import MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import AsyncMock, MagicMock
 
 from augmentum.proxy.notification_routes import router as notification_router
 

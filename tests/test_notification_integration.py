@@ -12,7 +12,7 @@ class TestNotificationChannel:
     """The service.alert channel is registered in the catalog."""
 
     def test_service_alert_channel_exists(self):
-        from augmentum.notifications.catalog import catalog_channel, DEFAULT_CHANNELS
+        from augmentum.notifications.catalog import catalog_channel
         ch = catalog_channel("service.alert")
         assert ch is not None
         assert ch.channel_id == "service.alert"

@@ -35,7 +35,6 @@ from augmentum.state.narrative_state import (
     PlotThread,
 )
 
-
 _UID = "u-test"
 _OTHER_UID = "u-other"
 _SID = "s-recall"

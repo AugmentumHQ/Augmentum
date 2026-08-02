@@ -776,6 +776,7 @@ async def fabric_inference(request: Request):
     # ── Non-streaming path ────────────────────────────────────────
     if not internal_req.stream:
         from fastapi.responses import JSONResponse
+
         from augmentum.models.openai_compat import to_openai_chat_response
         try:
             internal_resp = await backend.chat(internal_req)
@@ -973,7 +974,6 @@ async def fabric_knowledge_search(request: Request):
 
     Auth: verified fabric peer only.
     """
-    import json as _json
 
     _require_fabric_peer(request)
 
@@ -1099,8 +1099,8 @@ async def fabric_render(request: Request):
     if not isinstance(payload, dict):
         raise HTTPException(status_code=400, detail="payload must be an object")
 
-    from augmentum.cast.render import RenderJob, RenderResult
     from augmentum.cast.executors import execute_local_render
+    from augmentum.cast.render import RenderJob, RenderResult
     job = RenderJob(
         kind=kind,
         target_device_id=target_device_id,
@@ -1335,8 +1335,11 @@ async def fabric_tts(request: Request):
     # Build the same TTSRequest model the user-facing handler expects
     # so the synth pipeline + format defaults stay consistent.
     from augmentum.proxy.audio_routes import (
-        TTSRequest, tts_speech,
-        _FABRIC_PROVIDER_PREFIX, resolve_voice_provider, _get_conn,
+        _FABRIC_PROVIDER_PREFIX,
+        TTSRequest,
+        _get_conn,
+        resolve_voice_provider,
+        tts_speech,
     )
 
     tts_body = TTSRequest(
@@ -1426,7 +1429,9 @@ async def fabric_stt(request: Request):
         raise HTTPException(status_code=400, detail="file field required")
 
     from augmentum.proxy.audio_routes import (
-        stt_transcribe, _get_default_provider, _get_conn,
+        _get_conn,
+        _get_default_provider,
+        stt_transcribe,
     )
 
     # Recursion guard. STT providers don't have the same "fabric:"
@@ -2133,7 +2138,7 @@ async def fabric_connect(websocket: WebSocket) -> None:
         raw = await asyncio.wait_for(
             websocket.receive_text(), timeout=_HELLO_TIMEOUT_S,
         )
-    except asyncio.TimeoutError:
+    except TimeoutError:
         await websocket.close(code=4408, reason="hello timeout")
         return
     except WebSocketDisconnect:

@@ -28,10 +28,8 @@ from augmentum.cast.render import (
     RenderRoute,
 )
 from augmentum.fabric.identity import FabricIdentity
-from augmentum.fabric.peer_auth import PairedPeer
 from augmentum.fabric.render_client import render_via_peer, serialise_result
 from augmentum.state.settings_store import SettingsStore
-
 
 # ── execute_local_render (stub) ───────────────────────────────────
 

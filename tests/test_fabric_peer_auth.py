@@ -114,8 +114,9 @@ async def test_verify_rejects_stale_timestamp():
         )
         # Build a tampered request with an old timestamp; re-sign so
         # the signature itself isn't what catches it.
-        from augmentum.fabric.peer_auth import _pair_canonical_bytes
         import base64
+
+        from augmentum.fabric.peer_auth import _pair_canonical_bytes
         old_ts = int(time.time()) - 3600  # 1h old, well outside the 5min window
         canonical = _pair_canonical_bytes(
             sender_node_id=req.sender_node_id,

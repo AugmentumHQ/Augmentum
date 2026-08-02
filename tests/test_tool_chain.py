@@ -4,14 +4,13 @@ from __future__ import annotations
 
 import asyncio
 import unittest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 from augmentum.tools.base import Tool, ToolCategory, ToolResult
 from augmentum.tools.chain import (
     ChainPlan,
     ChainStep,
     StepResult,
-    ToolChainPlanner,
     _mutate_plan,
     _replan_on_failure,
     _resolve_args_via_llm,
@@ -960,8 +959,9 @@ class TestPlanMutation(unittest.TestCase):
 
     def test_mutate_plan_restructures(self):
         """_mutate_plan returns new steps from LLM."""
-        from augmentum.models.base import InternalChatRequest, Message
         import json
+
+        from augmentum.models.base import InternalChatRequest, Message
 
         search = _make_tool("web_search")
         wiki = _make_tool("wikipedia")
@@ -998,8 +998,9 @@ class TestPlanMutation(unittest.TestCase):
 
     def test_mutate_plan_unknown_tool_returns_none(self):
         """If mutated plan references unknown tool, returns None."""
-        from augmentum.models.base import InternalChatRequest, Message
         import json
+
+        from augmentum.models.base import InternalChatRequest, Message
 
         calc = _make_tool("calculator", ToolCategory.VERIFY)
         registry = _make_registry(calc)
@@ -1026,9 +1027,10 @@ class TestPlanMutation(unittest.TestCase):
 
     def test_mutate_wired_into_execute_chain(self):
         """When LLM says mutate, execute_chain restructures and continues."""
+        import json
+
         from augmentum.config import settings
         from augmentum.models.base import InternalChatRequest, Message
-        import json
 
         search = _make_tool("web_search")
         search.execute = AsyncMock(return_value=ToolResult(

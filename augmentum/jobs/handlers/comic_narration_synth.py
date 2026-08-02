@@ -27,10 +27,10 @@ from typing import Any
 from augmentum.jobs import JobCancelled
 from augmentum.jobs.context import JobContext
 from augmentum.jobs.handlers.narration_synth import (
+    _TTS_SAMPLE_RATE,
     _engine_wav_blobs,
     _resolve_synth_engine,
     _safe_name,
-    _TTS_SAMPLE_RATE,
 )
 from augmentum.ocr.reading_order import (
     default_reading_direction,

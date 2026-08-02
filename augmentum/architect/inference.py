@@ -32,9 +32,9 @@ log = get_logger(__name__)
 
 
 async def infer_args(
-    action: "Action",
+    action: Action,
     partial_args: dict[str, Any],
-    session: "SessionContext",
+    session: SessionContext,
     runtime: Any,
 ) -> dict[str, Any]:
     """Run the action's arg_inferrer if defined, else return partial.
@@ -227,7 +227,7 @@ async def query_browse_history(
     ]
 
 
-def pull_referent(session: "SessionContext", field: str) -> str | None:
+def pull_referent(session: SessionContext, field: str) -> str | None:
     """Pull a ReferentCache field if available. Convenience wrapper that
     None-checks the cache so individual inferrers don't have to.
 

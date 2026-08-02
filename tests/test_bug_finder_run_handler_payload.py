@@ -15,7 +15,6 @@ from augmentum.jobs.handlers.bug_finder_run import (
     _replace_intake_with_patterns,
 )
 
-
 _MINIMUM = {
     "workspace_id": "ws-1",
     "primary_model": "claude-sonnet-4-6",

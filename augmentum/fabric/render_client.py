@@ -44,7 +44,7 @@ _RENDER_HTTP_TIMEOUT_S = 60.0
 async def render_via_peer(
     *,
     http_client: httpx.AsyncClient,
-    identity: "FabricIdentity",
+    identity: FabricIdentity,
     user_id: str,
     peer_node_id: str,
     peer_addr: str,

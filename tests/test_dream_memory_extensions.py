@@ -1,8 +1,9 @@
 """Tests for dream-related memory pipeline extensions."""
 from __future__ import annotations
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 
 def _make_mock_store(tier_val: str = "provisional") -> MagicMock:

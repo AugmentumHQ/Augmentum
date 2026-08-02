@@ -21,7 +21,7 @@ import asyncio
 import os
 import struct
 import threading
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 import numpy as np
 
@@ -318,6 +318,7 @@ class KokoroTTS:
             walk_name = voice[5:]
             try:
                 import os
+
                 from augmentum.config import settings
                 walk_dir = os.path.join(settings.data_dir or "/data", "voice_walks")
                 walk_path = os.path.join(walk_dir, f"{walk_name}.npy")

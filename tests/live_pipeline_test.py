@@ -1304,12 +1304,7 @@ def select_from_list(
 
 
 _STOP_WORDS = frozenset(
-    "the a an is are was were be been being have has had do does did will would "
-    "shall should can could may might must need dare ought to of in for on with "
-    "at by from it its this that these those i you he she we they my your his her "
-    "our their what which who whom and but or nor not so yet both either neither "
-    "each every all any few more most other some such no only same than too very "
-    "just about also how when where why if then else".split()
+    ["the", "a", "an", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "do", "does", "did", "will", "would", "shall", "should", "can", "could", "may", "might", "must", "need", "dare", "ought", "to", "of", "in", "for", "on", "with", "at", "by", "from", "it", "its", "this", "that", "these", "those", "i", "you", "he", "she", "we", "they", "my", "your", "his", "her", "our", "their", "what", "which", "who", "whom", "and", "but", "or", "nor", "not", "so", "yet", "both", "either", "neither", "each", "every", "all", "any", "few", "more", "most", "other", "some", "such", "no", "only", "same", "than", "too", "very", "just", "about", "also", "how", "when", "where", "why", "if", "then", "else"]
 )
 
 

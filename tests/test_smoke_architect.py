@@ -11,8 +11,6 @@ Verifies the foundation slice is wired:
 
 from __future__ import annotations
 
-import pytest
-
 # Touch architect_routes so dead_code.find_untested_routes() recognizes
 # this file as covering the route surface (it also actually exercises
 # the import — circular-import bugs would surface here first).
@@ -69,7 +67,7 @@ class TestActionShapeExtension:
     """Existing Action shape carries the three new fields."""
 
     def test_action_has_new_fields(self):
-        from augmentum.intent.action import Action, ActionFanout
+        from augmentum.intent.action import Action
 
         async def _noop(text, session, args):  # pragma: no cover — handler stub
             return None
@@ -112,7 +110,7 @@ class TestRegisterActionExtensions:
     """register_action accepts the new kwargs without breaking the old ones."""
 
     def test_register_with_architect_kwargs(self):
-        from augmentum.intent.action import ActionResult, SessionContext
+        from augmentum.intent.action import ActionResult
         from augmentum.intent.registry import REGISTRY, register_action
 
         async def _h(text, session, args):

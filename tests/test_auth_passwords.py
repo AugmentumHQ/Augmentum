@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from augmentum.auth.passwords import (
     hash_password,
-    verify_password,
-    verify_dummy,
     needs_rehash,
+    verify_dummy,
+    verify_password,
 )
 
 

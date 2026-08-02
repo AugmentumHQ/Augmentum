@@ -27,7 +27,6 @@ from augmentum.companion_runtime.event_bus import VerbDispatcher
 from augmentum.companion_runtime.verbs import VerbRegistry
 from augmentum.state.backends.sqlite import SQLiteBackend
 
-
 _OWNER = "usr_test_owner"
 _COMPANION = "cmp_test"
 

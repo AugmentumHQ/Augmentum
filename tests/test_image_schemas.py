@@ -7,7 +7,6 @@ from pydantic import ValidationError
 
 from augmentum.image.schemas import (
     AspectRatio,
-    BatchDeleteRequest,
     GenerateRequest,
     GenerateResponse,
     HistoryEntry,
@@ -18,7 +17,6 @@ from augmentum.image.schemas import (
     LoraWeight,
     ModelInfo,
     OpenAIImageRequest,
-    OpenAIImageResponse,
     PipelineType,
 )
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 import asyncio
 import json
 from collections import defaultdict
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import structlog
 
@@ -57,7 +57,7 @@ class DreamScheduler:
         self._idle_minutes = idle_minutes
         self._cooldown_minutes = cooldown_minutes
         # Per-user counters. Empty-string key is the legacy single-tenant path.
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         self._messages_since: dict[str, int] = defaultdict(int)
         self._approved_since: dict[str, int] = defaultdict(int)
         self._last_request_at: dict[str, datetime] = defaultdict(lambda: now)
@@ -128,7 +128,7 @@ class DreamScheduler:
 
     def notify_request(self, user_id: str = "") -> None:
         """Called on every API request to track per-user idle time."""
-        self._last_request_at[user_id] = datetime.now(timezone.utc)
+        self._last_request_at[user_id] = datetime.now(UTC)
 
     # --- Eligibility & execution ----------------------------------------
 
@@ -207,7 +207,7 @@ class DreamScheduler:
         if self._approved_since[user_id] < 1:
             return False
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         idle_duration = now - self._last_request_at[user_id]
         if idle_duration < timedelta(minutes=idle_minutes):
             return False
@@ -253,7 +253,7 @@ class DreamScheduler:
         self._running_for.add(user_id)
         try:
             cycle = await self._engine.run_cycle("default", "threshold", user_id=user_id)
-            self._last_dream_at[user_id] = datetime.now(timezone.utc)
+            self._last_dream_at[user_id] = datetime.now(UTC)
             self._reset_counters(user_id)
             log.info(
                 "dream_cycle_completed",
@@ -296,7 +296,7 @@ class DreamScheduler:
         self._running_for.add(user_id)
         try:
             cycle = await self._engine.run_cycle(persona_id, "manual", user_id=user_id)
-            self._last_dream_at[user_id] = datetime.now(timezone.utc)
+            self._last_dream_at[user_id] = datetime.now(UTC)
             self._reset_counters(user_id)
             return cycle.id
         finally:

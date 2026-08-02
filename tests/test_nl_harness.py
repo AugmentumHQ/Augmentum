@@ -14,12 +14,11 @@ import argparse
 import json
 import os
 import re
-import time
 import sys
-from dataclasses import dataclass, field
-
-import urllib.request
+import time
 import urllib.error
+import urllib.request
+from dataclasses import dataclass
 
 # Fix Windows console encoding
 if sys.platform == "win32":
@@ -135,7 +134,7 @@ def extract_intents(text: str, workspace: str = "/workspace") -> list[ExtractedA
                 tool="shell_exec",
                 input={"command": f"python3 -c {json.dumps(content_stripped)}"},
                 confidence=0.8,
-                source_text=f"```tool_code",
+                source_text="```tool_code",
             ))
 
     # ── Step 2: Phrase-based intent matching (outside code blocks) ─
@@ -403,7 +402,7 @@ def run_test(base_url: str, model: str, test: dict) -> dict:
     print(f"{'='*70}")
 
     # ── Natural Language approach ──
-    print(f"\n  [NL] Calling model...")
+    print("\n  [NL] Calling model...")
     try:
         nl_response, nl_time = call_llm(base_url, model, NL_SYSTEM, prompt)
     except Exception as e:
@@ -414,7 +413,7 @@ def run_test(base_url: str, model: str, test: dict) -> dict:
     nl_actions = extract_intents(nl_response)
 
     # ── ReWOO JSON approach ──
-    print(f"\n  [ReWOO] Calling model...")
+    print("\n  [ReWOO] Calling model...")
     try:
         rewoo_response, rewoo_time = call_llm(base_url, model, REWOO_SYSTEM, prompt)
     except Exception as e:
@@ -425,7 +424,7 @@ def run_test(base_url: str, model: str, test: dict) -> dict:
     rewoo_calls = parse_rewoo_json(rewoo_response)
 
     # ── Display results ──
-    print(f"\n  ── Natural Language Response ──")
+    print("\n  ── Natural Language Response ──")
     # Show first 500 chars
     preview = nl_response[:500]
     if len(nl_response) > 500:
@@ -441,7 +440,7 @@ def run_test(base_url: str, model: str, test: dict) -> dict:
         print(f"  │ {a.tool:12s} conf={a.confidence:.0%}  {inp_preview}")
         print(f"  │   source: \"{a.source_text}\"")
 
-    print(f"\n  ── ReWOO Response ──")
+    print("\n  ── ReWOO Response ──")
     preview = rewoo_response[:500]
     if len(rewoo_response) > 500:
         preview += "..."
@@ -460,7 +459,7 @@ def run_test(base_url: str, model: str, test: dict) -> dict:
     rewoo_tools = {tc.get("tool", "") for tc in rewoo_calls}
     rewoo_valid = len(rewoo_calls) > 0
 
-    print(f"\n  ── Comparison ──")
+    print("\n  ── Comparison ──")
     print(f"  │ NL time:      {nl_time:.1f}s")
     print(f"  │ ReWOO time:   {rewoo_time:.1f}s")
     print(f"  │ NL actions:   {len(nl_actions)} ({', '.join(a.tool for a in nl_actions) or 'none'})")
@@ -495,11 +494,11 @@ def main():
                         help="Run only test N (0-indexed, -1=all)")
     args = parser.parse_args()
 
-    print(f"╔══════════════════════════════════════════════════════════════════╗")
-    print(f"║  NL Intent Extraction vs ReWOO JSON — Live A/B Test            ║")
+    print("╔══════════════════════════════════════════════════════════════════╗")
+    print("║  NL Intent Extraction vs ReWOO JSON — Live A/B Test            ║")
     print(f"║  Backend: {args.base_url:53s}║")
     print(f"║  Model:   {(args.model or '(auto)'):53s}║")
-    print(f"╚══════════════════════════════════════════════════════════════════╝")
+    print("╚══════════════════════════════════════════════════════════════════╝")
 
     # Quick connectivity check
     try:
@@ -529,7 +528,7 @@ def main():
 
     # ── Summary ──
     print(f"\n{'='*70}")
-    print(f"  SUMMARY")
+    print("  SUMMARY")
     print(f"{'='*70}")
 
     nl_total_actions = sum(r["nl_actions"] for r in results)
@@ -547,7 +546,7 @@ def main():
     print(f"  ReWOO avg time:      {rewoo_avg_time:.1f}s")
     print(f"  NL avg confidence:   {nl_avg_conf:.0%}")
 
-    print(f"\n  Per-test breakdown:")
+    print("\n  Per-test breakdown:")
     for r in results:
         status = "✓" if r["rewoo_valid"] else "✖"
         print(f"    {r['name']:25s}  NL:{r['nl_actions']}actions  ReWOO:{status}{r['rewoo_calls']}calls  "

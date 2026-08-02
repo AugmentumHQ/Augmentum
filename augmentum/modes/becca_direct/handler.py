@@ -37,6 +37,7 @@ preserved structurally.
 from __future__ import annotations
 
 import asyncio
+import dataclasses
 import time
 from collections.abc import AsyncIterator
 from typing import TYPE_CHECKING, Any
@@ -219,7 +220,6 @@ class BeccaDirectHandler(ModeHandler):
         # the user getting a response.
         try:
             from augmentum.companion_runtime.prompt_compose import compose_becca_prompt
-            from augmentum.companion_runtime.runtime import Intent
         except Exception:
             log.warning("becca_direct_import_failed", exc_info=True)
             async for chunk in self._fall_through_passthrough(request, reason="import_failed"):
@@ -669,8 +669,6 @@ class BeccaDirectHandler(ModeHandler):
         InternalChatRequest propagate cleanly (see the field-addition
         warning in ``augmentum/models/base.py``).
         """
-        import dataclasses
-
         new_messages: list[Message] = []
         replaced = False
         for msg in request.messages or []:
@@ -865,7 +863,7 @@ class BeccaDirectHandler(ModeHandler):
                 ),
                 timeout=_TOOL_INVOKE_TIMEOUT_S,
             )
-        except asyncio.TimeoutError:
+        except TimeoutError:
             log.info("becca_direct_tool_timeout", tool=tag.name)
             return InternalStreamChunk(
                 content_delta="",

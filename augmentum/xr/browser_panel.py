@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import asyncio
 import base64
-import contextlib
 import socket
 import tempfile
 import time

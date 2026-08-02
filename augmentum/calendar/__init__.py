@@ -21,6 +21,7 @@ __all__ = [
     "count_events_today",
     "create_calendar_event",
     "list_events",
+    "purge_old_events",
     "sync_calendar_events",
     "upsert_event",
 ]

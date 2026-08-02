@@ -7,7 +7,6 @@ citation pattern we've seen in the wild.
 
 from augmentum.voice.text_cleaning import clean_for_tts
 
-
 # ---------------------------------------------------------------------------
 # Realistic LLM outputs with citations/sources
 # ---------------------------------------------------------------------------

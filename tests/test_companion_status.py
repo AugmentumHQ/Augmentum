@@ -20,6 +20,7 @@ def _client_app():
     """Build a FastAPI app with just the companion router mounted.
     Avoids the full lifespan; tests can hit the endpoint directly."""
     from fastapi import FastAPI
+
     from augmentum.proxy.companion_routes import router
 
     app = FastAPI()
@@ -30,6 +31,7 @@ def _client_app():
 @pytest.mark.asyncio
 async def test_status_shape_when_runtime_off(monkeypatch):
     from fastapi.testclient import TestClient
+
     from augmentum.config import settings as _settings
 
     monkeypatch.setattr(_settings, "companion_runtime_enabled", False)
@@ -57,6 +59,7 @@ async def test_status_shape_when_runtime_off(monkeypatch):
 @pytest.mark.asyncio
 async def test_status_lists_active_features_when_runtime_on(monkeypatch):
     from fastapi.testclient import TestClient
+
     from augmentum.config import settings as _settings
 
     # Runtime on; downstream defaults are True per Tier 1 flip
@@ -93,6 +96,7 @@ async def test_status_features_have_plain_language(monkeypatch):
     """User-visible text must not contain flag names. This is the
     tasteful-surface discipline made testable."""
     from fastapi.testclient import TestClient
+
     from augmentum.config import settings as _settings
 
     monkeypatch.setattr(_settings, "companion_runtime_enabled", True)
@@ -124,6 +128,7 @@ async def test_status_advanced_lists_known_off_features(monkeypatch):
     """The advanced list surfaces things-she-could-do-but-doesn't so
     the user has a sense of the full system, not just the active part."""
     from fastapi.testclient import TestClient
+
     from augmentum.config import settings as _settings
 
     monkeypatch.setattr(_settings, "companion_runtime_enabled", True)
@@ -152,6 +157,7 @@ async def test_status_reflects_user_choice_persona_off(monkeypatch):
     runtime IS running) but persona_mode reports false so the UI can
     show 'turn on persona to see her'."""
     from fastapi.testclient import TestClient
+
     from augmentum.config import settings as _settings
 
     monkeypatch.setattr(_settings, "companion_runtime_enabled", True)
@@ -172,6 +178,7 @@ async def test_status_never_returns_5xx(monkeypatch):
     """The status endpoint should never break the settings UI.
     Returning a degraded response is fine; returning 500/503 is not."""
     from fastapi.testclient import TestClient
+
     from augmentum.config import settings as _settings
 
     monkeypatch.setattr(_settings, "companion_runtime_enabled", False)

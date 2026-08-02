@@ -16,8 +16,8 @@ from __future__ import annotations
 from augmentum.controllers.defaults import (
     SYSTEM_PROFILES,
     SystemProfile,
-    list_systems,
     get_system_profile,
+    list_systems,
 )
 from augmentum.controllers.service import (
     ControllerService,

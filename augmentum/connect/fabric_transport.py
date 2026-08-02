@@ -75,7 +75,7 @@ class DispatchResult:
 
 
 async def _resolve_node_id(
-    coordinator: "FabricCoordinator", *, hostname: str,
+    coordinator: FabricCoordinator, *, hostname: str,
 ) -> str | None:
     """Find the fabric ``node_id`` whose paired hostname matches.
 
@@ -100,9 +100,9 @@ async def _resolve_node_id(
 
 
 async def dispatch_fabric_envelope(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
-    coordinator: "FabricCoordinator | None",
+    coordinator: FabricCoordinator | None,
     target_hostname: str,
     source_did: str,
     sender_user_id: str,
@@ -231,9 +231,9 @@ async def dispatch_fabric_envelope(
 
 
 async def drain_outbox_for_peer(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
-    coordinator: "FabricCoordinator",
+    coordinator: FabricCoordinator,
     node_id: str,
 ) -> dict[str, int]:
     """Flush every queued envelope to ``node_id`` in queued_at order.

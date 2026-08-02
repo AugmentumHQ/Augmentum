@@ -27,11 +27,11 @@ if sys.platform == "win32":
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from augmentum.tools.preferred_sources import (
+    _SOURCES,
     AVOID,
     EXCELLENT,
     GOOD,
     UNKNOWN,
-    _SOURCES,
     SourceInfo,
 )
 from augmentum.tools.web_fetch import WebFetchTool
@@ -124,7 +124,7 @@ async def test_domain(
             "quality": info.quality,
         }
 
-    except asyncio.TimeoutError:
+    except TimeoutError:
         return {
             "domain": domain,
             "status": "TIMEOUT",
@@ -217,7 +217,7 @@ async def run_tests(args: argparse.Namespace) -> None:
 
     empties = [r for r in all_results if r["status"] == "EMPTY" and r["quality"] >= GOOD]
     if empties:
-        print(f"\nLOW CONTENT (currently GOOD+ but returned <50 chars):\n")
+        print("\nLOW CONTENT (currently GOOD+ but returned <50 chars):\n")
         for r in empties:
             q = _QUALITY_NAMES.get(r["quality"], "?")
             print(f"  {q:>9} → check  {r['domain']:<35} ({r['chars']} chars)")

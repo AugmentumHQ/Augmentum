@@ -21,7 +21,6 @@ import time
 
 import pytest
 
-
 # ── Tracker math ──────────────────────────────────────────────────────
 
 
@@ -208,7 +207,7 @@ async def test_observer_emits_user_affect_observed_event():
         for _ in range(2):
             try:
                 ev = await asyncio.wait_for(sub.queue.get(), timeout=0.6)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 break
             if ev is None:
                 break

@@ -10,8 +10,6 @@ from __future__ import annotations
 from augmentum.loops.breakers import (
     ACTION_STAGNATION_BREAK,
     ALL_BREAKERS,
-    Breaker,
-    BreakerRegistry,
     COORDINATION_ONLY_NUDGE_AT,
     FAILING_SHELL_NUDGE_AT,
     HYBRID_MAX_ITERS,
@@ -29,9 +27,10 @@ from augmentum.loops.breakers import (
     TASK_STALE_NUDGE_AT,
     TEST_FAILURE_STREAK_BREAK,
     VALIDATION_ERROR_STREAK_BREAK,
+    Breaker,
+    BreakerRegistry,
 )
 from augmentum.loops.tier import HEAVY, LIGHT, MEDIUM
-
 
 # ── Threshold preservation ────────────────────────────────────────────
 
@@ -158,9 +157,9 @@ class TestRegistryLookup:
 
 class TestToolSets:
     def test_mutating_tools_set(self):
-        assert MUTATING_TOOL_NAMES == frozenset({
+        assert frozenset({
             "code_edit", "code_edit_batch", "file_write", "apply_patch",
-        })
+        }) == MUTATING_TOOL_NAMES
 
     def test_inspection_tools_does_not_include_shell_exec(self):
         """2026-04-22 removal — shell_exec is the legitimate

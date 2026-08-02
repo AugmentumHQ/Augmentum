@@ -11,10 +11,8 @@ from augmentum.modes.coder.intent import (
     TIER_LIMITS,
     Tier,
     TierClassification,
-    TierLimit,
     classify_tier,
 )
-
 
 # ---------------------------------------------------------------------------
 # REFLEX

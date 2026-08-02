@@ -23,7 +23,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from augmentum.media.providers.base import CatalogItem, MediaProvider, ProviderInfo
+from augmentum.media.providers.base import MediaProvider
 from augmentum.media.providers.suwayomi import (
     SuwayomiProvider,
     _auth_headers,

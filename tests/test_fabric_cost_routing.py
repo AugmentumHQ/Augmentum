@@ -18,7 +18,7 @@ director path again (that's covered in test_fabric_director).
 """
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import MagicMock
 
 import aiosqlite
 import pytest
@@ -28,9 +28,7 @@ from augmentum.fabric.coordinator import FabricCoordinator
 from augmentum.fabric.cost_table import lookup_cost, reload_cost_table
 from augmentum.fabric.director import RoutingDirector
 from augmentum.fabric.identity import FabricIdentity
-from augmentum.fabric.peer_auth import PairedPeer
 from augmentum.state.settings_store import SettingsStore
-
 
 # ── cost_table ────────────────────────────────────────────────────
 

@@ -9,7 +9,6 @@ import pytest
 
 from augmentum.models.kv_session_manifest import KVSessionManifest
 
-
 # Snapshot of the pre-T2-2 CREATE TABLE statement. Hand-copied from the
 # git history at commit 7eaba7a^ — locking it into the test means any
 # future schema-narrowing change (dropping a column from the canonical

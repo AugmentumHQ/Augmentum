@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 log = get_logger(__name__)
 
 
-async def start_fabric_if_enabled(app: "FastAPI") -> None:
+async def start_fabric_if_enabled(app: FastAPI) -> None:
     """Initialise fabric subsystems on the app, gated on the flag.
 
     Idempotent: calling twice is safe (second call returns immediately
@@ -149,7 +149,7 @@ async def start_fabric_if_enabled(app: "FastAPI") -> None:
     )
 
 
-async def stop_fabric(app: "FastAPI") -> None:
+async def stop_fabric(app: FastAPI) -> None:
     """Tear down fabric subsystems on lifespan shutdown.
 
     No-op when fabric was never started (default-off path or a

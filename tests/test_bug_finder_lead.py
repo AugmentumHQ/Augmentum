@@ -15,7 +15,10 @@ import json
 import time
 
 from augmentum.bug_finder.findings import (
-    ClaimSignature, Finding, FindingStatus, Severity,
+    ClaimSignature,
+    Finding,
+    FindingStatus,
+    Severity,
 )
 from augmentum.bug_finder.lead import (
     LeadDecision,
@@ -23,7 +26,6 @@ from augmentum.bug_finder.lead import (
     render_lead_prompt,
 )
 from augmentum.bug_finder.task_queue import BugFinderTask
-
 
 # ---------------------------------------------------------------------------
 # parse_lead_decision

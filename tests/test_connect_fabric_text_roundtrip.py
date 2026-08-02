@@ -42,23 +42,22 @@ from augmentum.connect.protocol import (
     EVENT_TEXT_DELETE,
     EVENT_TEXT_DELIVERED,
     EVENT_TEXT_EDIT,
+    EVENT_TEXT_REACT,
     EVENT_TEXT_READ,
     EVENT_TEXT_RECEIVED,
-    EVENT_TEXT_REACT,
     EVENT_TYPING_START,
     EVENT_TYPING_STOP,
     MSG_TEXT_DELETE,
     MSG_TEXT_DELIVERED,
     MSG_TEXT_EDIT,
-    MSG_TEXT_READ,
     MSG_TEXT_REACT,
+    MSG_TEXT_READ,
     MSG_TEXT_SEND,
     MSG_TYPING_START,
     MSG_TYPING_STOP,
     ConnectEnvelope,
 )
 from augmentum.notifications.hub import NotificationHub
-
 
 CONNECT_MIGRATION = Path(
     "augmentum/state/migrations/219_connect_substrate.sql",

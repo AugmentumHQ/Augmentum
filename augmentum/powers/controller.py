@@ -7,9 +7,9 @@ should be engaged at a safe loop checkpoint.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from pathlib import PurePosixPath
-import re
 
 from augmentum.powers.models import PowerManifest
 

@@ -7,7 +7,7 @@ import shutil
 from pathlib import Path
 
 import structlog
-from fastapi import APIRouter, Request, UploadFile, File
+from fastapi import APIRouter, File, Request, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
 
 from augmentum.avatar.store import AvatarStore
@@ -461,7 +461,7 @@ async def serve_thumbnail(avatar_id: str, request: Request):
 
 
 @router.post("/{avatar_id}/thumbnail")
-async def upload_thumbnail(
+async def upload_thumbnail_file(
     avatar_id: str, request: Request, file: UploadFile = File(...),
 ):
     """Receive a captured thumbnail PNG (typically a downscaled canvas

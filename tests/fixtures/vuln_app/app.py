@@ -15,7 +15,6 @@ labeled ``# VULN-N:`` is intentionally exploitable.
 from __future__ import annotations
 
 import argparse
-import os
 import sqlite3
 import sys
 import traceback
@@ -24,7 +23,6 @@ from pathlib import Path
 import uvicorn
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.responses import JSONResponse
-
 
 # ---------------------------------------------------------------------------
 # In-memory state — re-built on each boot so tests get a clean slate

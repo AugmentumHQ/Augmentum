@@ -12,14 +12,13 @@ import aiosqlite
 import pytest
 import pytest_asyncio
 
-from augmentum.personality.models import FacetActivationSource, FacetCategory
+from augmentum.personality.models import FacetCategory
 from augmentum.personality.store import (
     COOCCURRENCE_FLOOR,
     DECAY_FACTOR,
     PersonalityStore,
 )
 from augmentum.personality.vocabulary import SEED_FACETS
-
 
 _MIGRATION = (
     Path(__file__).resolve().parent.parent

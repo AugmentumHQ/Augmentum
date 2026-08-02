@@ -48,7 +48,6 @@ from enum import StrEnum
 
 from augmentum.modes.coder.intent import TurnIntentKind
 
-
 # ---------------------------------------------------------------------------
 # Primitive 1: user demand classification
 # ---------------------------------------------------------------------------

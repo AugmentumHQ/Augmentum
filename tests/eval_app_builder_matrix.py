@@ -36,7 +36,6 @@ import asyncio
 import copy
 import difflib
 import json
-import os
 import re
 import sys
 import time
@@ -44,20 +43,12 @@ import traceback
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
 
 # Project root
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from augmentum.tools.artifact_application import ApplicationBuilderTool, PassResult, PipelineContext
-from augmentum.tools.application_scaffolds import (
-    build_design_rules,
-    build_fix_prompt,
-    build_generate_prompt,
-    build_judge_prompt,
-    build_plan_prompt,
-)
 
 # ---------------------------------------------------------------------------
 # Test Matrix
@@ -175,7 +166,8 @@ def scan_final_files(files: list[dict], planned: list[dict]) -> dict:
     * ``file_count``       — number of delivered files
     """
     from augmentum.tools.artifact_application import (
-        _extract_provides, _normalize_symbol,
+        _extract_provides,
+        _normalize_symbol,
     )
 
     stub_patterns = re.compile(r"\b(todo|placeholder|your code here|implement this)\b", re.IGNORECASE)
@@ -1014,11 +1006,11 @@ def _load_prior_trace(out_dir: Path, model: dict, prompt: dict) -> BuildTrace | 
     )
     # Pipeline signals live on trace fields too — re-hydrate from JSON.
     signals = data.get("signals", {}) or {}
-    for field in ("batch_gen_used", "batch_gen_complete", "contracts_declared_count",
-                  "contract_violations", "intent_features_declared", "warnings",
-                  "smoke_click_sequence", "file_heuristics"):
-        if field in signals:
-            setattr(t, field, signals[field])
+    for field_name in ("batch_gen_used", "batch_gen_complete", "contracts_declared_count",
+                        "contract_violations", "intent_features_declared", "warnings",
+                        "smoke_click_sequence", "file_heuristics"):
+        if field_name in signals:
+            setattr(t, field_name, signals[field_name])
     return t
 
 
@@ -1152,7 +1144,7 @@ def main():
         out_dir = Path(args.out) if args.out else results_root / run_id
         out_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"\n🔬 App Builder Evaluation Matrix")
+    print("\n🔬 App Builder Evaluation Matrix")
     print(f"   Models:  {len(models)}")
     print(f"   Prompts: {len(prompts)}")
     print(f"   Total:   {len(models) * len(prompts)} builds")

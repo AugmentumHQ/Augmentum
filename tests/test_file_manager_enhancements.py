@@ -37,7 +37,7 @@ class TestFileEntryEnhancements:
         assert entry.trashed_at is None
 
 
-import json
+
 import aiosqlite
 
 _SCHEMA = """

@@ -911,17 +911,16 @@ def _build_tts_stream(
         headers["Content-Type"] = "application/json"
 
         async def _stream_dg():
-            async with _audio_client(clean_url) as client:
-                async with client.stream(
-                    "POST",
-                    f"{clean_url}/v1/speak",
-                    json={"text": text},
-                    params=params,
-                    headers=headers,
-                ) as upstream:
-                    upstream.raise_for_status()
-                    async for chunk in upstream.aiter_bytes(chunk_size=4096):
-                        yield chunk
+            async with _audio_client(clean_url) as client, client.stream(
+                "POST",
+                f"{clean_url}/v1/speak",
+                json={"text": text},
+                params=params,
+                headers=headers,
+            ) as upstream:
+                upstream.raise_for_status()
+                async for chunk in upstream.aiter_bytes(chunk_size=4096):
+                    yield chunk
 
         return _stream_dg()
 
@@ -952,17 +951,16 @@ def _build_tts_stream(
         headers["Content-Type"] = "application/json"
 
         async def _stream_el():
-            async with _audio_client(clean_url) as client:
-                async with client.stream(
-                    "POST",
-                    f"{clean_url}/v1/text-to-speech/{voice_id}/stream",
-                    json=payload,
-                    headers=headers,
-                    params={"output_format": output_format},
-                ) as upstream:
-                    upstream.raise_for_status()
-                    async for chunk in upstream.aiter_bytes(chunk_size=4096):
-                        yield chunk
+            async with _audio_client(clean_url) as client, client.stream(
+                "POST",
+                f"{clean_url}/v1/text-to-speech/{voice_id}/stream",
+                json=payload,
+                headers=headers,
+                params={"output_format": output_format},
+            ) as upstream:
+                upstream.raise_for_status()
+                async for chunk in upstream.aiter_bytes(chunk_size=4096):
+                    yield chunk
 
         return _stream_el()
 
@@ -984,16 +982,15 @@ def _build_tts_stream(
         headers["Content-Type"] = "application/json"
 
         async def _stream_fish():
-            async with _audio_client(clean_url) as client:
-                async with client.stream(
-                    "POST",
-                    f"{clean_url}/v1/tts",
-                    json=payload_fish,
-                    headers=headers,
-                ) as upstream:
-                    upstream.raise_for_status()
-                    async for chunk in upstream.aiter_bytes(chunk_size=4096):
-                        yield chunk
+            async with _audio_client(clean_url) as client, client.stream(
+                "POST",
+                f"{clean_url}/v1/tts",
+                json=payload_fish,
+                headers=headers,
+            ) as upstream:
+                upstream.raise_for_status()
+                async for chunk in upstream.aiter_bytes(chunk_size=4096):
+                    yield chunk
 
         return _stream_fish()
 
@@ -1058,16 +1055,15 @@ def _build_tts_stream(
         )
 
     async def _stream_oai():
-        async with _audio_client(clean_url) as client:
-            async with client.stream(
-                "POST",
-                f"{clean_url}{speech_path}",
-                json=payload_oai,
-                headers=headers,
-            ) as upstream:
-                upstream.raise_for_status()
-                async for chunk in upstream.aiter_bytes(chunk_size=4096):
-                    yield chunk
+        async with _audio_client(clean_url) as client, client.stream(
+            "POST",
+            f"{clean_url}{speech_path}",
+            json=payload_oai,
+            headers=headers,
+        ) as upstream:
+            upstream.raise_for_status()
+            async for chunk in upstream.aiter_bytes(chunk_size=4096):
+                yield chunk
 
     return _stream_oai()
 
@@ -1207,7 +1203,7 @@ async def csm_unload(*, provider: dict | None, session_id: str, user_id: str) ->
         return False
 
 
-async def _safe_upstream_detail(resp: "httpx.Response | None") -> str:
+async def _safe_upstream_detail(resp: httpx.Response | None) -> str:
     """Best-effort body text from a streamed error response.
 
     The TTS dispatch uses ``client.stream(...)``; when the upstream
@@ -1731,7 +1727,8 @@ async def transcribe_audio_bytes(
             raise HTTPException(503, "Fabric STT dispatch unavailable")
 
         from augmentum.fabric.audio_client import (
-            RemoteAudioError, stt_transcribe_via_peer,
+            RemoteAudioError,
+            stt_transcribe_via_peer,
         )
         try:
             return await stt_transcribe_via_peer(
@@ -2531,7 +2528,7 @@ async def list_voices(request: Request, provider_id: str = ""):
     all_voices = []
     if settings.tts_kokoro_builtin and not settings.tts_kokoro_url:
         try:
-            from augmentum.voice.kokoro_tts import KokoroTTS, VOICE_META, _RECOMMENDED_GRADES
+            from augmentum.voice.kokoro_tts import _RECOMMENDED_GRADES, VOICE_META, KokoroTTS
             kokoro = KokoroTTS.instance(model_dir=settings.tts_kokoro_model_dir)
             if not kokoro.is_available:
                 await load_model_off_loop(kokoro.load_model)
@@ -2556,7 +2553,8 @@ async def list_voices(request: Request, provider_id: str = ""):
     # Include built-in PocketTTS voices (Kyutai pocket-tts, CPU)
     if settings.tts_pocket_builtin:
         try:
-            from augmentum.voice.pocket_tts import PocketTTS, VOICE_META as _POCKET_VOICE_META
+            from augmentum.voice.pocket_tts import VOICE_META as _POCKET_VOICE_META
+            from augmentum.voice.pocket_tts import PocketTTS
             pkt = PocketTTS.instance(
                 model_dir=settings.tts_pocket_model_dir,
                 language=settings.tts_pocket_language,
@@ -2720,8 +2718,10 @@ async def list_voices(request: Request, provider_id: str = ""):
             from augmentum.fabric.capabilities import KIND_TTS_SYNTHESIZE
             try:
                 from augmentum.voice.kokoro_tts import (
-                    VOICE_META as _KOKORO_META,
                     _RECOMMENDED_GRADES as _KOKORO_REC,
+                )
+                from augmentum.voice.kokoro_tts import (
+                    VOICE_META as _KOKORO_META,
                 )
             except Exception:
                 _KOKORO_META, _KOKORO_REC = {}, set()
@@ -3324,7 +3324,7 @@ _WEBUI_HINTS = {
 _webui_resolved: dict[str, dict] = {}
 
 
-async def _resolve_webui_hint(http_client: "httpx.AsyncClient", hint: dict) -> dict:
+async def _resolve_webui_hint(http_client: httpx.AsyncClient, hint: dict) -> dict:
     """Probe the primary port; if unreachable + fallback configured, swap."""
     if not hint.get("fallback_port"):
         return hint
@@ -3432,6 +3432,7 @@ def _get_voice_dir() -> str:
     if _VOICE_DIR:
         return _VOICE_DIR
     import pathlib
+
     from augmentum.config import settings as _cfg
     _VOICE_DIR = str(pathlib.Path(_cfg.data_dir) / "voices")
     return _VOICE_DIR
@@ -3992,8 +3993,9 @@ async def _decode_audio_to_numpy(audio_bytes: bytes) -> tuple[np.ndarray, int]:
 
 def _save_walk_embedding(voice_name: str, embedding: np.ndarray | None) -> str:
     """Save a voice walk embedding to disk for persistence across restarts."""
-    import numpy as np
     import pathlib
+
+    import numpy as np
     walk_dir = pathlib.Path(settings.data_dir or "/data") / "voice_walks"
     walk_dir.mkdir(parents=True, exist_ok=True)
     path = walk_dir / f"{voice_name}.npy"
@@ -4035,6 +4037,7 @@ async def voice_test_lipsync(body: LipSyncTestRequest):
     sent over the same WebSocket as audio chunks.
     """
     import base64
+
     import numpy as np
 
     from augmentum.voice.kokoro_tts import (

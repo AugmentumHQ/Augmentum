@@ -438,9 +438,9 @@ async def test_seen_url_recently_detects_prior_note():
 @pytest.mark.asyncio
 async def test_step_disabled_returns_none(monkeypatch):
     """Master kill switch off → no work, no exceptions."""
-    from augmentum.config import settings
     from augmentum.companion_runtime import curator
     from augmentum.companion_runtime.runtime import CompanionRuntime
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_curator_enabled", False)
     backend = await _fresh_backend()

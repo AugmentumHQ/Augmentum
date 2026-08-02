@@ -23,10 +23,10 @@ import pytest
 
 from augmentum.knowledge.content_extractor import ContentDoc, Link
 from augmentum.modes.narrative.cardsmith.scratchpad import (
-    ScratchEntry,
     ZONE_ACTIVE,
     ZONE_CONSUMED,
     ZONE_INDEXED,
+    ScratchEntry,
     add_to_scratchpad,
     build_reference_index,
     deserialize_scratchpad,
@@ -35,7 +35,6 @@ from augmentum.modes.narrative.cardsmith.scratchpad import (
     render_scratchpad_block,
     serialize_scratchpad,
 )
-
 
 # ── ScratchEntry serialization ────────────────────────────────────────────
 

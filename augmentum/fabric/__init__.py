@@ -17,12 +17,12 @@ landed phase 0 for the regression-prevention discipline.
 from __future__ import annotations
 
 from augmentum.fabric.capabilities import (
-    CapabilityBase,
-    ImageGenerationCapability,
-    KnowledgeSearchCapability,
     KIND_IMAGE_GENERATION,
     KIND_KNOWLEDGE_SEARCH,
     KIND_LLM_INFERENCE,
+    CapabilityBase,
+    ImageGenerationCapability,
+    KnowledgeSearchCapability,
     LLMInferenceCapability,
     deserialise,
     deserialise_list,

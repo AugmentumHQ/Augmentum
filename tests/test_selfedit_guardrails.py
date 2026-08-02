@@ -8,7 +8,6 @@ from __future__ import annotations
 import augmentum.selfedit.native_loop as N
 from augmentum.coder.external.base import ExternalTask
 
-
 # --- scanner write-lockout (integrity) --------------------------------------
 
 def test_is_audit_infra_flags_the_judge():

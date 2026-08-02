@@ -3,16 +3,14 @@
 from __future__ import annotations
 
 import struct
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import numpy as np
-import pytest
 
 from augmentum.voice.vad import (
     FRAME_BYTES,
     FRAME_SAMPLES,
     SAMPLE_RATE,
-    VadEvent,
     VadProcessor,
     VadState,
 )

@@ -20,8 +20,12 @@ from augmentum.models.base import InternalChatRequest, Message
 from augmentum.modes.agentic.handler import AgenticHandler
 from augmentum.modes.agentic.task_state import TaskState, TaskStatus
 from augmentum.reasoning import templates as _tpl
-
-from tests.agentic_evals.conftest import MockTool, MockToolRegistry, ScriptedBackend, ScriptedResponse
+from tests.agentic_evals.conftest import (
+    MockTool,
+    MockToolRegistry,
+    ScriptedBackend,
+    ScriptedResponse,
+)
 from tests.agentic_evals.properties import apply_assertions
 
 CASES_DIR = Path(__file__).parent / "cases"

@@ -20,14 +20,14 @@ from __future__ import annotations
 
 from augmentum.cast.games.classifier import CastClassifier
 from augmentum.cast.games.models import (
+    STRATEGY_CONTAINERIZED,
+    STRATEGY_PROXY,
+    STRATEGY_SHIM,
     CastProfile,
     CastStrategyKind,
     HostCapabilities,
     KeymapProfile,
     PreparedCast,
-    STRATEGY_CONTAINERIZED,
-    STRATEGY_PROXY,
-    STRATEGY_SHIM,
 )
 from augmentum.cast.games.registry import CastProfileRegistry
 from augmentum.cast.games.strategies.base import CastStrategy, StrategyRegistry

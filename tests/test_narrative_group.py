@@ -263,7 +263,7 @@ class TestLLMPickSpeakerParsing:
     def _make_handler(self):
         # Import-light shim so we can call _llm_pick_speaker without booting
         # the full handler stack. We just need the parsing logic.
-        from types import SimpleNamespace
+
         from augmentum.modes.narrative.handler import NarrativeHandler
         h = NarrativeHandler.__new__(NarrativeHandler)
         h._active_group = _make_group()
@@ -272,8 +272,9 @@ class TestLLMPickSpeakerParsing:
 
     @pytest.mark.asyncio
     async def test_exact_name_match(self):
-        import asyncio
-        from augmentum.models.base import InternalChatResponse, Message as _M, Usage
+
+        from augmentum.models.base import InternalChatResponse
+        from augmentum.models.base import Message as _M
         h = self._make_handler()
 
         class _FakeBackend:
@@ -288,7 +289,8 @@ class TestLLMPickSpeakerParsing:
 
     @pytest.mark.asyncio
     async def test_case_insensitive_and_trailing_punct(self):
-        from augmentum.models.base import InternalChatResponse, Message as _M
+        from augmentum.models.base import InternalChatResponse
+        from augmentum.models.base import Message as _M
         h = self._make_handler()
 
         class _FakeBackend:
@@ -303,7 +305,8 @@ class TestLLMPickSpeakerParsing:
     @pytest.mark.asyncio
     async def test_prefix_tolerance(self):
         """LLM says 'Carol says:' — we extract 'Carol'."""
-        from augmentum.models.base import InternalChatResponse, Message as _M
+        from augmentum.models.base import InternalChatResponse
+        from augmentum.models.base import Message as _M
         h = self._make_handler()
 
         class _FakeBackend:
@@ -317,7 +320,8 @@ class TestLLMPickSpeakerParsing:
 
     @pytest.mark.asyncio
     async def test_unparseable_returns_none(self):
-        from augmentum.models.base import InternalChatResponse, Message as _M
+        from augmentum.models.base import InternalChatResponse
+        from augmentum.models.base import Message as _M
         h = self._make_handler()
 
         class _FakeBackend:
@@ -333,7 +337,8 @@ class TestLLMPickSpeakerParsing:
     @pytest.mark.asyncio
     async def test_single_eligible_skips_llm_call(self):
         """If only one unmuted member, skip the LLM call and return directly."""
-        from augmentum.models.base import InternalChatResponse, Message as _M
+        from augmentum.models.base import InternalChatResponse
+        from augmentum.models.base import Message as _M
         h = self._make_handler()
         h._active_group.muted_names = ["Bob", "Carol"]
 
@@ -371,8 +376,12 @@ class TestLLMPickSpeakerParsing:
         first in member_names and the contains check accepted the shorter
         substring match."""
         from augmentum.models.base import (
-            InternalChatResponse, Message as _M,
-            InternalChatRequest, Message,
+            InternalChatRequest,
+            InternalChatResponse,
+            Message,
+        )
+        from augmentum.models.base import (
+            Message as _M,
         )
 
         # Anna added BEFORE Annabelle — the order that triggered the bug.

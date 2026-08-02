@@ -11,7 +11,6 @@ the per-user store API.
 
 from __future__ import annotations
 
-import json
 from unittest.mock import AsyncMock, MagicMock
 
 import aiosqlite

@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
-
+from augmentum.modes.narrative.branch_tracker import BranchDetection, BranchTracker
 from augmentum.modes.narrative.character_tracker import CharacterTracker, CharacterUpdate
+from augmentum.modes.narrative.plot_tracker import PlotTracker
 from augmentum.modes.narrative.world_tracker import SceneState, WorldTracker
-from augmentum.modes.narrative.plot_tracker import PlotTracker, PlotUpdate
-from augmentum.modes.narrative.branch_tracker import BranchTracker, BranchDetection
-from augmentum.state.narrative_state import Entity, EntityState, EntityType, PlotStatus, PlotThread
+from augmentum.state.narrative_state import Entity, EntityState, EntityType, PlotStatus
 
 
 def _make_character(name: str = "Luna", aliases: list[str] | None = None) -> Entity:

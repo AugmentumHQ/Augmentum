@@ -252,7 +252,7 @@ def drop_session(session_id: str) -> None:
 
 # ── Persistence helpers (called by cardsmith_routes; SQL lives there) ─────
 
-def register_session(sess: "CardsmithSession") -> None:
+def register_session(sess: CardsmithSession) -> None:
     """Insert a (possibly rehydrated) session back into the in-memory dict.
 
     Used by the disk-fallback path: when ``get_session`` misses, routes
@@ -263,7 +263,7 @@ def register_session(sess: "CardsmithSession") -> None:
     _sessions[sess.session_id] = sess
 
 
-def serialize_for_disk(sess: "CardsmithSession") -> dict[str, Any]:
+def serialize_for_disk(sess: CardsmithSession) -> dict[str, Any]:
     """Snapshot the session as a row dict matching the cardsmith_sessions
     schema. Caller binds the result into the SQL params.
 
@@ -286,7 +286,7 @@ def serialize_for_disk(sess: "CardsmithSession") -> dict[str, Any]:
     }
 
 
-def session_from_row(row: dict[str, Any]) -> "CardsmithSession":
+def session_from_row(row: dict[str, Any]) -> CardsmithSession:
     """Parse a cardsmith_sessions row back into a CardsmithSession.
 
     Tolerates rows written by older code where new fields didn't exist —

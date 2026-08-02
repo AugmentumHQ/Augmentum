@@ -36,16 +36,13 @@ from __future__ import annotations
 
 import asyncio
 import os
-import sys
 import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 from augmentum.bug_finder.pen_test import ProbeRequest, execute_probe
 from augmentum.bug_finder.workspace_substrate import (
-    ensure_substrate,
     substrate_dir,
 )
 from augmentum.utils.logging import get_logger
@@ -95,8 +92,8 @@ class BootSpec:
     boot_timeout_s: float = DEFAULT_BOOT_TIMEOUT_S
     healthcheck_interval_s: float = DEFAULT_HEALTHCHECK_INTERVAL_S
     env_overrides: dict[str, str] = field(default_factory=dict)
-    env_allowlist: Optional[tuple[str, ...]] = None
-    cwd: Optional[str] = None
+    env_allowlist: tuple[str, ...] | None = None
+    cwd: str | None = None
     # The healthcheck expects a status code in this range (inclusive).
     # Default 200-399 to admit redirects and "no-content but alive".
     healthcheck_status_min: int = 200
@@ -118,8 +115,8 @@ class UnderTestService:
     base_url: str
     pid: int
     started_at: int
-    log_path: Optional[Path] = None
-    process: Optional[asyncio.subprocess.Process] = None
+    log_path: Path | None = None
+    process: asyncio.subprocess.Process | None = None
     teardown_called: bool = False
 
     @property
@@ -136,7 +133,7 @@ class BootFailure:
     reason: str                 # short slug: "timeout" | "exit" | "command_error"
     detail: str
     elapsed_ms: int
-    exit_code: Optional[int] = None
+    exit_code: int | None = None
     log_tail: str = ""
 
 
@@ -147,8 +144,8 @@ class BootResult:
     Exactly one of ``service`` / ``failure`` is populated.
     """
 
-    service: Optional[UnderTestService] = None
-    failure: Optional[BootFailure] = None
+    service: UnderTestService | None = None
+    failure: BootFailure | None = None
 
     @property
     def ok(self) -> bool:
@@ -178,7 +175,7 @@ class _UnderTestRegistry:
     def add(self, service: UnderTestService) -> None:
         self._services[service.service_id] = service
 
-    def get(self, service_id: str) -> Optional[UnderTestService]:
+    def get(self, service_id: str) -> UnderTestService | None:
         return self._services.get(service_id)
 
     def all(self) -> tuple[UnderTestService, ...]:
@@ -220,7 +217,7 @@ def _build_env(spec: BootSpec) -> dict[str, str]:
     return env
 
 
-def _log_path(workspace_root: Optional[Path], service_id: str) -> Optional[Path]:
+def _log_path(workspace_root: Path | None, service_id: str) -> Path | None:
     """Return a writable log path for the under-test service.
 
     Preferred location is the workspace substrate dir
@@ -252,7 +249,7 @@ def _log_path(workspace_root: Optional[Path], service_id: str) -> Optional[Path]
             return None
 
 
-async def _read_log_tail(path: Optional[Path]) -> str:
+async def _read_log_tail(path: Path | None) -> str:
     if path is None or not path.is_file():
         return ""
     try:
@@ -268,7 +265,7 @@ async def boot_under_test(
     workspace_root: Path,
     spec: BootSpec,
     *,
-    registry: Optional[_UnderTestRegistry] = None,
+    registry: _UnderTestRegistry | None = None,
 ) -> BootResult:
     """Boot one under-test service. Always returns a ``BootResult``;
     never raises.
@@ -514,7 +511,7 @@ async def teardown_service(
             exit_code=proc.returncode,
         )
         return "clean"
-    except asyncio.TimeoutError:
+    except TimeoutError:
         pass
 
     # Step 3: force-kill if we have to

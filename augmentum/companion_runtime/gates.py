@@ -32,6 +32,7 @@ to a gate is almost always ``no_op``, never a hard error.
 from __future__ import annotations
 
 import time
+from datetime import UTC
 from typing import Any
 
 from augmentum.utils.logging import get_logger
@@ -101,10 +102,10 @@ def is_hushed_now() -> bool:
     if not raw:
         return False
     try:
-        from datetime import datetime, timezone
+        from datetime import datetime
         norm = raw.replace("T", " ").replace("Z", "").split(".", 1)[0]
         until = datetime.strptime(norm, "%Y-%m-%d %H:%M:%S").replace(
-            tzinfo=timezone.utc,
+            tzinfo=UTC,
         )
         return until.timestamp() > time.time()
     except Exception:

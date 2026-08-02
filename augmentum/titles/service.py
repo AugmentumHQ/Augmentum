@@ -16,7 +16,6 @@ them to 4xx/5xx without leaking implementation details.
 from __future__ import annotations
 
 import time
-from typing import Any
 
 from augmentum.titles.manifest import TitleManifest
 from augmentum.titles.runtimes import LaunchHandle, RuntimeRegistry

@@ -8,7 +8,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "services" / "engine"))
 
-from turboquant import TurboQuantizer, benchmark_quality, BLOCK_SIZE
+from turboquant import TurboQuantizer, benchmark_quality
 
 
 def test_tq3_roundtrip():

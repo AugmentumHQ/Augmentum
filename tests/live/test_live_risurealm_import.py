@@ -37,7 +37,6 @@ import json as _json
 import struct
 import zipfile
 from dataclasses import dataclass, field
-from typing import Any
 
 import httpx
 import pytest

@@ -74,7 +74,9 @@ _TOOL_ALIASES: dict[str, str] = {
     "math": "math_verify",
     "mathverify": "math_verify",
     "math-verify": "math_verify",
-    "verify_math": "math_verify",
+    # NOTE: the bare "verify_math" alias is claimed further down by the flow
+    # tool (-> "flow_verify_math"); that later entry wins. Kept single here to
+    # preserve that long-standing resolution. Flip if the math tool should own it.
     "sympy": "math_verify",
     "calc": "calculator",
     "calculate": "calculator",
@@ -383,13 +385,7 @@ class ToolRegistry:
             elif surface == "voice" and s.voice is not None:
                 if voice_level is None or s.voice == voice_level:
                     out.append(t)
-            elif surface == "coder" and s.coder:
-                out.append(t)
-            elif surface == "companion" and s.companion:
-                out.append(t)
-            elif surface == "artifact_studio" and s.artifact_studio:
-                out.append(t)
-            elif surface == "http" and s.http_route:
+            elif surface == "coder" and s.coder or surface == "companion" and s.companion or surface == "artifact_studio" and s.artifact_studio or surface == "http" and s.http_route:
                 out.append(t)
         return out
 

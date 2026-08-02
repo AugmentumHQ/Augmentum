@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from augmentum.media.receivers.base import ReceiverProfile
 
-
 _PROFILES: dict[str, ReceiverProfile] = {
     "cast_video": ReceiverProfile(
         id="cast_video",

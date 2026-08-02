@@ -30,7 +30,7 @@ _MESSAGE_FIELDS = frozenset(("role", "content", "images", "tool_calls",
                              "thinking", "tool_call_id"))
 
 
-def _coerce_message(m: object) -> "Message":
+def _coerce_message(m: object) -> Message:
     """Convert ``m`` into a ``Message`` if it isn't one already.
 
     Accepts: an existing ``Message`` (passthrough) or a dict with at
@@ -279,7 +279,7 @@ class InternalChatResponse:
 
 
 def response_text(
-    resp: "InternalChatResponse | None",
+    resp: InternalChatResponse | None,
     *,
     thinking_fallback: bool = True,
 ) -> str:

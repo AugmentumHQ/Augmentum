@@ -22,7 +22,6 @@ from augmentum.jobs import JobRunner, register_handler
 from augmentum.jobs.handlers.gutenberg_fetch import make_gutenberg_fetch_handler
 from augmentum.state.jobs_store import JobsStore
 
-
 _SCHEMA_SQL = """
 CREATE TABLE users (id TEXT PRIMARY KEY);
 CREATE TABLE background_jobs (

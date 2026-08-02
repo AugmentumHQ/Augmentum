@@ -13,9 +13,8 @@ consecutive misses they flip to `status='offline'`.
 from __future__ import annotations
 
 import asyncio
-import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
 from augmentum.devices.device import DiscoveredDevice
@@ -49,7 +48,7 @@ class DiscoveryResult:
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    return datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S")
 
 
 def _fingerprint(device: DiscoveredDevice | Device) -> str:
@@ -98,8 +97,8 @@ async def run_discovery_sweep(
                 timeout=timeout_s + 1.0,
             )
             return (driver.id, list(result or []))
-        except asyncio.TimeoutError:
-            return (driver.id, asyncio.TimeoutError("discovery_timeout"))
+        except TimeoutError:
+            return (driver.id, TimeoutError("discovery_timeout"))
         except Exception as exc:
             return (driver.id, exc)
 

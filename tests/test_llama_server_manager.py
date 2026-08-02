@@ -1208,7 +1208,7 @@ class TestIdleMonitorResilience:
             try:
                 if manager._idle_task is not None:
                     await asyncio.wait_for(manager._idle_task, timeout=1.0)
-            except (asyncio.CancelledError, asyncio.TimeoutError):
+            except (TimeoutError, asyncio.CancelledError):
                 pass
 
 
@@ -1404,7 +1404,7 @@ class TestIdleMonitorInFlightRace:
             try:
                 if manager._idle_task is not None:
                     await asyncio.wait_for(manager._idle_task, timeout=1.0)
-            except (asyncio.CancelledError, asyncio.TimeoutError):
+            except (TimeoutError, asyncio.CancelledError):
                 pass
 
 
@@ -2223,7 +2223,7 @@ class TestIdleMonitorSelfCancelGuard:
         # Wait briefly for the cancellation to propagate.
         try:
             await asyncio.wait_for(monitor_task, timeout=1.0)
-        except (asyncio.CancelledError, asyncio.TimeoutError):
+        except (TimeoutError, asyncio.CancelledError):
             pass
 
         assert monitor_task.done(), (
@@ -2275,7 +2275,7 @@ class TestIdleMonitorSelfHeal:
             try:
                 if manager._idle_task is not None:
                     await asyncio.wait_for(manager._idle_task, timeout=1.0)
-            except (asyncio.CancelledError, asyncio.TimeoutError):
+            except (TimeoutError, asyncio.CancelledError):
                 pass
 
         assert reconcile_calls["n"] == 1, (
@@ -2320,5 +2320,5 @@ class TestIdleMonitorSelfHeal:
             try:
                 if manager._idle_task is not None:
                     await asyncio.wait_for(manager._idle_task, timeout=1.0)
-            except (asyncio.CancelledError, asyncio.TimeoutError):
+            except (TimeoutError, asyncio.CancelledError):
                 pass

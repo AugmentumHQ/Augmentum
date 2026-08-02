@@ -102,13 +102,12 @@ def register(handler: ActionHandler) -> ActionHandler:
 # Import builtins so their ``register(...)`` call runs. New handlers must
 # be added here too — explicit beats import-side-effect discovery when the
 # package is consumed by multiple processes (CLAUDE.md / spine convention).
-from augmentum.companion.growth.actions import recall as _recall  # noqa: E402, F401
-from augmentum.companion.growth.actions import narrate as _narrate  # noqa: E402, F401
-from augmentum.companion.growth.actions import discovery as _discovery  # noqa: E402, F401
 from augmentum.companion.growth.actions import care as _care  # noqa: E402, F401
-from augmentum.companion.growth.actions import offer as _offer  # noqa: E402, F401
 from augmentum.companion.growth.actions import companionship as _companionship  # noqa: E402, F401
-
+from augmentum.companion.growth.actions import discovery as _discovery  # noqa: E402, F401
+from augmentum.companion.growth.actions import narrate as _narrate  # noqa: E402, F401
+from augmentum.companion.growth.actions import offer as _offer  # noqa: E402, F401
+from augmentum.companion.growth.actions import recall as _recall  # noqa: E402, F401
 
 __all__ = [
     "ACTIONS",

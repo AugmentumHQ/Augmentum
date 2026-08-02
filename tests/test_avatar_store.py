@@ -1,8 +1,11 @@
 """Tests for avatar CRUD store."""
 from __future__ import annotations
-import pytest
+
 import aiosqlite
+import pytest
+
 from augmentum.avatar.store import AvatarStore
+
 
 @pytest.fixture
 async def store(tmp_path):

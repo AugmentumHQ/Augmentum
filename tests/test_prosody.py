@@ -2,16 +2,13 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock
-
 import numpy as np
-import pytest
 
 from augmentum.voice.prosody import (
-    ProsodyCartographer,
     _AXIS_DEFINITIONS,
     _EXCLAMATION_MAGNITUDE,
     _QUESTION_MAGNITUDE,
+    ProsodyCartographer,
     _quick_sentiment,
     split_prosodic_clauses,
 )

@@ -5,8 +5,6 @@ from __future__ import annotations
 import json
 from unittest.mock import AsyncMock, MagicMock
 
-from fastapi.testclient import TestClient
-
 
 def _mock_artifact_store():
     store = MagicMock()
@@ -477,6 +475,7 @@ class TestStagingSweep:
 
     def _run(self, app_obj, now=None):
         import asyncio
+
         from augmentum.proxy.studio_routes import studio_staging_sweep
         return asyncio.run(studio_staging_sweep(app_obj, now=now))
 

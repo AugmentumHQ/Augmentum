@@ -19,7 +19,6 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
-
 # ── Data shapes ────────────────────────────────────────────────────
 
 

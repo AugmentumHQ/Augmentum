@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import asyncio
-import tempfile
 import os
+import tempfile
 
 import aiosqlite
 import pytest
@@ -42,7 +42,7 @@ def notif_db():
 
 @pytest.mark.asyncio
 async def test_queue_persistent_notification(notif_db):
-    from augmentum.memory.notifications import queue_notification, get_pending
+    from augmentum.memory.notifications import get_pending, queue_notification
 
     await queue_notification(notif_db, "m1", "Likes Python", tier="provisional", confidence=0.6, memory_type="preference")
 
@@ -55,7 +55,7 @@ async def test_queue_persistent_notification(notif_db):
 
 @pytest.mark.asyncio
 async def test_resolve_notification(notif_db):
-    from augmentum.memory.notifications import queue_notification, resolve_notification, get_pending
+    from augmentum.memory.notifications import get_pending, queue_notification, resolve_notification
 
     await queue_notification(notif_db, "m1", "Likes Python")
     await resolve_notification(notif_db, "m1", "approved")
@@ -66,7 +66,7 @@ async def test_resolve_notification(notif_db):
 
 @pytest.mark.asyncio
 async def test_get_pending_excludes_resolved(notif_db):
-    from augmentum.memory.notifications import queue_notification, resolve_notification, get_pending
+    from augmentum.memory.notifications import get_pending, queue_notification, resolve_notification
 
     await queue_notification(notif_db, "m1", "Fact 1")
     await queue_notification(notif_db, "m2", "Fact 2")
@@ -79,7 +79,7 @@ async def test_get_pending_excludes_resolved(notif_db):
 
 @pytest.mark.asyncio
 async def test_duplicate_notification_ignored(notif_db):
-    from augmentum.memory.notifications import queue_notification, get_pending
+    from augmentum.memory.notifications import get_pending, queue_notification
 
     await queue_notification(notif_db, "m1", "Likes Python")
     await queue_notification(notif_db, "m1", "Likes Python")  # duplicate

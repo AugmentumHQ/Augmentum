@@ -30,7 +30,6 @@ from augmentum.bug_finder.capability import (
 from augmentum.bug_finder.store import BugFinderRunStore
 from augmentum.bug_finder.stream import (
     BugFinderStreamHub,
-    StreamEvent,
     drop_hub,
     get_or_create_hub,
 )
@@ -477,7 +476,7 @@ async def stream_run_events(request: Request, run_id: str) -> StreamingResponse:
                     event = await asyncio.wait_for(
                         queue.get(), timeout=heartbeat_interval,
                     )
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     yield ": heartbeat\n\n"
                     continue
                 yield event.to_sse()

@@ -21,8 +21,6 @@ Run: python -m pytest tests/test_coder_preview_types.py -v
 
 from __future__ import annotations
 
-import json
-
 import pytest
 
 from augmentum.coder.preview_types import (
@@ -32,7 +30,6 @@ from augmentum.coder.preview_types import (
     list_extensions,
     render,
 )
-
 
 # ---------------------------------------------------------------------------
 # Extension lookup
@@ -201,9 +198,9 @@ class TestJsonRender:
         assert b"{not valid" in out
 
     def test_unicode_preserved(self):
-        out, _ = render("/workspace/u.json", '{"x":"é"}'.encode("utf-8"), "")
+        out, _ = render("/workspace/u.json", '{"x":"é"}'.encode(), "")
         # ensure_ascii=False keeps the é literal in the pretty output.
-        assert "é".encode("utf-8") in out
+        assert "é".encode() in out
 
 
 # ---------------------------------------------------------------------------

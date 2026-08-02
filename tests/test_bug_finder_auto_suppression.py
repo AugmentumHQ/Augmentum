@@ -17,8 +17,6 @@ from __future__ import annotations
 from pathlib import Path
 
 from augmentum.bug_finder.auto_suppression import (
-    AggregatedCandidate,
-    SuppressionCandidate,
     aggregate_candidates,
     apply_aggregated,
     apply_candidate,
@@ -30,7 +28,6 @@ from augmentum.bug_finder.workspace_substrate import (
     load_workspace_suppressions,
     upsert_pattern,
 )
-
 
 # ---------------------------------------------------------------------------
 # Empty / no-candidate paths

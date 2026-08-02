@@ -20,8 +20,6 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-import pytest
-
 BUG_FINDER_DIR = (
     Path(__file__).resolve().parent.parent / "augmentum" / "bug_finder"
 )
@@ -60,9 +58,7 @@ def _subagent_spec_call_sites() -> list[tuple[Path, int, ast.Call]]:
             if not isinstance(node, ast.Call):
                 continue
             fn = node.func
-            if isinstance(fn, ast.Name) and fn.id == "SubagentSpec":
-                sites.append((py, node.lineno, node))
-            elif (
+            if isinstance(fn, ast.Name) and fn.id == "SubagentSpec" or (
                 isinstance(fn, ast.Attribute) and fn.attr == "SubagentSpec"
             ):
                 sites.append((py, node.lineno, node))

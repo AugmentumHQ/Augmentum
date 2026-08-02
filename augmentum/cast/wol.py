@@ -33,7 +33,9 @@ import socket
 from dataclasses import dataclass
 
 from augmentum.cast.trusted_receivers import (
-    TrustedReceiver, normalise_ipv4, normalise_mac,
+    TrustedReceiver,
+    normalise_ipv4,
+    normalise_mac,
 )
 from augmentum.utils.logging import get_logger
 

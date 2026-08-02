@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-import pytest
-
-from augmentum.models.converters.base import MessageConverter, PostProcessMode
+from augmentum.models.converters.base import PostProcessMode
 from augmentum.models.converters.utils import (
     ZWS,
     extract_system_prefix,

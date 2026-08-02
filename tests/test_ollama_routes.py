@@ -6,7 +6,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from augmentum.models.base import InternalChatResponse, Message, Usage
 
-
 # ---------------------------------------------------------------------------
 # GET /api/version
 # ---------------------------------------------------------------------------

@@ -13,6 +13,7 @@ from __future__ import annotations
 import pytest
 
 from augmentum.coder.verify import (
+    _YAML_AVAILABLE,
     Checker,
     CheckResult,
     EditRecord,
@@ -23,9 +24,7 @@ from augmentum.coder.verify import (
     VerificationGate,
     VerificationReport,
     YamlParseChecker,
-    _YAML_AVAILABLE,
 )
-
 
 # ---------------------------------------------------------------------------
 # Protocol + detection

@@ -11,7 +11,6 @@ from __future__ import annotations
 
 from augmentum.models.base import InternalChatRequest
 
-
 # Mode → default inference parameters.
 # Only applied when the user hasn't set the value explicitly.
 #

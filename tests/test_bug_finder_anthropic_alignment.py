@@ -20,8 +20,6 @@ to Anthropic's published bug-finder design
 
 from __future__ import annotations
 
-import pytest
-
 from augmentum.bug_finder.findings import Finding, FindingStatus
 from augmentum.bug_finder.orchestrator import (
     BugFinderIntake,

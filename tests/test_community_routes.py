@@ -11,13 +11,8 @@ Covers:
 
 from __future__ import annotations
 
-import asyncio
-import json
-from unittest.mock import AsyncMock, MagicMock
-
 import pytest
 from fastapi.testclient import TestClient
-
 
 # The conftest already provides `app`, `client` (auth-bearer wired), and
 # `test_user`. The community route writes an audit row, but for the

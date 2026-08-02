@@ -59,7 +59,6 @@ async def notification_ingest(request: Request):
         return JSONResponse({"error": "database unavailable"}, status_code=503)
 
     try:
-        import sqlite3
         cur = await conn.execute(
             "SELECT config_json FROM managed_services WHERE id = ? AND enabled = 1",
             (service_id,),
@@ -172,7 +171,7 @@ async def notification_stream(request: Request, session_id: str):
                     break
                 try:
                     event = await asyncio.wait_for(queue.get(), timeout=30.0)
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     yield ":\n\n"  # SSE keepalive comment
                     continue
                 if event is None:

@@ -14,7 +14,6 @@ here instead of silently timing out on the next WebGL page.
 """
 from __future__ import annotations
 
-import asyncio
 import shlex
 
 import pytest

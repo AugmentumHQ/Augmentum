@@ -41,8 +41,6 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from typing import Any
-
 
 # ── Constants ──────────────────────────────────────────────────────────
 
@@ -148,7 +146,7 @@ class ObservationLedger:
         recent_tool_failures: list[dict],
         recent_tool_calls: list[dict],
         background_processes: list[dict],
-    ) -> "ObservationLedger":
+    ) -> ObservationLedger:
         """Build a ledger that shares its bucket lists with the caller.
 
         Used by :class:`CoderState` so ``state.recent_validation_errors``

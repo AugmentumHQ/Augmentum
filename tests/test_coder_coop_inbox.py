@@ -6,7 +6,7 @@ import asyncio
 
 import pytest
 
-from augmentum.coder.run_broker import CoderRunBroker, _INBOX_CAP
+from augmentum.coder.run_broker import _INBOX_CAP, CoderRunBroker
 from augmentum.models.base import InternalStreamChunk
 from augmentum.modes.coder.chat_egress import (
     _VALID_PHASES,

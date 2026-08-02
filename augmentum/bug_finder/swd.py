@@ -108,7 +108,7 @@ class FileSnapshot:
     sha256: str = ""
     content: bytes | None = None
 
-    def summary(self) -> "FileSnapshotSummary":
+    def summary(self) -> FileSnapshotSummary:
         return FileSnapshotSummary(
             path=self.path, exists=self.exists,
             size=self.size, mtime=self.mtime, sha256=self.sha256,

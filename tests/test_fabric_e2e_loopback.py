@@ -23,7 +23,6 @@ These are integration tests; they spin up actual ASGI apps in-process
 """
 from __future__ import annotations
 
-import asyncio
 import json
 from unittest.mock import AsyncMock, MagicMock
 
@@ -35,7 +34,7 @@ from fastapi.responses import StreamingResponse
 
 from augmentum.fabric.coordinator import FabricCoordinator
 from augmentum.fabric.identity import FabricIdentity
-from augmentum.fabric.peer_auth import PairedPeer, persist_remote_node
+from augmentum.fabric.peer_auth import persist_remote_node
 from augmentum.fabric.peer_middleware import FabricPeerMiddleware
 from augmentum.models.base import (
     InternalChatRequest,
@@ -43,7 +42,6 @@ from augmentum.models.base import (
 )
 from augmentum.models.fabric_backend import FabricBackend
 from augmentum.state.settings_store import SettingsStore
-
 
 # ── Fixture: paired two-peer fabric ────────────────────────────────
 

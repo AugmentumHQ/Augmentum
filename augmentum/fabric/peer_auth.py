@@ -29,6 +29,7 @@ import hashlib
 import secrets
 import time
 from dataclasses import dataclass
+from datetime import UTC
 from typing import TYPE_CHECKING
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
@@ -189,7 +190,7 @@ class PairRequestError(Exception):
 
 
 async def persist_remote_node(
-    db: "aiosqlite.Connection",
+    db: aiosqlite.Connection,
     *,
     node_id: str,
     hostname: str,
@@ -265,7 +266,7 @@ async def persist_remote_node(
 
 
 async def persist_pairing(
-    db: "aiosqlite.Connection",
+    db: aiosqlite.Connection,
     *,
     req: PairRequest,
     addr: str,
@@ -297,7 +298,7 @@ async def persist_pairing(
     )
 
 
-async def load_paired_peers(db: "aiosqlite.Connection") -> list[PairedPeer]:
+async def load_paired_peers(db: aiosqlite.Connection) -> list[PairedPeer]:
     """Read all paired peers from the table. Used by the coordinator
     at startup to seed its in-memory view.
 
@@ -330,7 +331,7 @@ async def load_paired_peers(db: "aiosqlite.Connection") -> list[PairedPeer]:
 
 
 async def lookup_peer_pubkey(
-    db: "aiosqlite.Connection",
+    db: aiosqlite.Connection,
     node_id: str,
 ) -> str | None:
     """Look up the pinned pubkey for a node_id. Returns None when the peer
@@ -379,7 +380,7 @@ def _pair_canonical_bytes(
     is fixed and explicit; we don't rely on dict ordering.
     """
     parts = [
-        f"v1",
+        "v1",
         f"sender={sender_node_id}",
         f"hostname={hostname}",
         f"pubkey={pubkey_b64}",
@@ -399,6 +400,6 @@ def _fingerprint_from_b64(pubkey_b64: str) -> str:
 
 def _sql_now() -> str:
     """ISO-formatted UTC timestamp matching ``datetime('now')`` in SQLite."""
-    from datetime import datetime, timezone
+    from datetime import datetime
 
-    return datetime.now(timezone.utc).isoformat(sep=" ", timespec="seconds")
+    return datetime.now(UTC).isoformat(sep=" ", timespec="seconds")

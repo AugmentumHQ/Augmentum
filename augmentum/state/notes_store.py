@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from datetime import UTC
 
 import aiosqlite
 
@@ -141,8 +142,8 @@ class NotesStore:
             "word_count", "reading_time_min", "ai_blocks",
         }
         if content_fields & updates.keys():
-            from datetime import datetime, timezone
-            existing["updated_at"] = datetime.now(timezone.utc).isoformat()
+            from datetime import datetime
+            existing["updated_at"] = datetime.now(UTC).isoformat()
 
         await self._conn.execute(
             "UPDATE browse_notes SET "

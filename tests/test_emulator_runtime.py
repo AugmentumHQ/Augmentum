@@ -9,7 +9,6 @@ import json
 import aiosqlite
 import pytest
 
-
 _SCHEMA_SQL = """
 CREATE TABLE users (id TEXT PRIMARY KEY);
 

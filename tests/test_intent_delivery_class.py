@@ -211,6 +211,7 @@ _NOTE_TEST_SEQ = [0]
 
 def _note_session(note_id="n1"):
     from types import SimpleNamespace
+
     from augmentum.intent.action import SessionContext
     # Unique user/session per call — the referent cache is keyed
     # globally, so reusing ids bleeds active_note_id across tests.

@@ -35,15 +35,13 @@ from augmentum.coder.prompts import (
     ACT_SYSTEM_WITH_TOOLS,
     MISSION_ACT_SYSTEM,
     MISSION_ACT_SYSTEM_WITH_TOOLS,
-    TOOL_REFERENCE,
 )
 from augmentum.coder.repomap import build_repo_map
+from augmentum.modes.analytical.tool_calling import ToolCallingTier
 from augmentum.modes.coder.handler import (
     _act_system_for_tier,
     _mission_act_system_for_tier,
 )
-from augmentum.modes.analytical.tool_calling import ToolCallingTier
-
 
 # ---------------------------------------------------------------------------
 # build_repo_map — skip_file_listing flag

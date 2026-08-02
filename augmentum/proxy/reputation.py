@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import UTC
 from urllib.parse import urlparse
 
 from fastapi import Request
@@ -115,7 +116,7 @@ async def _seed_preferred_sources(request: Request) -> None:
     if not db:
         return
     try:
-        from augmentum.tools.preferred_sources import _SOURCES, EXCELLENT, GOOD, AVOID
+        from augmentum.tools.preferred_sources import _SOURCES, AVOID, EXCELLENT, GOOD
 
         score_map = {EXCELLENT: 5, GOOD: 2, AVOID: -3}
 
@@ -156,9 +157,9 @@ async def _maybe_decay_scores(request: Request) -> None:
         row = await cursor.fetchone()
 
         if row:
-            from datetime import datetime, timezone, timedelta
+            from datetime import datetime, timedelta
             last_decay = datetime.fromisoformat(row[0])
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
             if now - last_decay < timedelta(days=1):
                 return  # too soon
 

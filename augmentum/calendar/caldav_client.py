@@ -19,8 +19,8 @@ from __future__ import annotations
 
 import re
 import uuid
-from dataclasses import dataclass, field
-from datetime import date, datetime, timedelta, timezone
+from dataclasses import dataclass
+from datetime import UTC, date, datetime
 from typing import Any
 from xml.etree import ElementTree as ET
 
@@ -77,7 +77,7 @@ def _parse_date_value(value: str) -> datetime | date | None:
         return datetime(
             int(m.group(1)), int(m.group(2)), int(m.group(3)),
             int(m.group(4)), int(m.group(5)), int(m.group(6)),
-            tzinfo=timezone.utc,
+            tzinfo=UTC,
         )
     m = _DATE_RE.match(value)
     if m:
@@ -138,7 +138,7 @@ def _build_vevent(summary: str, start_dt: datetime, end_dt: datetime,
     """Build a minimal VEVENT iCalendar string for PUT."""
     if not uid:
         uid = str(uuid.uuid4())
-    now = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    now = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     lines = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",

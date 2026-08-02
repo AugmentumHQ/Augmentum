@@ -175,8 +175,9 @@ class TestPublishAndDispatch:
     """The wrapper that bridges store.publish + hub.dispatch."""
 
     async def test_persists_then_pushes(self, tmp_path) -> None:
-        import aiosqlite
         from pathlib import Path
+
+        import aiosqlite
 
         from augmentum.notifications.hub import publish_and_dispatch
         from augmentum.notifications.store import list_for_user
@@ -218,8 +219,9 @@ class TestImportanceFanout:
 
     async def _publish(self, monkeypatch, *, importance, attach_ws,
                        transient=False):
-        import aiosqlite
         from pathlib import Path
+
+        import aiosqlite
 
         from augmentum.notifications import hub as hub_mod
 

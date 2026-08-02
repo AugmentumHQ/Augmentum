@@ -18,9 +18,9 @@ from typing import TYPE_CHECKING, Any
 from augmentum.cast.games.models import (
     CLASSIFIED_DEFAULT,
     CLASSIFIED_MANUAL,
+    STRATEGY_SHIM,
     CastProfile,
     KeymapProfile,
-    STRATEGY_SHIM,
     _coerce_input_chain,
     _coerce_strategy,
 )
@@ -44,7 +44,7 @@ class CastProfileRegistry:
     writes via the underlying aiosqlite serialisation.
     """
 
-    def __init__(self, conn: "aiosqlite.Connection") -> None:
+    def __init__(self, conn: aiosqlite.Connection) -> None:
         self._conn = conn
 
     # ── reads ────────────────────────────────────────────────────

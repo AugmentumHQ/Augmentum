@@ -3,16 +3,13 @@
 from __future__ import annotations
 
 import json
-from unittest.mock import AsyncMock, MagicMock
-
-import pytest
 
 from augmentum.modes.narrative.card_parser import CardParser, CharacterCard
+from augmentum.modes.narrative.llm_extractor import NarrativeExtraction
 from augmentum.modes.narrative.regex_transformer import (
     RegexScript,
     apply_regex_scripts,
 )
-from augmentum.modes.narrative.llm_extractor import NarrativeExtraction
 
 
 class TestCharacterCardDefaults:

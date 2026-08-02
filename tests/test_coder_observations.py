@@ -45,7 +45,6 @@ from augmentum.coder.observations import (
     serialize_observations,
 )
 
-
 # ---------------------------------------------------------------------------
 # Observation dataclass + parsing
 # ---------------------------------------------------------------------------
@@ -156,9 +155,9 @@ class TestJsonlRoundTrip:
         assert len(CATEGORIES) == 10
 
     def test_confidences_closed_set(self):
-        assert CONFIDENCES == frozenset({
+        assert frozenset({
             "tentative", "confirmed", "user_asserted",
-        })
+        }) == CONFIDENCES
 
 
 # ---------------------------------------------------------------------------

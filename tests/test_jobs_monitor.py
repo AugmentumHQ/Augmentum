@@ -19,8 +19,6 @@ Covers:
 
 from __future__ import annotations
 
-import asyncio
-
 import pytest
 
 from augmentum.jobs.context import JobCancelled, JobContext, JobRetryable

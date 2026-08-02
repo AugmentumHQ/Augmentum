@@ -6,11 +6,8 @@ size cap enforcement, and cascade delete-all-for-title.
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
-
 import aiosqlite
 import pytest
-
 
 _SCHEMA_SQL = """
 CREATE TABLE users (id TEXT PRIMARY KEY);
@@ -40,7 +37,9 @@ class _FakeBlobStore:
     layout, so we monkey-path the read helper at the SaveStore layer.
     """
     def __init__(self):
-        import hashlib, tempfile, os
+        import hashlib
+        import os
+        import tempfile
         self._data: dict[str, bytes] = {}
         self._refs: dict[str, int] = {}
         self._dir = tempfile.mkdtemp()

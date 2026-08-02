@@ -7,7 +7,6 @@ sports, finance, recipes, health, entertainment, local news, shopping, travel.
 from __future__ import annotations
 
 import asyncio
-import re
 import sys
 from pathlib import Path
 
@@ -157,10 +156,10 @@ async def main():
                 st = _status(content, chars)
                 preview = content[:60].replace("\n", " ")
                 return (domain, st, chars, cats, ctype, fresh, preview)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 return (domain, "TIMEOUT", 0, cats, ctype, fresh, "Timed out")
-            except Exception as e:
-                return (domain, "ERROR", 0, cats, ctype, fresh, str(e)[:60])
+            except Exception as exc:
+                return (domain, "ERROR", 0, cats, ctype, fresh, str(exc)[:60])
 
         results = await asyncio.gather(*[test_one(e) for e in batch])
 
@@ -179,11 +178,11 @@ async def main():
     print(f"ACCESSIBLE ({len(ok_sites)}):\n")
     for domain, cats, ctype, fresh in ok_sites:
         print(f'    "{domain}": SourceInfo(')
-        print(f'        quality=GOOD,')
+        print('        quality=GOOD,')
         print(f'        categories=({", ".join(repr(c) for c in cats.split(","))}),')
         print(f'        content_type="{ctype}",')
         print(f'        freshness="{fresh}",')
-        print(f'    ),')
+        print('    ),')
 
     print(f"\nBLOCKED/FAILED ({len(blocked_sites)}):")
     for domain, st in blocked_sites:

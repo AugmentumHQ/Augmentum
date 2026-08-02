@@ -27,7 +27,6 @@ from dataclasses import dataclass
 
 import pytest
 
-
 # ── Fixtures ─────────────────────────────────────────────────────────
 
 
@@ -398,7 +397,7 @@ async def test_dispatch_emits_routed_chat_event(monkeypatch):
     async def _drain():
         try:
             ev = await asyncio.wait_for(sub.queue.get(), timeout=0.5)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return
         if ev is not None:
             captured.append({"topic": ev.topic, "payload": ev.payload})

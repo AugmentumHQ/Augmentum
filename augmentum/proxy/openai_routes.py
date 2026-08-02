@@ -15,7 +15,6 @@ from pydantic import BaseModel, field_validator
 
 from augmentum.classifier.router import MODE_HEADER, Mode, RequestClassifier
 from augmentum.config import settings
-from augmentum.proxy.ollama_routes import _inject_voice_context, _resolve_request_think
 from augmentum.image.schemas import OpenAIImageData, OpenAIImageRequest, OpenAIImageResponse
 from augmentum.memory.integration import (
     apply_dream_injection_to_request,
@@ -31,7 +30,7 @@ from augmentum.models.base import (
 )
 from augmentum.models.openai_compat import to_openai_chat_response
 from augmentum.models.provider_registry import ModelUnavailableError
-from augmentum.modes.passthrough.handler import PassthroughHandler, _CHAT_SYNTHESIS_HINT
+from augmentum.modes.passthrough.handler import _CHAT_SYNTHESIS_HINT, PassthroughHandler
 from augmentum.proxy.handler_factory import (
     _resolve_passthrough_tools,
     apply_prompt_cache_key,
@@ -46,6 +45,7 @@ from augmentum.proxy.harness import (
     inject_harness_context,
     schedule_harness_capture,
 )
+from augmentum.proxy.ollama_routes import _inject_voice_context, _resolve_request_think
 from augmentum.proxy.status_bus import bind_request_id, make_request_id
 from augmentum.proxy.streaming import (
     stream_openai_chat_handler,
@@ -135,7 +135,7 @@ def _backend_runtime_error_to_response(exc: RuntimeError) -> JSONResponse | None
 
 async def _dispatch_direct(
     internal_req: InternalChatRequest,
-    body: "OpenAIChatRequest",
+    body: OpenAIChatRequest,
     backend,
     app_state,
     *,

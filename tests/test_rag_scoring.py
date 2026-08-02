@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 
 class TestScoreGate:
     """Test three-tier confidence classification."""
@@ -278,8 +276,8 @@ class TestBuildDocumentContext:
     """Test structured injection format."""
 
     def test_sufficient_with_high_chunks(self):
-        from augmentum.memory.integration import _build_document_context
         from augmentum.documents.scoring import ScoredChunk
+        from augmentum.memory.integration import _build_document_context
 
         chunks = [ScoredChunk(
             chunk={"content": "Test content", "filename": "a.pdf", "page_num": 3},
@@ -292,8 +290,8 @@ class TestBuildDocumentContext:
         assert "Ground your response" in result
 
     def test_partial_sufficiency_message(self):
-        from augmentum.memory.integration import _build_document_context
         from augmentum.documents.scoring import ScoredChunk
+        from augmentum.memory.integration import _build_document_context
 
         chunks = [ScoredChunk(
             chunk={"content": "Test", "filename": "b.md"},
@@ -309,8 +307,8 @@ class TestBuildDocumentContext:
         assert _build_document_context([], "none") == ""
 
     def test_no_page_num(self):
-        from augmentum.memory.integration import _build_document_context
         from augmentum.documents.scoring import ScoredChunk
+        from augmentum.memory.integration import _build_document_context
 
         chunks = [ScoredChunk(
             chunk={"content": "Test", "filename": "c.md"},

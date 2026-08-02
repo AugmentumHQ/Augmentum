@@ -11,7 +11,6 @@ from unittest.mock import AsyncMock
 
 from augmentum.config import settings
 
-
 # ---------------------------------------------------------------------------
 # POST /api/chats/fanout-plan
 # ---------------------------------------------------------------------------

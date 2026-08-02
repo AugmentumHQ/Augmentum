@@ -25,13 +25,10 @@ Run: python -m pytest tests/test_coder_native_guards.py -v
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
-
 import pytest
 
+from augmentum.models.base import InternalStreamChunk
 from augmentum.modes.coder.handler import CoderHandler
-from augmentum.models.base import InternalChatRequest, InternalStreamChunk, Message
-
 from tests.test_coder_handler import (
     _ExtendedContainerManager,
     _FakeChunk,
@@ -39,7 +36,6 @@ from tests.test_coder_handler import (
     _make_request,
     _tc_delta,
 )
-
 
 # ---------------------------------------------------------------------------
 # Silent-success-fog detector

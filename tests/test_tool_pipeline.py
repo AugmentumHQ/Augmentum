@@ -2,18 +2,14 @@
 
 from __future__ import annotations
 
-import asyncio
 import time
 from dataclasses import dataclass
-
-import pytest
 
 from augmentum.tools.base import Tool, ToolCategory, ToolResult
 from augmentum.tools.cache import ToolResultCache
 from augmentum.tools.circuit_breaker import ToolCircuitBreaker
 from augmentum.tools.filter import filter_tools_for_query
 from augmentum.tools.result_processing import truncate_tool_result
-
 
 # === Result Truncation ===
 
@@ -318,8 +314,9 @@ class TestSpreadsheetFormulaSanitization:
         sheets = [{"name": "Test", "headers": ["A"], "rows": [["+cmd|' /C calc'!A0"]]}]
         data = _render_xlsx(sheets)
         # The value should be prefixed with ' to neutralize the formula
-        from openpyxl import load_workbook
         import io
+
+        from openpyxl import load_workbook
         wb = load_workbook(io.BytesIO(data))
         cell_value = wb.active.cell(row=2, column=1).value
         assert cell_value.startswith("'")
@@ -328,8 +325,9 @@ class TestSpreadsheetFormulaSanitization:
         from augmentum.tools.artifact_spreadsheet import _render_xlsx
         sheets = [{"name": "Test", "headers": ["A"], "rows": [["@SUM(A1)"]]}]
         data = _render_xlsx(sheets)
-        from openpyxl import load_workbook
         import io
+
+        from openpyxl import load_workbook
         wb = load_workbook(io.BytesIO(data))
         cell_value = wb.active.cell(row=2, column=1).value
         assert cell_value.startswith("'")
@@ -338,8 +336,9 @@ class TestSpreadsheetFormulaSanitization:
         from augmentum.tools.artifact_spreadsheet import _render_xlsx
         sheets = [{"name": "Test", "headers": ["A"], "rows": [["-42.5"]]}]
         data = _render_xlsx(sheets)
-        from openpyxl import load_workbook
         import io
+
+        from openpyxl import load_workbook
         wb = load_workbook(io.BytesIO(data))
         cell_value = wb.active.cell(row=2, column=1).value
         # Negative number string should NOT be prefixed
@@ -349,8 +348,9 @@ class TestSpreadsheetFormulaSanitization:
         from augmentum.tools.artifact_spreadsheet import _render_xlsx
         sheets = [{"name": "Test", "headers": ["A"], "rows": [["=SUM(A1:A5)"]]}]
         data = _render_xlsx(sheets)
-        from openpyxl import load_workbook
         import io
+
+        from openpyxl import load_workbook
         wb = load_workbook(io.BytesIO(data))
         cell_value = wb.active.cell(row=2, column=1).value
         assert cell_value == "=SUM(A1:A5)"

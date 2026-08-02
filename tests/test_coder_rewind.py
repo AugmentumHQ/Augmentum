@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 from dataclasses import dataclass, field
 from types import SimpleNamespace
-from typing import Any
 
 import pytest
 
@@ -17,7 +16,6 @@ from augmentum.coder.rewind import (
 )
 from augmentum.coder.run_broker import CoderRunBroker
 from augmentum.models.base import InternalStreamChunk
-
 
 # ---------------------------------------------------------------------------
 # Test doubles

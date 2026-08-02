@@ -14,10 +14,9 @@ for backward compatibility but no longer used for filtering.
 from __future__ import annotations
 
 import asyncio
-
 import uuid
 
-from fastapi import APIRouter, Request, UploadFile, File
+from fastapi import APIRouter, File, Request, UploadFile
 from fastapi.responses import JSONResponse
 
 from augmentum.utils.logging import get_logger

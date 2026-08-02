@@ -50,8 +50,9 @@ import os
 import random
 import tarfile
 import time
+from collections.abc import Awaitable, Callable
 from pathlib import Path
-from typing import Any, Awaitable, Callable
+from typing import Any
 
 import httpx
 import numpy as np

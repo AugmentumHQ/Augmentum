@@ -62,7 +62,6 @@ from augmentum.models.base import (
     InternalStreamChunk,
     Message,
 )
-from augmentum.modes.coder.intent import TIER_LIMITS, Tier, TurnIntentKind
 from augmentum.modes.analytical.tool_calling import ToolCallingTier
 
 # ``select_tier`` is live-bound via ``_bind_handler_helpers`` so tests
@@ -71,6 +70,7 @@ from augmentum.modes.coder.chat_egress import (  # noqa: F401 — emit_relay for
     emit,
     emit_relay,
 )
+from augmentum.modes.coder.intent import TIER_LIMITS, TurnIntentKind
 
 log = structlog.get_logger(__name__)
 
@@ -132,12 +132,20 @@ def _env_int(name: str, default: int) -> int:
 # drives the act loop directly.
 from augmentum.loops.breakers import (
     HYBRID_CONTINUATION_LOOKBACK as _HYBRID_CONTINUATION_LOOKBACK,
-    HYBRID_MAX_ITERS as _HYBRID_MAX_ITERS,
-    HYBRID_MAX_ITERS_UNGATED as _HYBRID_MAX_ITERS_UNGATED,
+)
+from augmentum.loops.breakers import (
     HYBRID_MIN_TURN_PROSE_CHARS as _HYBRID_MIN_TURN_PROSE_CHARS,
+)
+from augmentum.loops.breakers import (
     HYBRID_STAGNATION_REPEATS as _HYBRID_STAGNATION_REPEATS,
+)
+from augmentum.loops.breakers import (
     live_max_iters as _live_max_iters,
+)
+from augmentum.loops.breakers import (
     live_native_nudge_max,
+)
+from augmentum.loops.breakers import (
     live_threshold as _live_threshold,
 )
 
@@ -585,7 +593,6 @@ def _pending_contract_for_turn(
 # Phase 2 / PR-2.3: aliased from augmentum/loops/breakers.py registry.
 from augmentum.loops.breakers import (
     SAME_VALIDATION_REPEAT_BREAK as _SAME_VALIDATION_REPEAT_BREAK,
-    VALIDATION_ERROR_STREAK_BREAK as _VALIDATION_ERROR_STREAK_BREAK,
 )
 
 
@@ -676,50 +683,68 @@ def _bump_identical_streaks(
     return max(streaks.values(), default=0)
 
 
-from augmentum.loops.breakers import (
-    ACTION_STAGNATION_BREAK as _ACTION_STAGNATION_BREAK,
-    INSPECTION_COLD_START_GRACE as _INSPECTION_COLD_START_GRACE,
-    SAME_FILE_EDIT_BREAK as _SAME_FILE_EDIT_BREAK,
-    TEST_FAILURE_STREAK_BREAK as _TEST_FAILURE_STREAK_BREAK,
+# Command-carousel detector: the same NORMALIZED shell command (output-
+# shaping pipe tail + redirections stripped) re-run with no improvement
+# in its meaningful signal (pytest counts, error sigs). The test/probe
+# re-run class that duplicate_calls (shell-excluded), probe_no_signal
+# (byte-identical only), and action_stagnation (same tool name) all miss.
+# Motivated by three 2026-07-07 Qwen3.6-35B runs of 147-150 iterations.
+# Carries the flaky-test flag too (same cmd, different result, no edit).
+from augmentum.coder.command_carousel import (
+    carousel_nudge_body,
+    carousel_reorientation_body,
+    flaky_test_body,
+)
+from augmentum.coder.command_carousel import (
+    extract_signal as _extract_signal,
 )
 
-# Write-without-progress circuit-breaker. Fires when the agent is
-# attempting mutating tool calls (code_edit / code_multi_edit /
-# file_write) but NONE are succeeding — i.e. every edit bounces off
-# a stale search-block, idempotence guard, or validation error.
-# Complement to inspection_loop_break (which fires when NO mutations
-# are attempted at all) and same_file_edit_break (which fires on too
-# many successful edits to one file). The three together cover the
-# write-axis degenerate states:
-#   - not writing anything               → inspection_loop_break
-#   - writing everything to one file     → same_file_edit_break
-#   - trying to write but nothing sticks → no_write_progress_break
-from augmentum.loops.breakers import (
-    MUTATING_TOOL_NAMES as _MUTATING_TOOL_NAMES,
-    NATIVE_SERIAL_TOOL_NAMES as _NATIVE_SERIAL_TOOL_NAMES,
-    NO_WRITE_PROGRESS_BREAK as _NO_WRITE_PROGRESS_BREAK,
-    PARALLEL_READ_TOOLS as _HYBRID_PARALLEL_READ_TOOLS,
+# Always-green-probe detector: the same shell probe re-run with byte-
+# identical output despite edits landing in between — the model's
+# verification loop carries no signal (print-script "tests"). Threshold
+# probe_no_signal_nudge in loops/breakers.py.
+from augmentum.coder.probe_signal import (
+    probe_no_signal_nudge_body,
 )
 
-# Silent-success fog detector. A shell_exec that returns "(exit 0,
-# command succeeded with no stdout)" is honest but opaque. When 3+
-# consecutive iterations are dominated by silent successes, the model
-# has no grounding signal about what its commands are doing and tends
-# to spiral (kill → restart → check → check → check). Threshold-based
-# nudge fires once per turn, pushing the model toward a diagnostic
-# (ps / curl / ls) before its next mutation.
-from augmentum.loops.breakers import SILENT_SUCCESS_NUDGE_AT as _SILENT_SUCCESS_NUDGE_AT
+# Task-list staleness detector. When the model has set a task list via
+# ``task_list`` but then runs N iterations without updating it, fire
+# a one-shot nudge reminding it to re-render the list (mark the
+# in_progress task done, promote the next pending). Catches the
+# pattern where the model loses track of its own plan mid-execution.
+# Only fires when the list is non-empty AND has at least one
+# non-completed item — a stable all-completed list isn't stale, the
+# loop's ``tasks_completed`` early termination handles that.
+# Threshold lives in loops/breakers.py (TASK_STALE_NUDGE_AT); the
+# check logic is the shared TaskSpineTracker (2026-07-06 — hybrid's
+# inline copy factored out so native runs the same spine).
+from augmentum.coder.task_spine import TaskSpineTracker
 
-# Identical-call loop detector. A model that re-issues the SAME tool with
-# the SAME arguments and gets byte-identical output is stuck even when each
-# call "succeeds" — which is exactly why the other guards miss it:
-# no_progress resets on any success, silent_success only fires on empty
-# shell stdout, and the validation breaks only watch errors. Hash
-# (tool, input, output) per successful call, count consecutive-iteration
-# repeats, and nudge once when any signature reaches the threshold.
-from augmentum.loops.breakers import (
-    IDENTICAL_TOOL_RESULT_NUDGE_AT as _IDENTICAL_RESULT_NUDGE_AT,
+# Coarse turn-level progress backstop: N iterations with no measurable
+# progress (changed-file set didn't grow AND no new test started
+# passing) → nudge then break. The superset floor beneath the narrow
+# breakers, making runaway turn length structurally impossible.
+from augmentum.coder.turn_progress import (
+    progress_stall_nudge_body,
 )
+
+# Same-file write-churn ladder (nudge → break). Hybrid had only the
+# hard break; native had NOTHING — a 2026-07-06 live 9B run rewrote
+# one file 20+ times with every guard blind to it (writes succeed,
+# args differ, model never stops). Shared tracker; thresholds
+# same_file_edit_nudge / same_file_edit_break in loops/breakers.py.
+from augmentum.coder.write_churn import (
+    WriteChurnTracker,
+    churn_nudge_body,
+    escalation_handoff_body,
+)
+
+# Coordination-churn detector. Weak models can get stuck repeatedly
+# calling ``task_list`` / ``ask_user`` instead of taking the next
+# concrete step. We nudge earlier here than the broader stagnation
+# breakers because these tools are meta-coordination, not task
+# progress.
+from augmentum.loops.breakers import COORDINATION_ONLY_NUDGE_AT as _COORDINATION_ONLY_NUDGE_AT
 
 # Failing-build-without-edit detector. Complements
 # ``no_write_progress_break`` (which requires a mutating-tool attempt
@@ -735,75 +760,19 @@ from augmentum.loops.breakers import (
 # next shell retry, or to explain what it thinks is wrong.
 from augmentum.loops.breakers import FAILING_SHELL_NUDGE_AT as _FAILING_SHELL_NUDGE_AT
 
-# Task-list staleness detector. When the model has set a task list via
-# ``task_list`` but then runs N iterations without updating it, fire
-# a one-shot nudge reminding it to re-render the list (mark the
-# in_progress task done, promote the next pending). Catches the
-# pattern where the model loses track of its own plan mid-execution.
-# Only fires when the list is non-empty AND has at least one
-# non-completed item — a stable all-completed list isn't stale, the
-# loop's ``tasks_completed`` early termination handles that.
-# Threshold lives in loops/breakers.py (TASK_STALE_NUDGE_AT); the
-# check logic is the shared TaskSpineTracker (2026-07-06 — hybrid's
-# inline copy factored out so native runs the same spine).
-from augmentum.coder.task_spine import TaskSpineTracker
-
-# Same-file write-churn ladder (nudge → break). Hybrid had only the
-# hard break; native had NOTHING — a 2026-07-06 live 9B run rewrote
-# one file 20+ times with every guard blind to it (writes succeed,
-# args differ, model never stops). Shared tracker; thresholds
-# same_file_edit_nudge / same_file_edit_break in loops/breakers.py.
-from augmentum.coder.write_churn import (
-    WriteChurnTracker,
-    churn_nudge_body,
-    escalation_handoff_body,
-)
-
-# Always-green-probe detector: the same shell probe re-run with byte-
-# identical output despite edits landing in between — the model's
-# verification loop carries no signal (print-script "tests"). Threshold
-# probe_no_signal_nudge in loops/breakers.py.
-from augmentum.coder.probe_signal import (
-    ProbeSignalTracker,
-    probe_no_signal_nudge_body,
-)
-
-# Command-carousel detector: the same NORMALIZED shell command (output-
-# shaping pipe tail + redirections stripped) re-run with no improvement
-# in its meaningful signal (pytest counts, error sigs). The test/probe
-# re-run class that duplicate_calls (shell-excluded), probe_no_signal
-# (byte-identical only), and action_stagnation (same tool name) all miss.
-# Motivated by three 2026-07-07 Qwen3.6-35B runs of 147-150 iterations.
-# Carries the flaky-test flag too (same cmd, different result, no edit).
-from augmentum.coder.command_carousel import (
-    CommandCarouselTracker,
-    carousel_nudge_body,
-    carousel_reorientation_body,
-    extract_signal as _extract_signal,
-    flaky_test_body,
-)
-
-# Coarse turn-level progress backstop: N iterations with no measurable
-# progress (changed-file set didn't grow AND no new test started
-# passing) → nudge then break. The superset floor beneath the narrow
-# breakers, making runaway turn length structurally impossible.
-from augmentum.coder.turn_progress import (
-    TurnProgressLedger,
-    progress_stall_nudge_body,
+# Identical-call loop detector. A model that re-issues the SAME tool with
+# the SAME arguments and gets byte-identical output is stuck even when each
+# call "succeeds" — which is exactly why the other guards miss it:
+# no_progress resets on any success, silent_success only fires on empty
+# shell stdout, and the validation breaks only watch errors. Hash
+# (tool, input, output) per successful call, count consecutive-iteration
+# repeats, and nudge once when any signature reaches the threshold.
+from augmentum.loops.breakers import (
+    IDENTICAL_TOOL_RESULT_NUDGE_AT as _IDENTICAL_RESULT_NUDGE_AT,
 )
 from augmentum.loops.breakers import (
-    COMMAND_CAROUSEL_NUDGE_AT as _COMMAND_CAROUSEL_NUDGE_AT,
-    COMMAND_CAROUSEL_REORIENT_DELTA as _COMMAND_CAROUSEL_REORIENT_DELTA,
-    PROGRESS_STALL_BREAK_AT as _PROGRESS_STALL_BREAK_AT,
-    PROGRESS_STALL_NUDGE_AT as _PROGRESS_STALL_NUDGE_AT,
+    INSPECTION_COLD_START_GRACE as _INSPECTION_COLD_START_GRACE,
 )
-
-# Coordination-churn detector. Weak models can get stuck repeatedly
-# calling ``task_list`` / ``ask_user`` instead of taking the next
-# concrete step. We nudge earlier here than the broader stagnation
-# breakers because these tools are meta-coordination, not task
-# progress.
-from augmentum.loops.breakers import COORDINATION_ONLY_NUDGE_AT as _COORDINATION_ONLY_NUDGE_AT
 
 # Tools whose presence-ONLY in an iteration flags it as "pure inspection".
 # The inspection_only_streak detector increments when every call in an
@@ -828,11 +797,38 @@ from augmentum.loops.breakers import COORDINATION_ONLY_NUDGE_AT as _COORDINATION
 #   - ``no_write_progress_break``: mutating-tool attempts all failing
 #   - ``max_iterations_reached``: 150-iter ceiling
 from augmentum.loops.breakers import (
-    INSPECTION_STREAK_BREAK_AFTER_NUDGE as _INSPECTION_STREAK_BREAK_AFTER_NUDGE,
-    INSPECTION_STREAK_NUDGE as _INSPECTION_STREAK_NUDGE,
     INSPECTION_TOOLS as _INSPECTION_TOOLS,
 )
 
+# Write-without-progress circuit-breaker. Fires when the agent is
+# attempting mutating tool calls (code_edit / code_multi_edit /
+# file_write) but NONE are succeeding — i.e. every edit bounces off
+# a stale search-block, idempotence guard, or validation error.
+# Complement to inspection_loop_break (which fires when NO mutations
+# are attempted at all) and same_file_edit_break (which fires on too
+# many successful edits to one file). The three together cover the
+# write-axis degenerate states:
+#   - not writing anything               → inspection_loop_break
+#   - writing everything to one file     → same_file_edit_break
+#   - trying to write but nothing sticks → no_write_progress_break
+from augmentum.loops.breakers import (
+    MUTATING_TOOL_NAMES as _MUTATING_TOOL_NAMES,
+)
+from augmentum.loops.breakers import (
+    NATIVE_SERIAL_TOOL_NAMES as _NATIVE_SERIAL_TOOL_NAMES,
+)
+from augmentum.loops.breakers import (
+    PARALLEL_READ_TOOLS as _HYBRID_PARALLEL_READ_TOOLS,
+)
+
+# Silent-success fog detector. A shell_exec that returns "(exit 0,
+# command succeeded with no stdout)" is honest but opaque. When 3+
+# consecutive iterations are dominated by silent successes, the model
+# has no grounding signal about what its commands are doing and tends
+# to spiral (kill → restart → check → check → check). Threshold-based
+# nudge fires once per turn, pushing the model toward a diagnostic
+# (ps / curl / ls) before its next mutation.
+from augmentum.loops.breakers import SILENT_SUCCESS_NUDGE_AT as _SILENT_SUCCESS_NUDGE_AT
 
 # ---------------------------------------------------------------------------
 # Termination Quality Gate — nudge messages (Phase 3.6)
@@ -2426,6 +2422,8 @@ class ActPhaseMixin:
                 # rather than threading a flag through the tool model.
                 from augmentum.modes.coder.handler import (  # noqa: F401
                     _SUBAGENT_STREAMING_TOOLS as _SUB_STREAM,
+                )
+                from augmentum.modes.coder.handler import (
                     _execute_tool_with_subagent_stream,
                 )
                 if tool_name in _SUB_STREAM:

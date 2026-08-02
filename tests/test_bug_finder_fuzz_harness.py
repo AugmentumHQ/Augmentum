@@ -16,13 +16,12 @@ import pytest
 
 from augmentum.bug_finder.fuzz.classifier import FuzzVerdict
 from augmentum.bug_finder.fuzz.harness import (
-    Harness,
     _EXPECTED_PARSE_ERRORS,
+    Harness,
     _input_conversion,
     _module_path_from_file,
     generate_harness,
 )
-
 
 # ---------------------------------------------------------------------------
 # _module_path_from_file

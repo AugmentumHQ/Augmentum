@@ -19,10 +19,10 @@ from typing import Any
 from urllib.parse import urlparse
 
 from augmentum.cast.games.models import (
+    STRATEGY_PROXY,
     CastProfile,
     HostCapabilities,
     PreparedCast,
-    STRATEGY_PROXY,
 )
 from augmentum.cast.games.proxy.fetcher import is_url_safe
 from augmentum.cast.games.proxy.session_store import ProxySessionStore

@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from augmentum.voice.text_cleaning import clean_for_tts
 
 

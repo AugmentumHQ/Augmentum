@@ -7,9 +7,7 @@ and Vertex AI safety-setting variants.
 
 from __future__ import annotations
 
-import base64
 import re
-from copy import deepcopy
 from typing import Any
 
 from augmentum.models.converters.utils import extract_system_prefix

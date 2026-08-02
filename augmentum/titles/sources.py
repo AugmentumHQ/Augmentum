@@ -21,12 +21,11 @@ pending downloads) lives in the source's helper layer (e.g.
 from __future__ import annotations
 
 import json
-import time
 import uuid
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
-from augmentum.titles.manifest import TITLE_KINDS, _legacy_kind_to_axf
+from augmentum.titles.manifest import TITLE_KINDS
 from augmentum.utils.logging import get_logger
 
 log = get_logger(__name__)

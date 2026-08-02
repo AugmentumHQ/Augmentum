@@ -36,15 +36,15 @@ log = structlog.get_logger(__name__)
 # per-page route, future Phase B surface) pull the configured instance
 # without having to thread the DB connection through every layer.
 
-_comic_series_store: "ComicSeriesStore | None" = None  # forward-declared
+_comic_series_store: ComicSeriesStore | None = None  # forward-declared
 
 
-def set_comic_series_store(store: "ComicSeriesStore") -> None:
+def set_comic_series_store(store: ComicSeriesStore) -> None:
     global _comic_series_store
     _comic_series_store = store
 
 
-def get_comic_series_store() -> "ComicSeriesStore | None":
+def get_comic_series_store() -> ComicSeriesStore | None:
     """Return the configured store, or ``None`` if startup hasn't wired it.
 
     Callers should treat ``None`` as a benign "feature not yet configured"

@@ -14,8 +14,6 @@ Covers:
 
 from __future__ import annotations
 
-import pytest
-
 from augmentum.security.untrusted import (
     UNTRUSTED_CONTEXT_POLICY,
     ensure_policy_in_system,

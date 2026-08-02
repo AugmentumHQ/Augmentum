@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import re
 
-
 # Patterns that indicate factual/specific content
 _NUMBER_RE = re.compile(
     r'\$[\d,]+(?:\.\d+)?'      # dollar amounts: $145,000

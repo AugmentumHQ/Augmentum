@@ -11,11 +11,9 @@ Three slices:
 
 from __future__ import annotations
 
-import asyncio
 import json
 from pathlib import Path
-from unittest.mock import AsyncMock, patch
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import aiosqlite
 import pytest
@@ -29,13 +27,12 @@ from augmentum.notifications.hub import (
 from augmentum.notifications.store import NotificationAction
 from augmentum.notifications.webpush import (
     DEFAULT_SUBJECT,
-    SETTING_VAPID_PUBLIC,
     SETTING_VAPID_PRIVATE,
+    SETTING_VAPID_PUBLIC,
     WebPushSendResult,
     ensure_vapid_keys,
     get_public_key,
 )
-
 
 NOTIFICATIONS_MIGRATION = Path(
     "augmentum/state/migrations/221_notification_substrate.sql"

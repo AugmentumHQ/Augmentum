@@ -29,7 +29,6 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
-
 # Stable kind discriminators. Match Phase 3's routing-rule grammar.
 KIND_LLM_INFERENCE = "llm.inference"
 KIND_IMAGE_GENERATION = "image.generation"

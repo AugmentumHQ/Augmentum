@@ -5,14 +5,13 @@ from __future__ import annotations
 import pytest
 
 from augmentum.documents.chunker import (
-    Chunk,
+    _detect_sections,
+    _split_section,
     chunk_text,
     chunk_with_parents,
     extract_text,
-    _split_section,
-    _detect_sections,
 )
-from augmentum.documents.dedup import deduplicate, _word_ngrams
+from augmentum.documents.dedup import _word_ngrams, deduplicate
 from augmentum.documents.scoring import (
     ScoredChunk,
     apply_budget,
@@ -22,10 +21,12 @@ from augmentum.documents.scoring import (
     score_gate,
 )
 from augmentum.documents.topic_coverage import (
+    _extract_topic_terms,
     build_topic_map,
     check_topic_coverage,
+)
+from augmentum.documents.topic_coverage import (
     reset as reset_topic_coverage,
-    _extract_topic_terms,
 )
 
 

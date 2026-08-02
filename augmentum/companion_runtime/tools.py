@@ -647,7 +647,7 @@ def known_tool_names() -> set[str]:
 
 async def execute_tool(
     call: ToolCall,
-    runtime: "CompanionRuntime",
+    runtime: CompanionRuntime,
     *,
     cancel: asyncio.Event | None = None,
     user_id: str = "",
@@ -789,7 +789,7 @@ _PRIMITIVE_ARG_ALIASES: dict[str, dict[str, str]] = {
 async def _execute_primitive(
     primitive_name: str,
     args: dict[str, str],
-    runtime: "CompanionRuntime",
+    runtime: CompanionRuntime,
     *,
     user_id: str,
 ) -> ToolResult:
@@ -821,7 +821,7 @@ async def _execute_primitive(
 
     try:
         result = await asyncio.wait_for(prim.call(ctx, **args), timeout=_PER_TOOL_TIMEOUT_S)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         return ToolResult(
             ok=False, tool=primitive_name, payload=None,
             error=ToolError(category="timeout", message="primitive timeout", retryable=True),
@@ -847,7 +847,7 @@ async def _execute_primitive(
 async def _execute_subagent(
     subagent_name: str,
     args: dict[str, str],
-    runtime: "CompanionRuntime",
+    runtime: CompanionRuntime,
     *,
     user_id: str,
 ) -> ToolResult:
@@ -889,7 +889,7 @@ async def _execute_subagent(
 
     try:
         result = await asyncio.wait_for(sub.invoke(ctx), timeout=_PER_TOOL_TIMEOUT_S)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         return ToolResult(
             ok=False, tool=subagent_name, payload=None,
             error=ToolError(category="timeout", message="subagent timeout", retryable=True),
@@ -930,7 +930,7 @@ def _lookup_registry_action(name: str):
 
 async def _execute_registry_action(
     call: ToolCall,
-    runtime: "CompanionRuntime",
+    runtime: CompanionRuntime,
     *,
     user_id: str,
     session_id: str = "",
@@ -1019,7 +1019,7 @@ async def _execute_registry_action(
         result = await asyncio.wait_for(
             action.handler("", session, args), timeout=_PER_TOOL_TIMEOUT_S,
         )
-    except asyncio.TimeoutError:
+    except TimeoutError:
         return ToolResult(
             ok=False, tool=call.name, payload=None,
             error=ToolError(category="timeout", message="action timeout", retryable=True),

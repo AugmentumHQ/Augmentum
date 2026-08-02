@@ -6,7 +6,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from augmentum.models.base import InternalChatResponse, Message, Usage
 
-
 # ---------------------------------------------------------------------------
 # POST /v1/chat/completions (non-streaming)
 # ---------------------------------------------------------------------------

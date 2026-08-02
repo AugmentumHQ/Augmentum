@@ -11,7 +11,6 @@ from __future__ import annotations
 from augmentum.bug_finder.investigator import INVESTIGATOR_SYSTEM_PROMPT
 from augmentum.bug_finder.prompts import DETECTOR_SYSTEM_PROMPT
 
-
 _DETECTOR_WIRING_TOOLS = (
     "middleware_chain",
     "decorators_on",

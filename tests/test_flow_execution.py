@@ -6,12 +6,10 @@ import pytest
 
 from augmentum.reasoning.models import FlowStep, ReasoningFlow
 from augmentum.reasoning.variables import (
-    DEFAULT_USER_TEMPLATE,
     StepContext,
     build_user_message,
     resolve_variables,
 )
-
 
 # ---------------------------------------------------------------------------
 # Variable substitution tests
@@ -195,8 +193,10 @@ class TestStepFiltering:
 
 @pytest.fixture
 async def resolver_store():
-    import aiosqlite
     from pathlib import Path
+
+    import aiosqlite
+
     from augmentum.reasoning.store import FlowStore
 
     db = await aiosqlite.connect(":memory:")
@@ -336,6 +336,7 @@ class TestResolver:
 class TestToolResolution:
     def test_resolve_by_name(self):
         from unittest.mock import MagicMock
+
         from augmentum.reasoning.executor import _resolve_tools_for_step
 
         registry = MagicMock()
@@ -351,6 +352,7 @@ class TestToolResolution:
 
     def test_resolve_by_category(self):
         from unittest.mock import MagicMock
+
         from augmentum.reasoning.executor import _resolve_tools_for_step
 
         registry = MagicMock()
@@ -372,6 +374,7 @@ class TestToolResolution:
 
     def test_dedup(self):
         from unittest.mock import MagicMock
+
         from augmentum.reasoning.executor import _resolve_tools_for_step
 
         registry = MagicMock()
@@ -386,6 +389,7 @@ class TestToolResolution:
 
     def test_exclude(self):
         from unittest.mock import MagicMock
+
         from augmentum.reasoning.executor import _resolve_tools_for_step
 
         registry = MagicMock()

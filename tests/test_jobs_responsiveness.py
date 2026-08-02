@@ -21,7 +21,6 @@ import pytest
 from augmentum.jobs import JobRunner, register_handler
 from augmentum.state.jobs_store import JobsStore
 
-
 _SCHEMA_SQL = """
 CREATE TABLE users (id TEXT PRIMARY KEY);
 CREATE TABLE background_jobs (

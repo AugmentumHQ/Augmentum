@@ -323,7 +323,7 @@ def return_microcopy(channel: str, exit_class: str) -> str:
     return _pick(f"return:{channel}:{exit_class}", deck)
 
 
-def refusal_addendum_for(intent: "Intent", runtime: "CompanionRuntime") -> RefusalAddendum:
+def refusal_addendum_for(intent: Intent, runtime: CompanionRuntime) -> RefusalAddendum:
     """Build the layer-8 refusal addendum based on triage metadata.
 
     Lane 1 §9: the wrap conditions the model toward in-character refusal
@@ -362,7 +362,7 @@ def floor_tail(resource: str) -> str:
     return template.format(resource_phrase=resource)
 
 
-def _resource_phrase_for(runtime: "CompanionRuntime", intent: "Intent") -> str:
+def _resource_phrase_for(runtime: CompanionRuntime, intent: Intent) -> str:
     """Resolve the locale-aware resource phrase. Reads the runtime's
     configured locale; falls back to the install's
     ``companion_locale`` setting; falls back to en-US.

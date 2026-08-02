@@ -18,7 +18,6 @@ other, but they share state through this module.
 from __future__ import annotations
 
 import secrets
-import time
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
@@ -33,7 +32,6 @@ from augmentum.connect.protocol import (
     EVENT_ANSWER,
     EVENT_CANDIDATES,
     EVENT_DECLINE,
-    EVENT_ERROR,
     EVENT_HANGUP,
     EVENT_INVITE,
     EVENT_MUTE_STATE,
@@ -56,7 +54,6 @@ from augmentum.connect.protocol import (
 )
 from augmentum.notifications import (
     IMPORTANCE_CRITICAL,
-    IMPORTANCE_DEFAULT,
     NotificationAction,
 )
 from augmentum.utils.logging import get_logger
@@ -282,8 +279,8 @@ async def _log_call_event(
 async def handle_signaling_envelope(
     *,
     conn: Any,
-    connect_hub: "ConnectHub",
-    notification_hub: "NotificationHub",
+    connect_hub: ConnectHub,
+    notification_hub: NotificationHub,
     env: ConnectEnvelope,
     sender_user_id: str,
     sender_did: str,
@@ -528,8 +525,8 @@ async def handle_signaling_envelope(
 async def _handle_invite(
     *,
     conn: Any,
-    connect_hub: "ConnectHub",
-    notification_hub: "NotificationHub",
+    connect_hub: ConnectHub,
+    notification_hub: NotificationHub,
     env: ConnectEnvelope,
     sender_user_id: str,
     sender_did: str,
@@ -688,7 +685,7 @@ async def _handle_invite(
 async def _handle_negotiate(
     *,
     conn: Any,
-    connect_hub: "ConnectHub",
+    connect_hub: ConnectHub,
     env: ConnectEnvelope,
     sender_user_id: str,
     sender_did: str,
@@ -793,7 +790,7 @@ def _cancel_invite_timer_safely(call_id: str) -> None:
 
 
 async def handle_call_action(
-    notification: "Notification", action_id: str, request: "Request",
+    notification: Notification, action_id: str, request: Request,
 ) -> dict[str, Any]:
     """Action handler for ``connect.call.*`` notifications.
 
@@ -989,7 +986,6 @@ async def _handle_fabric_signaling_outbound(
     All branches then dispatch the envelope over fabric. The remote
     instance's inbound handler does the recipient-side equivalent.
     """
-    from augmentum.connect.contacts import local_did_for
     from augmentum.connect.fabric_transport import dispatch_fabric_envelope
 
     data = env.data or {}

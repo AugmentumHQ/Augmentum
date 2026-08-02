@@ -21,11 +21,15 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
 
 from augmentum.bug_finder import (
-    dev_tools, intelligence, pen_test, pen_test_attacks, pen_test_boot,
-    refs, wiring,
+    dev_tools,
+    intelligence,
+    pen_test,
+    pen_test_attacks,
+    pen_test_boot,
+    refs,
+    wiring,
 )
 from augmentum.bug_finder.adapters import adapter_for_framework
 from augmentum.bug_finder.call_graph import CallGraph, build_from_directory

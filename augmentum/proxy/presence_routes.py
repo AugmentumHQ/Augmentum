@@ -39,7 +39,6 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from augmentum.companion.presence import (
     PresencePipeline,
-    PresenceState,
     StateTransition,
 )
 from augmentum.utils.logging import get_logger

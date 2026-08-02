@@ -5,13 +5,11 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 import numpy as np
-import pytest
 
 from augmentum.voice.kokoro_tts import (
     RECOMMENDED_BLENDS,
     VOICE_META,
     KokoroTTS,
-    _PREFIX_TO_LANG,
     _voice_lang,
 )
 

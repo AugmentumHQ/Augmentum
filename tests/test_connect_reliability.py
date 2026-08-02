@@ -25,11 +25,10 @@ from augmentum.connect.hub import ConnectHub
 from augmentum.connect.message_routing import handle_message_envelope
 from augmentum.connect.message_store import (
     get_message,
-    insert_message,
     get_or_create_thread,
+    insert_message,
 )
 from augmentum.connect.protocol import (
-    EVENT_ERROR,
     EVENT_TEXT_DELIVERED,
     MSG_PING,
     MSG_TEXT_DELIVERED,
@@ -44,7 +43,6 @@ from augmentum.connect.rate_limit import (
     WsRateLimiter,
 )
 from augmentum.notifications.hub import NotificationHub
-
 
 CONNECT_MIGRATION = Path(
     "augmentum/state/migrations/219_connect_substrate.sql"

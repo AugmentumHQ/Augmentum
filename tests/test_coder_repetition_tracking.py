@@ -17,7 +17,6 @@ These tests verify:
 from __future__ import annotations
 
 from augmentum.loops.ledger import (
-    ObservationLedger,
     TRACKED_TOOLS_BY_COMMAND,
     TRACKED_TOOLS_BY_EXPRESSION,
     TRACKED_TOOLS_BY_PATH,
@@ -26,9 +25,9 @@ from augmentum.loops.ledger import (
     TRACKED_TOOLS_BY_REQUEST,
     TRACKED_TOOLS_BY_SELECTOR,
     TRACKED_TOOLS_BY_URL,
+    ObservationLedger,
     _intent_key,
 )
-
 
 # ---------------------------------------------------------------------------
 # Intent-key derivation per tool family

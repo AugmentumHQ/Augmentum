@@ -15,7 +15,6 @@ from augmentum.bug_finder.fuzz.classifier import (
     classify_function,
 )
 
-
 # ---------------------------------------------------------------------------
 # Positive — first-arg accepts bytes-shaped input
 # ---------------------------------------------------------------------------

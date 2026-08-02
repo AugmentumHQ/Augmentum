@@ -17,8 +17,6 @@ from __future__ import annotations
 
 import time
 
-import pytest
-
 
 def _evt(topic: str, payload: dict, t: float | None = None) -> dict:
     """Helper — build a deque-shaped event entry."""

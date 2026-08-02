@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import pytest
 
+from augmentum.models.base import InternalStreamChunk
 from augmentum.modes.coder.chat_egress import (
     _VALID_PHASES,
     _VALID_STATUSES,
@@ -17,8 +18,6 @@ from augmentum.modes.coder.chat_egress import (
     emit,
     emit_relay,
 )
-from augmentum.models.base import InternalStreamChunk
-
 
 # ---------------------------------------------------------------------------
 # The known-good set stays in sync with what the loop actually emits.
@@ -28,10 +27,10 @@ from augmentum.models.base import InternalStreamChunk
 def test_valid_phases_covers_known_five():
     # Regression guard: the five phases the loop uses. If any of these
     # disappear, a bunch of emit sites will start raising.
-    assert _VALID_PHASES >= {
+    assert {
         "planning", "executing", "passthrough",
         "conversational", "waiting",
-    }
+    } <= _VALID_PHASES
 
 
 def test_valid_statuses_covers_termination_reasons():

@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
 from unittest.mock import MagicMock
 
 import aiosqlite
@@ -36,7 +35,6 @@ from augmentum.connect.protocol import (
     ConnectEnvelope,
     serialise_envelope,
 )
-
 
 CONNECT_MIGRATION = Path(
     "augmentum/state/migrations/219_connect_substrate.sql",

@@ -12,7 +12,6 @@ import asyncio
 
 import pytest
 
-
 # ── owner_clause helper ───────────────────────────────────────────────
 
 def test_owner_clause_shapes():

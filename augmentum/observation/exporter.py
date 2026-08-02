@@ -252,7 +252,7 @@ async def _run_llama_lookup_create(
         stdout, stderr = await asyncio.wait_for(
             proc.communicate(), timeout=_LLAMA_LOOKUP_CREATE_TIMEOUT_S,
         )
-    except asyncio.TimeoutError as exc:
+    except TimeoutError as exc:
         proc.kill()
         await proc.wait()
         raise RuntimeError(

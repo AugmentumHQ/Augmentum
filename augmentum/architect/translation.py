@@ -180,7 +180,7 @@ async def expand_image_prompt(
 
     try:
         resp = await asyncio.wait_for(backend.chat(req), timeout=timeout_s)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         log.info("image_prompt_expansion_timeout", model=resolved_model)
         return raw
     except Exception as exc:  # noqa: BLE001 — degrade safely
@@ -211,7 +211,7 @@ async def expand_image_prompt(
 
 async def translate_image_args(
     args: dict[str, Any],
-    session: "SessionContext",
+    session: SessionContext,
     runtime: Any,
 ) -> dict[str, Any]:
     """Action.arg_transformer for image.generate_with_defaults.

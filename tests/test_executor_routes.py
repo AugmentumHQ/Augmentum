@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock, MagicMock
 
-from fastapi.testclient import TestClient
-
 
 class TestExecuteCode:
     def test_empty_code(self, client):

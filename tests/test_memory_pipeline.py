@@ -2,20 +2,20 @@
 
 from __future__ import annotations
 
-import json
-from unittest.mock import AsyncMock, MagicMock, patch
+from datetime import UTC
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from augmentum.memory.compactor import MemoryCompactor, _cosine_similarity, _parse_summary_response
 from augmentum.memory.consolidator import (
     CONSOLIDATION_HIGH,
     CONSOLIDATION_LOW,
     _parse_merge_response,
     try_consolidate,
 )
-from augmentum.memory.compactor import MemoryCompactor, _cosine_similarity, _parse_summary_response
 from augmentum.memory.core_profile import CoreProfileManager, _recency_weight
-from augmentum.memory.models import Memory, MemoryTier, MemoryType
+from augmentum.memory.models import Memory, MemoryType
 
 
 class TestConsolidator:
@@ -115,8 +115,8 @@ class TestCoreProfile:
 
     def test_recency_weight_recent(self):
         """Recent memories should have weight close to 1.0."""
-        from datetime import datetime, timezone
-        now = datetime.now(timezone.utc).isoformat()
+        from datetime import datetime
+        now = datetime.now(UTC).isoformat()
         weight = _recency_weight(now)
         assert weight > 0.9
 

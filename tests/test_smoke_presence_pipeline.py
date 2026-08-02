@@ -24,7 +24,6 @@ from augmentum.companion.presence import (
     PresenceState,
 )
 
-
 # ── Construction + multi-tenant invariants ──────────────────────
 
 

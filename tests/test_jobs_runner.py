@@ -7,10 +7,9 @@ import asyncio
 import aiosqlite
 import pytest
 
-from augmentum.jobs import JobCancelled, JobRunner, register_handler
+from augmentum.jobs import JobRunner, register_handler
 from augmentum.jobs.context import JobRetryable
 from augmentum.state.jobs_store import JobsStore
-
 
 # Same minimal schema as test_jobs_store (intentional duplication — keeps
 # each test file self-contained). See that file for the rationale.

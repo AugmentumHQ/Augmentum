@@ -56,7 +56,7 @@ def make_surface_id() -> str:
 
 
 async def cast_surface(
-    registry: "ReceiverRegistry",
+    registry: ReceiverRegistry,
     receiver_id: str,
     *,
     surface_kind: str,
@@ -94,7 +94,7 @@ async def cast_surface(
 
 
 async def close_surface(
-    registry: "ReceiverRegistry",
+    registry: ReceiverRegistry,
     receiver_id: str,
     *,
     surface_id: str,
@@ -109,7 +109,7 @@ async def close_surface(
 
 
 async def focus_slot(
-    registry: "ReceiverRegistry",
+    registry: ReceiverRegistry,
     receiver_id: str,
     *,
     slot: str,
@@ -126,7 +126,7 @@ async def focus_slot(
 
 
 async def patch_surface_state(
-    registry: "ReceiverRegistry",
+    registry: ReceiverRegistry,
     receiver_id: str,
     *,
     surface_id: str,
@@ -145,7 +145,7 @@ async def patch_surface_state(
 
 
 async def cast_image(
-    registry: "ReceiverRegistry",
+    registry: ReceiverRegistry,
     receiver_id: str,
     *,
     url: str,
@@ -162,7 +162,7 @@ async def cast_image(
 
 
 async def cast_html(
-    registry: "ReceiverRegistry",
+    registry: ReceiverRegistry,
     receiver_id: str,
     *,
     url: str,
@@ -177,7 +177,7 @@ async def cast_html(
 
 
 async def cast_video(
-    registry: "ReceiverRegistry",
+    registry: ReceiverRegistry,
     receiver_id: str,
     *,
     url: str,
@@ -197,7 +197,7 @@ async def cast_video(
 
 
 async def cast_audio(
-    registry: "ReceiverRegistry",
+    registry: ReceiverRegistry,
     receiver_id: str,
     *,
     url: str,
@@ -216,7 +216,7 @@ async def cast_audio(
 
 
 async def cast_vrm(
-    registry: "ReceiverRegistry",
+    registry: ReceiverRegistry,
     receiver_id: str,
     *,
     avatar_id: str = "",

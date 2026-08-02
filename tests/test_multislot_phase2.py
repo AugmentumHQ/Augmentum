@@ -19,10 +19,8 @@ Spec: docs/superpowers/specs/2026-05-05-multi-slot-kv-design.md
 
 from __future__ import annotations
 
-import asyncio
 import contextlib
 import json
-import time
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx

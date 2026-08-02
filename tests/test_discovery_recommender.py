@@ -1,10 +1,7 @@
 """Tests for augmentum.discovery.recommender."""
 from __future__ import annotations
 
-import pytest
-
 from augmentum.discovery.recommender import build_search_query, distribute_slots
-
 
 # ---------------------------------------------------------------------------
 # distribute_slots

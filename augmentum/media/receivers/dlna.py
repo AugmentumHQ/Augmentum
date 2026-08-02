@@ -293,7 +293,7 @@ async def discover_dlna_receivers(
             f"MX: {max(1, int(mx))}\r\n"
             f"ST: {_MEDIA_RENDERER_ST}\r\n"
             "\r\n"
-        ).encode("utf-8")
+        ).encode()
         transport.sendto(query, _SSDP_ADDR)
         await asyncio.sleep(max(0.5, float(timeout_s or 2.5)))
     finally:

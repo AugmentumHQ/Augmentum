@@ -1,8 +1,14 @@
 """Dump generated code with quality analysis."""
-import asyncio, json, sys, re, urllib.request
+import asyncio
+import json
+import re
+import sys
+import urllib.request
+
 sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 sys.path.insert(0, '.')
 from augmentum.tools.artifact_application import ApplicationBuilderTool
+
 
 async def build(model, desc, scaffold):
     async def llm(messages, max_tokens=4096, **kw):
@@ -51,18 +57,18 @@ async def main():
     var_refs = all_css.count('var(')
 
     print(f'\n{"="*50}')
-    print(f'  QUALITY REPORT')
+    print('  QUALITY REPORT')
     print(f'{"="*50}')
     print(f'  Files: {len(files)}, Total lines: {sum(f["content"].count(chr(10))+1 for f in files)}')
     print()
-    print(f'  ACCESSIBILITY')
+    print('  ACCESSIBILITY')
     print(f'    lang="en":        {"YES" if "lang=" in entry else "NO"}')
     print(f'    alt on images:    {"YES" if "<img" not in entry or "alt=" in entry else "NO"}')
     print(f'    aria-label count: {all_code.count("aria-label")}')
     print(f'    <main> landmark:  {"YES" if "<main" in entry else "NO"}')
     print(f'    Semantic tags:    {"YES" if any(t in entry for t in ("<nav","<header","<footer","<main","<section","<article")) else "NO"}')
     print()
-    print(f'  CSS QUALITY')
+    print('  CSS QUALITY')
     print(f'    Custom properties: {len(css_vars)}')
     print(f'    var() references:  {var_refs}')
     print(f'    Has :root block:   {"YES" if ":root" in all_css else "NO"}')
@@ -70,7 +76,7 @@ async def main():
     print(f'    Transitions:       {all_css.count("transition")}')
     print(f'    Hover states:      {all_css.count(":hover")}')
     print()
-    print(f'  JS QUALITY')
+    print('  JS QUALITY')
     print(f'    IIFE:              {"YES" if "(function()" in all_js or "(function(" in all_js else "NO"}')
     print(f'    use strict:        {"YES" if "use strict" in all_js else "NO"}')
     print(f'    XSS escaping:      {"YES" if "esc(" in all_js or "&lt;" in all_js or "escapeHtml" in all_js else "NO"}')

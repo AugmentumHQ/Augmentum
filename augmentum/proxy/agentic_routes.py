@@ -159,8 +159,8 @@ def _serialise_candidates(task) -> dict:
 def _parsed_slides_for_task(task) -> list[dict]:
     """Pull the deck draft + parse slides the same way the handler does."""
     from augmentum.modes.agentic.handler import (
-        _pick_artifact_draft_from_outputs,
         _parse_slide_draft,
+        _pick_artifact_draft_from_outputs,
         _resolve_artifact_topic,
     )
 
@@ -210,7 +210,7 @@ async def _rerender_pptx_with_picks(request: Request, task, user_id: str) -> boo
     if not slides:
         return False
     from augmentum.tools.artifact_pipeline import _apply_pipeline_image_picks
-    from augmentum.tools.artifact_presentation import _render_pptx, PresentationTool
+    from augmentum.tools.artifact_presentation import PresentationTool, _render_pptx
 
     new_slides = _apply_pipeline_image_picks(
         slides, task.slide_image_picks or {}, task.image_candidates or {},
@@ -254,8 +254,8 @@ async def _backfill_candidates_if_empty(
     if task.image_candidates:
         return
     from augmentum.tools.artifact_pipeline import (
-        craft_initial_slide_queries,
         build_backend_pipeline_caller,
+        craft_initial_slide_queries,
     )
 
     slides = _parsed_slides_for_task(task)

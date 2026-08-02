@@ -22,8 +22,8 @@ from __future__ import annotations
 
 import asyncio
 import html
-from dataclasses import asdict
-from typing import TYPE_CHECKING, Any, AsyncIterator
+from collections.abc import AsyncIterator
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urlsplit
 
 from augmentum.devices.device import Device, DiscoveredDevice
@@ -33,12 +33,10 @@ from augmentum.devices.invocation import (
     InvocationResult,
     PairResult,
 )
-from augmentum.media.receivers.base import ReceiverLaunchPlan
 from augmentum.media.receivers.dlna import (
     DlnaReceiver,
     _fetch_description,
     discover_dlna_receivers,
-    launch_dlna_receiver,
     send_dlna_general_command,
     send_dlna_playstate_command,
     snapshot_dlna_receiver,
@@ -229,7 +227,7 @@ async def _tcp_alive(host: str, port: int, timeout_s: float) -> bool:
             timeout=max(0.05, float(timeout_s)),
         )
         return True
-    except (asyncio.TimeoutError, OSError, ConnectionRefusedError):
+    except (TimeoutError, OSError, ConnectionRefusedError):
         return False
     except Exception as exc:
         log.debug("tcp_knock_unexpected_error", host=host, port=port, error=str(exc))
@@ -256,8 +254,9 @@ async def _fetch_description_fast(http_client, location: str) -> DlnaReceiver | 
         if resp.status_code != 200:
             return None
         # Reuse the shared parser for content-type-loose UPnP XML.
-        from xml.etree import ElementTree as ET
         from urllib.parse import urljoin, urlsplit
+        from xml.etree import ElementTree as ET
+
         from augmentum.media.receivers.dlna import _child_text  # type: ignore
 
         root = ET.fromstring(resp.text)
@@ -334,10 +333,10 @@ class DlnaDriver:
     requires_pairing: bool = False
     supports_passive_discovery: bool = False
 
-    def __init__(self, *, http_client: "httpx.AsyncClient | None" = None) -> None:
-        self._http: "httpx.AsyncClient | None" = http_client
+    def __init__(self, *, http_client: httpx.AsyncClient | None = None) -> None:
+        self._http: httpx.AsyncClient | None = http_client
 
-    async def start(self, ctx: "DriverContext") -> None:
+    async def start(self, ctx: DriverContext) -> None:
         if self._http is None:
             self._http = ctx.http_client
 
@@ -563,8 +562,10 @@ class DlnaDriver:
     ) -> bool:
         """SetAVTransportURI + Play with rich DIDL metadata."""
         from augmentum.media.receivers.dlna import (
-            _soap_call as soap_call,
             _seconds_to_time,
+        )
+        from augmentum.media.receivers.dlna import (
+            _soap_call as soap_call,
         )
 
         metadata = _build_didl(

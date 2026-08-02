@@ -16,7 +16,8 @@ from __future__ import annotations
 
 import asyncio
 import json
-from dataclasses import dataclass, field, replace as dataclass_replace
+from dataclasses import dataclass, field
+from dataclasses import replace as dataclass_replace
 
 from augmentum.models.base import InternalChatRequest, Message
 from augmentum.modes.narrative.branch_tracker import BranchTracker

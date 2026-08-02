@@ -12,10 +12,6 @@ Verifies:
 
 from __future__ import annotations
 
-import json
-
-import pytest
-
 from augmentum.state.narrative_persistence import NarrativePersistence
 
 
@@ -68,7 +64,7 @@ class TestListBranches:
         asyncio.get_event_loop().run_until_complete(
             _seed_branch_session(backend.conn, "ses_lr", test_user.id),
         )
-        resp = sqlite_client.get(f"/api/narrative/session/ses_lr/branches")
+        resp = sqlite_client.get("/api/narrative/session/ses_lr/branches")
         assert resp.status_code == 200
         data = resp.json()
         ids = sorted(b["branch_id"] for b in data["branches"])

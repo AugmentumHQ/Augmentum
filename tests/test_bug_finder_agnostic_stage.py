@@ -36,7 +36,6 @@ from augmentum.bug_finder.dev_tools import ScannerFinding
 from augmentum.bug_finder.findings import Finding, FindingStatus
 from augmentum.bug_finder.generic_scanners import GenericScannerSuiteResult
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -233,8 +232,9 @@ def test_orchestrator_source_references_substrate_stage() -> None:
     """The integration is a load-bearing block of code in ``run_bug_finder``.
     A regression that deletes the block (e.g. during a merge) would
     silently strip the substrate — find it by a stable anchor."""
-    from augmentum.bug_finder import orchestrator
     import inspect
+
+    from augmentum.bug_finder import orchestrator
     src = inspect.getsource(orchestrator)
     assert "Stage 2.25: agnostic substrate" in src
     assert "run_agnostic_stage" in src
@@ -246,8 +246,9 @@ def test_orchestrator_loads_workspace_priors() -> None:
     start of a run and fed into the planner + lead. This pins the
     presence of the load + the two consumer sites — without these,
     patterns.json reverts to a write-only graveyard."""
-    from augmentum.bug_finder import orchestrator
     import inspect
+
+    from augmentum.bug_finder import orchestrator
     src = inspect.getsource(orchestrator)
     assert "load_workspace_patterns" in src
     assert "render_pattern_priors" in src
@@ -260,7 +261,8 @@ def test_planner_signature_accepts_workspace_priors_brief() -> None:
     """A future refactor that drops the parameter from ``_run_planner``
     would silently disable workspace-pattern compounding for the
     planner. Lock the signature."""
-    from augmentum.bug_finder import orchestrator
     import inspect
+
+    from augmentum.bug_finder import orchestrator
     sig = inspect.signature(orchestrator._run_planner)
     assert "workspace_priors_brief" in sig.parameters

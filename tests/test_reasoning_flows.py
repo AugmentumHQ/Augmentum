@@ -2,20 +2,21 @@
 
 from __future__ import annotations
 
-import json
-from unittest.mock import AsyncMock, MagicMock
-
 import pytest
 
-from augmentum.reasoning.models import FlowCreateRequest, FlowStep, FlowUpdateRequest, ReasoningFlow
-from augmentum.reasoning.models import VALID_ROLES
+from augmentum.reasoning.models import (
+    VALID_ROLES,
+    FlowCreateRequest,
+    FlowStep,
+    FlowUpdateRequest,
+    ReasoningFlow,
+)
 from augmentum.reasoning.templates import (
     BUILTIN_TEMPLATES,
     get_template,
     list_templates,
     research_flow,
 )
-
 
 # ---------------------------------------------------------------------------
 # Template tests
@@ -269,8 +270,9 @@ UID = "user_test"
 
 @pytest.fixture
 async def store():
-    import aiosqlite
     from pathlib import Path
+
+    import aiosqlite
 
     db = await aiosqlite.connect(":memory:")
     await db.execute("PRAGMA journal_mode=WAL")
@@ -541,9 +543,11 @@ class TestFlowStore:
 @pytest.fixture
 async def app_with_flows():
     """Create a minimal FastAPI app with flow store for route testing."""
-    import aiosqlite
     from pathlib import Path
+
+    import aiosqlite
     from fastapi import FastAPI
+
     from augmentum.proxy.reasoning_routes import router
     from augmentum.reasoning.store import FlowStore
 

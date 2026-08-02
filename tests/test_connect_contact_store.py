@@ -19,7 +19,6 @@ from augmentum.connect.contact_store import (
     update_presence,
 )
 
-
 CONNECT_MIGRATION = Path(
     "augmentum/state/migrations/219_connect_substrate.sql"
 ).read_text()

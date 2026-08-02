@@ -1,8 +1,8 @@
 """Tests for bundled avatar manifest and seeding."""
 from __future__ import annotations
 
-import pytest
 import aiosqlite
+import pytest
 
 from augmentum.avatar.bundled import BUNDLED_AVATARS, VALID_MANNERISM_KEYS, seed_bundled_avatars
 from augmentum.avatar.store import AvatarStore

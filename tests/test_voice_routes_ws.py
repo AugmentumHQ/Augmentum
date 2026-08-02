@@ -6,10 +6,9 @@ connection setup and basic protocol handling rather than full E2E.
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
-from fastapi.testclient import TestClient
 
 from augmentum.proxy.voice_routes import _VOICE_TOOLS, _resolve_voice_tools
 from augmentum.tools.base import Tool, ToolCategory, ToolResult

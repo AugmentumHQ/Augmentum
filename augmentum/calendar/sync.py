@@ -7,7 +7,7 @@ cache but not on server → delete. All-or-nothing per calendar.
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
 from augmentum.calendar.caldav_client import CalDAVClient
@@ -24,7 +24,7 @@ _SYNC_WINDOW_DAYS = 60
 
 
 async def sync_calendar_events(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
     user_id: str,
     service_id: str,
@@ -54,7 +54,7 @@ async def sync_calendar_events(
         )
         return 0
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     range_start = now - timedelta(days=1)   # include yesterday (overlap buffer)
     range_end = now + timedelta(days=_SYNC_WINDOW_DAYS)
 

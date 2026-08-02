@@ -16,6 +16,7 @@ Exported pipelines:
 from __future__ import annotations
 
 import re
+from datetime import UTC
 from urllib.parse import urlparse
 
 from augmentum.utils.logging import get_logger
@@ -1020,12 +1021,12 @@ def filter_for_docs(
         pub = r.get("publishedDate", "")
         if pub:
             try:
-                from datetime import datetime, timezone
+                from datetime import datetime
                 if "T" in pub or len(pub) == 10:
                     pub_date = datetime.fromisoformat(pub.replace("Z", "+00:00"))
                     if pub_date.tzinfo is None:
-                        pub_date = pub_date.replace(tzinfo=timezone.utc)
-                    age_days = (datetime.now(timezone.utc) - pub_date).days
+                        pub_date = pub_date.replace(tzinfo=UTC)
+                    age_days = (datetime.now(UTC) - pub_date).days
                     if age_days < 90:
                         score += 1.0
                     elif age_days > 1095:

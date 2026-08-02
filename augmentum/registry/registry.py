@@ -10,7 +10,8 @@ in the historical 4 declaration sites unchanged.
 
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from augmentum.registry.settings import Setting
 

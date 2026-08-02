@@ -19,12 +19,11 @@ classifier hard-case fallback) inherit the same semantics.
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
 from augmentum.config import Settings
-
 
 # ----------------------------------------------------------------------
 # Config-layer behaviour

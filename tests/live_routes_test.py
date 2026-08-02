@@ -273,7 +273,7 @@ async def test_browse(client: httpx.AsyncClient, verbose: bool):
         _cleanup.append(("delete", f"/api/browse/notes/{note_id}"))
         data = await _check(client, "get", f"/api/browse/notes/{note_id}", name="Get note", verbose=verbose)
         if data and data.get("title") != "Live Test Note":
-            _fail_msg("Note roundtrip", f"title mismatch")
+            _fail_msg("Note roundtrip", "title mismatch")
 
         await _check(client, "put", f"/api/browse/notes/{note_id}", json_body={
             "title": "Updated Note", "content": "Updated.", "tags": ["updated"],
@@ -428,9 +428,9 @@ async def test_voice(client: httpx.AsyncClient, verbose: bool):
             if r.status_code == 200 and len(r.content) > 100:
                 _ok(f"Kokoro blend: {blend}", f"{len(r.content)/1024:.0f}KB")
             else:
-                _fail_msg(f"Kokoro blend", f"{r.status_code}")
+                _fail_msg("Kokoro blend", f"{r.status_code}")
         except Exception as e:
-            _fail_msg(f"Kokoro blend", str(e)[:60])
+            _fail_msg("Kokoro blend", str(e)[:60])
 
 
 async def test_stt(client: httpx.AsyncClient, verbose: bool):
@@ -455,7 +455,7 @@ async def test_stt(client: httpx.AsyncClient, verbose: bool):
         elapsed = time.time() - start
         if r.status_code == 200:
             text = r.json().get("text", "")
-            _ok(f"Moonshine STT", f'"{text}" ({elapsed:.1f}s)')
+            _ok("Moonshine STT", f'"{text}" ({elapsed:.1f}s)')
             # Check accuracy
             expected_words = {"testing", "speech", "recognition"}
             actual_words = set(text.lower().split())
@@ -590,7 +590,7 @@ async def main():
     parser.add_argument("--section", "-s", choices=list(SECTIONS.keys()), help="Run only one section")
     args = parser.parse_args()
 
-    print(f"\n\033[1mAugmentum Live Integration Test\033[0m")
+    print("\n\033[1mAugmentum Live Integration Test\033[0m")
     print(f"Target: {args.url}")
 
     async with httpx.AsyncClient(base_url=args.url) as client:
@@ -622,7 +622,7 @@ async def main():
     if _fail:
         print(f"\033[91m  {_fail} FAILURE(S)\033[0m")
     else:
-        print(f"\033[92m  ALL PASSED\033[0m")
+        print("\033[92m  ALL PASSED\033[0m")
     print()
     sys.exit(1 if _fail else 0)
 

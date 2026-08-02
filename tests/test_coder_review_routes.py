@@ -33,7 +33,6 @@ from augmentum.coder.reviews import ReviewBundle, ReviewRegistry
 from augmentum.coder.turn_snapshot import DiffEntry
 from augmentum.proxy.coder_review_routes import router
 
-
 # ---------------------------------------------------------------------------
 # Fakes
 # ---------------------------------------------------------------------------

@@ -69,8 +69,8 @@ class LLMCapabilityExtractor:
     def __init__(
         self,
         *,
-        provider_registry: "ProviderRegistry | None" = None,
-        llama_manager: "LlamaServerManager | None" = None,
+        provider_registry: ProviderRegistry | None = None,
+        llama_manager: LlamaServerManager | None = None,
     ) -> None:
         self._registry = provider_registry
         self._llama_manager = llama_manager
@@ -318,7 +318,7 @@ class KnowledgeSearchExtractor:
     present). One capability per installed pack.
     """
 
-    def __init__(self, *, pack_manager: "PackManager | None" = None) -> None:
+    def __init__(self, *, pack_manager: PackManager | None = None) -> None:
         self._packs = pack_manager
 
     async def collect(self) -> list[CapabilityBase]:
@@ -372,7 +372,7 @@ class AudioCapabilityExtractor:
         explicit ``fabric:<node>::<voice>`` prefix.
     """
 
-    def __init__(self, *, db_conn: "aiosqlite.Connection | None" = None) -> None:
+    def __init__(self, *, db_conn: aiosqlite.Connection | None = None) -> None:
         self._db_conn = db_conn
 
     async def collect(self) -> list[CapabilityBase]:
@@ -435,6 +435,8 @@ class AudioCapabilityExtractor:
             try:
                 from augmentum.voice.pocket_tts import (
                     _DEFAULT_VOICE as _POCKET_DEFAULT_VOICE,
+                )
+                from augmentum.voice.pocket_tts import (
                     _DEFAULT_VOICE_NAMES as _POCKET_DEFAULT_VOICE_NAMES,
                 )
                 # Language from the user's setting — Pocket supports 6

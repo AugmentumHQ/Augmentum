@@ -25,9 +25,8 @@ import sys
 import tempfile
 import time
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 if sys.platform == "win32":
     import io
@@ -38,12 +37,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from augmentum.documents.chunker import chunk_text, chunk_with_parents, extract_text
 from augmentum.memory.embeddings import EmbeddingService
-from augmentum.models.base import (
-    InternalChatRequest,
-    InternalChatResponse,
-    Message,
-    Usage,
-)
 from augmentum.utils.logging import get_logger
 
 log = get_logger(__name__)
@@ -1012,7 +1005,7 @@ async def run_test(
                 try:
                     print(f"    [{qid}] searching...", end="", flush=True)
                     context = await harness.search_for_context(q["query"], doc_id, limit=3)
-                    print(f" asking LLM...", end="", flush=True)
+                    print(" asking LLM...", end="", flush=True)
 
                     if verbose:
                         print(f"    Context ({len(context)} chars): {context[:200]}...")
@@ -1048,7 +1041,7 @@ async def run_test(
                         passed=passed, detail=", ".join(missing) if missing else "",
                     ))
 
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     print(f"    \u2717 {qid}: TIMEOUT")
                     all_results.append(QuestionResult(
                         question_id=qid, config_name=cfg_name, doc_name=doc_name,
@@ -1119,7 +1112,7 @@ def print_summary(results: list[QuestionResult], model: str) -> None:
     print(f"\n  Best config: {best_config} ({best_score:.0f}%)")
 
     # Per-document size class analysis
-    print(f"\n  --- By Document Size ---")
+    print("\n  --- By Document Size ---")
     for size in ["short", "medium", "long"]:
         size_docs = [d for d, dd in NARRATIVE_DOCUMENTS.items() if dd["size_class"] == size]
         for cfg in configs:
@@ -1132,7 +1125,7 @@ def print_summary(results: list[QuestionResult], model: str) -> None:
                 print(f"    {size:>6s} | {label:<25s} | {passed}/{total} | {chunks} chunks")
 
     # Chunk count comparison
-    print(f"\n  --- Chunk Counts ---")
+    print("\n  --- Chunk Counts ---")
     print(f"  {'Config':<25s}", end="")
     for doc in docs:
         short = doc.split(".")[0][:12]

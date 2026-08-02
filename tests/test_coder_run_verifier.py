@@ -322,8 +322,13 @@ async def test_contract_unmet_with_ok_false_is_failed():
 @pytest.mark.asyncio
 async def test_persist_roundtrip_and_user_scope():
     import aiosqlite
+
     from augmentum.coder.run_verifier import (
-        ORACLE_MECHANICAL, TIER_VERIFIED, RunVerdict, load_verdict, save_verdict,
+        ORACLE_MECHANICAL,
+        TIER_VERIFIED,
+        RunVerdict,
+        load_verdict,
+        save_verdict,
     )
     conn = await aiosqlite.connect(":memory:")
     try:

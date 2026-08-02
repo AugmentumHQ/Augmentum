@@ -18,7 +18,6 @@ Covers:
 
 from __future__ import annotations
 
-import json
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -129,8 +128,9 @@ def test_is_muted_no_overlap():
 
 @pytest.mark.asyncio
 async def test_generate_and_read_today(monkeypatch):
+    from augmentum.companion_runtime import tiers
+    from augmentum.companion_runtime import today as _today
     from augmentum.config import settings
-    from augmentum.companion_runtime import today as _today, tiers
     monkeypatch.setattr(settings, "companion_today_enabled", True)
     monkeypatch.setattr(settings, "companion_presence_mode", "gentle")
     monkeypatch.setattr(settings, "companion_today_max_chars", 360)
@@ -171,8 +171,9 @@ async def test_generate_and_read_today(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_empty_output_quarantines(monkeypatch):
+    from augmentum.companion_runtime import tiers
+    from augmentum.companion_runtime import today as _today
     from augmentum.config import settings
-    from augmentum.companion_runtime import today as _today, tiers
     monkeypatch.setattr(settings, "companion_today_enabled", True)
     monkeypatch.setattr(settings, "companion_presence_mode", "gentle")
 
@@ -194,8 +195,9 @@ async def test_quarantined_does_not_overwrite_prior_good_row(monkeypatch):
     """If a good reflection exists for the day and regen produces junk,
     the prior good row is preserved (we'd rather show stale-but-good
     than swap in quarantine garbage)."""
+    from augmentum.companion_runtime import tiers
+    from augmentum.companion_runtime import today as _today
     from augmentum.config import settings
-    from augmentum.companion_runtime import today as _today, tiers
     monkeypatch.setattr(settings, "companion_today_enabled", True)
     monkeypatch.setattr(settings, "companion_presence_mode", "gentle")
 
@@ -244,8 +246,9 @@ async def test_quarantined_does_not_overwrite_prior_good_row(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_debounce_prevents_back_to_back_regen(monkeypatch):
+    from augmentum.companion_runtime import tiers
+    from augmentum.companion_runtime import today as _today
     from augmentum.config import settings
-    from augmentum.companion_runtime import today as _today, tiers
     monkeypatch.setattr(settings, "companion_today_enabled", True)
     monkeypatch.setattr(settings, "companion_presence_mode", "gentle")
 
@@ -278,8 +281,9 @@ async def test_debounce_prevents_back_to_back_regen(monkeypatch):
 @pytest.mark.asyncio
 async def test_force_regen_uses_shorter_window(monkeypatch):
     """force=True honors the 10min floor rather than 1hr."""
+    from augmentum.companion_runtime import tiers
+    from augmentum.companion_runtime import today as _today
     from augmentum.config import settings
-    from augmentum.companion_runtime import today as _today, tiers
     monkeypatch.setattr(settings, "companion_today_enabled", True)
     monkeypatch.setattr(settings, "companion_presence_mode", "gentle")
 
@@ -317,8 +321,9 @@ async def test_force_regen_uses_shorter_window(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_settle_marks_row(monkeypatch):
+    from augmentum.companion_runtime import tiers
+    from augmentum.companion_runtime import today as _today
     from augmentum.config import settings
-    from augmentum.companion_runtime import today as _today, tiers
     monkeypatch.setattr(settings, "companion_today_enabled", True)
     monkeypatch.setattr(settings, "companion_presence_mode", "gentle")
 
@@ -343,8 +348,9 @@ async def test_settle_marks_row(monkeypatch):
 @pytest.mark.asyncio
 async def test_settled_row_not_overwritten(monkeypatch):
     """Once settled, opportunistic regen should not modify content."""
+    from augmentum.companion_runtime import tiers
+    from augmentum.companion_runtime import today as _today
     from augmentum.config import settings
-    from augmentum.companion_runtime import today as _today, tiers
     monkeypatch.setattr(settings, "companion_today_enabled", True)
     monkeypatch.setattr(settings, "companion_presence_mode", "gentle")
 
@@ -379,8 +385,9 @@ async def test_settled_row_not_overwritten(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_forget_quarantines_source_and_invalidates_today(monkeypatch):
+    from augmentum.companion_runtime import tiers
+    from augmentum.companion_runtime import today as _today
     from augmentum.config import settings
-    from augmentum.companion_runtime import today as _today, tiers
     monkeypatch.setattr(settings, "companion_today_enabled", True)
     monkeypatch.setattr(settings, "companion_presence_mode", "gentle")
 
@@ -438,14 +445,15 @@ async def test_forget_quarantines_source_and_invalidates_today(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_users_do_not_see_each_others_reflections(monkeypatch):
+    from augmentum.companion_runtime import tiers
+    from augmentum.companion_runtime import today as _today
     from augmentum.config import settings
-    from augmentum.companion_runtime import today as _today, tiers
     monkeypatch.setattr(settings, "companion_today_enabled", True)
     monkeypatch.setattr(settings, "companion_presence_mode", "gentle")
 
     # Single backend, two users.
-    from augmentum.state.backends.sqlite import SQLiteBackend
     from augmentum.companion_runtime.runtime import CompanionRuntime
+    from augmentum.state.backends.sqlite import SQLiteBackend
     backend = SQLiteBackend(":memory:")
     await backend.connect()
     for uid in ("usr_alice", "usr_bob"):
@@ -486,8 +494,9 @@ async def test_users_do_not_see_each_others_reflections(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_silent_presence_suppresses_generation(monkeypatch):
+    from augmentum.companion_runtime import tiers
+    from augmentum.companion_runtime import today as _today
     from augmentum.config import settings
-    from augmentum.companion_runtime import today as _today, tiers
     monkeypatch.setattr(settings, "companion_today_enabled", True)
     monkeypatch.setattr(settings, "companion_presence_mode", "silent")
 
@@ -513,8 +522,9 @@ async def test_silent_presence_suppresses_generation(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_today_disabled_suppresses_generation(monkeypatch):
+    from augmentum.companion_runtime import tiers
+    from augmentum.companion_runtime import today as _today
     from augmentum.config import settings
-    from augmentum.companion_runtime import today as _today, tiers
     monkeypatch.setattr(settings, "companion_today_enabled", False)
     monkeypatch.setattr(settings, "companion_presence_mode", "gentle")
 

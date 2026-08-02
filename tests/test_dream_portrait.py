@@ -2,10 +2,12 @@
 from __future__ import annotations
 
 import json
+from datetime import UTC, datetime, timedelta
+
 import pytest
-from datetime import datetime, timedelta, timezone
+
+from augmentum.dream.models import DreamEntry, DreamEntryType, DreamPortrait
 from augmentum.dream.portrait import PortraitManager
-from augmentum.dream.models import DreamPortrait, DreamEntry, DreamEntryType
 
 
 def test_parse_portrait_response_valid():
@@ -38,7 +40,7 @@ def test_parse_portrait_response_empty():
 
 def test_weight_entries():
     manager = PortraitManager.__new__(PortraitManager)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     entries = [
         DreamEntry(
             id="e1", persona_id="default", content="Recent pinned",
@@ -63,7 +65,7 @@ def test_weight_entries():
 def test_weight_entries_decay_tiers():
     """Test the three decay tiers: <7 days (1.0), 7-30 days (0.7), >30 days (0.4)."""
     manager = PortraitManager.__new__(PortraitManager)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     entries = [
         DreamEntry(id="recent", persona_id="default", content="R",
                    entry_type=DreamEntryType.REFLECTION, source_memories=[],

@@ -17,7 +17,6 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import os
-import re
 import tempfile
 import time
 
@@ -279,8 +278,8 @@ which is {"within" if i % 3 != 0 else "above"} the acceptable threshold of 0.50%
     @pytest.mark.asyncio
     async def test_dedup_effectiveness_large_doc(self, large_store):
         """Verify dedup removes overlapping chunks in large documents."""
-        from augmentum.documents.scoring import score_gate, cliff_detect
         from augmentum.documents.dedup import deduplicate
+        from augmentum.documents.scoring import cliff_detect, score_gate
 
         store, conn = large_store
         doc = self._generate_large_doc(50)
@@ -479,7 +478,7 @@ class TestConcurrentOps:
             r2 = [r["chunk_id"] for r in results[i + 5]]
             assert r1 == r2, f"Inconsistent results for query '{queries[i]}'"
 
-        print(f"\nConcurrent searches (10 parallel): PASS — all consistent")
+        print("\nConcurrent searches (10 parallel): PASS — all consistent")
 
     @pytest.mark.asyncio
     async def test_no_deadlock_under_load(self, conc_store):
@@ -641,8 +640,8 @@ class TestTokenBudget:
     @pytest.mark.asyncio
     async def test_budget_caps_output(self, budget_store):
         """Budget should cap total injected content."""
-        from augmentum.documents.scoring import score_gate, cliff_detect, apply_budget
         from augmentum.documents.dedup import deduplicate
+        from augmentum.documents.scoring import apply_budget, cliff_detect, score_gate
 
         store, conn, doc_id = budget_store
         _q = "project budget deliverables"
@@ -683,8 +682,8 @@ class TestTokenBudget:
     @pytest.mark.asyncio
     async def test_lower_budget_fewer_chunks(self, budget_store):
         """Lower budget should produce fewer chunks, not same chunks truncated."""
-        from augmentum.documents.scoring import score_gate, cliff_detect, apply_budget
         from augmentum.documents.dedup import deduplicate
+        from augmentum.documents.scoring import apply_budget, cliff_detect, score_gate
 
         store, conn, doc_id = budget_store
         _q = "project budget"
@@ -823,7 +822,7 @@ class TestDocumentUpdates:
         assert fts_count == chunk_count, (
             f"FTS index out of sync: {fts_count} FTS rows vs {chunk_count} chunk rows"
         )
-        print(f"\nNo orphaned chunks: PASS (0 chunks, FTS in sync)")
+        print("\nNo orphaned chunks: PASS (0 chunks, FTS in sync)")
 
 
 # ===================================================================

@@ -14,14 +14,12 @@ This file runs offline with mocked httpx and exercises:
 
 from __future__ import annotations
 
-import json
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
 from augmentum.media.providers.base import (
     BrowseResult,
-    CatalogItem,
     MediaProvider,
     provider_supports_browse,
 )
@@ -32,7 +30,6 @@ from augmentum.media.providers.librivox import (
     ARCHIVE_SEARCH,
     LibrivoxProvider,
     _archive_identifier,
-    _browse_result_from_archive_doc,
     _browse_result_from_feed,
     _clean_html_text,
     _filename_from_listen_url,

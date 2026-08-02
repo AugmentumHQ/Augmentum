@@ -24,12 +24,11 @@ from __future__ import annotations
 import pytest
 
 from augmentum.coder.scratch import (
+    _SCRATCH_THRESHOLD,
     ScratchRef,
     ScratchStore,
-    _SCRATCH_THRESHOLD,
     render_scratch_message,
 )
-
 
 # ---------------------------------------------------------------------------
 # Stub container — records file_write calls and shell mkdir commands
@@ -323,8 +322,6 @@ async def test_handler_externalises_large_tool_output(monkeypatch):
     message got replaced by the scratch summary and the full content
     reached the container file_write path."""
     from augmentum.modes.coder.handler import CoderHandler
-    from augmentum.models.base import Message
-
     from tests.test_coder_handler import (
         _FakeChunk,
         _FakeTool,
@@ -393,7 +390,6 @@ async def test_handler_keeps_small_output_inline(monkeypatch):
     """Small outputs should NOT hit the scratch path — no reason to
     pay the file_read round-trip cost."""
     from augmentum.modes.coder.handler import CoderHandler
-
     from tests.test_coder_handler import (
         _FakeChunk,
         _FakeTool,

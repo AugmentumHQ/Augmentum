@@ -30,9 +30,9 @@ import contextlib
 import io
 import os
 import re
-import sys
 import threading
-from typing import Any, AsyncGenerator
+from collections.abc import AsyncGenerator
+from typing import Any
 
 import numpy as np
 
@@ -429,6 +429,7 @@ class PocketTTS:
                 or name.endswith((".wav", ".mp3", ".flac", ".ogg", ".opus", ".m4a"))):
             return ""
         import os
+
         from augmentum.config import settings as _cfg
         voice_dir = os.path.join(_cfg.data_dir or "/data", "voices")
         for ext in (".wav", ".mp3", ".flac", ".ogg", ".opus", ".m4a"):

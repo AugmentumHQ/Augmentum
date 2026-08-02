@@ -24,7 +24,6 @@ import pytest
 
 from augmentum.coder.reviews import ReviewRegistry
 from augmentum.coder.snapshot import WorkspaceSnapshot
-
 from tests.test_coder_handler import (
     _ExtendedContainerManager,
     _FakeBackend,
@@ -34,7 +33,6 @@ from tests.test_coder_handler import (
     _make_request,
     _tc_delta,
 )
-
 
 # ---------------------------------------------------------------------------
 # Scriptable container — per-test control over what ``find | wc -l`` returns

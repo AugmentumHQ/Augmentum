@@ -255,7 +255,7 @@ async def test_bus_emits_on_capture():
         for _ in range(4):
             try:
                 ev = await asyncio.wait_for(sub.queue.get(), timeout=0.5)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 break
             if ev is None:
                 break
@@ -385,7 +385,8 @@ def test_parse_lessons_strips_code_fence_and_wrapper():
 
 def test_parse_lessons_drops_incomplete_and_caps():
     from augmentum.companion_runtime.lessons_capture import (
-        MAX_LESSONS_PER_PASS, _parse_lessons,
+        MAX_LESSONS_PER_PASS,
+        _parse_lessons,
     )
 
     # One valid, one missing 'better' (dropped), plus many valid to test cap.

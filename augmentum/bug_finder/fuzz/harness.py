@@ -28,7 +28,6 @@ from pathlib import Path
 
 from augmentum.bug_finder.fuzz.classifier import FuzzVerdict
 
-
 # Exception classes a typical parser/decoder raises when it rejects
 # malformed input. The harness wraps the target call in
 # ``try/except (these...)`` so the fuzzer only flags *unhandled*

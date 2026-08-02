@@ -26,7 +26,6 @@ from augmentum.intent.action import (
 )
 from augmentum.intent.registry import register_action
 
-
 # Fast-path actions opt out of LLM tool exposure — there's no scenario
 # where the model should "call" a stop action. They're pure surface
 # controls keyed off recognized phrasings.

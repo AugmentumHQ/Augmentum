@@ -14,11 +14,8 @@ fast and the regression will show up in profiling.
 from __future__ import annotations
 
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
-
-import pytest
-
 
 # ── is_primary_busy ──────────────────────────────────────────────────
 
@@ -145,7 +142,7 @@ def test_is_hushed_now_future_iso():
     from augmentum.companion_runtime.gates import is_hushed_now
     from augmentum.config import settings
     orig = getattr(settings, "companion_journal_hushed_until", "")
-    future = (datetime.now(timezone.utc) + timedelta(hours=1)).strftime(
+    future = (datetime.now(UTC) + timedelta(hours=1)).strftime(
         "%Y-%m-%d %H:%M:%S",
     )
     try:
@@ -160,7 +157,7 @@ def test_is_hushed_now_past_iso():
     from augmentum.companion_runtime.gates import is_hushed_now
     from augmentum.config import settings
     orig = getattr(settings, "companion_journal_hushed_until", "")
-    past = (datetime.now(timezone.utc) - timedelta(hours=1)).strftime(
+    past = (datetime.now(UTC) - timedelta(hours=1)).strftime(
         "%Y-%m-%d %H:%M:%S",
     )
     try:
@@ -188,7 +185,7 @@ def test_is_hushed_now_iso_t_z_format():
     from augmentum.companion_runtime.gates import is_hushed_now
     from augmentum.config import settings
     orig = getattr(settings, "companion_journal_hushed_until", "")
-    future = (datetime.now(timezone.utc) + timedelta(hours=1)).strftime(
+    future = (datetime.now(UTC) + timedelta(hours=1)).strftime(
         "%Y-%m-%dT%H:%M:%SZ",
     )
     try:

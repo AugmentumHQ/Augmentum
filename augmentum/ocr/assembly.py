@@ -152,7 +152,7 @@ async def assemble_script(
     )
     try:
         resp = await asyncio.wait_for(backend.chat(req), timeout=timeout_s)
-    except (asyncio.TimeoutError, Exception) as exc:  # noqa: BLE001
+    except (TimeoutError, Exception) as exc:  # noqa: BLE001
         log.warning("ocr_assembly_failed", model=resolved, error=str(exc)[:200])
         return None
 

@@ -55,7 +55,7 @@ KIND: str = "mcp_client_config"
 # ── URL resolution ───────────────────────────────────────────────
 
 
-def _augmentum_mcp_url(request: "Request") -> str:
+def _augmentum_mcp_url(request: Request) -> str:
     """Derive the user-facing Augmentum /mcp URL from the request.
 
     We can't hardcode this — Augmentum runs behind reverse proxies,
@@ -276,7 +276,7 @@ def _make_entry(record: dict[str, Any]) -> CatalogEntry:
             },
         )
 
-    async def _accept(payload: dict[str, Any], request: "Request") -> dict[str, Any]:
+    async def _accept(payload: dict[str, Any], request: Request) -> dict[str, Any]:
         # Allow the user/model to override the URL via extra (e.g.
         # a Tailscale hostname instead of the local origin) — but
         # default to whatever the request resolves to.

@@ -85,7 +85,7 @@ def _compose_embedding_text(
 
 
 async def _set_embedding_status(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
     archive_id: str,
     status: str,
@@ -105,7 +105,7 @@ async def _set_embedding_status(
 
 
 async def embed_one(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
     archive_id: str,
 ) -> bool:
@@ -145,6 +145,7 @@ async def embed_one(
 
     try:
         import asyncio
+
         from augmentum.memory.embeddings import (
             EmbeddingService,
             EmbeddingUnavailable,
@@ -197,7 +198,7 @@ async def embed_one(
 
 
 async def embed_pending(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
     user_id: str = "",
     workspace_id: str = "",
@@ -247,7 +248,7 @@ async def embed_pending(
 
 
 async def search_similar(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
     user_id: str,
     workspace_id: str,
@@ -273,6 +274,7 @@ async def search_similar(
 
     try:
         import asyncio
+
         from augmentum.memory.embeddings import (
             EmbeddingService,
             EmbeddingUnavailable,

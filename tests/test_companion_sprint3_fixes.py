@@ -13,10 +13,9 @@ from __future__ import annotations
 
 import asyncio
 import threading
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
-
 
 # ── bg_tasks.track: GC-safe + reaps ───────────────────────────────────
 
@@ -75,7 +74,7 @@ async def test_aembed_one_runs_on_worker_thread(monkeypatch):
 def test_age_seconds_parses_past_timestamp():
     from augmentum.companion_runtime.state import _age_seconds
 
-    past = (datetime.now(timezone.utc) - timedelta(hours=1)).strftime(
+    past = (datetime.now(UTC) - timedelta(hours=1)).strftime(
         "%Y-%m-%d %H:%M:%S",
     )
     age = _age_seconds(past)
@@ -89,7 +88,7 @@ def test_age_seconds_safe_defaults():
     assert _age_seconds(None) == 0.0
     assert _age_seconds("not-a-timestamp") == 0.0
     # Future timestamp (clock skew) clamps to 0, never negative.
-    future = (datetime.now(timezone.utc) + timedelta(hours=1)).strftime(
+    future = (datetime.now(UTC) + timedelta(hours=1)).strftime(
         "%Y-%m-%d %H:%M:%S",
     )
     assert _age_seconds(future) == 0.0

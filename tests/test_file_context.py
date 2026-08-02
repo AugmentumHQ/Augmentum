@@ -53,7 +53,7 @@ class TestBuildContext:
         assert "report.pdf" in result
 
     def test_max_cards_limit(self):
-        from augmentum.vfs.context import build_file_context, MAX_FILE_CARDS
+        from augmentum.vfs.context import MAX_FILE_CARDS, build_file_context
         from augmentum.vfs.models import FileEntry
         entries = [
             FileEntry(id=f"fi_{i}", user_id="usr_1", source="images",

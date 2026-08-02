@@ -7,10 +7,7 @@ Test strategy:
 """
 from __future__ import annotations
 
-import pytest
-
 from augmentum.coder.editing import apply_edit, parse_search_replace_blocks
-
 
 # ---------------------------------------------------------------------------
 # Helpers

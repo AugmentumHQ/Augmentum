@@ -27,7 +27,8 @@ from __future__ import annotations
 import asyncio
 import ipaddress
 import time
-from typing import TYPE_CHECKING, Iterable
+from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 from augmentum.devices.device import DiscoveredDevice
 from augmentum.utils.logging import get_logger
@@ -75,7 +76,7 @@ def _enumerate_hosts(subnet: str) -> list[str]:
 
 async def sweep_subnet(
     *,
-    drivers: list["DeviceDriver"],
+    drivers: list[DeviceDriver],
     subnet: str,
     timeout_s: float = 15.0,
     concurrency: int = 60,
@@ -103,7 +104,7 @@ async def sweep_subnet(
     start = time.monotonic()
     deadline = start + max(2.0, float(timeout_s))
 
-    async def _probe_one(driver: "DeviceDriver", host: str) -> None:
+    async def _probe_one(driver: DeviceDriver, host: str) -> None:
         if time.monotonic() >= deadline:
             return
         async with sem:
@@ -140,7 +141,7 @@ async def sweep_subnet(
             asyncio.gather(*tasks, return_exceptions=True),
             timeout=max(2.0, float(timeout_s)),
         )
-    except asyncio.TimeoutError:
+    except TimeoutError:
         # Some probes may still be in flight — cancel them.
         for t in tasks:
             if not t.done():
@@ -163,7 +164,7 @@ async def sweep_subnet(
 
 async def sweep_multiple_subnets(
     *,
-    drivers: list["DeviceDriver"],
+    drivers: list[DeviceDriver],
     subnets: Iterable[str],
     timeout_s_per_subnet: float = 6.0,
 ) -> tuple[list[DiscoveredDevice], dict[str, str], float]:

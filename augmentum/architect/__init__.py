@@ -39,6 +39,20 @@ from augmentum.architect.dispatch import (
     dispatch_architect_command,
 )
 from augmentum.architect.inference import infer_args
+from augmentum.architect.primitives import browse_find as _browse_find  # noqa: F401
+from augmentum.architect.primitives import companion_today as _companion_today  # noqa: F401
+from augmentum.architect.primitives import discovery_show as _discovery_show  # noqa: F401
+from augmentum.architect.primitives import files_find as _files_find  # noqa: F401
+from augmentum.architect.primitives import grove_match as _grove_match  # noqa: F401
+from augmentum.architect.primitives import image_defaults as _image_defaults  # noqa: F401
+
+# Second-wave primitives (media transport control, local file lookup,
+# Today reflection). Registered AFTER the original seven so registration
+# order keeps the specificity-high-to-low policy intact — these are all
+# narrower than grove.play_matching's permissive {query} slot, but they
+# don't overlap with each other.
+from augmentum.architect.primitives import media_control as _media_control  # noqa: F401
+from augmentum.architect.primitives import media_resume as _media_resume  # noqa: F401
 
 # Import builtin architect primitives so @register_action runs at
 # process startup. Order matters: the matcher returns the FIRST hit
@@ -65,20 +79,7 @@ from augmentum.architect.inference import infer_args
 #                        LAST so other primitives have first claim
 #                        on overlapping utterances.
 from augmentum.architect.primitives import time_timer as _time_timer  # noqa: F401
-from augmentum.architect.primitives import media_resume as _media_resume  # noqa: F401
-from augmentum.architect.primitives import browse_find as _browse_find  # noqa: F401
-from augmentum.architect.primitives import discovery_show as _discovery_show  # noqa: F401
 from augmentum.architect.primitives import web_search as _web_search  # noqa: F401
-from augmentum.architect.primitives import image_defaults as _image_defaults  # noqa: F401
-from augmentum.architect.primitives import grove_match as _grove_match  # noqa: F401
-# Second-wave primitives (media transport control, local file lookup,
-# Today reflection). Registered AFTER the original seven so registration
-# order keeps the specificity-high-to-low policy intact — these are all
-# narrower than grove.play_matching's permissive {query} slot, but they
-# don't overlap with each other.
-from augmentum.architect.primitives import media_control as _media_control  # noqa: F401
-from augmentum.architect.primitives import files_find as _files_find  # noqa: F401
-from augmentum.architect.primitives import companion_today as _companion_today  # noqa: F401
 
 __all__ = [
     "ArchitectResult",

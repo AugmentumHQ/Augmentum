@@ -14,11 +14,8 @@ Coverage:
 
 from __future__ import annotations
 
-import pytest
-
 from augmentum.titles import bios_catalog
 from augmentum.titles.file_classifier import classify
-
 
 # ── Catalog ──────────────────────────────────────────────────────────
 

@@ -196,6 +196,7 @@ async def _apply_migration(conn, version: int) -> None:
 
 async def _create_store():
     import aiosqlite
+
     from augmentum.memory.store import MemoryStore
 
     conn = await aiosqlite.connect(":memory:")

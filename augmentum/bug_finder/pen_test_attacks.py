@@ -30,12 +30,11 @@ from __future__ import annotations
 
 import asyncio
 from collections import Counter
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 from augmentum.bug_finder.pen_test import (
     ProbeRequest,
-    ProbeResponse,
     execute_probe,
 )
 from augmentum.utils.logging import get_logger

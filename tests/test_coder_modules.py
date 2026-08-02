@@ -2,22 +2,19 @@
 
 from __future__ import annotations
 
-import json
-import time
-from unittest.mock import AsyncMock, MagicMock
-from unittest.mock import patch
-
-import pytest
-
-from augmentum.coder.models import ContainerInfo, FileEntry, WorkspaceConfig
-from augmentum.coder.state import CoderPhase, CoderState
-from augmentum.coder.harness import select_harness
-from augmentum.coder.repomap import _format_definitions, _DEF_PATTERNS
-from augmentum.coder.indexer import CodeChunk, SearchResult, _INDEXABLE_EXTS, _SKIP_DIRS
-
 # web_tools has a circular import with tools.py at module level.
 # Import individual symbols lazily to avoid collection-time ImportError.
 import importlib as _il
+import json
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
+
+from augmentum.coder.harness import select_harness
+from augmentum.coder.indexer import _INDEXABLE_EXTS, _SKIP_DIRS, CodeChunk, SearchResult
+from augmentum.coder.models import ContainerInfo, FileEntry, WorkspaceConfig
+from augmentum.coder.repomap import _DEF_PATTERNS, _format_definitions
+from augmentum.coder.state import CoderPhase, CoderState
 
 
 def _get_web_tools():

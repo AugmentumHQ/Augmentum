@@ -46,11 +46,7 @@ DEFAULT_KEEP_TURNS = 3
 # Words that carry no referential signal — overlap on these must not
 # refresh (or re-inflate) an entry. Mirrors the roster scorer's spirit.
 _STOPWORDS = frozenset(
-    "the a an and or but of to in on at for with about from is are was "
-    "were be been it its this that these those i you she he we they me "
-    "my your her his our their what which who when how do does did can "
-    "could would should will just so not no yes okay please tell show "
-    "open get make let".split()
+    ["the", "a", "an", "and", "or", "but", "of", "to", "in", "on", "at", "for", "with", "about", "from", "is", "are", "was", "were", "be", "been", "it", "its", "this", "that", "these", "those", "i", "you", "she", "he", "we", "they", "me", "my", "your", "her", "his", "our", "their", "what", "which", "who", "when", "how", "do", "does", "did", "can", "could", "would", "should", "will", "just", "so", "not", "no", "yes", "okay", "please", "tell", "show", "open", "get", "make", "let"]
 )
 
 _TOKEN_RE = re.compile(r"[a-z0-9][a-z0-9'-]+")

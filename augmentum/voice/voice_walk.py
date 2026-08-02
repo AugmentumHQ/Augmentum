@@ -26,8 +26,8 @@ from __future__ import annotations
 import asyncio
 import re
 import time
-from dataclasses import dataclass, field
-from typing import AsyncGenerator, Callable
+from collections.abc import AsyncGenerator, Callable
+from dataclasses import dataclass
 
 import numpy as np
 
@@ -280,7 +280,7 @@ async def clone_voice_walk_stream(
                     "mutation_scale": round(p.mutation_scale, 6),
                     "elapsed_s": round(p.elapsed_s, 1),
                 }
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 continue
 
         # Drain remaining progress.
@@ -378,7 +378,7 @@ async def _find_best_seed(
         return "af_heart"
 
     # Only check high-quality voices to avoid wasting time on D-grade seeds
-    from augmentum.voice.kokoro_tts import VOICE_META, _RECOMMENDED_GRADES
+    from augmentum.voice.kokoro_tts import _RECOMMENDED_GRADES, VOICE_META
     priority_voices = [v for v in voices if VOICE_META.get(v, {}).get("grade", "") in _RECOMMENDED_GRADES]
     if not priority_voices:
         priority_voices = voices[:10]

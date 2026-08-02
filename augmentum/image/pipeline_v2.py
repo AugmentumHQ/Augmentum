@@ -22,7 +22,6 @@ from augmentum.image.pipeline import (
     ImagePipeline,
     _apply_pipeline_optimizations,
     _cuda_oom_cleanup,
-    _detect_local_variant,
     _ensure_output_dir,
     _get_cpu_offload_setting,
     _get_torch_dtype,
@@ -488,8 +487,6 @@ def _load_gguf_pipeline(model_path: str, torch_dtype, device: str):
     - Parallel transformer + text encoder quantization config preparation
     - Group offloading for tight VRAM (block-level CPU/GPU swap)
     """
-    import json
-    import os
 
     import torch
 
@@ -966,6 +963,7 @@ class UnifiedPipeline(ImagePipeline):
 
         try:
             import inspect
+
             import torch
 
             # Introspect encode_prompt return names from its signature
@@ -1420,7 +1418,7 @@ class UnifiedPipeline(ImagePipeline):
 
         def _run():
             import torch
-            from PIL import Image, ImageFilter
+            from PIL import Image
 
             generator = torch.Generator(device=self._device).manual_seed(actual_seed)
 

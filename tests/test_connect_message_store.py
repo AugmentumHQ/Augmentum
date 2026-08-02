@@ -29,7 +29,6 @@ from augmentum.connect.message_store import (
     stamp_delivered,
 )
 
-
 CONNECT_MIGRATION = Path(
     "augmentum/state/migrations/219_connect_substrate.sql"
 ).read_text()

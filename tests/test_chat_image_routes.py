@@ -4,9 +4,6 @@ from __future__ import annotations
 
 import asyncio
 import base64
-from unittest.mock import AsyncMock, MagicMock
-
-from fastapi.testclient import TestClient
 
 
 def _setup_chat_images_db(app):

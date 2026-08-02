@@ -7,13 +7,10 @@ from unittest.mock import AsyncMock
 import pytest
 
 from augmentum.models.base import (
-    InternalChatRequest,
     InternalChatResponse,
     InternalStreamChunk,
     Message,
 )
-from augmentum.reasoning.models import FlowStep, ReasoningFlow
-
 
 # ---------------------------------------------------------------------------
 # Template structure tests

@@ -76,7 +76,7 @@ class FabricIdentity:
     public_key: Ed25519PublicKey
 
     @classmethod
-    async def from_settings_store(cls, store: "SettingsStore") -> "FabricIdentity":
+    async def from_settings_store(cls, store: SettingsStore) -> FabricIdentity:
         """Load or generate the fabric identity from the settings store.
 
         On first call, generates a new node_id + ed25519 keypair,

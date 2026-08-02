@@ -340,7 +340,7 @@ async def _install_knowledge_pack(
     jobs: dict = getattr(request.app.state, "install_jobs", None)
     if jobs is None:
         jobs = {}
-        setattr(request.app.state, "install_jobs", jobs)
+        request.app.state.install_jobs = jobs
 
     from augmentum.proxy.knowledge_routes import InstallJob
     job = InstallJob(
@@ -566,7 +566,7 @@ async def _install_media_server(
     # sanity-check the shape here, not its existence.
     media_mount = str(artifact.get("media_mount") or "").strip()
     options = artifact.get("_install_options") or {}
-    host_path = str((options.get("media_host_path") or "")).strip()
+    host_path = str(options.get("media_host_path") or "").strip()
     volume_overrides: dict[str, str] = {}
     if media_mount and host_path:
         if not _looks_like_host_path(host_path):

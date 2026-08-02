@@ -1072,10 +1072,10 @@ class ContainerManager:
         )
 
         # Write workspace guide for the agent
-        from augmentum.coder.prompts import workspace_guide
-
         # Encode file contents as base64 to avoid heredoc/quoting issues in &&-chained commands
         import base64
+
+        from augmentum.coder.prompts import workspace_guide
         guide_b64 = base64.b64encode(
             workspace_guide(tooling_profile).encode()
         ).decode()
@@ -1758,7 +1758,7 @@ class ContainerManager:
             ws_id = labels.get(_LABEL_ID) or ""
             if workspace_id and ws_id != workspace_id:
                 continue
-            pid_limit = int(((details.get("HostConfig") or {}).get("PidsLimit") or 0))
+            pid_limit = int((details.get("HostConfig") or {}).get("PidsLimit") or 0)
             if pid_limit <= 0:
                 continue  # unlimited / unknown — can't compute ratio
 
@@ -1825,7 +1825,7 @@ class ContainerManager:
         # recreate paths auto-apply any operator-bumped setting. A
         # workspace stuck at the old 256 default gets the new limit
         # without forcing the user to migrate manually.
-        existing_pids = int(((details.get("HostConfig") or {}).get("PidsLimit") or 0))
+        existing_pids = int((details.get("HostConfig") or {}).get("PidsLimit") or 0)
         pids = max(existing_pids, _resolve_workspace_pids_limit())
 
         try:
@@ -1903,7 +1903,7 @@ class ContainerManager:
             (details.get("Config") or {}).get("Image") or "augmentum-workspace"
         )
         existing_pids = int(
-            ((details.get("HostConfig") or {}).get("PidsLimit") or 0)
+            (details.get("HostConfig") or {}).get("PidsLimit") or 0
         )
         pids = max(existing_pids, _resolve_workspace_pids_limit())
         has_ports = self._container_has_published_ports(details)
@@ -3493,7 +3493,6 @@ class ContainerManager:
         file) rather than ``cat``-through-exec, so binary files aren't
         corrupted by stream decoding.
         """
-        import io
         import tarfile
 
         info = await self._get_workspace(workspace_id)
@@ -4211,7 +4210,7 @@ class ContainerManager:
                         msg = await asyncio.wait_for(
                             stream.read_out(), timeout=effective_tick,
                         )
-                    except asyncio.TimeoutError:
+                    except TimeoutError:
                         # Stdout went quiet. If we're watching a
                         # download target, check whether bytes are
                         # still landing before calling it hung.
@@ -4227,7 +4226,7 @@ class ContainerManager:
                                     f"(+{_fmt_bytes(delta)} in "
                                     f"{int(effective_tick)}s) — "
                                     f"{progress_path}]\n"
-                                ).encode("utf-8")
+                                ).encode()
                                 chunks.append(heartbeat)
                                 await _forward_chunk(heartbeat)
                                 last_size = current_size
@@ -4258,7 +4257,7 @@ class ContainerManager:
         try:
             try:
                 await asyncio.wait_for(_read_stream(), timeout=timeout)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 log.warning("run_command_timeout", workspace=workspace_id,
                             cmd=cmd[:3], timeout=timeout)
                 # Terminate the remote process. ``wait_for`` only cancels the

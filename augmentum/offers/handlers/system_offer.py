@@ -46,14 +46,14 @@ log = get_logger(__name__)
 OFFER_CHANNEL_PATTERN: str = "system.offer"
 
 
-def _resolve_conn(request: "Request"):
+def _resolve_conn(request: Request):
     sm = getattr(request.app.state, "state_manager", None)
     if sm is not None and isinstance(getattr(sm, "backend", None), SQLiteBackend):
         return sm.backend.conn
     return None
 
 
-def _is_admin(request: "Request") -> bool:
+def _is_admin(request: Request) -> bool:
     """True when the request's authenticated user has admin role.
 
     The ``user`` object on ``request.scope`` is populated by the auth
@@ -67,7 +67,7 @@ def _is_admin(request: "Request") -> bool:
 
 
 async def handle_offer_action(
-    notification: "Notification", action_id: str, request: "Request",
+    notification: Notification, action_id: str, request: Request,
 ) -> dict[str, Any]:
     """Dispatch ``accept`` / ``snooze`` / ``never`` for an offer notification."""
 

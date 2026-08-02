@@ -202,8 +202,8 @@ def run_cli(argv: list[str] | None = None) -> int:
                 f"expected={len(f.expected_findings)}"
             )
         print(
-            f"\nNothing to score — pass --reports-dir <path> with one "
-            f"<fixture_id>.json per fixture.",
+            "\nNothing to score — pass --reports-dir <path> with one "
+            "<fixture_id>.json per fixture.",
         )
         return 0
 

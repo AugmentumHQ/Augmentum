@@ -13,7 +13,6 @@ cross-user leakage.
 from __future__ import annotations
 
 import json
-import tempfile
 from pathlib import Path
 
 import aiosqlite
@@ -21,10 +20,8 @@ import pytest
 
 from augmentum.dream.engine import DreamEngine
 from augmentum.dream.journal import DreamJournal
-from augmentum.dream.models import DreamEntryType
 from augmentum.dream.portrait import PortraitManager
 from augmentum.dream.scheduler import DreamScheduler
-
 
 _FAKE_LLM_RESPONSE = json.dumps({
     "reflections": [

@@ -11,7 +11,6 @@ from __future__ import annotations
 import aiosqlite
 import pytest
 
-
 # Minimal schema covering migrations 120-122. Mirrors the SQL in
 # augmentum/state/migrations/ -- if it drifts, the migration is the
 # source of truth and this fixture stays in sync via a quick edit.
@@ -353,7 +352,9 @@ async def test_runtime_lifecycle_marks():
 async def test_admit_credit_budget_caps_solo_user():
     """Solo user gets up to user_hard_cap, then is blocked."""
     from augmentum.game_stream import (
-        ConcurrentStreamLimitError, GameStreamRuntime, PortPool,
+        ConcurrentStreamLimitError,
+        GameStreamRuntime,
+        PortPool,
     )
 
     store, _ = await _mkstore()
@@ -378,7 +379,9 @@ async def test_admit_credit_budget_caps_solo_user():
 async def test_admit_heavy_profile_costs_more():
     """A profile with cost_credits=2 fills the budget faster."""
     from augmentum.game_stream import (
-        ConcurrentStreamLimitError, GameStreamRuntime, PortPool,
+        ConcurrentStreamLimitError,
+        GameStreamRuntime,
+        PortPool,
     )
     from augmentum.game_stream.profiles import GameProfile, ProfileRegistry
 
@@ -414,7 +417,9 @@ async def test_admit_heavy_profile_costs_more():
 async def test_admit_fair_share_with_two_users():
     """Two active users split the budget in half."""
     from augmentum.game_stream import (
-        ConcurrentStreamLimitError, GameStreamRuntime, PortPool,
+        ConcurrentStreamLimitError,
+        GameStreamRuntime,
+        PortPool,
     )
 
     store, _ = await _mkstore()
@@ -447,7 +452,9 @@ async def test_admit_fair_share_with_two_users():
 @pytest.mark.asyncio
 async def test_pause_resume_session_round_trip():
     from augmentum.game_stream import (
-        GameStreamRuntime, PortPool, SessionStatus,
+        GameStreamRuntime,
+        PortPool,
+        SessionStatus,
     )
 
     store, _ = await _mkstore()
@@ -477,7 +484,9 @@ async def test_pause_resume_session_round_trip():
 async def test_pause_frees_active_credits_for_others():
     """Pausing a heavy session frees its active credits."""
     from augmentum.game_stream import (
-        ConcurrentStreamLimitError, GameStreamRuntime, PortPool,
+        ConcurrentStreamLimitError,
+        GameStreamRuntime,
+        PortPool,
     )
     from augmentum.game_stream.profiles import GameProfile, ProfileRegistry
 
@@ -515,7 +524,9 @@ async def test_watchdog_reaps_dead_container():
     """sweep_idle marks a session CRASHED when the adapter says
     its container has died without going through stop_session."""
     from augmentum.game_stream import (
-        GameStreamRuntime, PortPool, SessionStatus,
+        GameStreamRuntime,
+        PortPool,
+        SessionStatus,
     )
     from augmentum.game_stream.runtime import StubContainerAdapter
 

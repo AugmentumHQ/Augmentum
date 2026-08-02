@@ -25,7 +25,6 @@ import asyncio
 
 import pytest
 
-
 # ── Mode + factory wiring ─────────────────────────────────────────────
 
 
@@ -597,7 +596,7 @@ async def test_handler_emits_invoked_event_on_success(monkeypatch):
     async def _drain():
         try:
             ev = await asyncio.wait_for(sub.queue.get(), timeout=1.0)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return
         if ev is not None:
             captured.append({"topic": ev.topic, "payload": ev.payload})

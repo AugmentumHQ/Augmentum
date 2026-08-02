@@ -63,7 +63,9 @@ async def _uninstall(request: Any, manifest: Any, sd: Any, user_id: str) -> None
 
     removed = 0
     try:
-        from augmentum.media.store import MediaServerStore
+        from augmentum.media.store import (
+            MediaServerStore,  # noqa: F401  (import is the availability guard)
+        )
     except ImportError:
         log.warning("media_connect_uninstall_no_store", service_id=manifest.service_id)
         return

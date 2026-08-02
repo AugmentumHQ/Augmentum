@@ -84,8 +84,9 @@ class TestVFSRouter:
         assert bridge is None
 
     def test_root_lists_bridges(self):
-        from augmentum.vfs.bridges import VFS, VFSBridge
         import asyncio
+
+        from augmentum.vfs.bridges import VFS, VFSBridge
 
         class FakeA(VFSBridge):
             prefix = "/Alpha"

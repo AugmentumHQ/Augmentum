@@ -7,14 +7,12 @@ All moonshine_voice internals are mocked to test wiring only.
 from __future__ import annotations
 
 import asyncio
-import struct
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import numpy as np
 import pytest
 
 from augmentum.voice.moonshine_stt import MoonshineSTTSession
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -525,6 +523,7 @@ class TestFallbackPath:
         # This is a structural test — verify the code path exists in the
         # speech_start handling section (after the warmup section)
         import inspect
+
         from augmentum.proxy import voice_routes
 
         source = inspect.getsource(voice_routes.voice_websocket)
@@ -549,6 +548,7 @@ class TestFallbackPath:
     def test_finalize_speech_handles_both_paths(self):
         """_finalize_speech handles both stt_session and batch_stt."""
         import inspect
+
         from augmentum.proxy import voice_routes
 
         source = inspect.getsource(voice_routes.voice_websocket)

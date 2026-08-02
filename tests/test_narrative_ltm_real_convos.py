@@ -29,11 +29,8 @@ from augmentum.modes.narrative.memory import (
     CardType,
     MemoryEntry,
     StateSnapshot,
-    SummaryMode,
     build_compaction_prompt,
     build_state_memory_prompt,
-    format_ledger_for_context,
-    format_state_for_context,
     parse_state_memory_response,
 )
 
@@ -117,7 +114,7 @@ def _generate_realistic_refresh(
     Extracts location hints, character names, and key events from the actual
     message text to produce a plausible refresh response.
     """
-    from augmentum.modes.narrative.memory import STATE_FIELDS, MEMORY_CATEGORIES
+    from augmentum.modes.narrative.memory import MEMORY_CATEGORIES, STATE_FIELDS
 
     fields = STATE_FIELDS.get(card_type, STATE_FIELDS[CardType.CHARACTER])
     categories = MEMORY_CATEGORIES.get(card_type, MEMORY_CATEGORIES[CardType.CHARACTER])

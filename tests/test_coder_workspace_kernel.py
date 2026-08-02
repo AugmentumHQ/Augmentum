@@ -29,7 +29,6 @@ from augmentum.coder.workspace_kernel import (
 )
 from augmentum.modes.coder.intent import Tier
 
-
 # ---------------------------------------------------------------------------
 # Fakes — minimal container manager mimicking the public surface the
 # kernel touches. ``run_command_calls`` lets tests assert what the
@@ -390,7 +389,6 @@ async def test_native_sys_text_contains_kernel_hint(monkeypatch):
     # backend fakes — they're well-tuned for the act loop.
     from tests.test_coder_handler import (
         _ExtendedContainerManager,
-        _FakeBackend,
         _FakeChunk,
         _FakeTool,
         _make_request,
@@ -892,14 +890,14 @@ async def test_native_sys_text_includes_facts_block_when_present(monkeypatch):
     the workspace AND both kernel_v2 and inline_facts are on, native's
     first request system message must contain the <workspace_facts>
     block. This is the load-bearing wiring test."""
-    from augmentum.config import settings as _settings
     from augmentum.coder.observations import (
         Observation,
         serialize_observations,
     )
+    from augmentum.coder.workspace_kernel import OBSERVATIONS_JSONL
+    from augmentum.config import settings as _settings
     from augmentum.models.base import InternalStreamChunk
     from augmentum.modes.coder.handler import CoderHandler
-    from augmentum.coder.workspace_kernel import OBSERVATIONS_JSONL
 
     monkeypatch.setattr(_settings, "coder_kernel_v2", True)
     monkeypatch.setattr(_settings, "coder_kernel_inline_facts", True)
@@ -1088,7 +1086,6 @@ async def test_native_skips_seed_for_short_message(monkeypatch):
     objective.md — pinning 'hi' as the session goal would be a
     pathological state."""
     from augmentum.config import settings as _settings
-    from augmentum.models.base import InternalStreamChunk
     from augmentum.modes.coder.handler import CoderHandler
 
     monkeypatch.setattr(_settings, "coder_kernel_v2", True)
@@ -1164,14 +1161,14 @@ async def test_native_sys_text_omits_facts_block_when_flag_off(monkeypatch):
     """The inline-facts setting is the opt-out switch for strong
     models that prefer the pure on-demand pattern. With it disabled,
     the facts block must NOT appear even when both files exist."""
-    from augmentum.config import settings as _settings
     from augmentum.coder.observations import (
         Observation,
         serialize_observations,
     )
+    from augmentum.coder.workspace_kernel import OBSERVATIONS_JSONL
+    from augmentum.config import settings as _settings
     from augmentum.models.base import InternalStreamChunk
     from augmentum.modes.coder.handler import CoderHandler
-    from augmentum.coder.workspace_kernel import OBSERVATIONS_JSONL
 
     monkeypatch.setattr(_settings, "coder_kernel_v2", True)
     monkeypatch.setattr(_settings, "coder_kernel_inline_facts", False)

@@ -45,8 +45,8 @@ You are merging a new reflection into a related existing reflection from an AI's
 
 async def try_consolidate_dream(
     new_content: str,
-    candidates: list[tuple["DreamEntry", float]],
-    backend: "ModelBackend | None",
+    candidates: list[tuple[DreamEntry, float]],
+    backend: ModelBackend | None,
     model: str | None,
     *,
     sim_low: float,

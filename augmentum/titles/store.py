@@ -14,13 +14,12 @@ delegate to ArtifactStore so its VFS bookkeeping stays consistent.
 from __future__ import annotations
 
 import json
-import time
 import uuid
 from typing import Any
 
 import aiosqlite
 
-from augmentum.titles.manifest import TITLE_KINDS, TitleManifest, _legacy_kind_to_axf
+from augmentum.titles.manifest import TITLE_KINDS, TitleManifest
 from augmentum.utils.logging import get_logger
 
 log = get_logger(__name__)

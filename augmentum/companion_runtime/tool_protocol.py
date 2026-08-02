@@ -331,7 +331,7 @@ class Promise:
     "alright, Dune's playing in the living room".
     """
     pre_text: str
-    tag: "ToolCall"
+    tag: ToolCall
     started_at: float
 
 

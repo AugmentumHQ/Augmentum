@@ -47,11 +47,6 @@ from augmentum.modes.narrative.cardsmith import (
     get_prompt,
     get_session,
 )
-from augmentum.modes.narrative.cardsmith.state import (
-    register_session,
-    serialize_for_disk,
-    session_from_row,
-)
 from augmentum.modes.narrative.cardsmith.parser import StreamingFieldParser
 from augmentum.modes.narrative.cardsmith.scratchpad import (
     ScratchEntry,
@@ -61,6 +56,11 @@ from augmentum.modes.narrative.cardsmith.scratchpad import (
     recall_for_turn,
     render_scratchpad_block,
     serialize_scratchpad,
+)
+from augmentum.modes.narrative.cardsmith.state import (
+    register_session,
+    serialize_for_disk,
+    session_from_row,
 )
 from augmentum.utils.logging import get_logger
 
@@ -244,7 +244,7 @@ async def _persist_session(sess, be) -> None:
                     session_id=getattr(sess, "session_id", "?"), error=str(exc))
 
 
-async def _resolve_session(session_id: str, *, user_id: str, be) -> "object | None":
+async def _resolve_session(session_id: str, *, user_id: str, be) -> object | None:
     """Return a CardsmithSession by id — in-memory first, disk fallback.
 
     `get_session` enforces user ownership + TTL eviction on the in-memory

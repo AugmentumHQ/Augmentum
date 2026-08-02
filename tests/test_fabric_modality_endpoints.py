@@ -19,7 +19,6 @@ subsystems themselves.
 """
 from __future__ import annotations
 
-import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -193,8 +192,8 @@ async def test_render_400_on_missing_kind():
 async def test_render_returns_renderresult_dict():
     """Happy path: dispatches to execute_local_render, returns the
     serialized RenderResult."""
-    from augmentum.proxy.fabric_routes import fabric_render
     from augmentum.cast.render import RenderResult
+    from augmentum.proxy.fabric_routes import fabric_render
 
     request = _make_request(
         fabric_peer={"sender_node_id": "p"},

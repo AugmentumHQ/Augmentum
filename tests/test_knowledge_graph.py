@@ -8,14 +8,13 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from augmentum.memory.graph_extractor import (
-    GraphUpdate,
     _CARD_TYPE_PROMPTS,
     _SYSTEM_PROMPT,
+    GraphUpdate,
     _parse_extraction_response,
     apply_graph_updates,
     extract_graph_updates,
 )
-
 
 # ------------------------------------------------------------------
 # GraphExtractor — parsing tests

@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
-from unittest.mock import patch
-
-from fastapi.testclient import TestClient
+from unittest.mock import AsyncMock, MagicMock, patch
 
 
 def _mock_ledger():
@@ -54,8 +51,9 @@ class TestResourceStatus:
         assert data["cpu_scope"] == "runtime"
 
     def test_status_models_carry_confidence_and_as_of(self, app, client):
-        from augmentum.resource.ledger import ResourceSnapshot, TrackedModel
         from datetime import datetime
+
+        from augmentum.resource.ledger import ResourceSnapshot, TrackedModel
         snap = ResourceSnapshot(
             timestamp=datetime(2026, 6, 19, 12, 0, 0),
             gpu_total_mb=24576, gpu_used_mb=8192, gpu_free_mb=16384,
@@ -82,8 +80,9 @@ class TestResourceStatus:
     def test_unattributed_vram_subtracts_measured_sidecars_on_wsl2(self, app, client):
         # WSL2: gpu_processes is empty (per-process VRAM opaque), so a sidecar's
         # measured VRAM is sitting inside the residual — subtract it back out.
-        from augmentum.resource.ledger import ResourceSnapshot
         from datetime import datetime
+
+        from augmentum.resource.ledger import ResourceSnapshot
         snap = ResourceSnapshot(
             timestamp=datetime(2026, 6, 19, 12, 0, 0),
             gpu_total_mb=24576, gpu_used_mb=8000, gpu_free_mb=16576,

@@ -22,7 +22,6 @@ from augmentum.models.openai_compat import (
     _scrub_orphan_tool_messages,
 )
 
-
 # ---------------------------------------------------------------------------
 # Tool-name sanitisation
 # ---------------------------------------------------------------------------

@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import json
-
 import pytest
 
 from augmentum.tools.artifact_normalize import (
@@ -26,7 +24,6 @@ from augmentum.tools.artifact_sanitize import (
     sanitize_text,
 )
 from augmentum.tools.artifact_templates import ArtifactTemplate
-
 
 # ---------------------------------------------------------------------------
 # Normalization tests

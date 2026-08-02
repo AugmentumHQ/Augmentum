@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import asyncio
 from typing import Any
-from unittest.mock import AsyncMock
 
 import pytest
 
@@ -28,7 +27,6 @@ from augmentum.cast.receiver_protocol import (
     ReceiverEvent,
 )
 from augmentum.cast.receiver_registry import ReceiverRegistry
-
 
 # ── Fake WebSocket ────────────────────────────────────────────────
 

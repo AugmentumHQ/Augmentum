@@ -3243,7 +3243,7 @@ class CoderHandler(LegacyStrategyMixin, PlanPhaseMixin, ActPhaseMixin, ModeHandl
         # dispatcher sees current state on every spawn, not stale
         # snapshots taken at construction.
         def _live_tools():
-            from augmentum.coder.tools import create_coder_tools
+            from augmentum.coder.tools import create_coder_tools  # noqa: F811
             return create_coder_tools(
                 self._container_manager,
                 self._workspace_id,
@@ -6768,8 +6768,8 @@ class CoderHandler(LegacyStrategyMixin, PlanPhaseMixin, ActPhaseMixin, ModeHandl
                 __slots__ = ()
 
                 @staticmethod
-                def append(ev) -> None:
-                    queue.put_nowait(ev)
+                def append(ev, _queue=queue) -> None:
+                    _queue.put_nowait(ev)
 
             task = asyncio.create_task(self._stream_and_parse(
                 request, messages, tool_schemas, tool_map, tier, iteration,
@@ -10348,6 +10348,7 @@ async def _execute_tool_with_shell_stream(
     same contract as :func:`_execute_tool`.
     """
     import asyncio as _asyncio
+
     from augmentum.modes.coder.chat_egress import emit
 
     tool = tool_map.get(tool_name)
@@ -10451,6 +10452,7 @@ async def _execute_tool_with_subagent_stream(
     tools, falls through to one-shot ``_execute_tool``.
     """
     import asyncio as _asyncio
+
     from augmentum.modes.coder.chat_egress import emit
 
     tool = tool_map.get(tool_name)

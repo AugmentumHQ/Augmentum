@@ -102,7 +102,7 @@ class BeccaObserver:
             self._subscription = None
         try:
             await asyncio.wait_for(self._task, timeout=2.0)
-        except (asyncio.TimeoutError, asyncio.CancelledError):
+        except (TimeoutError, asyncio.CancelledError):
             self._task.cancel()
         self._task = None
         log.info("becca_observer_stopped", companion_id=self.runtime.companion_id)
@@ -114,7 +114,7 @@ class BeccaObserver:
                     event = await asyncio.wait_for(
                         self._subscription.queue.get(), timeout=1.0
                     )
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     continue
                 if event is None:
                     continue
@@ -148,10 +148,7 @@ class BeccaObserver:
             "t": event.t,
         })
 
-        if topic == "chat.turn_started":
-            state["last_chat_mode"] = payload.get("mode")
-            state["last_chat_at"] = now
-        elif topic == "chat.turn_completed":
+        if topic == "chat.turn_started" or topic == "chat.turn_completed":
             state["last_chat_mode"] = payload.get("mode")
             state["last_chat_at"] = now
         elif topic == "mode.changed":
@@ -286,7 +283,8 @@ class BeccaObserver:
         engine can both draw on her own voice as raw material.
         """
         from augmentum.companion_runtime.bus import (
-            PROP_AFFECT_ONLY, PROP_FULL,
+            PROP_AFFECT_ONLY,
+            PROP_FULL,
         )
 
         propagation = getattr(event, "propagation", PROP_FULL)

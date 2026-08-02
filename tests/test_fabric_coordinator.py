@@ -14,8 +14,6 @@ The coordinator's contract:
 """
 from __future__ import annotations
 
-import asyncio
-
 import aiosqlite
 import pytest
 
@@ -410,9 +408,9 @@ async def test_handle_inbound_envelope_records_lifecycle_events():
     or drain_peer_call_events (consuming read).
     """
     from augmentum.fabric.protocol import (
-        FabricEnvelope,
         MSG_JOB_COMPLETED,
         MSG_JOB_STARTED,
+        FabricEnvelope,
     )
 
     conn, _, identity_a, coordinator = await _make_env()
@@ -456,7 +454,8 @@ async def test_handle_inbound_envelope_dispatches_cancel():
     from unittest.mock import MagicMock
 
     from augmentum.fabric.protocol import (
-        FabricEnvelope, MSG_CANCEL_REQUEST,
+        MSG_CANCEL_REQUEST,
+        FabricEnvelope,
     )
 
     conn, _, identity_a, coordinator = await _make_env()

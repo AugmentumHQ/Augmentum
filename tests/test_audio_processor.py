@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import numpy as np
-import pytest
 
 from augmentum.voice.audio_processor import AudioProcessor, normalize_pcm
 

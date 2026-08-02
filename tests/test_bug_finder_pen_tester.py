@@ -11,8 +11,6 @@ Covers:
 
 from __future__ import annotations
 
-import asyncio
-import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -38,7 +36,6 @@ from augmentum.bug_finder.pen_tester import (
     verdict_to_note,
 )
 from augmentum.bug_finder.role_models import Role, RoleModelConfig
-
 
 # ---------------------------------------------------------------------------
 # Parser
@@ -585,8 +582,9 @@ def test_bug_finder_run_config_default_pen_test_disabled() -> None:
     """The leg must be opt-in. Defaulting it on would make every
     bug_finder run boot the workspace's app, which is heavier than
     callers usually want."""
-    from augmentum.bug_finder.orchestrator import BugFinderRunConfig
     # Build with minimal required args
     import inspect
+
+    from augmentum.bug_finder.orchestrator import BugFinderRunConfig
     sig = inspect.signature(BugFinderRunConfig)
     assert sig.parameters["enable_pen_test_leg"].default is False

@@ -12,7 +12,6 @@ from datetime import UTC, datetime, timedelta
 from math import exp
 from typing import TYPE_CHECKING
 
-from augmentum.config import settings
 from augmentum.memory.embeddings import EmbeddingService
 from augmentum.memory.events import log_event
 from augmentum.memory.models import ExtractedFact, Memory, MemoryTier, MemoryType, SourceType

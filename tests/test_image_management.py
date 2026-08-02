@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -12,7 +10,6 @@ from augmentum.image.lora_manager import LoraManager
 from augmentum.image.model_manager import ModelManager
 from augmentum.image.presets import BUILTIN_PRESETS, GenrePreset, PresetManager
 from augmentum.image.schedulers import (
-    SAMPLER_ALIASES,
     SAMPLER_MAP,
     _resolve_alias,
     get_available_samplers,
@@ -145,6 +142,7 @@ class TestImagePersistenceRoundTrip:
     @pytest.mark.asyncio
     async def test_save_and_load_generation(self, tmp_path):
         import aiosqlite
+
         from augmentum.image.persistence import ImagePersistence
 
         db_path = str(tmp_path / "test.db")
@@ -209,6 +207,7 @@ class TestImagePersistenceRoundTrip:
     @pytest.mark.asyncio
     async def test_list_generations(self, tmp_path):
         import aiosqlite
+
         from augmentum.image.persistence import ImagePersistence
 
         db_path = str(tmp_path / "test2.db")
@@ -276,6 +275,7 @@ class TestImageModelCache:
     @pytest.mark.asyncio
     async def test_list_models_caches_and_invalidates(self, tmp_path):
         import aiosqlite
+
         from augmentum.image.persistence import ImagePersistence
 
         db_path = str(tmp_path / "models.db")

@@ -13,7 +13,6 @@ import json
 
 import pytest
 
-
 # ---- Built-in registration ----
 
 

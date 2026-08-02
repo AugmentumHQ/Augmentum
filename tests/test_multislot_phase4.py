@@ -237,6 +237,7 @@ class TestKvTierContextVar:
         slot mode where multiple sessions process simultaneously.
         """
         import asyncio
+
         from augmentum.proxy.status_bus import bind_kv_tier, kv_tier_var
 
         observed: dict[str, str] = {}

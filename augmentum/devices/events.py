@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
-from typing import AsyncIterator
+from collections.abc import AsyncIterator
 
 from augmentum.devices.invocation import Event
 from augmentum.utils.logging import get_logger

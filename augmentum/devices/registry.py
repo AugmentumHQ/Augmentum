@@ -10,8 +10,9 @@ from __future__ import annotations
 
 import asyncio
 import time
-from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Any, AsyncIterator
+from collections.abc import AsyncIterator
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any
 
 from augmentum.devices.capabilities import (
     get_capability,
@@ -84,7 +85,7 @@ def _content_kind_for_capability(capability_id: str) -> str:
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    return datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S")
 
 
 def _expand_capabilities(caps: list[str]) -> list[str]:
@@ -120,8 +121,8 @@ class DeviceRegistry:
         history_store: DevicePlayHistoryStore,
         sessions: SessionRuntime,
         bus: EventBus,
-        http_client: "httpx.AsyncClient | None" = None,
-        cast_token_store: "CastTokenStore | None" = None,
+        http_client: httpx.AsyncClient | None = None,
+        cast_token_store: CastTokenStore | None = None,
     ) -> None:
         self._device_store = device_store
         self._pairing_store = pairing_store
@@ -135,7 +136,7 @@ class DeviceRegistry:
         self._started = False
 
     @property
-    def cast_token_store(self) -> "CastTokenStore | None":
+    def cast_token_store(self) -> CastTokenStore | None:
         return self._cast_token_store
 
     # ---- driver registration -------------------------------------------------
@@ -149,7 +150,7 @@ class DeviceRegistry:
     def list_drivers(self) -> list[DeviceDriver]:
         return list(self._drivers.values())
 
-    def get_driver(self, driver_id: str) -> "DeviceDriver | None":
+    def get_driver(self, driver_id: str) -> DeviceDriver | None:
         return self._drivers.get(driver_id)
 
     # ---- lifecycle -----------------------------------------------------------
@@ -436,7 +437,7 @@ class DeviceRegistry:
                 asyncio.gather(*tasks, return_exceptions=True),
                 timeout=max(2.0, float(timeout_s)),
             )
-        except asyncio.TimeoutError:
+        except TimeoutError:
             for t in tasks:
                 if not t.done():
                     t.cancel()

@@ -23,7 +23,6 @@ import pytest
 from augmentum.providers.catalog import ProviderCatalog
 from augmentum.providers.models import ServiceCategory
 
-
 # ── Schema (mirrors marketplace_listings incl. migration-254 columns) ──
 
 _SCHEMA_SQL = """
@@ -687,6 +686,7 @@ async def test_load_persisted_volume_overrides_roundtrip():
     import json as _json
 
     import aiosqlite
+
     from augmentum.providers.manager import ServiceManager
     db = await aiosqlite.connect(":memory:")
     await db.execute("CREATE TABLE managed_services (id TEXT PRIMARY KEY, config_json TEXT)")
@@ -722,6 +722,7 @@ async def test_install_media_server_binds_external_host_path(monkeypatch):
 @pytest.mark.asyncio
 async def test_install_media_server_rejects_relative_host_path(monkeypatch):
     from fastapi import HTTPException
+
     from augmentum.marketplace.install_dispatchers import _install_media_server
     store = _FakeStore(existing=None)
     _patch_common(monkeypatch, store)

@@ -7,7 +7,7 @@ normalize → reject junk → score by reputation → dedup against history → 
 from __future__ import annotations
 
 import random
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 from urllib.parse import urlparse
 
@@ -103,7 +103,7 @@ def build_search_query(cluster_name: str, depth_level: int = 1) -> str:
         return ""
     level = min(max(depth_level, 1), 5)
     modifiers = _DEPTH_MODIFIERS[level]
-    window = datetime.now(timezone.utc).hour // 6
+    window = datetime.now(UTC).hour // 6
     idx = (window + hash(name)) % len(modifiers)
     modifier = modifiers[idx]
     # Empty modifier slots ("") mean "naked query — just the topic".
@@ -216,8 +216,8 @@ async def generate_recommendations(
     infrastructure, manual UI search) pass ``autonomous=False`` and always
     run the full pipeline.
     """
-    from augmentum.discovery.quality import filter_and_rank
     from augmentum.config import settings as _settings
+    from augmentum.discovery.quality import filter_and_rank
 
     autonomous_web_allowed = bool(
         getattr(_settings, "companion_autonomous_web_search_enabled", False),

@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 
 class TestCommunityImports:
     """Import every module that ships in the community subsystem."""

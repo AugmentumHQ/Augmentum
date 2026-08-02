@@ -9,7 +9,6 @@ import pytest
 
 from augmentum.modes.agentic.task_state import ToolCallCache, hash_tool_call
 
-
 _MIGRATIONS = Path(__file__).parent.parent / "augmentum" / "state" / "migrations"
 
 

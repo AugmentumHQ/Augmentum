@@ -1,11 +1,7 @@
 """Dream context window retrieval and memory clustering."""
 from __future__ import annotations
 
-from datetime import datetime, timezone
-
-from augmentum.dream.models import ContextSegment
-from augmentum.state.tree_utils import linearize_to_node, find_node_by_evidence
-
+from datetime import UTC, datetime
 
 MAX_WINDOW_MESSAGES = 12  # 6 pairs cap
 
@@ -100,7 +96,7 @@ class DreamContextBuilder:
     def humanize_age(self, timestamp: str, now: datetime | None = None) -> str:
         """Convert absolute timestamp to relative age string."""
         if now is None:
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
         try:
             dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
             delta = now - dt

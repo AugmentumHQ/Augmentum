@@ -1,10 +1,12 @@
 """Test no-rollback self-speculation approach."""
 from __future__ import annotations
+
 import time
 
 
 def test_no_rollback():
-    from llama_cpp import Llama, llama_cpp as lcpp
+    from llama_cpp import Llama
+    from llama_cpp import llama_cpp as lcpp
 
     model_path = "/models/Qwen3.5-0.8B-Q8_0.gguf"
     print(f"Loading {model_path}...")
@@ -49,7 +51,7 @@ def test_no_rollback():
     print(f"Text: {text}")
 
     # Baseline: same but ALL full model (no draft)
-    print(f"\n=== Baseline (full model only) ===")
+    print("\n=== Baseline (full model only) ===")
     llm.reset()
     llm.eval(prompt)
     tokens_baseline = []
@@ -68,7 +70,7 @@ def test_no_rollback():
     print(f"Text: {text_baseline}")
 
     # Compare
-    print(f"\n=== Comparison ===")
+    print("\n=== Comparison ===")
     matching = sum(1 for a, b in zip(tokens_out, tokens_baseline) if a == b)
     print(f"Token match: {matching}/{min(len(tokens_out), len(tokens_baseline))}")
 

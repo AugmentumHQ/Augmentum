@@ -1,5 +1,6 @@
 """Check if CPU expert compute is active."""
 from __future__ import annotations
+
 import json
 import time
 import urllib.request

@@ -24,7 +24,6 @@ import pytest
 from augmentum.state.backends.sqlite import SQLiteBackend
 from augmentum.state.narrative_cleanup import (
     NARRATIVE_TABLES,
-    CleanupReport,
     purge_narrative_session,
 )
 from augmentum.state.narrative_persistence import NarrativePersistence

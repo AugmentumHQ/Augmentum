@@ -32,9 +32,10 @@ import importlib.util
 import sys
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from augmentum.bug_finder import refs
 from augmentum.utils.logging import get_logger

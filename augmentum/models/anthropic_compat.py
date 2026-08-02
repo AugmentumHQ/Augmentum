@@ -39,12 +39,11 @@ from __future__ import annotations
 
 import hashlib
 import json
-import time
 import uuid
 from collections.abc import AsyncIterator
 from typing import Any
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, field_validator
 
 from augmentum.models.base import InternalChatResponse
 from augmentum.proxy.openai_routes import OpenAIChatRequest, OpenAIMessage
@@ -526,7 +525,7 @@ def internal_response_to_anthropic_message(
 def _sse_event(event: str, data: dict) -> bytes:
     """Format one SSE event in Anthropic's wire shape."""
     payload = json.dumps(data, separators=(",", ":"))
-    return f"event: {event}\ndata: {payload}\n\n".encode("utf-8")
+    return f"event: {event}\ndata: {payload}\n\n".encode()
 
 
 def build_message_start_event(

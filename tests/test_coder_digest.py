@@ -16,7 +16,6 @@ from augmentum.coder.digest import (
     build_project_digest,
 )
 
-
 # ---------------------------------------------------------------------------
 # Container-manager stub. Matches the surface build_project_digest calls:
 # ``_run_command`` for the find listing, ``file_read`` per file.

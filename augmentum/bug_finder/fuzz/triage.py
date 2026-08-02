@@ -33,7 +33,6 @@ from augmentum.bug_finder.findings import (
 from augmentum.bug_finder.fuzz.harness import Harness
 from augmentum.bug_finder.fuzz.runner import FuzzCrash, FuzzRunResult
 
-
 # Family slug for cross-modal confirmation. When an LLM detector AND
 # this fuzz leg agree on a finding, families_to_confirm reaches 2 —
 # the spec's "cross-modal confirmation is the gold-standard FP killer".

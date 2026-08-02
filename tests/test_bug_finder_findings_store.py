@@ -28,7 +28,6 @@ from augmentum.bug_finder.store import BugFinderRunStore
 from augmentum.bug_finder.workspace import WorkspaceBaseline
 from augmentum.state.backends.sqlite import SQLiteBackend
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------

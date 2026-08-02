@@ -5,10 +5,10 @@ from __future__ import annotations
 import pytest
 
 from augmentum.voice.phoneme_lipsync import (
-    ARPA_TO_VISEME,
-    DEFAULT_DURATIONS_MS,
     _SILENCE_TOKENS,
     _VOWELS,
+    ARPA_TO_VISEME,
+    DEFAULT_DURATIONS_MS,
     _strip_stress,
     is_lang_supported,
     phonemes_to_schedule,

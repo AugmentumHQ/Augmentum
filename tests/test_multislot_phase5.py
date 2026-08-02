@@ -13,7 +13,6 @@ from __future__ import annotations
 import contextlib
 
 import httpx
-import pytest
 
 from augmentum.models.llama_cpp import LlamaCppBackend
 from augmentum.models.llama_server_manager import LlamaServerManager

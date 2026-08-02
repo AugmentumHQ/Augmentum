@@ -315,7 +315,6 @@ async def test_resolver_uses_manager_loaded_model_when_map_misses():
     window after every UI refresh.
     """
     from augmentum.models.provider_registry import (
-        ModelUnavailableError,
         ProviderRegistry,
     )
 

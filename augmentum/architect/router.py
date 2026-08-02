@@ -590,7 +590,7 @@ async def route_utterance(
 
     try:
         resp = await asyncio.wait_for(backend.chat(req), timeout=timeout_s)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         elapsed = int((_time.monotonic() - started_at) * 1000)
         log.info("architect_router_timeout", ms=elapsed, model=resolved_model)
         return _reject("timeout", elapsed_ms=elapsed, model=resolved_model)

@@ -15,7 +15,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-
 _TRUTHY = {"1", "true", "yes", "on"}
 
 
@@ -74,7 +73,7 @@ class LiveTraceRecorder:
             self.event("run_start")
 
     @classmethod
-    def from_env(cls) -> "LiveTraceRecorder":
+    def from_env(cls) -> LiveTraceRecorder:
         enabled = _truthy_env("AUGMENTUM_LIVE_TRACE")
         base = Path(os.getenv("AUGMENTUM_LIVE_TRACE_DIR", "tests/live/artifacts/llama-kv"))
         content_mode = os.getenv("AUGMENTUM_LIVE_TRACE_CONTENT", "redacted").strip().lower()

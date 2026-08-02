@@ -1,8 +1,6 @@
 """Tests for the Kiwix OPDS catalog client."""
 from __future__ import annotations
 
-import json
-import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
@@ -10,7 +8,6 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from augmentum.knowledge.catalog import (
-    CATEGORY_MAP,
     FEATURED_PACK_IDS,
     CatalogClient,
     CatalogEntry,

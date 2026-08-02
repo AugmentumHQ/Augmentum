@@ -146,9 +146,10 @@ def _eval_minimal_deliver_flow():
     Plan (generative) -> Deliver (generative, streamed). No chain/tool
     steps — exercises just the generative path + delivery composition.
     """
+    import uuid
+
     from augmentum.reasoning.models import FlowStep, ReasoningFlow
     from augmentum.reasoning.templates import _DELIVER_SYSTEM_BASE, _DELIVER_USER_TEMPLATE
-    import uuid
 
     def _sid() -> str:
         return uuid.uuid4().hex[:16]

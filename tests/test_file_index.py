@@ -6,8 +6,6 @@ import asyncio
 import json
 
 import aiosqlite
-import pytest
-
 
 # ---------------------------------------------------------------------------
 # Minimal file_index schema for atomic-enrichment tests. Skips the FTS

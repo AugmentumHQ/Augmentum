@@ -24,7 +24,6 @@ from typing import Any
 
 from augmentum.agents.budget import SubagentBudget
 
-
 # Per-role context-bridge modes. See ``context_bridge.py`` for what each
 # inherits from the parent turn.
 CONTEXT_MODES = ("slim", "workspace", "hot")

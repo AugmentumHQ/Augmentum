@@ -17,7 +17,6 @@ from augmentum.bug_finder.role_models import (
     pick_cross_family_verifier,
 )
 
-
 # ---------------------------------------------------------------------------
 # pick_cross_family_verifier
 # ---------------------------------------------------------------------------

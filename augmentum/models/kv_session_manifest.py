@@ -93,10 +93,9 @@ class KVSessionManifest:
     )
 
     def _init_db(self) -> None:
-        with self._lock:
-            with self._connect() as conn:
-                conn.execute(
-                    """
+        with self._lock, self._connect() as conn:
+            conn.execute(
+                """
                     CREATE TABLE IF NOT EXISTS kv_sessions (
                         model_key TEXT NOT NULL,
                         session_key TEXT NOT NULL,
@@ -130,40 +129,40 @@ class KVSessionManifest:
                         PRIMARY KEY (model_key, session_key)
                     )
                     """
-                )
-                # Migrate older DBs that predate the load-shape columns.
-                for col_name, col_decl in self._MIGRATION_COLUMNS:
-                    try:
-                        conn.execute(
-                            f"ALTER TABLE kv_sessions ADD COLUMN {col_name} {col_decl}"
-                        )
-                    except sqlite3.OperationalError:
-                        # Column already exists (post-CREATE or already migrated).
-                        pass
-                conn.execute(
-                    """
+            )
+            # Migrate older DBs that predate the load-shape columns.
+            for col_name, col_decl in self._MIGRATION_COLUMNS:
+                try:
+                    conn.execute(
+                        f"ALTER TABLE kv_sessions ADD COLUMN {col_name} {col_decl}"
+                    )
+                except sqlite3.OperationalError:
+                    # Column already exists (post-CREATE or already migrated).
+                    pass
+            conn.execute(
+                """
                     CREATE INDEX IF NOT EXISTS idx_kv_sessions_slot_dir
                     ON kv_sessions(slot_dir)
                     """
-                )
-                conn.execute(
-                    """
+            )
+            conn.execute(
+                """
                     CREATE INDEX IF NOT EXISTS idx_kv_sessions_expires_at
                     ON kv_sessions(expires_at)
                     """
-                )
-                # Replay sources — the durable half of the KV resume
-                # ladder's rung 2. Stores the exact message prefix a
-                # session's last engine request actually served, so a
-                # restart (or a --kv-unified config where slot-file
-                # restore is structurally unavailable) can recompute the
-                # KV via a background prewarm instead of making the user
-                # pay full prefill at the keyboard. Keyed by session_key
-                # alone — deliberately NOT model-scoped: replay re-renders
-                # through whatever model is live, so a model swap keeps
-                # every warm candidate (tensor restore can't do that).
-                conn.execute(
-                    """
+            )
+            # Replay sources — the durable half of the KV resume
+            # ladder's rung 2. Stores the exact message prefix a
+            # session's last engine request actually served, so a
+            # restart (or a --kv-unified config where slot-file
+            # restore is structurally unavailable) can recompute the
+            # KV via a background prewarm instead of making the user
+            # pay full prefill at the keyboard. Keyed by session_key
+            # alone — deliberately NOT model-scoped: replay re-renders
+            # through whatever model is live, so a model swap keeps
+            # every warm candidate (tensor restore can't do that).
+            conn.execute(
+                """
                     CREATE TABLE IF NOT EXISTS kv_replay_sources (
                         session_key TEXT PRIMARY KEY,
                         mode TEXT NOT NULL DEFAULT '',
@@ -176,23 +175,23 @@ class KVSessionManifest:
                         sampling_json TEXT NOT NULL DEFAULT ''
                     )
                     """
-                )
-                conn.execute(
-                    """
+            )
+            conn.execute(
+                """
                     CREATE INDEX IF NOT EXISTS idx_kv_replay_updated_at
                     ON kv_replay_sources(updated_at)
                     """
+            )
+            # Additive upgrade for DBs created before sampling capture
+            # (the speculation rung needs the previous turn's sampling
+            # to fingerprint-match the next real request).
+            try:
+                conn.execute(
+                    "ALTER TABLE kv_replay_sources "
+                    "ADD COLUMN sampling_json TEXT NOT NULL DEFAULT ''"
                 )
-                # Additive upgrade for DBs created before sampling capture
-                # (the speculation rung needs the previous turn's sampling
-                # to fingerprint-match the next real request).
-                try:
-                    conn.execute(
-                        "ALTER TABLE kv_replay_sources "
-                        "ADD COLUMN sampling_json TEXT NOT NULL DEFAULT ''"
-                    )
-                except sqlite3.OperationalError:
-                    pass  # column already exists (fresh CREATE or prior ALTER)
+            except sqlite3.OperationalError:
+                pass  # column already exists (fresh CREATE or prior ALTER)
 
     # ------------------------------------------------------------------
     # Self-recovery (mirrors TokenCountCache pattern)
@@ -311,15 +310,14 @@ class KVSessionManifest:
         if not self._healthy:
             return None
         try:
-            with self._lock:
-                with self._connect() as conn:
-                    row = conn.execute(
-                        """
+            with self._lock, self._connect() as conn:
+                row = conn.execute(
+                    """
                         SELECT * FROM kv_sessions
                         WHERE model_key = ? AND session_key = ?
                         """,
-                        (model_key, session_key),
-                    ).fetchone()
+                    (model_key, session_key),
+                ).fetchone()
             return dict(row) if row else None
         except sqlite3.Error as exc:
             self._handle_error("kv_manifest_get_session_error", exc)
@@ -329,16 +327,15 @@ class KVSessionManifest:
         if not self._healthy:
             return []
         try:
-            with self._lock:
-                with self._connect() as conn:
-                    rows = conn.execute(
-                        """
+            with self._lock, self._connect() as conn:
+                rows = conn.execute(
+                    """
                         SELECT * FROM kv_sessions
                         WHERE slot_dir = ?
                         ORDER BY last_accessed DESC, last_saved DESC
                         """,
-                        (slot_dir,),
-                    ).fetchall()
+                    (slot_dir,),
+                ).fetchall()
             return [dict(row) for row in rows]
         except sqlite3.Error as exc:
             self._handle_error("kv_manifest_list_sessions_error", exc)
@@ -353,16 +350,15 @@ class KVSessionManifest:
         if not self._healthy:
             return []
         try:
-            with self._lock:
-                with self._connect() as conn:
-                    rows = conn.execute(
-                        """
+            with self._lock, self._connect() as conn:
+                rows = conn.execute(
+                    """
                         SELECT * FROM kv_sessions
                         WHERE model_key = ?
                         ORDER BY last_accessed DESC, last_saved DESC
                         """,
-                        (model_key,),
-                    ).fetchall()
+                    (model_key,),
+                ).fetchall()
             return [dict(row) for row in rows]
         except sqlite3.Error as exc:
             self._handle_error("kv_manifest_list_model_sessions_error", exc)
@@ -380,17 +376,16 @@ class KVSessionManifest:
         now_ts = time.time() if now is None else now
         pinned = pinned_sessions or set()
         try:
-            with self._lock:
-                with self._connect() as conn:
-                    rows = conn.execute(
-                        """
+            with self._lock, self._connect() as conn:
+                rows = conn.execute(
+                    """
                         SELECT * FROM kv_sessions
                         WHERE slot_dir = ?
                           AND expires_at > 0
                           AND expires_at <= ?
                         """,
-                        (slot_dir, now_ts),
-                    ).fetchall()
+                    (slot_dir, now_ts),
+                ).fetchall()
         except sqlite3.Error as exc:
             self._handle_error("kv_manifest_list_expired_error", exc)
             return []
@@ -543,16 +538,15 @@ class KVSessionManifest:
         params.extend([model_key, session_key])
 
         try:
-            with self._lock:
-                with self._connect() as conn:
-                    conn.execute(
-                        f"""
+            with self._lock, self._connect() as conn:
+                conn.execute(
+                    f"""
                         UPDATE kv_sessions
                         SET {", ".join(sets)}
                         WHERE model_key = ? AND session_key = ?
                         """,
-                        params,
-                    )
+                    params,
+                )
         except sqlite3.Error as exc:
             self._handle_error("kv_manifest_touch_session_error", exc)
 
@@ -561,18 +555,17 @@ class KVSessionManifest:
             return
         now = time.time()
         try:
-            with self._lock:
-                with self._connect() as conn:
-                    conn.execute(
-                        """
+            with self._lock, self._connect() as conn:
+                conn.execute(
+                    """
                         UPDATE kv_sessions
                         SET last_accessed = ?,
                             last_restore_result = 'skipped',
                             last_skip_reason = ?
                         WHERE model_key = ? AND session_key = ?
                         """,
-                        (now, reason, model_key, session_key),
-                    )
+                    (now, reason, model_key, session_key),
+                )
         except sqlite3.Error as exc:
             self._handle_error("kv_manifest_mark_skip_error", exc)
 
@@ -580,12 +573,11 @@ class KVSessionManifest:
         if not self._healthy:
             return
         try:
-            with self._lock:
-                with self._connect() as conn:
-                    conn.execute(
-                        "UPDATE kv_sessions SET pinned = ? WHERE session_key = ?",
-                        (1 if pinned else 0, session_key),
-                    )
+            with self._lock, self._connect() as conn:
+                conn.execute(
+                    "UPDATE kv_sessions SET pinned = ? WHERE session_key = ?",
+                    (1 if pinned else 0, session_key),
+                )
         except sqlite3.Error as exc:
             self._handle_error("kv_manifest_set_pinned_error", exc)
 
@@ -593,15 +585,14 @@ class KVSessionManifest:
         if not self._healthy:
             return
         try:
-            with self._lock:
-                with self._connect() as conn:
-                    conn.execute(
-                        """
+            with self._lock, self._connect() as conn:
+                conn.execute(
+                    """
                         DELETE FROM kv_sessions
                         WHERE model_key = ? AND session_key = ?
                         """,
-                        (model_key, session_key),
-                    )
+                    (model_key, session_key),
+                )
         except sqlite3.Error as exc:
             self._handle_error("kv_manifest_delete_error", exc)
 
@@ -633,10 +624,9 @@ class KVSessionManifest:
         now = time.time()
         expires_at = self._expiry_from_ttl(ttl_days, now)
         try:
-            with self._lock:
-                with self._connect() as conn:
-                    conn.execute(
-                        """
+            with self._lock, self._connect() as conn:
+                conn.execute(
+                    """
                         INSERT INTO kv_replay_sources (
                             session_key, mode, messages_json, fingerprint,
                             message_count, approx_chars, updated_at, expires_at,
@@ -652,18 +642,18 @@ class KVSessionManifest:
                             expires_at = excluded.expires_at,
                             sampling_json = excluded.sampling_json
                         """,
-                        (
-                            session_key,
-                            mode or "",
-                            messages_json,
-                            fingerprint or "",
-                            int(message_count or 0),
-                            len(messages_json),
-                            now,
-                            expires_at,
-                            sampling_json or "",
-                        ),
-                    )
+                    (
+                        session_key,
+                        mode or "",
+                        messages_json,
+                        fingerprint or "",
+                        int(message_count or 0),
+                        len(messages_json),
+                        now,
+                        expires_at,
+                        sampling_json or "",
+                    ),
+                )
         except sqlite3.Error as exc:
             self._handle_error("kv_manifest_record_replay_error", exc)
 
@@ -678,12 +668,11 @@ class KVSessionManifest:
         if not self._healthy or not session_key:
             return None
         try:
-            with self._lock:
-                with self._connect() as conn:
-                    row = conn.execute(
-                        "SELECT * FROM kv_replay_sources WHERE session_key = ?",
-                        (session_key,),
-                    ).fetchone()
+            with self._lock, self._connect() as conn:
+                row = conn.execute(
+                    "SELECT * FROM kv_replay_sources WHERE session_key = ?",
+                    (session_key,),
+                ).fetchone()
             return dict(row) if row else None
         except sqlite3.Error as exc:
             self._handle_error("kv_manifest_get_replay_error", exc)
@@ -700,18 +689,17 @@ class KVSessionManifest:
         if not self._healthy:
             return []
         try:
-            with self._lock:
-                with self._connect() as conn:
-                    rows = conn.execute(
-                        """
+            with self._lock, self._connect() as conn:
+                rows = conn.execute(
+                    """
                         SELECT session_key, mode, fingerprint, message_count,
                                approx_chars, updated_at, expires_at
                         FROM kv_replay_sources
                         ORDER BY updated_at DESC
                         LIMIT ?
                         """,
-                        (max(1, int(limit)),),
-                    ).fetchall()
+                    (max(1, int(limit)),),
+                ).fetchall()
             return [dict(row) for row in rows]
         except sqlite3.Error as exc:
             self._handle_error("kv_manifest_list_replay_error", exc)
@@ -721,12 +709,11 @@ class KVSessionManifest:
         if not self._healthy or not session_key:
             return
         try:
-            with self._lock:
-                with self._connect() as conn:
-                    conn.execute(
-                        "DELETE FROM kv_replay_sources WHERE session_key = ?",
-                        (session_key,),
-                    )
+            with self._lock, self._connect() as conn:
+                conn.execute(
+                    "DELETE FROM kv_replay_sources WHERE session_key = ?",
+                    (session_key,),
+                )
         except sqlite3.Error as exc:
             self._handle_error("kv_manifest_delete_replay_error", exc)
 
@@ -742,20 +729,19 @@ class KVSessionManifest:
             return (0, 0)
         now_ts = time.time() if now is None else now
         try:
-            with self._lock:
-                with self._connect() as conn:
-                    cur = conn.execute(
-                        """
+            with self._lock, self._connect() as conn:
+                cur = conn.execute(
+                    """
                         DELETE FROM kv_replay_sources
                         WHERE expires_at > 0 AND expires_at <= ?
                         """,
-                        (now_ts,),
-                    )
-                    expired = cur.rowcount if cur.rowcount and cur.rowcount > 0 else 0
-                    evicted = 0
-                    if max_rows > 0:
-                        cur = conn.execute(
-                            """
+                    (now_ts,),
+                )
+                expired = cur.rowcount if cur.rowcount and cur.rowcount > 0 else 0
+                evicted = 0
+                if max_rows > 0:
+                    cur = conn.execute(
+                        """
                             DELETE FROM kv_replay_sources
                             WHERE session_key NOT IN (
                                 SELECT session_key FROM kv_replay_sources
@@ -763,9 +749,9 @@ class KVSessionManifest:
                                 LIMIT ?
                             )
                             """,
-                            (int(max_rows),),
-                        )
-                        evicted = cur.rowcount if cur.rowcount and cur.rowcount > 0 else 0
+                        (int(max_rows),),
+                    )
+                    evicted = cur.rowcount if cur.rowcount and cur.rowcount > 0 else 0
             return (expired, evicted)
         except sqlite3.Error as exc:
             self._handle_error("kv_manifest_prune_replay_error", exc)

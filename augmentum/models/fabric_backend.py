@@ -215,10 +215,10 @@ class FabricBackend(ModelBackend):
         http_client: httpx.AsyncClient,
         peer_node_id: str,
         peer_addr: str,
-        advertised_capability: "LLMInferenceCapability",
-        identity: "FabricIdentity | None" = None,
+        advertised_capability: LLMInferenceCapability,
+        identity: FabricIdentity | None = None,
         user_id: str = "",
-        coordinator: "Any | None" = None,
+        coordinator: Any | None = None,
         pinned_wire_name: str = "",
     ) -> None:
         self._client = http_client

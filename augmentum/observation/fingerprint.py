@@ -57,5 +57,5 @@ def fingerprint_prefix(
     upsert path relies on.
     """
     normalized = normalize_prefix(text)
-    key = f"{surface}\x1f{mode}\x1f{normalized}".encode("utf-8")
+    key = f"{surface}\x1f{mode}\x1f{normalized}".encode()
     return hashlib.sha1(key).hexdigest()

@@ -32,7 +32,6 @@ bypasses the cache for manual reload + tests.
 from __future__ import annotations
 
 import asyncio
-import re
 import secrets
 import time
 from typing import Any

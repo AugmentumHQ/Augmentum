@@ -58,8 +58,8 @@ def _fake_runtime(backend):
 @pytest.mark.asyncio
 async def test_step_skips_when_disabled(monkeypatch):
     """companion_initiative_enabled=False → step returns None, no DB hit."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.behavior import initiative
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_initiative_enabled", False)
 
@@ -78,8 +78,8 @@ async def test_step_skips_when_disabled(monkeypatch):
 @pytest.mark.asyncio
 async def test_step_skips_within_interval(monkeypatch):
     """Repeated step() calls within min_interval_s must not re-score."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.behavior import initiative
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_initiative_enabled", True)
     monkeypatch.setattr(settings, "companion_initiative_min_interval_s", 60.0)
@@ -99,8 +99,8 @@ async def test_step_skips_within_interval(monkeypatch):
 @pytest.mark.asyncio
 async def test_step_runs_after_interval(monkeypatch):
     """After min_interval_s elapsed, step actually scores."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.behavior import initiative
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_initiative_enabled", True)
     monkeypatch.setattr(settings, "companion_initiative_min_interval_s", 60.0)
@@ -126,8 +126,8 @@ async def test_step_runs_after_interval(monkeypatch):
 @pytest.mark.asyncio
 async def test_first_run_runs_immediately(monkeypatch):
     """When last_initiative_score_at is 0 (fresh runtime), don't suppress."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.behavior import initiative
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_initiative_enabled", True)
     monkeypatch.setattr(settings, "companion_initiative_min_interval_s", 60.0)
@@ -238,8 +238,8 @@ async def test_unresolved_journal_excludes_suppressed():
 @pytest.mark.asyncio
 async def test_proposal_kind_reflects_dominant_feature(monkeypatch):
     """With only journal-wondering entries, dominant feature is journal."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.behavior import initiative
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_initiative_enabled", True)
     monkeypatch.setattr(settings, "companion_initiative_min_interval_s", 0.0)
@@ -264,8 +264,8 @@ async def test_proposal_kind_reflects_dominant_feature(monkeypatch):
 @pytest.mark.asyncio
 async def test_no_enqueue_on_trivial_score(monkeypatch):
     """Zero-feature score → return Proposal but don't write to queue."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.behavior import initiative
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_initiative_enabled", True)
     monkeypatch.setattr(settings, "companion_initiative_min_interval_s", 0.0)

@@ -47,8 +47,8 @@ async def _boot_runtime(*, with_user: str | None = None):
     auto-bind path resolves owner_user_id.
     """
     from augmentum.companion_runtime.runtime import CompanionRuntime
-    from augmentum.memory.store import MemoryStore
     from augmentum.memory.core_profile import CoreProfileManager
+    from augmentum.memory.store import MemoryStore
     from augmentum.state.backends.sqlite import SQLiteBackend
 
     backend = SQLiteBackend(":memory:")
@@ -155,8 +155,8 @@ def test_drift_audit_timestamp_parser():
 @pytest.mark.asyncio
 async def test_drift_audit_skip_when_disabled(monkeypatch):
     """Flag off → no-op even if interval has elapsed."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.behavior import drift_audit
+    from augmentum.config import settings
 
     runtime, backend = await _boot_runtime(with_user="user-x")
     try:
@@ -192,7 +192,7 @@ async def test_drift_audit_runs_when_due():
                 try:
                     ev = await asyncio.wait_for(sub.queue.get(), timeout=0.1)
                     collected.append(ev)
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     pass
 
         # Backdate to force due
@@ -228,7 +228,6 @@ def test_companion_internal_chat_request_imports_canonical():
     that module doesn't exist. The fix moved them to
     `augmentum.models.base`. Voice keeps a fallback for defense.
     """
-    import ast
     from pathlib import Path
 
     root = Path(__file__).resolve().parents[1] / "augmentum" / "companion_runtime"

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-
 # ── GET /stats ────────────────────────────────────────────────────────────
 
 def test_cache_stats(client):

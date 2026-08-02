@@ -10,8 +10,10 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "services" / "engine"))
 
 from scheduler import (
-    RequestScheduler, Priority, ScheduledRequest,
-    detect_speculative_pairs, _extract_family,
+    Priority,
+    RequestScheduler,
+    _extract_family,
+    detect_speculative_pairs,
 )
 
 

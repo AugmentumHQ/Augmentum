@@ -6,7 +6,6 @@ Run with: pytest tests/live/test_live_state_persistence.py --run-live -x -v
 
 from __future__ import annotations
 
-import asyncio
 import json
 import uuid
 

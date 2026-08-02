@@ -3,9 +3,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
-
-import pytest
 
 from augmentum.knowledge.catalog import (
     CATEGORY_MAP,
@@ -16,11 +13,11 @@ from augmentum.knowledge.catalog import (
 )
 from augmentum.knowledge.importer import (
     ALL_SUPPORTED,
-    ImportChunk,
     IMPORTABLE_EXTS,
-    detect_format,
+    ImportChunk,
     _extract_csv,
     _extract_json,
+    detect_format,
 )
 from augmentum.knowledge.packs import PackManager, PackMeta, PackResult
 

@@ -20,7 +20,6 @@ from augmentum.library.publications import (
     TitleCollision,
 )
 
-
 _SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY,

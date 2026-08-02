@@ -8,9 +8,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from fastapi.testclient import TestClient
 
-from augmentum.knowledge.catalog import CatalogEntry, CatalogClient, CATEGORY_MAP
+from augmentum.knowledge.catalog import CATEGORY_MAP, CatalogClient, CatalogEntry
 from augmentum.knowledge.packs import PackManager
-
 
 # ---------------------------------------------------------------------------
 # Helpers

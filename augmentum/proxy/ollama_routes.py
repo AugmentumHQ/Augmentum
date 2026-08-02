@@ -6,13 +6,12 @@ import asyncio
 import json
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, field_validator
 
 from augmentum.classifier.router import MODE_HEADER, Mode, RequestClassifier
 from augmentum.config import settings
-from augmentum.models.provider_registry import ModelUnavailableError
 from augmentum.memory.integration import (
     apply_dream_injection_to_request,
     recall_and_inject,
@@ -25,7 +24,8 @@ from augmentum.models.base import (
     inject_vision_prompt,
     resolve_chat_image_urls,
 )
-from augmentum.modes.passthrough.handler import PassthroughHandler, _CHAT_SYNTHESIS_HINT
+from augmentum.models.provider_registry import ModelUnavailableError
+from augmentum.modes.passthrough.handler import _CHAT_SYNTHESIS_HINT, PassthroughHandler
 from augmentum.proxy.handler_factory import (
     _resolve_passthrough_tools,
     apply_prompt_cache_key,
@@ -843,7 +843,7 @@ async def ollama_tags(request: Request) -> JSONResponse:
             if probe_state.pop(key, None):
                 log.warning("tags_list_recovered", backend=key)
             return key, list(models)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             err_key = "timeout"
             if probe_state.get(key) != err_key:
                 log.warning("tags_list_timeout", backend=key, timeout_s=deadline)

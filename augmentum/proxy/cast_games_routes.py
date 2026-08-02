@@ -26,11 +26,11 @@ from pydantic import BaseModel, Field
 from augmentum.cast.games.classifier import CastClassifier
 from augmentum.cast.games.models import (
     KNOWN_ADAPTERS,
-    HostCapabilities,
-    KeymapProfile,
     STRATEGY_CONTAINERIZED,
     STRATEGY_PROXY,
     STRATEGY_SHIM,
+    HostCapabilities,
+    KeymapProfile,
     _coerce_input_chain,
 )
 from augmentum.cast.games.registry import CastProfileRegistry

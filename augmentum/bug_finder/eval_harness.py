@@ -19,11 +19,11 @@ from pathlib import Path
 from typing import Any
 
 from augmentum.bug_finder.findings import (
+    _SEV_RANK,
+    _STATUS_RANK,
     Finding,
     FindingStatus,
     Severity,
-    _SEV_RANK,
-    _STATUS_RANK,
 )
 
 # ---------------------------------------------------------------------------

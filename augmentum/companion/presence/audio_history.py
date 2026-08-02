@@ -37,7 +37,6 @@ Concurrency:
 from __future__ import annotations
 
 import gzip
-import time
 import uuid
 from dataclasses import dataclass
 

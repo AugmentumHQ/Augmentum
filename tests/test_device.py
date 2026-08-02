@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 
 
 def test_device_routes_import():
-    from augmentum.proxy.device_routes import router, cast_blob_router
+    from augmentum.proxy.device_routes import cast_blob_router, router
     assert router.prefix == "/api/devices"
     assert cast_blob_router.prefix == "/api/cast"
 

@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
-
-import pytest
+from unittest.mock import MagicMock
 
 
 class TestBaseDataModels:
@@ -367,7 +365,7 @@ class TestConverters:
     """Verify all converter modules import and construct."""
 
     def test_import_base_converter(self):
-        from augmentum.models.converters.base import MessageConverter, PostProcessMode
+        from augmentum.models.converters.base import PostProcessMode
 
         assert PostProcessMode.NONE.value == "none"
 
@@ -396,7 +394,7 @@ class TestConverters:
         assert c is not None
 
     def test_import_utils(self):
-        from augmentum.models.converters.utils import ZWS, merge_consecutive_messages, prepend_name
+        from augmentum.models.converters.utils import ZWS
 
         assert ZWS == "\u200b"
 
@@ -429,11 +427,8 @@ class TestLoadBalancer:
 
     def test_import_strategies(self):
         from augmentum.models.load_balancer import (
-            AB_TEST,
-            RANDOM,
             ROUND_ROBIN,
             STRATEGIES,
-            WEIGHTED_RANDOM,
         )
 
         assert ROUND_ROBIN in STRATEGIES
@@ -454,7 +449,7 @@ class TestProviderProfiles:
     """Verify provider profiles load."""
 
     def test_profiles_dict(self):
-        from augmentum.models.provider_profiles import PROFILES, get_profile
+        from augmentum.models.provider_profiles import PROFILES
 
         assert "openai" in PROFILES
         assert "openrouter" in PROFILES

@@ -520,7 +520,9 @@ async def _render_document(source: dict, request: Request) -> tuple[bytes, list[
     any indication to the user).
     """
     from augmentum.tools.artifact_document import (
-        _render_pdf, _render_docx, pdf_render_will_downgrade_unicode,
+        _render_docx,
+        _render_pdf,
+        pdf_render_will_downgrade_unicode,
     )
 
     title = source.get("title", "Document")

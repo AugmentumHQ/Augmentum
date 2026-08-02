@@ -67,8 +67,8 @@ class RoutingDirector:
 
     def __init__(
         self,
-        coordinator: "FabricCoordinator",
-        http_client: "httpx.AsyncClient",
+        coordinator: FabricCoordinator,
+        http_client: httpx.AsyncClient,
     ) -> None:
         self._coordinator = coordinator
         self._http_client = http_client
@@ -86,9 +86,9 @@ class RoutingDirector:
         model: str,
         user_id: str,
         session_id: str,
-        local_backend: "ModelBackend",
+        local_backend: ModelBackend,
         local_known: bool = True,
-    ) -> "ModelBackend | None":
+    ) -> ModelBackend | None:
         """Decide whether to route this LLM request to a peer.
 
         Returns ``None`` when local should serve (the common case).
@@ -230,7 +230,7 @@ class RoutingDirector:
         peer_id_prefix: str,
         user_id: str,
         session_id: str,
-    ) -> "ModelBackend | None":
+    ) -> ModelBackend | None:
         """Route an LLM request to a *specific* peer the operator picked.
 
         ``peer_id_prefix`` is the short node-id (first 12 chars by
@@ -683,7 +683,7 @@ class RoutingDirector:
             tier=chosen_cap.tier,
         )
 
-    def _local_render_capability(self) -> "CastRenderCapability | None":
+    def _local_render_capability(self) -> CastRenderCapability | None:
         """Pick the cast-render cap out of this node's local capability
         list. Empty / missing capability means the extractor hasn't run
         yet (very rare — happens during a narrow startup window).

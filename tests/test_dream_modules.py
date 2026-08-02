@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
-from unittest.mock import AsyncMock, MagicMock, patch
+from datetime import UTC, datetime, timedelta
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -93,7 +93,7 @@ class TestDreamScheduler:
                                message_threshold=5, idle_minutes=30)
         sched._messages_since_dream = 10
         sched._approved_since_dream = 1
-        sched._last_request_at = datetime.now(timezone.utc)  # just now
+        sched._last_request_at = datetime.now(UTC)  # just now
         assert sched._is_eligible() is False
 
     def test_eligible_all_conditions_met(self):
@@ -101,8 +101,8 @@ class TestDreamScheduler:
                                message_threshold=5, idle_minutes=1, cooldown_minutes=1)
         sched._messages_since_dream = 10
         sched._approved_since_dream = 2
-        sched._last_request_at = datetime.now(timezone.utc) - timedelta(minutes=5)
-        sched._last_dream_at = datetime.now(timezone.utc) - timedelta(minutes=5)
+        sched._last_request_at = datetime.now(UTC) - timedelta(minutes=5)
+        sched._last_dream_at = datetime.now(UTC) - timedelta(minutes=5)
         assert sched._is_eligible() is True
 
     def test_not_eligible_during_cooldown(self):
@@ -110,8 +110,8 @@ class TestDreamScheduler:
                                message_threshold=5, idle_minutes=1, cooldown_minutes=60)
         sched._messages_since_dream = 10
         sched._approved_since_dream = 2
-        sched._last_request_at = datetime.now(timezone.utc) - timedelta(minutes=5)
-        sched._last_dream_at = datetime.now(timezone.utc) - timedelta(minutes=10)
+        sched._last_request_at = datetime.now(UTC) - timedelta(minutes=5)
+        sched._last_dream_at = datetime.now(UTC) - timedelta(minutes=10)
         assert sched._is_eligible() is False
 
     def test_notify_message_increments(self):
@@ -180,19 +180,19 @@ class TestDreamContextBuilder:
 
     def test_humanize_age_just_now(self):
         builder = DreamContextBuilder()
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         ts = now.isoformat()
         assert builder.humanize_age(ts, now) == "just now"
 
     def test_humanize_age_hours(self):
         builder = DreamContextBuilder()
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         ts = (now - timedelta(hours=3)).isoformat()
-        assert "3 hours ago" == builder.humanize_age(ts, now)
+        assert builder.humanize_age(ts, now) == "3 hours ago"
 
     def test_humanize_age_yesterday(self):
         builder = DreamContextBuilder()
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         ts = (now - timedelta(days=1)).isoformat()
         assert builder.humanize_age(ts, now) == "yesterday"
 
@@ -205,6 +205,7 @@ class TestJournalPersistence:
     @pytest.mark.asyncio
     async def test_store_and_retrieve_entry(self, tmp_path):
         import aiosqlite
+
         from augmentum.dream.journal import DreamJournal
 
         db_path = str(tmp_path / "dream_test.db")
@@ -256,6 +257,7 @@ class TestJournalPersistence:
     @pytest.mark.asyncio
     async def test_list_entries(self, tmp_path):
         import aiosqlite
+
         from augmentum.dream.journal import DreamJournal
 
         db_path = str(tmp_path / "dream_list.db")

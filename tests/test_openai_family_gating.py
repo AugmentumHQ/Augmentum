@@ -25,11 +25,9 @@ from augmentum.models.base import InternalChatRequest, Message
 from augmentum.models.openai_compat import OpenAIBackend
 from augmentum.models.provider_profiles import (
     PROFILES,
-    ProviderProfile,
     effective_capability,
     is_openai_family_model,
 )
-
 
 # ----------------------------------------------------------------------
 # Pure capability function: is_openai_family_model + effective_capability

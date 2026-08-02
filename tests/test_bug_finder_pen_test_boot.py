@@ -16,7 +16,6 @@ Covers:
 
 from __future__ import annotations
 
-import asyncio
 import json
 import socket
 import sys
@@ -25,11 +24,15 @@ from pathlib import Path
 import pytest
 
 from augmentum.bug_finder.agent_tools import (
-    BootUnderTestTool, HTTPAttackTool, UnderTestStatusTool,
+    BootUnderTestTool,
+    UnderTestStatusTool,
     build_pen_test_tools,
 )
 from augmentum.bug_finder.pen_test_boot import (
-    BootSpec, _UnderTestRegistry, boot_under_test, teardown_service,
+    BootSpec,
+    _UnderTestRegistry,
+    boot_under_test,
+    teardown_service,
 )
 
 

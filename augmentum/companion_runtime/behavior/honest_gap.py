@@ -125,6 +125,7 @@ async def _embedding_drift(text_a: str, text_b: str) -> float:
         return 0.0
     try:
         import asyncio
+
         from augmentum.memory.embeddings import EmbeddingService
         emb_a = await asyncio.to_thread(EmbeddingService.embed_one, text_a)
         emb_b = await asyncio.to_thread(EmbeddingService.embed_one, text_b)

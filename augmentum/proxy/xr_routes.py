@@ -9,7 +9,6 @@ spine that lets a Quest Browser/PWA experience recover like a native app.
 from __future__ import annotations
 
 import asyncio
-import contextlib
 import ipaddress
 from http.cookies import SimpleCookie
 from typing import Any
@@ -19,9 +18,9 @@ from fastapi import APIRouter, HTTPException, Query, Request, WebSocket, WebSock
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 
+from augmentum.utils.logging import get_logger
 from augmentum.xr.browser_panel import ChromiumNotAvailable, XRBrowserPanelManager
 from augmentum.xr.session import DEFAULT_ROOM_ID, DEFAULT_SEAT_ID
-from augmentum.utils.logging import get_logger
 
 router = APIRouter(prefix="/api/xr", tags=["xr"])
 log = get_logger(__name__)

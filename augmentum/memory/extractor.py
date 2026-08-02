@@ -571,6 +571,7 @@ async def _deduplicate_facts(
 
     try:
         import asyncio
+
         from augmentum.memory.embeddings import EmbeddingService
 
         texts = [f.content for f in facts]

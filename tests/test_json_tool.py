@@ -4,8 +4,6 @@ from __future__ import annotations
 
 import json
 
-import pytest
-
 from augmentum.tools.json_tool import JsonTool, _jsonpath_query
 
 

@@ -9,8 +9,6 @@ They assume the server has an active session (already set up).
 
 from __future__ import annotations
 
-import asyncio
-
 import httpx
 import pytest
 

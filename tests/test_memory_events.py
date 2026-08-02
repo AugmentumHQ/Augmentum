@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import asyncio
 import json
-import tempfile
 import os
+import tempfile
 
 import aiosqlite
 import pytest
@@ -67,7 +67,7 @@ async def test_log_event_without_memory_id(event_db):
 
 @pytest.mark.asyncio
 async def test_get_events_returns_newest_first(event_db):
-    from augmentum.memory.events import log_event, get_events
+    from augmentum.memory.events import get_events, log_event
 
     await log_event(event_db, "extraction", user_id=_UID, detail={"count": 1})
     await log_event(event_db, "promotion", user_id=_UID, memory_id="m2", detail={"to_tier": "core"})
@@ -79,7 +79,7 @@ async def test_get_events_returns_newest_first(event_db):
 
 @pytest.mark.asyncio
 async def test_get_events_filters_by_type(event_db):
-    from augmentum.memory.events import log_event, get_events
+    from augmentum.memory.events import get_events, log_event
 
     await log_event(event_db, "extraction", user_id=_UID, detail={"count": 1})
     await log_event(event_db, "promotion", user_id=_UID, memory_id="m2", detail={})
@@ -120,7 +120,7 @@ async def test_get_events_requires_user_id(event_db):
 @pytest.mark.asyncio
 async def test_log_event_isolates_users(event_db):
     """A's events are not visible to B and vice-versa."""
-    from augmentum.memory.events import log_event, get_events
+    from augmentum.memory.events import get_events, log_event
 
     await log_event(event_db, "promotion", user_id="usr_a", memory_id="m1")
     await log_event(event_db, "promotion", user_id="usr_b", memory_id="m2")
@@ -138,6 +138,7 @@ async def test_dream_scheduler_passes_user_id():
     not inside the detail dict — that pattern (silent + misleading) is
     what stranded the 32 dream_cycle rows."""
     import inspect
+
     from augmentum.dream import scheduler
     src = inspect.getsource(scheduler)
     # The call site must pass user_id as a top-level kwarg
@@ -151,6 +152,7 @@ async def test_memory_store_promotion_passes_user_id():
     callers omitting the kwarg."""
     import inspect
     import re
+
     from augmentum.memory import store
     src = inspect.getsource(store)
     # Find every log_event(...) call signature, verify each carries user_id

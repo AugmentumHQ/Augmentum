@@ -20,7 +20,6 @@ from augmentum.tools.setting_tools import (
     _trust_check,
 )
 
-
 _RESTORE_KEYS = (
     "tts_voice_style",
     "tts_kokoro_hbe",

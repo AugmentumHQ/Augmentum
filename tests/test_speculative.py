@@ -3,16 +3,12 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
-from dataclasses import dataclass
 
 import numpy as np
-import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "services" / "engine"))
 
-from speculative import SpeculativeGenerator, SpeculativeStats, DualModelSlot
-
+from speculative import DualModelSlot, SpeculativeGenerator, SpeculativeStats
 
 # ---------------------------------------------------------------------------
 # Mock Llama model for testing without a real GGUF model

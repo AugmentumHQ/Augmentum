@@ -2450,12 +2450,12 @@ class LlamaServerManager:
             self.process.terminate()
             try:
                 await asyncio.wait_for(self.process.wait(), timeout=10.0)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 log.warning("llama-server did not exit in 10s, killing", pid=pid)
                 self.process.kill()
                 try:
                     await asyncio.wait_for(self.process.wait(), timeout=5.0)
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     # asyncio.wait() can hang past SIGKILL on WSL2+CUDA
                     # when the kernel hasn't reaped the process yet
                     # (D-state, waiting on GPU driver release). Bypass

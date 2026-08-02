@@ -14,7 +14,6 @@ from augmentum.state.backends.sqlite import (
     _split_sql_statements,
 )
 
-
 MIGRATIONS_DIR = Path(__file__).parent.parent / "augmentum" / "state" / "migrations"
 
 

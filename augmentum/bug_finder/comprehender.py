@@ -39,7 +39,6 @@ from dataclasses import dataclass
 
 from augmentum.bug_finder.budget import SubagentBudget
 from augmentum.bug_finder.knowledge_store import (
-    CodebaseKnowledge,
     EntryPoint,
     Pillar,
     RiskSurface,
@@ -47,10 +46,8 @@ from augmentum.bug_finder.knowledge_store import (
 )
 from augmentum.bug_finder.role_models import Role
 from augmentum.bug_finder.subagent import (
-    COMPREHENDER_TOOL_NAMES,
     SubagentResult,
     SubagentSpec,
-    filter_tools,
     run_subagent,
 )
 from augmentum.utils.logging import get_logger

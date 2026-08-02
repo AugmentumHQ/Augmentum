@@ -2,14 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
-
 from augmentum.discovery.distiller import (
     chunk_text,
     distill_article,
     distill_transcript,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers

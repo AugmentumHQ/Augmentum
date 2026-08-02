@@ -23,7 +23,6 @@ from typing import Any
 from augmentum.intent.action import ActionFanout, ActionResult, SessionContext
 from augmentum.intent.registry import register_action
 
-
 _TIER3_ONLY = ActionFanout(tier1=False, tier2=False, tier3=True)
 
 

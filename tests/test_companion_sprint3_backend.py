@@ -159,8 +159,8 @@ async def test_topic_mute_persisted_with_expiry():
 @pytest.mark.asyncio
 async def test_pre_context_disabled_returns_none(monkeypatch):
     """Master kill switch off → no injection."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.pre_context import maybe_inject_notes_context
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_pre_context_enabled", False)
     backend = await _boot_backend()
@@ -180,8 +180,8 @@ async def test_pre_context_disabled_returns_none(monkeypatch):
 @pytest.mark.asyncio
 async def test_pre_context_no_match_returns_none(monkeypatch):
     """No keyword overlap → no injection."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.pre_context import maybe_inject_notes_context
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_pre_context_enabled", True)
     backend = await _boot_backend()
@@ -209,8 +209,8 @@ async def test_pre_context_no_match_returns_none(monkeypatch):
 @pytest.mark.asyncio
 async def test_pre_context_keyword_overlap_triggers_injection(monkeypatch):
     """≥ min_keyword_overlap shared between note + message → inject."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.pre_context import maybe_inject_notes_context
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_pre_context_enabled", True)
     monkeypatch.setattr(settings, "companion_pre_context_min_keyword_overlap", 2)
@@ -246,8 +246,8 @@ async def test_pre_context_keyword_overlap_triggers_injection(monkeypatch):
 @pytest.mark.asyncio
 async def test_pre_context_skips_surfaced_notes(monkeypatch):
     """Already-surfaced notes are excluded."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.pre_context import maybe_inject_notes_context
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_pre_context_enabled", True)
     backend = await _boot_backend()
@@ -277,8 +277,8 @@ async def test_pre_context_skips_surfaced_notes(monkeypatch):
 @pytest.mark.asyncio
 async def test_pre_context_skips_quarantined_notes(monkeypatch):
     """Quarantined notes are excluded even if keyword-matched."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.pre_context import maybe_inject_notes_context
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_pre_context_enabled", True)
     backend = await _boot_backend()
@@ -307,8 +307,8 @@ async def test_pre_context_skips_quarantined_notes(monkeypatch):
 @pytest.mark.asyncio
 async def test_pre_context_empty_message_returns_none(monkeypatch):
     """Empty first message → trivially no match."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.pre_context import maybe_inject_notes_context
+    from augmentum.config import settings
 
     monkeypatch.setattr(settings, "companion_pre_context_enabled", True)
     backend = await _boot_backend()

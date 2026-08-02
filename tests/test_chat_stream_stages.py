@@ -12,7 +12,6 @@ isolation. End-to-end browser verification is the manual step.
 
 from __future__ import annotations
 
-import asyncio
 import contextlib
 from unittest.mock import AsyncMock, MagicMock
 

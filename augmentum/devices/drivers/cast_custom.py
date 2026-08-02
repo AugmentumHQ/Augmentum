@@ -36,9 +36,8 @@ fallback and works through Docker NAT cleanly (TCP connect crosses).
 from __future__ import annotations
 
 import asyncio
-import threading
-import time
-from typing import TYPE_CHECKING, Any, AsyncIterator
+from collections.abc import AsyncIterator
+from typing import TYPE_CHECKING, Any
 
 from augmentum.devices.device import Device, DiscoveredDevice
 from augmentum.devices.invocation import (
@@ -50,7 +49,6 @@ from augmentum.devices.invocation import (
 from augmentum.utils.logging import get_logger
 
 if TYPE_CHECKING:
-    import httpx
 
     from augmentum.devices.driver import DriverContext
 
@@ -96,7 +94,7 @@ class CastCustomDriver:
 
     # ---- lifecycle ----------------------------------------------------------
 
-    async def start(self, ctx: "DriverContext") -> None:
+    async def start(self, ctx: DriverContext) -> None:
         # Confirm pychromecast is importable. If not, the driver still
         # registers (so the registry contract stays clean) but every
         # call returns "driver_unavailable" instead of crashing.

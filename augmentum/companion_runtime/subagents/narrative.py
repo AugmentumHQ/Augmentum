@@ -30,8 +30,8 @@ class NarrativeSubagent(SubagentBase):
 
     async def invoke(self, ctx: SubagentContext) -> SubagentResult:
         try:
-            from augmentum.models.base import InternalChatRequest
             from augmentum.companion_runtime import tiers
+            from augmentum.models.base import InternalChatRequest
         except Exception as exc:
             return SubagentResult(
                 content="", handled_by=self.name,

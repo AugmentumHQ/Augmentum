@@ -19,7 +19,7 @@ import os
 import re
 import tempfile
 import time
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 import aiosqlite
@@ -456,9 +456,10 @@ class RAGBenchHarness:
 
             # Query expansion: add synonym terms to search queries
             if use_query_expansion and not skip_search:
+                import re as _re
+
                 from augmentum.documents.query_expansion import expand_query_terms
                 from augmentum.documents.store import _STOP_WORDS
-                import re as _re
 
                 expanded_queries = []
                 for sq in search_queries:

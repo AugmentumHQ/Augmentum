@@ -7,8 +7,9 @@ lifecycle. User scoping is verified at every join point.
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from pathlib import Path
-from typing import Any, AsyncIterator
+from typing import Any
 
 import aiosqlite
 import pytest
@@ -29,7 +30,6 @@ from augmentum.devices.store import (
     DevicePlayHistoryStore,
     DeviceStore,
 )
-
 
 _MIGRATIONS_DIR = Path(__file__).parent.parent / "augmentum" / "state" / "migrations"
 

@@ -3,11 +3,11 @@ from __future__ import annotations
 
 import json
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime
 
 import structlog
 
-from augmentum.dream.models import DreamPortrait, DreamEntry
+from augmentum.dream.models import DreamEntry, DreamPortrait
 
 log = structlog.get_logger(__name__)
 
@@ -68,7 +68,7 @@ class PortraitManager:
             return None
 
         # Weight and sort entries
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         weighted = self._weight_entries(journal_entries, now)
 
         # Build journal text for the prompt
@@ -170,7 +170,7 @@ class PortraitManager:
                 impressions=self._coerce_section(data.get("impressions")),
                 source_entries=source_entry_ids,
                 is_current=True,
-                created_at=datetime.now(timezone.utc).isoformat(),
+                created_at=datetime.now(UTC).isoformat(),
             )
         except (json.JSONDecodeError, KeyError, TypeError, AttributeError):
             # Fallback: use entire response as voice_notes
@@ -185,7 +185,7 @@ class PortraitManager:
                 impressions="",
                 source_entries=source_entry_ids,
                 is_current=True,
-                created_at=datetime.now(timezone.utc).isoformat(),
+                created_at=datetime.now(UTC).isoformat(),
             )
 
     def _enforce_token_budget(self, portrait: DreamPortrait) -> DreamPortrait:

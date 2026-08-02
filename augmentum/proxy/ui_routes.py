@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import asyncio
 import base64
-import contextlib
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 import httpx

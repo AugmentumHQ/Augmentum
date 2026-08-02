@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -17,7 +16,6 @@ from augmentum.modes.narrative.llm_extractor import (
     _parse_extraction,
     extract_narrative_state,
 )
-
 
 # --- _parse_extraction tests ---
 
@@ -459,13 +457,13 @@ class TestEngineMerge:
 class TestHandlerLLMExtraction:
     @pytest.mark.asyncio()
     async def test_llm_extraction_fires_on_response(self):
-        from augmentum.modes.narrative.engine import NarrativeEngine
-        from augmentum.modes.narrative.handler import NarrativeHandler
         from augmentum.models.base import (
             InternalChatRequest,
             InternalChatResponse,
             Message,
         )
+        from augmentum.modes.narrative.engine import NarrativeEngine
+        from augmentum.modes.narrative.handler import NarrativeHandler
 
         engine = NarrativeEngine(session_id="test")
         backend = AsyncMock()

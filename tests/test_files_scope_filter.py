@@ -16,10 +16,8 @@ from __future__ import annotations
 
 import asyncio
 import json
-from typing import Any
 
 import aiosqlite
-import pytest
 
 
 def _run(coro):
@@ -193,7 +191,8 @@ class TestIndexLayerExcludeSources:
             idx, conn, uid = await _make_index()
             try:
                 from augmentum.proxy.files_routes import (
-                    _SOURCE_GROUPS, _SOURCE_GROUP_ENTITY_FILTERS,
+                    _SOURCE_GROUP_ENTITY_FILTERS,
+                    _SOURCE_GROUPS,
                 )
                 cfg = _SOURCE_GROUP_ENTITY_FILTERS["podcasts"]
                 results = await idx.list_recent(
@@ -213,7 +212,8 @@ class TestIndexLayerExcludeSources:
             idx, conn, uid = await _make_index()
             try:
                 from augmentum.proxy.files_routes import (
-                    _SOURCE_GROUPS, _SOURCE_GROUP_ENTITY_FILTERS,
+                    _SOURCE_GROUP_ENTITY_FILTERS,
+                    _SOURCE_GROUPS,
                 )
                 cfg = _SOURCE_GROUP_ENTITY_FILTERS["audiobooks"]
                 results = await idx.list_recent(
@@ -288,7 +288,7 @@ class TestSourceGroupsConstants:
 
     def test_every_source_group_member_is_also_a_cloud_source(self):
         """Invariant: virtual chip groups only aggregate cloud sources."""
-        from augmentum.proxy.files_routes import _SOURCE_GROUPS, _CLOUD_SOURCES
+        from augmentum.proxy.files_routes import _CLOUD_SOURCES, _SOURCE_GROUPS
         for group, members in _SOURCE_GROUPS.items():
             for m in members:
                 assert m in _CLOUD_SOURCES, (

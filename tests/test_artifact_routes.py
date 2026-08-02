@@ -15,10 +15,6 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock, MagicMock
 
-import pytest
-from fastapi.testclient import TestClient
-
-
 TEST_USER_ID = "usr_test"
 
 

@@ -19,7 +19,6 @@ for the broader design.
 
 from __future__ import annotations
 
-from .hub import ConnectHub
 from .contacts import (
     THIS_INSTANCE_SENTINEL,
     ResolvedPeer,
@@ -28,6 +27,7 @@ from .contacts import (
     local_did_for,
     resolve_peer_did,
 )
+from .hub import ConnectHub
 from .protocol import (
     CALL_PROTOCOL_VERSION,
     DEFAULT_INVITE_LIFETIME_MS,

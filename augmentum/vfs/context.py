@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from augmentum.vfs.models import FileEntry
 from augmentum.utils.logging import get_logger
+from augmentum.vfs.models import FileEntry
 
 log = get_logger(__name__)
 

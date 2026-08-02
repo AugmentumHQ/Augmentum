@@ -8,7 +8,6 @@ plan that a sender/control stack can consume.
 
 from __future__ import annotations
 
-from typing import Any
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from augmentum.media.playback_selection import (

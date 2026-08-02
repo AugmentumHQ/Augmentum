@@ -10,7 +10,6 @@ SLOW (3-8 min per test) — run manually, not in CI.
 
 from __future__ import annotations
 
-import asyncio
 import json
 import os
 import re
@@ -195,7 +194,7 @@ def _analyze_project(result, label: str):
         for i in issues:
             print(f"    - {i}")
     else:
-        print(f"\n  ✓ No issues detected")
+        print("\n  ✓ No issues detected")
 
     return project
 
@@ -355,7 +354,7 @@ class TestComplexBuilds:
         assert has_persistence, "No localStorage/persistence usage found"
 
         # Should have drag-and-drop related code
-        has_dnd = any(kw in all_js for kw in ("dragstart", "dragover", "drop", "draggable"))
+        has_dnd = any(kw in all_code for kw in ("dragstart", "dragover", "drop", "draggable"))
         print(f"\n  Drag-and-drop: {'yes' if has_dnd else 'NOT FOUND'}")
 
         total_lines = sum(f["content"].count("\n") + 1 for f in files)

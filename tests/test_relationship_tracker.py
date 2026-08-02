@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-import pytest
-
 from augmentum.modes.narrative.relationship_tracker import (
-    Relationship,
     RelationshipDelta,
     RelationshipTracker,
 )
@@ -300,7 +297,6 @@ class TestEngineIntegration:
         from unittest.mock import patch
 
         from augmentum.modes.narrative.engine import NarrativeEngine
-        from augmentum.models.base import InternalChatRequest, Message
         from augmentum.state.narrative_state import Entity, EntityState, EntityType, _new_id
 
         engine = NarrativeEngine(session_id="test")
@@ -328,9 +324,9 @@ class TestEngineIntegration:
     def test_relationship_context_injected(self):
         from unittest.mock import patch
 
+        from augmentum.models.base import InternalChatRequest, Message
         from augmentum.modes.narrative.engine import NarrativeEngine
         from augmentum.modes.narrative.relationship_tracker import RelationshipDelta
-        from augmentum.models.base import InternalChatRequest, Message
         from augmentum.state.narrative_state import Entity, EntityState, EntityType, _new_id
 
         engine = NarrativeEngine(session_id="test")

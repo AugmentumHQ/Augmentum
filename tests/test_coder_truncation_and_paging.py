@@ -14,16 +14,12 @@ Covers:
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock
-
-import pytest
-
 from augmentum.coder.state import CoderState
 from augmentum.coder.tools import (
+    _MAX_OUTPUT_CHARS,
     CodeGlobTool,
     CodeGrepTool,
     FileReadTool,
-    _MAX_OUTPUT_CHARS,
     _truncate,
 )
 

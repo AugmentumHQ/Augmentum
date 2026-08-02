@@ -32,7 +32,6 @@ import threading
 from dataclasses import dataclass
 from pathlib import Path
 
-
 # Standard reference subdirectory inside any augmentum-dev-shipping repo.
 _REF_SUBPATH = (
     ".claude", "skills", "augmentum-dev", "references",

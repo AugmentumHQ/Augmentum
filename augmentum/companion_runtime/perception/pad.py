@@ -25,7 +25,6 @@ activity_selector pulls once per tick.
 
 from __future__ import annotations
 
-import json
 import math
 from dataclasses import dataclass
 from typing import TYPE_CHECKING

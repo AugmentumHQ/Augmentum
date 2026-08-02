@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import patch
 
 from augmentum.utils.datetime_context import _get_local_tz, get_datetime_context
@@ -68,5 +68,5 @@ class TestGetLocalTz:
     def test_utc_conversion(self):
         tz = _get_local_tz()
         now = datetime.now(tz)
-        utc_now = now.astimezone(timezone.utc)
-        assert utc_now.tzinfo == timezone.utc
+        utc_now = now.astimezone(UTC)
+        assert utc_now.tzinfo == UTC

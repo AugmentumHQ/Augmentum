@@ -18,9 +18,6 @@ from __future__ import annotations
 
 import re
 
-import pytest
-
-
 # ── Pin constants ───────────────────────────────────────────────
 
 
@@ -220,6 +217,7 @@ class TestVendorDocs:
 
     def test_vendor_md_includes_pinned_commit(self):
         import pathlib
+
         from augmentum.voice._vendored.pocket_tts.upstream_pin import (
             UPSTREAM_COMMIT,
         )
@@ -243,6 +241,7 @@ class TestVendorDocs:
 
     def test_license_upstream_references_pin(self):
         import pathlib
+
         from augmentum.voice._vendored.pocket_tts.upstream_pin import (
             UPSTREAM_COMMIT,
         )

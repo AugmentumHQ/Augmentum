@@ -390,8 +390,9 @@ async def _calendar_today_block(conn, intent) -> str:
                 return cached
 
     try:
-        from augmentum.calendar.store import list_events
         from datetime import date, timedelta
+
+        from augmentum.calendar.store import list_events
         today = date.today()
         events = await list_events(
             conn, user_id=user_id,
@@ -430,8 +431,8 @@ async def _calendar_today_block(conn, intent) -> str:
     # Keyed by turn_seq — a new user message invalidates automatically.
     if refs is not None and current_turn >= 0:
         try:
-            setattr(refs, "_calendar_block", block)
-            setattr(refs, "_calendar_block_turn", current_turn)
+            refs._calendar_block = block
+            refs._calendar_block_turn = current_turn
         except Exception:
             pass
 
@@ -494,7 +495,6 @@ def _maybe_schedule_calendar_sync(conn, *, user_id: str) -> None:
             username, password = managed_service_credentials(service_id)
 
             # Resolve internal_port from the service definition.
-            from augmentum.providers.manager import ServiceManager
             # We can't easily get the manager here, so use a fixed pattern.
             # The container is reachable at augmentum-{id}:{port} on the
             # shared network. The default internal port for Radicale is 5232.
@@ -889,8 +889,8 @@ _PHONE_ASSIST_NOTE = (
 
 
 async def compose_becca_prompt(
-    intent: "Intent",
-    runtime: "CompanionRuntime",
+    intent: Intent,
+    runtime: CompanionRuntime,
     ctx: dict[str, Any],
 ) -> ComposedPrompt:
     """Build Becca's system prompt for this turn.

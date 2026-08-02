@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -10,7 +10,6 @@ from augmentum.providers.manager import ServiceManager, _parse_size
 from augmentum.providers.models import (
     GpuRequirements,
     HealthCheck,
-    ManagedService,
     ServiceCategory,
     ServiceDefinition,
     ServiceStatus,

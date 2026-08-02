@@ -35,7 +35,7 @@ import fnmatch
 import json
 import time
 from collections import OrderedDict
-from collections.abc import Awaitable, Callable
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 from augmentum.utils.logging import get_logger

@@ -8,8 +8,6 @@ separate migration PR — see project memory: "Powers extension pass").
 
 from __future__ import annotations
 
-import io
-
 from augmentum.coder.analyzers.registry import (
     AnalysisReport,
     register_analyzer,

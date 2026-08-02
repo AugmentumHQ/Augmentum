@@ -1,10 +1,9 @@
 """Prometheus-compatible metrics endpoint."""
 from __future__ import annotations
 
+from fastapi import APIRouter
 from starlette.requests import Request
 from starlette.responses import Response
-
-from fastapi import APIRouter
 
 router = APIRouter(tags=["metrics"])
 

@@ -49,7 +49,7 @@ log = get_logger(__name__)
 class _Attachment:
     """One open WS subscription for one user."""
 
-    ws: "WebSocket"
+    ws: WebSocket
     connection_id: str
     user_id: str
     channel_pattern: str
@@ -112,7 +112,7 @@ class NotificationHub:
 
     async def attach(
         self, *,
-        ws: "WebSocket",
+        ws: WebSocket,
         user_id: str,
         channel_pattern: str = "*",
         importance_floor: int = 0,
@@ -323,7 +323,7 @@ class NotificationHub:
 
 
 async def publish_and_dispatch(
-    conn: "Any", *,
+    conn: Any, *,
     hub: NotificationHub,
     user_id: str,
     channel_id: str,
@@ -361,6 +361,8 @@ async def publish_and_dispatch(
 
     from augmentum.notifications.store import (
         get_notification,
+    )
+    from augmentum.notifications.store import (
         publish as _publish,
     )
 
@@ -428,7 +430,7 @@ async def publish_and_dispatch(
 
 
 async def _dispatch_webpush(
-    conn: "Any", *, notification: Notification,
+    conn: Any, *, notification: Notification,
 ) -> int:
     """Send Web Push to every matching subscription for the recipient.
 

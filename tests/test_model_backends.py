@@ -1231,7 +1231,7 @@ class TestLlamaCppBackend:
         outcomes: list[str | None],
         autofit_layers: int = 40,
         n_layers: int = 50,
-    ) -> "_OomFakeManager":
+    ) -> _OomFakeManager:  # noqa: F821  (class is defined locally in the body below)
         """Build an OOM-test manager keyed off ``outcomes``.
 
         Each entry in ``outcomes`` is the result of one ``start()``:
@@ -1277,8 +1277,8 @@ class TestLlamaCppBackend:
                 outcome = self._outcomes.pop(0)
                 if outcome == "oom":
                     raise RuntimeError(
-                        f"llama-server exited during startup with code 137 "
-                        f"(out of memory)"
+                        "llama-server exited during startup with code 137 "
+                        "(out of memory)"
                     )
                 if outcome == "crash":
                     raise RuntimeError("invalid model file: bad magic")
@@ -1935,7 +1935,7 @@ class TestLlamaCppBackend:
 
         assert saved is True
         body = json.loads(transport.requests[-1].content.decode("utf-8"))
-        expected = "session_" + hashlib.sha256("sess:abc/123".encode("utf-8")).hexdigest()[:32]
+        expected = "session_" + hashlib.sha256(b"sess:abc/123").hexdigest()[:32]
         assert body["filename"] == expected
 
     @pytest.mark.asyncio

@@ -22,14 +22,13 @@ from __future__ import annotations
 import pytest
 
 from augmentum.coder.prompts import PLAN_SYSTEM
+from augmentum.models.base import InternalStreamChunk
 from augmentum.modes.coder.handler import (
-    CoderHandler,
     _SAME_FILE_EDIT_BREAK,
     _TEST_FAILURE_STREAK_BREAK,
+    CoderHandler,
 )
 from augmentum.modes.coder.phase_act import _NO_WRITE_PROGRESS_BREAK
-from augmentum.models.base import InternalStreamChunk
-
 from tests.test_coder_handler import (
     _ExtendedContainerManager,
     _FakeChunk,
@@ -38,7 +37,6 @@ from tests.test_coder_handler import (
     _make_request,
     _tc_delta,
 )
-
 
 # ---------------------------------------------------------------------------
 # test_run failure streak

@@ -33,11 +33,9 @@ from augmentum.agents.loop import (
     run_subagent,
 )
 from augmentum.agents.verify import (
-    SubagentVerdict,
     judge_subagent_result,
 )
 from augmentum.tools.base import Tool, ToolCategory, ToolResult
-
 
 # ----------------------------------------------------------------------
 # judge_subagent_result — verdict parsing + fail-open contract

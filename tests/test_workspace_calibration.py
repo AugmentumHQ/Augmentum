@@ -7,7 +7,6 @@ from pathlib import Path
 
 from augmentum.models.workspace_calibration import WorkspaceCalibration
 
-
 # ---------------------------------------------------------------------------
 # Pure-EMA invariants
 # ---------------------------------------------------------------------------

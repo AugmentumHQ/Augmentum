@@ -140,6 +140,7 @@ async def _validate_kind_access(
 def _isolated_origin(request: Request) -> str:
     """Derive the isolated origin URL. Mirrors coder_routes._isolated_preview_origin."""
     import re
+
     from augmentum.config import settings
     explicit = (getattr(settings, "coder_preview_isolated_origin", "") or "").strip()
     if explicit:

@@ -1210,6 +1210,7 @@ class FileReadTool(_CoderTool):
         """
         import os
         import tempfile
+
         from augmentum.coder.analyzers import analyze_file, is_analyzable
 
         if not is_analyzable(path):
@@ -3909,9 +3910,7 @@ class TestRunTool(_CoderTool):
         # in execute() so they don't reach here.
         if result["passed"] == 0 and result["failed"] == 0:
             lower = output.lower()
-            if "error" in lower or "fail" in lower or "traceback" in lower:
-                result["errors"] = 1
-            elif output.strip() == "":
+            if "error" in lower or "fail" in lower or "traceback" in lower or output.strip() == "":
                 result["errors"] = 1
             else:
                 # Output exists and looks benign but we can't confirm a
@@ -5197,9 +5196,6 @@ class AskUserTool(_CoderTool):
 
 #: Ordered list of all coder tool classes for registration.
 # Import web tools (doc_search, doc_fetch) from the web_tools module
-from augmentum.coder.web_tools import DocSearchTool, DocFetchTool
-# Offline knowledge-pack search (dynamic description lists installed packs)
-from augmentum.coder.knowledge_tools import PackSearchTool
 # Sidecar-native browser verbs (persistent agent-browser service)
 from augmentum.coder.browser_tools_native import (
     BrowserConsoleTool,
@@ -5209,6 +5205,9 @@ from augmentum.coder.browser_tools_native import (
     BrowserNavigateTool,
     BrowserTabsTool,
 )
+
+# Offline knowledge-pack search (dynamic description lists installed packs)
+from augmentum.coder.knowledge_tools import PackSearchTool
 from augmentum.coder.runtime_tools import (
     BrowserClickTool,
     BrowserEvaluateTool,
@@ -5238,6 +5237,8 @@ from augmentum.coder.terminal_tools import (
     TermSendTool,
     TermSnapshotTool,
 )
+from augmentum.coder.web_tools import DocFetchTool, DocSearchTool
+
 
 class TaskDispatchTool(_CoderTool):
     """Spawn a focused subagent with its own model + tool subset + budget.
@@ -5803,11 +5804,12 @@ class BugFinderRunTool(_CoderTool):
         force_below_minimum: bool = False,
         **_kwargs,
     ) -> ToolResult:
+        import uuid as _uuid
+
         from augmentum.bug_finder.capability import (
             capability_floor_label,
             is_capable,
         )
-        import uuid as _uuid
 
         primary_model = (primary_model or "").strip()
         if not primary_model:
@@ -5913,7 +5915,7 @@ class BugFinderRunTool(_CoderTool):
                 + (f"  focus_paths: {focus}\n" if focus else "")
                 + "\nThe audit is running in the background. Continue "
                 "with other work and call `bug_finder_status` with this "
-                f"run_id when you want the report."
+                "run_id when you want the report."
             ),
             metadata={
                 "run_id": run_id,

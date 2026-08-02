@@ -1,8 +1,8 @@
 """Tests for dream context window retrieval and clustering."""
 from __future__ import annotations
 
-import pytest
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
+
 from augmentum.dream.context import DreamContextBuilder
 from augmentum.state.tree_utils import linearize_to_node
 
@@ -76,13 +76,13 @@ def test_max_window_cap():
 
 def test_humanize_age_just_now():
     builder = DreamContextBuilder()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     assert builder.humanize_age(now.isoformat(), now) == "just now"
 
 
 def test_humanize_age_days():
     builder = DreamContextBuilder()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     three_days_ago = (now - timedelta(days=3)).isoformat()
     assert builder.humanize_age(three_days_ago, now) == "3 days ago"
 

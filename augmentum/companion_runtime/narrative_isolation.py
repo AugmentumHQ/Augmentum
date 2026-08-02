@@ -190,7 +190,7 @@ def detect_frame_break(text: str) -> FrameBreakSignal:
 # ── Graduation (Lane 3 §4.6) ─────────────────────────────────────────
 
 async def graduate_to_becca(
-    runtime: "CompanionRuntime",
+    runtime: CompanionRuntime,
     *,
     user_id: str,
     content: str,

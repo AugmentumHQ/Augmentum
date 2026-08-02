@@ -55,14 +55,14 @@ import hashlib
 import json
 import time
 import uuid
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Awaitable, Callable
+from typing import TYPE_CHECKING, Any
 
 from augmentum.companion_runtime import presence_mode
 from augmentum.companion_runtime.bus import (
     PROP_FULL,
-    PresenceBus,
     PresenceEvent,
 )
 from augmentum.companion_runtime.dispatch_policy import (
@@ -245,7 +245,7 @@ class VerbContext:
     helpers for emitting events with provenance (chain_depth + parent
     log id auto-stamped so verbs can't accidentally break chain depth
     tracking)."""
-    runtime: "CompanionRuntime"
+    runtime: CompanionRuntime
     verb: ManagementVerb
     event: VerbEvent
     verb_log_id: int
@@ -299,7 +299,7 @@ class VerbDispatcher:
 
     def __init__(
         self,
-        runtime: "CompanionRuntime",
+        runtime: CompanionRuntime,
         *,
         chain_depth_limit: int = DEFAULT_CHAIN_DEPTH_LIMIT,
         coalesce_window_s: float = DEFAULT_COALESCE_WINDOW_S,
@@ -508,7 +508,7 @@ class VerbDispatcher:
             if ctx.db_ops > verb.cost_envelope.max_db_ops:
                 outcome = VerbOutcome.BUDGET_EXCEEDED
                 error_msg = f"db_ops={ctx.db_ops} > {verb.cost_envelope.max_db_ops}"
-        except asyncio.TimeoutError:
+        except TimeoutError:
             outcome = VerbOutcome.BUDGET_EXCEEDED
             error_msg = f"wallclock > {verb.cost_envelope.max_wallclock_ms}ms"
         except Exception as exc:

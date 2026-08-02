@@ -28,12 +28,11 @@ import json
 
 import pytest
 
-from augmentum.coder.state import CoderPhase, CoderState
+from augmentum.coder.state import CoderState
+from augmentum.models.base import Message
 from augmentum.modes.coder.handler import CoderHandler
-from augmentum.models.base import InternalChatRequest, InternalStreamChunk, Message
 from augmentum.state.backends.sqlite import SQLiteBackend
 from augmentum.state.manager import StateManager
-
 from tests.test_coder_handler import (
     _ExtendedContainerManager,
     _FakeBackend,
@@ -43,7 +42,6 @@ from tests.test_coder_handler import (
     _make_request,
     _tc_delta,
 )
-
 
 # ---------------------------------------------------------------------------
 # CoderState.add_turn_summary
@@ -866,8 +864,8 @@ async def test_prior_turn_appears_in_next_request_system_prompt(monkeypatch):
 @pytest.mark.asyncio
 async def test_save_session_state_returns_true_on_write(tmp_path):
     """A normal upsert reports success."""
-    from augmentum.state.coder_persistence import CoderPersistence
     from augmentum.coder.state import CoderState
+    from augmentum.state.coder_persistence import CoderPersistence
 
     backend = SQLiteBackend(str(tmp_path / "coder-save.db"))
     await backend.connect()
@@ -892,8 +890,8 @@ async def test_save_session_state_returns_true_on_write(tmp_path):
 @pytest.mark.asyncio
 async def test_save_session_state_blocked_by_other_owner(tmp_path):
     """A cross-user session_id collision must NOT silently succeed."""
-    from augmentum.state.coder_persistence import CoderPersistence
     from augmentum.coder.state import CoderState
+    from augmentum.state.coder_persistence import CoderPersistence
 
     backend = SQLiteBackend(str(tmp_path / "coder-block.db"))
     await backend.connect()

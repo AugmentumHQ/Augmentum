@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 import secrets
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from urllib.parse import urlparse
 
 import aiosqlite
@@ -14,7 +14,7 @@ log = get_logger(__name__)
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _row_to_dict(cursor: aiosqlite.Cursor, row) -> dict:
@@ -104,7 +104,7 @@ class DiscoveryStore:
         # so deliberate actions (note_save, ai_action, discuss) always
         # create a fresh row even when fired back-to-back.
         if window_min > 0:
-            window = (datetime.now(timezone.utc) - timedelta(minutes=window_min)).isoformat()
+            window = (datetime.now(UTC) - timedelta(minutes=window_min)).isoformat()
             dedup_query = (
                 """SELECT id, metadata FROM interaction_signals
                    WHERE source_url = ? AND signal_type = ? AND created_at >= ?"""
@@ -366,7 +366,7 @@ class DiscoveryStore:
             clauses.append("(title LIKE ? OR url LIKE ? OR domain LIKE ?)")
             params += [like, like, like]
         if days > 0:
-            cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+            cutoff = (datetime.now(UTC) - timedelta(days=days)).isoformat()
             clauses.append("last_visited >= ?")
             params.append(cutoff)
         where = "WHERE " + " AND ".join(clauses)
@@ -404,7 +404,7 @@ class DiscoveryStore:
 
         Folded into the recommender's seen-set so hidden items do not reappear.
         """
-        cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+        cutoff = (datetime.now(UTC) - timedelta(days=days)).isoformat()
         try:
             query = (
                 """SELECT DISTINCT source_url FROM interaction_signals
@@ -774,7 +774,7 @@ class DiscoveryStore:
         Returns the number of chunks pruned.
         """
         cutoff = (
-            datetime.now(timezone.utc) - timedelta(days=retention_days)
+            datetime.now(UTC) - timedelta(days=retention_days)
         ).isoformat()
         cursor = await self._conn.execute(
             """UPDATE content_library

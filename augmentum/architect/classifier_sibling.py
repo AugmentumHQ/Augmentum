@@ -110,7 +110,7 @@ class ClassifierSibling:
         return self._manager.base_url
 
     @property
-    def manager(self) -> "LlamaServerManager | None":
+    def manager(self) -> LlamaServerManager | None:
         """Direct access to the underlying manager. May be None
         before :meth:`start` succeeds."""
         return self._manager
@@ -137,13 +137,13 @@ class ClassifierSibling:
             if self._manager is not None and self._manager.state.name == "READY":
                 return True
 
-            from augmentum.models.llama_server_manager import LlamaServerManager
-
             # Fall back to PATH if the configured llama-server binary
             # isn't present at the dataclass default (e.g. Apple Silicon
             # Homebrew lands in /opt/homebrew/bin, not /usr/local/bin).
             import os
             import shutil
+
+            from augmentum.models.llama_server_manager import LlamaServerManager
             _binary = cfg.llama_server_path
             if not os.path.isfile(_binary):
                 _binary = shutil.which("llama-server") or _binary

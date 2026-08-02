@@ -9,10 +9,9 @@ from unittest.mock import AsyncMock, MagicMock
 
 import aiosqlite
 
-from augmentum.tools.chain import ChainStep
 from augmentum.tools.custom_flows import (
-    CustomFlowStore,
     _DEFAULT_FLOWS,
+    CustomFlowStore,
     flow_to_plan,
     match_trigger,
 )

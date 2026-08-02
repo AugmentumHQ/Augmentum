@@ -58,7 +58,7 @@ class TickLadder:
       ``await ladder.stop()`` cancels the task and waits.
     """
 
-    def __init__(self, runtime: "CompanionRuntime") -> None:
+    def __init__(self, runtime: CompanionRuntime) -> None:
         self._runtime = runtime
         self._task: asyncio.Task | None = None
         self._stopped = asyncio.Event()
@@ -117,7 +117,7 @@ class TickLadder:
                 sleep_for = max(0.001, next_boundary - now)
                 try:
                     await asyncio.wait_for(self._stopped.wait(), timeout=sleep_for)
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     pass
                 if self._stopped.is_set():
                     break

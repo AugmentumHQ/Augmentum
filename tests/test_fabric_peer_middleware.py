@@ -28,7 +28,6 @@ from augmentum.fabric.peer_middleware import (
 )
 from augmentum.state.settings_store import SettingsStore
 
-
 # ── Test fixtures ─────────────────────────────────────────────────
 
 

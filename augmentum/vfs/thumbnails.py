@@ -216,8 +216,9 @@ def _downscale_bytes(raw: bytes, size: int) -> bytes | None:
 
 def _encode_webp(img, size: int) -> bytes:
     """Fit inside a size×size box, preserve aspect, encode as WebP."""
-    from PIL import Image
     import io as _io
+
+    from PIL import Image
 
     # Honor EXIF orientation so portrait phone photos don't land sideways.
     try:
@@ -234,9 +235,7 @@ def _encode_webp(img, size: int) -> bytes:
         bg = Image.new("RGB", img.size, (255, 255, 255))
         bg.paste(img, mask=img.split()[-1])
         img = bg
-    elif img.mode == "P":
-        img = img.convert("RGB")
-    elif img.mode != "RGB":
+    elif img.mode == "P" or img.mode != "RGB":
         img = img.convert("RGB")
 
     img.thumbnail((size, size), Image.LANCZOS)

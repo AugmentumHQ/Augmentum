@@ -15,8 +15,8 @@ from __future__ import annotations
 import pytest
 
 from augmentum.auth.models import (
-    RESERVED_USERNAMES,
     RESERVED_USERNAME_PREFIXES,
+    RESERVED_USERNAMES,
     is_reserved_username,
 )
 
@@ -121,8 +121,8 @@ class TestCRUDEnforcement:
 
     @pytest.mark.asyncio
     async def test_create_user_rejects_reserved(self):
-        from augmentum.state.backends.sqlite import SQLiteBackend
         from augmentum.auth.session_manager import SessionManager
+        from augmentum.state.backends.sqlite import SQLiteBackend
         # SQLiteBackend(":memory:") gives us an in-memory aiosqlite
         # connection with all migrations applied. SessionManager wraps
         # the raw conn; same pattern as tests/test_auth_routes.py.
@@ -143,8 +143,8 @@ class TestCRUDEnforcement:
 
     @pytest.mark.asyncio
     async def test_create_first_admin_rejects_reserved(self):
-        from augmentum.state.backends.sqlite import SQLiteBackend
         from augmentum.auth.session_manager import SessionManager
+        from augmentum.state.backends.sqlite import SQLiteBackend
         backend = SQLiteBackend(":memory:")
         await backend.connect()
         sm = SessionManager(backend._conn)
@@ -158,8 +158,8 @@ class TestCRUDEnforcement:
 
     @pytest.mark.asyncio
     async def test_normal_username_succeeds(self):
-        from augmentum.state.backends.sqlite import SQLiteBackend
         from augmentum.auth.session_manager import SessionManager
+        from augmentum.state.backends.sqlite import SQLiteBackend
         backend = SQLiteBackend(":memory:")
         await backend.connect()
         sm = SessionManager(backend._conn)

@@ -30,7 +30,6 @@ from augmentum.fabric.extractors import (
     _classify_tier,
 )
 
-
 # ── Dataclass round-trip ──────────────────────────────────────────
 
 

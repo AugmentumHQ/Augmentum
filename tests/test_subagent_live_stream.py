@@ -16,30 +16,26 @@ Pinning behavior that this shipment introduced:
 
 from __future__ import annotations
 
-import asyncio
 from dataclasses import dataclass
 from unittest.mock import MagicMock
 
 import pytest
 
 from augmentum.agents.budget import SubagentBudget
-from augmentum.agents.loop import (
-    SubagentProgress,
-    SubagentResult,
-    SubagentSpec,
-    _compute_recovery_hint,
-    run_subagent,
-)
 from augmentum.agents.dispatch import (
-    DispatchRequest,
     SubagentDispatcher,
     current_subagent_depth,
     find_subagent_owner,
     list_active_subagents,
 )
+from augmentum.agents.loop import (
+    SubagentProgress,
+    SubagentSpec,
+    _compute_recovery_hint,
+    run_subagent,
+)
 from augmentum.agents.spec import AgentRole
 from augmentum.tools.base import Tool, ToolCategory, ToolResult
-
 
 # ----------------------------------------------------------------------
 # Recovery-hint mapping

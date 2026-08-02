@@ -16,7 +16,6 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
-import sys
 import time
 
 import httpx
@@ -82,7 +81,7 @@ def run_benchmark(base: str, model: str | None = None):
 
     # List models
     models = get_json(f"{base}/v1/models")
-    print(f"\nAvailable models:")
+    print("\nAvailable models:")
     for m in models.get("data", []):
         size_gb = m.get("size_bytes", 0) / (1024**3)
         shards = m.get("shards", 1)

@@ -15,7 +15,6 @@ Coverage:
 from __future__ import annotations
 
 import asyncio
-import time
 
 import pytest
 
@@ -23,8 +22,8 @@ import pytest
 async def _boot_backend_with_runtime(*, companion_id: str = "becca"):
     """Fresh :memory: backend with full migrations + a runtime + memory facade."""
     from augmentum.companion_runtime.runtime import CompanionRuntime
-    from augmentum.memory.store import MemoryStore
     from augmentum.memory.core_profile import CoreProfileManager
+    from augmentum.memory.store import MemoryStore
     from augmentum.state.backends.sqlite import SQLiteBackend
 
     backend = SQLiteBackend(":memory:")

@@ -79,6 +79,7 @@ async def _embed_intent(intent_text: str) -> list[float] | None:
     """
     try:
         import asyncio
+
         from augmentum.memory.embeddings import EmbeddingService
         return await asyncio.to_thread(EmbeddingService.embed_one, intent_text)
     except Exception:

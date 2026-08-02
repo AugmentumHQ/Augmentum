@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
 from unittest.mock import MagicMock
 
 import aiosqlite
@@ -38,7 +37,6 @@ from augmentum.connect.protocol import (
     serialise_envelope,
 )
 from augmentum.notifications.hub import NotificationHub
-
 
 CONNECT_MIGRATION = Path(
     "augmentum/state/migrations/219_connect_substrate.sql",
@@ -142,8 +140,9 @@ def test_token_uses_real_fabric_identity() -> None:
     derived HMAC secret. A different identity won't verify the same
     token — guards against secret cross-contamination."""
 
-    from augmentum.fabric.identity import FabricIdentity
     from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
+    from augmentum.fabric.identity import FabricIdentity
 
     priv_a = Ed25519PrivateKey.generate()
     identity_a = FabricIdentity(

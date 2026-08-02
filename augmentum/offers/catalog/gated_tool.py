@@ -127,7 +127,7 @@ def _make_entry(spec: dict[str, str]) -> CatalogEntry:
             if not objective:
                 return {"ok": False, "error": "missing_args",
                         "detail": "The proposal carried no build description."}
-            model = str((extra.get("model") or "")) if isinstance(extra, dict) else ""
+            model = str(extra.get("model") or "") if isinstance(extra, dict) else ""
             from augmentum.builds.dispatch import start_app_build
             ack = await start_app_build(
                 request.app.state,

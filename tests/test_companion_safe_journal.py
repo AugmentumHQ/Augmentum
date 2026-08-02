@@ -117,7 +117,10 @@ def test_validator_detects_injection_patterns():
 
 
 def test_validator_quality_penalizes_known_markers():
-    from augmentum.companion_runtime.validators import validate_quality, QUALITY_QUARANTINE_THRESHOLD
+    from augmentum.companion_runtime.validators import (
+        QUALITY_QUARANTINE_THRESHOLD,
+        validate_quality,
+    )
 
     clean = validate_quality("She noticed the light on the kitchen counter and stayed with it.")
     assert clean >= 0.8

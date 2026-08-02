@@ -31,7 +31,8 @@ from __future__ import annotations
 
 import asyncio
 import time
-from typing import TYPE_CHECKING, Any, Awaitable, Callable
+from collections.abc import Awaitable, Callable
+from typing import TYPE_CHECKING, Any
 
 from augmentum.jobs.context import JobCancelled, JobContext, JobRetryable
 from augmentum.utils.logging import get_logger
@@ -120,7 +121,7 @@ class JobRunner:
         if self._task:
             try:
                 await asyncio.wait_for(self._task, timeout=30.0)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 log.warning("job_runner_stop_timeout")
                 self._task.cancel()
 
@@ -162,7 +163,7 @@ class JobRunner:
         """Sleep up to ``timeout`` seconds, interruptible by ``wake()``."""
         try:
             await asyncio.wait_for(self._wakeup.wait(), timeout=timeout)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             pass
         finally:
             self._wakeup.clear()

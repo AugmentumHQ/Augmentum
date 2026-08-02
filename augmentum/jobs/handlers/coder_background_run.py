@@ -501,7 +501,7 @@ def make_coder_background_run_handler(app):
                 workspace_id=workspace_id, verdict=verdict,
             )
         except Exception:
-            from augmentum.coder.run_verifier import RunVerdict, TIER_UNCHECKED
+            from augmentum.coder.run_verifier import TIER_UNCHECKED, RunVerdict
             log.warning("coder_background_run_verify_failed", exc_info=True)
             verdict = RunVerdict(tier=TIER_UNCHECKED, reason="verification errored")
         verification = verdict.to_envelope()

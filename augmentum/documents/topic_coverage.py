@@ -54,9 +54,8 @@ _TOPIC_STOP = frozenset({
     "point", "number", "value", "type", "name", "role", "description",
     "true", "false", "null", "string", "integer", "boolean",
     "request", "response", "data", "status", "code", "error",
-    "method", "field", "parameter", "option", "default", "required",
-    "used", "using", "make", "made", "also", "well", "however",
-    "addition", "accordance", "connection", "respect",
+    "method", "field", "parameter", "option", "default", "used", "using", "make", "made", "also", "well", "however",
+    "addition", "accordance", "connection",
 })
 
 

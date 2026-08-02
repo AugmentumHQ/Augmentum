@@ -11,7 +11,7 @@ import sqlite3
 import subprocess
 import time
 import traceback
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import aiosqlite
@@ -439,7 +439,7 @@ async def apply_augmentum_pragmas(conn: aiosqlite.Connection) -> None:
         await conn.execute(pragma)
 
 
-def apply_augmentum_pragmas_sync(conn: "object") -> None:
+def apply_augmentum_pragmas_sync(conn: object) -> None:
     """Sync variant for ``sqlite3.Connection`` callers (e.g. KVSessionManifest,
     coder/indexer, knowledge subsystem helpers).
 
@@ -1072,7 +1072,7 @@ class SQLiteBackend:
                     shutil.copy2(str(latest), str(db))
                     for f in (wal, shm):
                         f.unlink(missing_ok=True)
-                    
+
                     log.info("sqlite_recovery_success", method="backup_restore", latest=str(latest))
                     await self.connect()
                     return
@@ -1095,7 +1095,7 @@ class SQLiteBackend:
                 db.unlink()
         else:
             db.unlink(missing_ok=True)
-            
+
         for f in (wal, shm):
             f.unlink(missing_ok=True)
 
@@ -1517,7 +1517,7 @@ class SQLiteBackend:
         stamp = Path(self._db_path).parent / ".augmentum_recovery_stamp"
         try:
             line = (
-                datetime.now(timezone.utc).isoformat(timespec="seconds")
+                datetime.now(UTC).isoformat(timespec="seconds")
                 + f"\t{reason}\n"
             )
             with stamp.open("a", encoding="utf-8") as f:

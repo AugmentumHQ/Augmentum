@@ -24,7 +24,6 @@ from augmentum.bug_finder.findings import (
 )
 from augmentum.bug_finder.orchestrator import _merge_cross_modal
 
-
 # ---------------------------------------------------------------------------
 # Builders
 # ---------------------------------------------------------------------------

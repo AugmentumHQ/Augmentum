@@ -226,9 +226,7 @@ async def _image_generate_handler(
     # (e.g. "a cat") rather than the expanded scene description so the
     # ack stays conversational. Strip filler words and cap at 60 chars.
     short_label = raw_label[:60].rstrip() if raw_label else prompt[:60].rstrip()
-    if raw_label and len(raw_label) > 60:
-        short_label += "…"
-    elif not raw_label and len(prompt) > 60:
+    if raw_label and len(raw_label) > 60 or not raw_label and len(prompt) > 60:
         short_label += "…"
 
     model = args.get("model") or ""

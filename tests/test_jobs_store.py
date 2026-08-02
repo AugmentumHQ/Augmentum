@@ -7,7 +7,6 @@ import asyncio
 import aiosqlite
 import pytest
 
-
 # Minimal schema mirroring migration 102. Duplicating here (rather than
 # wiring the full migration runner) keeps this a unit test: one file, one
 # table, no app-state assembly. If the migration drifts from this, the

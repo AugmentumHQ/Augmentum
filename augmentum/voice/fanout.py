@@ -43,8 +43,9 @@ Lifecycle:
 from __future__ import annotations
 
 import asyncio
+from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, AsyncIterator
+from typing import TYPE_CHECKING, Any
 
 from augmentum.utils.logging import get_logger
 
@@ -226,7 +227,7 @@ class VoiceFanoutSocket:
 
     def __init__(
         self,
-        websocket: "WebSocket",
+        websocket: WebSocket,
         fanout: VoiceFanout,
         session_id: str,
     ) -> None:
@@ -258,7 +259,7 @@ class VoiceFanoutSocket:
 
 
 def wrap_websocket(
-    websocket: "WebSocket",
+    websocket: WebSocket,
     fanout: VoiceFanout,
     session_id: str,
 ) -> VoiceFanoutSocket:

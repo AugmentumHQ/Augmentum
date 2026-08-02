@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
-
-import pytest
+from unittest.mock import MagicMock
 
 
 class TestBaseImports:
@@ -58,10 +56,6 @@ class TestAnalyticalImports:
     def test_import_state(self):
         from augmentum.modes.analytical.state import (
             AnalyticalPhase,
-            AnalyticalResult,
-            AnalyticalState,
-            PhaseResult,
-            ToolCallRecord,
         )
         assert AnalyticalPhase.ASSESS.value == "assess"
 
@@ -72,23 +66,12 @@ class TestAnalyticalImports:
     def test_import_tool_calling(self):
         from augmentum.modes.analytical.tool_calling import (
             ToolCallingTier,
-            select_tier,
-            tools_to_native_format,
-            parse_native_tool_call,
-            parse_structured_output,
-            extract_structured_text,
-            parse_python_style_tool_call,
-            coerce_tool_params,
         )
         assert ToolCallingTier.NATIVE.value == "native"
 
     def test_import_auto_verify(self):
         from augmentum.modes.analytical.auto_verify import (
             run_auto_verification,
-            extract_math_expressions,
-            extract_code_blocks,
-            VerificationCheck,
-            AutoVerifyResult,
         )
         assert callable(run_auto_verification)
 
@@ -109,10 +92,6 @@ class TestAgenticImports:
     def test_import_planner(self):
         from augmentum.modes.agentic.planner import (
             parse_plan,
-            update_plan_step,
-            mark_current_step,
-            plan_to_context,
-            PLAN_SYSTEM_PROMPT,
         )
         assert callable(parse_plan)
 
@@ -121,15 +100,12 @@ class TestAgenticImports:
         assert WorkingMemory is not None
 
     def test_import_task_state(self):
-        from augmentum.modes.agentic.task_state import TaskState, TaskStatus, TaskStore
+        from augmentum.modes.agentic.task_state import TaskStatus
         assert TaskStatus.PLANNING.value == "planning"
 
     def test_import_autonomy(self):
         from augmentum.modes.agentic.autonomy import (
             needs_plan_approval,
-            needs_step_approval,
-            build_approval_chunk,
-            build_inform_chunk,
         )
         assert callable(needs_plan_approval)
 
@@ -163,27 +139,29 @@ class TestNarrativeImports:
         assert NarrativeEngine is not None
 
     def test_import_character_tracker(self):
-        from augmentum.modes.narrative.character_tracker import CharacterTracker, CharacterUpdate
+        from augmentum.modes.narrative.character_tracker import CharacterTracker
         assert CharacterTracker is not None
 
     def test_import_world_tracker(self):
-        from augmentum.modes.narrative.world_tracker import WorldTracker, SceneState
+        from augmentum.modes.narrative.world_tracker import WorldTracker
         assert WorldTracker is not None
 
     def test_import_plot_tracker(self):
-        from augmentum.modes.narrative.plot_tracker import PlotTracker, PlotUpdate
+        from augmentum.modes.narrative.plot_tracker import PlotTracker
         assert PlotTracker is not None
 
     def test_import_relationship_tracker(self):
-        from augmentum.modes.narrative.relationship_tracker import RelationshipTracker, Relationship
+        from augmentum.modes.narrative.relationship_tracker import RelationshipTracker
         assert RelationshipTracker is not None
 
     def test_import_branch_tracker(self):
-        from augmentum.modes.narrative.branch_tracker import BranchTracker, BranchDetection
+        from augmentum.modes.narrative.branch_tracker import BranchTracker
         assert BranchTracker is not None
 
     def test_import_group_manager(self):
-        from augmentum.modes.narrative.group_manager import CharacterGroup, GroupTurnManager, GroupStore
+        from augmentum.modes.narrative.group_manager import (
+            GroupTurnManager,
+        )
         assert GroupTurnManager is not None
 
     def test_import_llm_extractor(self):
@@ -191,11 +169,11 @@ class TestNarrativeImports:
         assert NarrativeExtraction is not None
 
     def test_import_card_parser(self):
-        from augmentum.modes.narrative.card_parser import CardParser, CharacterCard
+        from augmentum.modes.narrative.card_parser import CardParser
         assert CardParser is not None
 
     def test_import_regex_transformer(self):
-        from augmentum.modes.narrative.regex_transformer import RegexScript, apply_regex_scripts
+        from augmentum.modes.narrative.regex_transformer import apply_regex_scripts
         assert callable(apply_regex_scripts)
 
     def test_import_regex_presets(self):
@@ -207,13 +185,12 @@ class TestNarrativeImports:
         assert PromptPreset is not None
 
     def test_import_macro_expander(self):
-        from augmentum.modes.narrative.macro_expander import expand_macros, expand_messages
+        from augmentum.modes.narrative.macro_expander import expand_macros
         assert callable(expand_macros)
 
     def test_import_memory_settings(self):
         from augmentum.modes.narrative.memory_settings import (
             SessionMemorySettings,
-            resolve_memory_setting,
         )
         assert SessionMemorySettings is not None
 
@@ -226,20 +203,16 @@ class TestNarrativeImports:
         assert callable(filter_by_groups)
 
     def test_import_context_builder(self):
-        from augmentum.modes.narrative.context_builder import ContextBuilder, BuiltContext
+        from augmentum.modes.narrative.context_builder import ContextBuilder
         assert ContextBuilder is not None
 
     def test_import_lore_engine(self):
-        from augmentum.modes.narrative.lore_engine import LoreEngine, match_keywords
+        from augmentum.modes.narrative.lore_engine import LoreEngine
         assert LoreEngine is not None
 
     def test_import_memory(self):
         from augmentum.modes.narrative.memory import (
             CardType,
-            MemoryEntry,
-            StateSnapshot,
-            SummaryMode,
-            detect_card_type,
         )
         assert CardType is not None
 
@@ -328,7 +301,7 @@ class TestCoderPromptMetadata:
 
     def test_plan_meta_uses_utility_role(self):
         """Plan resolves through the smarter ``utility`` model tier."""
-        from augmentum.coder.prompts import PLAN_META, MISSION_PLAN_META
+        from augmentum.coder.prompts import MISSION_PLAN_META, PLAN_META
         assert PLAN_META.model_role == "utility"
         assert MISSION_PLAN_META.model_role == "utility"
 
@@ -339,7 +312,7 @@ class TestCoderPromptMetadata:
         dispatcher; act stays on the request's bound backend so the user's
         active chat model is what runs iteration-heavy work.
         """
-        from augmentum.coder.prompts import ACT_META, NATIVE_META, MISSION_ACT_META
+        from augmentum.coder.prompts import ACT_META, MISSION_ACT_META, NATIVE_META
         assert ACT_META.model_role == ""
         assert NATIVE_META.model_role == ""
         assert MISSION_ACT_META.model_role == ""
@@ -390,7 +363,9 @@ class TestCoderPromptMetadata:
         """The orchestrator-spawn dispatch prompt has metadata and the
         renderer's expected variables are declared."""
         from augmentum.coder.prompts import (
-            DISPATCH_FORK_META, DISPATCH_FORK_SYSTEM, PROMPT_REGISTRY,
+            DISPATCH_FORK_META,
+            DISPATCH_FORK_SYSTEM,
+            PROMPT_REGISTRY,
         )
         assert "coder.dispatch_fork" in PROMPT_REGISTRY
         assert DISPATCH_FORK_META.agent_role == "fork"
@@ -434,7 +409,9 @@ class TestCoderDispatch:
         from augmentum.coder import dispatch as d
         from augmentum.coder.prompts import DISPATCH_FORK_SYSTEM
         from augmentum.promises.models import (
-            Promise, Verification, VerificationKind,
+            Promise,
+            Verification,
+            VerificationKind,
         )
         disp = d.CoderDispatch(
             workspace_id="ws", user_id="u", task="Build a thing",

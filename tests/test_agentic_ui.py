@@ -9,14 +9,6 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from augmentum.models.base import (
-    InternalChatRequest,
-    InternalChatResponse,
-    InternalStreamChunk,
-    Message,
-)
-
-
 # ---------------------------------------------------------------------------
 # Mode prefix tests
 # ---------------------------------------------------------------------------

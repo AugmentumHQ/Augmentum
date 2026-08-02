@@ -8,7 +8,6 @@ breaking edit to either surfaces here.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import aiosqlite
@@ -20,7 +19,6 @@ from augmentum.notifications import (
     IMPORTANCE_DEFAULT,
     IMPORTANCE_HIGH,
     IMPORTANCE_LOW,
-    Notification,
     NotificationAction,
     NotificationStore,
     catalog_channel,
@@ -36,7 +34,6 @@ from augmentum.notifications.store import (
     publish,
     resolved_channels,
 )
-
 
 MIGRATION = (
     Path("augmentum/state/migrations/221_notification_substrate.sql").read_text()

@@ -25,7 +25,8 @@ different session list.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, AsyncIterator, Callable
+from collections.abc import AsyncIterator, Callable
+from typing import TYPE_CHECKING, Any
 
 from augmentum.devices.device import Device, DiscoveredDevice
 from augmentum.devices.invocation import (
@@ -68,17 +69,17 @@ class EmbyRemoteDriver:
     def __init__(
         self,
         *,
-        http_client: "httpx.AsyncClient | None" = None,
+        http_client: httpx.AsyncClient | None = None,
         media_server_store_factory: Callable[[], Any] | None = None,
         file_index_factory: Callable[[], Any] | None = None,
         provider_client_factory: Callable[[str, Any], Any] | None = None,
     ) -> None:
-        self._http: "httpx.AsyncClient | None" = http_client
+        self._http: httpx.AsyncClient | None = http_client
         self._media_server_store_factory = media_server_store_factory
         self._file_index_factory = file_index_factory
         self._provider_client_factory = provider_client_factory
 
-    async def start(self, ctx: "DriverContext") -> None:
+    async def start(self, ctx: DriverContext) -> None:
         if self._http is None:
             self._http = ctx.http_client
 

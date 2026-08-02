@@ -48,7 +48,7 @@ class TestChatFilterRideAlong:
             *_SCHEDULE_INJECTION_ORDER,
         )
         kept = {t.name for t in filter_tools_for_query(_NO_SCHEDULE_VOCAB, pool)}
-        assert _SCHEDULE_SUBSTRATE_TOOLS <= kept, (
+        assert kept >= _SCHEDULE_SUBSTRATE_TOOLS, (
             f"substrate stripped on unsignalled turn: missing "
             f"{_SCHEDULE_SUBSTRATE_TOOLS - kept}"
         )
@@ -62,7 +62,7 @@ class TestChatFilterRideAlong:
             *_SCHEDULE_INJECTION_ORDER,
         )
         kept = {t.name for t in filter_tools_for_query("calculate 15% of 2840", pool)}
-        assert _SCHEDULE_SUBSTRATE_TOOLS <= kept
+        assert kept >= _SCHEDULE_SUBSTRATE_TOOLS
 
     def test_absent_substrate_is_not_invented(self):
         # Filter only keeps what the pool offers — installs without the

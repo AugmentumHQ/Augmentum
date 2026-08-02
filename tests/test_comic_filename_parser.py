@@ -22,11 +22,9 @@ from __future__ import annotations
 import pytest
 
 from augmentum.media.comic_filename_parser import (
-    ParsedFilename,
     _classify_bracketed,
     parse_filename,
 )
-
 
 # --- Bracket classification ----------------------------------------------
 

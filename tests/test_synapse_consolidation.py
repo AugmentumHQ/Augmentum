@@ -15,11 +15,9 @@ LLM calls are mocked. No live network.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import pytest
-
 
 # ── Section parser ───────────────────────────────────────────────────
 
@@ -75,7 +73,9 @@ def test_get_section_returns_none_for_missing():
 @pytest.mark.asyncio
 async def test_propose_candidate_refuses_frozen_section():
     from augmentum.companion_runtime.consolidation import (
-        FROZEN_SECTIONS, FrozenSectionError, propose_candidate,
+        FROZEN_SECTIONS,
+        FrozenSectionError,
+        propose_candidate,
     )
 
     class _FakeRuntime:
@@ -96,7 +96,8 @@ async def test_propose_candidate_raises_when_evidence_below_min(tmp_path, monkey
     """When fewer than min_evidence entries available, raises rather
     than silently confabulating."""
     from augmentum.companion_runtime.consolidation import (
-        InsufficientEvidenceError, propose_candidate,
+        InsufficientEvidenceError,
+        propose_candidate,
     )
 
     # Write a fake personality doc with §10 so the section lookup
@@ -367,9 +368,10 @@ def test_section_policy_constants_are_canonical():
     """The doc says 1-6 are frozen and 10-11 are the natural-rotation
     sections. The constants must match."""
     from augmentum.companion_runtime.consolidation import (
-        FROZEN_SECTIONS, ROTATING_SECTIONS,
+        FROZEN_SECTIONS,
+        ROTATING_SECTIONS,
     )
-    assert FROZEN_SECTIONS == frozenset({1, 2, 3, 4, 5, 6})
-    assert ROTATING_SECTIONS == frozenset({10, 11})
+    assert frozenset({1, 2, 3, 4, 5, 6}) == FROZEN_SECTIONS
+    assert frozenset({10, 11}) == ROTATING_SECTIONS
     # No overlap (obvious but worth asserting)
     assert not (FROZEN_SECTIONS & ROTATING_SECTIONS)

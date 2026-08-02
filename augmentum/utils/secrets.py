@@ -6,8 +6,6 @@ Key file is auto-generated on first use and stored alongside the database.
 
 from __future__ import annotations
 
-import base64
-import os
 import re
 from pathlib import Path
 

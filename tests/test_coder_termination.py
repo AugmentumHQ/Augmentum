@@ -44,7 +44,6 @@ from augmentum.coder.termination import (
 )
 from augmentum.modes.coder.intent import TurnIntentKind
 
-
 # ---------------------------------------------------------------------------
 # Primitive 1: classify_user_demand
 # ---------------------------------------------------------------------------

@@ -23,7 +23,6 @@ from augmentum.devices.capabilities import (
 )
 from augmentum.devices.capability import Capability
 
-
 _REGISTERED_CAPABILITIES: tuple[Capability, ...] = (
     *media.CAPABILITIES,
     *display.CAPABILITIES,

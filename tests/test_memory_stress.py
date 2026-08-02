@@ -25,26 +25,20 @@ import aiosqlite
 import pytest
 
 from augmentum.memory.core_profile import CoreProfileManager
-from augmentum.memory.embeddings import EmbeddingService
 from augmentum.memory.extractor import (
     _deduplicate_facts,
     batch_extract_and_store,
-    extract_and_store,
     heuristic_extract,
     should_extract,
-    smart_extract_and_store,
 )
 from augmentum.memory.integration import (
     _build_user_summary,
     recall_and_inject,
-    schedule_extraction,
 )
 from augmentum.memory.models import (
     ExtractedFact,
-    Memory,
     MemoryTier,
     MemoryType,
-    SourceType,
 )
 from augmentum.memory.store import MemoryStore
 from augmentum.models.base import (

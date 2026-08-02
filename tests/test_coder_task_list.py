@@ -12,9 +12,7 @@ from __future__ import annotations
 
 import json
 
-import pytest
-
-from augmentum.coder.state import CoderState, CoderPhase
+from augmentum.coder.state import CoderState
 from augmentum.coder.tools import TaskListTool
 
 
@@ -687,8 +685,8 @@ class TestParseErrorSurfacing:
     async def test_tool_tracked_prepends_json_hint(self):
         """When _parse_error_raw is on the raw tc dict and the tool fails,
         the resulting error must mention malformed JSON + the raw string."""
-        from augmentum.modes.coder.handler import CoderHandler
         from augmentum.coder.tools import FileReadTool
+        from augmentum.modes.coder.handler import CoderHandler
 
         class _Backend:
             pass

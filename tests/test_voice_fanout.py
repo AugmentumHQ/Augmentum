@@ -26,7 +26,6 @@ from augmentum.voice.fanout import (
     wrap_websocket,
 )
 
-
 # ── Session lifecycle ─────────────────────────────────────────────
 
 

@@ -11,7 +11,6 @@ from collections.abc import AsyncIterator
 from typing import TYPE_CHECKING
 
 import httpx
-
 from fastapi.responses import StreamingResponse
 
 from augmentum.models.base import InternalChatRequest, InternalStreamChunk, ModelBackend
@@ -200,7 +199,7 @@ class _StreamTimer:
         if self._first_token is None:
             self._first_token = time.monotonic()
 
-    def observe(self, chunk: "InternalStreamChunk") -> None:
+    def observe(self, chunk: InternalStreamChunk) -> None:
         """Consume one stream chunk: update TTFT, eval_tokens, and
         (on the final chunk) merge authoritative usage from upstream.
 
@@ -312,7 +311,7 @@ class _StreamTimer:
         return result
 
 
-def _prompt_text_for_timer(request: "InternalChatRequest") -> str:
+def _prompt_text_for_timer(request: InternalChatRequest) -> str:
     """Concatenate message content for the timer's local-tokenization
     fallback. Best-effort — used only when upstream skips usage; an
     authoritative count from the upstream's own tokenizer always wins.
@@ -330,8 +329,8 @@ def _prompt_text_for_timer(request: "InternalChatRequest") -> str:
 
 
 def _log_chat_request_perf(
-    timer: "_StreamTimer",
-    request: "InternalChatRequest",
+    timer: _StreamTimer,
+    request: InternalChatRequest,
     endpoint: str,
 ) -> None:
     """Emit a ``chat_request_perf`` log event with proxy-observed timings.
@@ -462,7 +461,7 @@ def _classify_backend_error(exc: Exception) -> str:
 _NON_RETRYABLE_KINDS = frozenset({"no_vision_projector", "auth_failed", "context_overflow"})
 
 
-def _make_error_chunk(exc: Exception) -> "InternalStreamChunk":
+def _make_error_chunk(exc: Exception) -> InternalStreamChunk:
     """Build the canonical mid-stream error chunk.
 
     Combines the legacy inline `[Error: ...]` text (which non-Augmentum

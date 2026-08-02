@@ -68,7 +68,6 @@ from augmentum.notifications import (
 )
 from augmentum.utils.logging import get_logger
 
-
 if TYPE_CHECKING:
     from augmentum.connect.hub import ConnectHub
     from augmentum.notifications import NotificationHub
@@ -108,8 +107,8 @@ class MessageRoutingResult:
 async def handle_message_envelope(
     *,
     conn: Any,
-    connect_hub: "ConnectHub",
-    notification_hub: "NotificationHub",
+    connect_hub: ConnectHub,
+    notification_hub: NotificationHub,
     env: ConnectEnvelope,
     sender_user_id: str,
     sender_did: str,
@@ -257,7 +256,7 @@ async def handle_message_envelope(
 async def _handle_typing(
     *,
     conn: Any,
-    connect_hub: "ConnectHub",
+    connect_hub: ConnectHub,
     env: ConnectEnvelope,
     sender_did: str,
     target_user_id: str,
@@ -305,7 +304,7 @@ async def _handle_typing(
 async def _handle_react(
     *,
     conn: Any,
-    connect_hub: "ConnectHub",
+    connect_hub: ConnectHub,
     env: ConnectEnvelope,
     sender_user_id: str,
     sender_did: str,
@@ -397,8 +396,8 @@ async def _handle_react(
 async def _handle_send(
     *,
     conn: Any,
-    connect_hub: "ConnectHub",
-    notification_hub: "NotificationHub",
+    connect_hub: ConnectHub,
+    notification_hub: NotificationHub,
     env: ConnectEnvelope,
     sender_user_id: str,
     sender_did: str,
@@ -601,7 +600,7 @@ async def _handle_send(
 async def _handle_read(
     *,
     conn: Any,
-    connect_hub: "ConnectHub",
+    connect_hub: ConnectHub,
     env: ConnectEnvelope,
     sender_user_id: str,
     sender_did: str,
@@ -658,7 +657,7 @@ async def _handle_read(
 async def _handle_delivered(
     *,
     conn: Any,
-    connect_hub: "ConnectHub",
+    connect_hub: ConnectHub,
     env: ConnectEnvelope,
     sender_user_id: str,
     sender_did: str,
@@ -732,7 +731,7 @@ async def _handle_delivered(
 async def _handle_delete(
     *,
     conn: Any,
-    connect_hub: "ConnectHub",
+    connect_hub: ConnectHub,
     env: ConnectEnvelope,
     sender_user_id: str,
     sender_did: str,
@@ -802,7 +801,7 @@ async def _handle_delete(
 async def _handle_edit(
     *,
     conn: Any,
-    connect_hub: "ConnectHub",
+    connect_hub: ConnectHub,
     env: ConnectEnvelope,
     sender_user_id: str,
     sender_did: str,
@@ -1110,7 +1109,7 @@ async def _handle_fabric_outbound(
 
 
 async def handle_message_action(
-    notification: "Any", action_id: str, request: "Any",
+    notification: Any, action_id: str, request: Any,
 ) -> dict[str, Any]:
     """Notification action handler for ``connect.message.*``.
 

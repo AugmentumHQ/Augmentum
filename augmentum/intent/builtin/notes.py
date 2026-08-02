@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import time
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from augmentum.intent.action import ActionFanout, ActionResult, SessionContext
@@ -49,7 +49,7 @@ def _notes_store(session: SessionContext):
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _new_note_id() -> str:
@@ -683,8 +683,8 @@ async def _save_to_memory(
         tags = []
 
     try:
-        from augmentum.memory.store import MemoryStore
         from augmentum.memory.models import MemoryType, SourceType
+        from augmentum.memory.store import MemoryStore
         store = getattr(session.app_state, "memory_store", None)
         if not isinstance(store, MemoryStore):
             store = None

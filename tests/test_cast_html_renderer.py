@@ -31,7 +31,6 @@ from augmentum.cast.html_renderer import (
     HTMLRenderError,
 )
 
-
 # ── Discovery / lifecycle ─────────────────────────────────────────
 
 

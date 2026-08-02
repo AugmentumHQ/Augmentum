@@ -7,13 +7,6 @@ the flag is False, ``available()`` returns an empty tuple even though
 the registrations exist.
 """
 
-from augmentum.companion_runtime.subagents.base import (
-    SubagentBase,
-    SubagentContext,
-    SubagentResult,
-)
-from augmentum.companion_runtime.subagents.registry import SubagentRegistry
-
 # Import every adapter so each class registers at package-import time.
 # Imports are kept here (not eagerly in registry.py) so test code can
 # selectively import individual adapters in isolation if needed.
@@ -27,6 +20,12 @@ from augmentum.companion_runtime.subagents import (  # noqa: F401
     narrative,
     passthrough,
 )
+from augmentum.companion_runtime.subagents.base import (
+    SubagentBase,
+    SubagentContext,
+    SubagentResult,
+)
+from augmentum.companion_runtime.subagents.registry import SubagentRegistry
 
 __all__ = [
     "SubagentBase",

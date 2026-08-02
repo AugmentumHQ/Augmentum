@@ -59,7 +59,7 @@ def test_shell_files_includes_only_shell(tmp_path: Path) -> None:
 
 def test_excluded_dirs_are_the_documented_set() -> None:
     # Guards against silent drift from the Gradle bundle's excludes.
-    assert _UI_SHELL_EXCLUDE_TOP == frozenset({"mockups", "lib"})
+    assert frozenset({"mockups", "lib"}) == _UI_SHELL_EXCLUDE_TOP
 
 
 def test_digest_is_stable_hex(tmp_path: Path) -> None:

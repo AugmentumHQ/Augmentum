@@ -18,15 +18,15 @@ import time
 
 import pytest
 
-from augmentum.cast.games.classifier import CastClassifier, DEMOTION_WINDOW_S
+from augmentum.cast.games.classifier import DEMOTION_WINDOW_S, CastClassifier
 from augmentum.cast.games.models import (
     CLASSIFIED_DEFAULT,
     CLASSIFIED_MANUAL,
+    STRATEGY_PROXY,
+    STRATEGY_SHIM,
     CastProfile,
     HostCapabilities,
     KeymapProfile,
-    STRATEGY_PROXY,
-    STRATEGY_SHIM,
     _coerce_input_chain,
     _coerce_strategy,
 )

@@ -211,7 +211,6 @@ def _load_conversations() -> list[LoCoMoConversation]:
 
 from augmentum.memory.extractor import heuristic_extract, should_extract
 
-
 # ---------------------------------------------------------------------------
 # Technique 1: Contextual Fact Enrichment (Anthropic's approach)
 # Prepend a context sentence to facts before embedding for better retrieval.
@@ -332,6 +331,7 @@ async def _create_store():
     import sqlite3
 
     import aiosqlite
+
     from augmentum.memory.store import MemoryStore
 
     # Load sqlite-vec extension BEFORE wrapping in aiosqlite

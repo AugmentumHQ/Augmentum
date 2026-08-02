@@ -13,7 +13,6 @@ import json
 import aiosqlite
 import pytest
 
-
 # Minimal schema mirroring the parts we read from. Includes the
 # existing ``artifacts`` table (relevant columns only) and the new
 # ``title_runs`` table (migration 123). Same pattern as the smoke
@@ -99,21 +98,22 @@ async def _seed_artifact(
 
 
 def test_package_surface_imports():
+    from augmentum.proxy.titles_routes import router  # noqa: F401
     from augmentum.titles import (  # noqa: F401
-        BrowserIframeRuntime,
-        InternalSource,
         KIND_EMULATOR_ROM,
         KIND_GIT_PROJECT,
         KIND_JS13K_GAME,
         KIND_STREAMED_GAME,
         KIND_WEB_APP,
+        TITLE_KINDS,
+        BrowserIframeRuntime,
+        InternalSource,
         LaunchHandle,
         Runtime,
         RuntimeRegistry,
         Source,
         SourceImportError,
         SourceRegistry,
-        TITLE_KINDS,
         TitleManifest,
         TitleService,
         TitleServiceError,
@@ -122,7 +122,6 @@ def test_package_surface_imports():
         runtime_registry,
         source_registry,
     )
-    from augmentum.proxy.titles_routes import router  # noqa: F401
 
 
 def test_browser_iframe_runtime_registered_eagerly():
@@ -405,11 +404,11 @@ async def test_internal_source_rejects_unknown_kind():
 @pytest.mark.asyncio
 async def test_browser_iframe_supports_correct_kinds():
     from augmentum.titles import (
-        BrowserIframeRuntime,
         KIND_EMULATOR_ROM,
         KIND_JS13K_GAME,
         KIND_STREAMED_GAME,
         KIND_WEB_APP,
+        BrowserIframeRuntime,
         TitleManifest,
     )
 
@@ -432,8 +431,8 @@ async def test_browser_iframe_supports_correct_kinds():
 @pytest.mark.asyncio
 async def test_runtime_resolver_picks_supporting_runtime():
     from augmentum.titles import (
-        BrowserIframeRuntime,
         KIND_WEB_APP,
+        BrowserIframeRuntime,
         RuntimeRegistry,
         TitleManifest,
     )

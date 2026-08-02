@@ -2,10 +2,6 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
-
-from fastapi.testclient import TestClient
-
 
 class TestEnrollmentStatus:
     def test_status_no_db(self, client):

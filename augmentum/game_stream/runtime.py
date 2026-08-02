@@ -17,7 +17,7 @@ from __future__ import annotations
 import secrets
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Protocol
 
 from augmentum.game_stream.lifecycle import (
@@ -711,7 +711,7 @@ class GameStreamRuntime:
            inside one watchdog cycle.
         """
         rows = await self._store.list_running_unscoped()
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         stopped = 0
         paused_stop_seconds = self._paused_stop_seconds
         for row in rows:
@@ -1021,7 +1021,7 @@ class GameStreamRuntime:
         try:
             # SQLite datetime('now') format -- 'YYYY-MM-DD HH:MM:SS'
             return datetime.strptime(value, "%Y-%m-%d %H:%M:%S").replace(
-                tzinfo=timezone.utc,
+                tzinfo=UTC,
             )
         except ValueError:
             return None

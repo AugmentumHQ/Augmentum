@@ -469,14 +469,14 @@ async def run_scenario(
                     if tool_output:
                         full_response += tool_output
                 if aug.get("status") == "error":
-                    errors.append(f"Stream error")
+                    errors.append("Stream error")
                 if aug.get("strategy"):
                     strategy_used = aug["strategy"]
 
             except json.JSONDecodeError:
                 continue
 
-    except asyncio.TimeoutError:
+    except TimeoutError:
         errors.append(f"Timed out after {scenario.max_time_s}s")
     except Exception as exc:
         errors.append(f"Request failed: {str(exc)[:200]}")
@@ -557,7 +557,7 @@ async def run_scenario(
         if full_response:
             print(f"      Response: {full_response[:150]}...")
         else:
-            print(f"      Response: <empty>")
+            print("      Response: <empty>")
 
     return result
 
@@ -579,14 +579,14 @@ async def run_all_tests(
                 return
 
         print(f"\n{'='*60}")
-        print(f"CODER AGENT TEST HARNESS")
+        print("CODER AGENT TEST HARNESS")
         print(f"{'='*60}")
         print(f"Models: {', '.join(available)}")
         print(f"Scenarios: {len(SCENARIOS)}")
         print(f"Strategy filter: {strategy_filter or 'all'}")
 
         # Ensure test workspace
-        print(f"\nSetting up workspace...")
+        print("\nSetting up workspace...")
         ws_id = await ensure_workspace(session)
         if not ws_id:
             print("ERROR: Could not create workspace")
@@ -631,7 +631,7 @@ async def run_all_tests(
 
         # Summary
         print(f"\n{'='*60}")
-        print(f"SUMMARY")
+        print("SUMMARY")
         print(f"{'='*60}")
 
         # Per-model summary
@@ -654,7 +654,7 @@ async def run_all_tests(
         print(f"\n  Overall: {total_passed}/{total_tests} passed")
 
         # Per-scenario summary
-        print(f"\n  Per scenario:")
+        print("\n  Per scenario:")
         for scenario in SCENARIOS:
             s_results = [r for r in all_results if r.scenario == scenario.name]
             if not s_results:
@@ -666,7 +666,7 @@ async def run_all_tests(
         # Failed tests detail
         failed = [r for r in all_results if not r.success]
         if failed:
-            print(f"\n  Failed tests:")
+            print("\n  Failed tests:")
             for r in failed:
                 print(f"    {r.model} / {r.scenario}: {r.errors[0] if r.errors else 'unknown'}")
 
@@ -696,12 +696,12 @@ async def run_all_tests(
         print(f"\n  Results saved to {results_path}")
 
         # Cleanup
-        print(f"\nCleaning up test workspace...")
+        print("\nCleaning up test workspace...")
         async with session.delete(f"{BASE_URL}/api/coder/workspaces/{ws_id}") as r:
             print(f"  Deleted: {r.status}")
 
         print(f"\n{'='*60}")
-        print(f"DONE")
+        print("DONE")
         print(f"{'='*60}")
 
 

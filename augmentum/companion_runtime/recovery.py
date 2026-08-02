@@ -24,8 +24,6 @@ tool/channel. Each rerun writes a DPO pair into companion_skill_archive
 """
 from __future__ import annotations
 
-import json
-import time
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -49,7 +47,7 @@ class RebuildResult:
 # ── Soft rebuild ─────────────────────────────────────────────────────
 
 async def _soft_cascade(
-    runtime: "CompanionRuntime",
+    runtime: CompanionRuntime,
     conn,
     *,
     user_id: str,
@@ -116,7 +114,7 @@ async def _soft_cascade(
 
 
 async def rebuild_soft(
-    runtime: "CompanionRuntime",
+    runtime: CompanionRuntime,
     *,
     user_id: str,
     user_signal: str = "explicit_request",
@@ -164,7 +162,7 @@ async def rebuild_soft(
 # ── Hard reset (relationship continues, memories wiped) ──────────────
 
 async def rebuild_hard(
-    runtime: "CompanionRuntime",
+    runtime: CompanionRuntime,
     *,
     user_id: str,
     user_signal: str = "settings_panel",
@@ -232,7 +230,7 @@ async def rebuild_hard(
 # ── Frictionless delete (Lane 2 §7.2) ────────────────────────────────
 
 async def delete_all(
-    runtime: "CompanionRuntime",
+    runtime: CompanionRuntime,
     *,
     user_id: str,
 ) -> dict[str, int]:
@@ -339,7 +337,7 @@ async def delete_all(
 # ── Rerun affordance (Lane 3 §9) ─────────────────────────────────────
 
 async def record_rerun_pair(
-    runtime: "CompanionRuntime",
+    runtime: CompanionRuntime,
     *,
     user_id: str,
     intent_text: str,

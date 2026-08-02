@@ -7,9 +7,8 @@ verb handlers, prompt injection gating.
 
 from __future__ import annotations
 
-import sqlite3
-from datetime import date, datetime, timedelta, timezone
-from unittest.mock import AsyncMock, MagicMock, patch
+from datetime import UTC, date, datetime
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -21,7 +20,6 @@ from augmentum.calendar.caldav_client import (
     _parse_date_value,
     _parse_vevents,
 )
-
 
 # ── iCalendar parsing ──────────────────────────────────────────────────
 
@@ -46,8 +44,8 @@ class TestICalendarParsing:
         assert ev.uid == "abc-123"
         assert ev.summary == "Team standup"
         assert ev.location == "Conference room"
-        assert ev.start == datetime(2026, 7, 19, 9, 0, 0, tzinfo=timezone.utc)
-        assert ev.end == datetime(2026, 7, 19, 9, 30, 0, tzinfo=timezone.utc)
+        assert ev.start == datetime(2026, 7, 19, 9, 0, 0, tzinfo=UTC)
+        assert ev.end == datetime(2026, 7, 19, 9, 30, 0, tzinfo=UTC)
 
     def test_parse_multiple_vevents(self):
         ics = (
@@ -85,7 +83,7 @@ class TestICalendarParsing:
 
     def test_parse_date_time_value(self):
         assert _parse_date_value("20260719T140000Z") == datetime(
-            2026, 7, 19, 14, 0, 0, tzinfo=timezone.utc,
+            2026, 7, 19, 14, 0, 0, tzinfo=UTC,
         )
         assert _parse_date_value("20260719") == date(2026, 7, 19)
         assert _parse_date_value("") is None
@@ -94,8 +92,8 @@ class TestICalendarParsing:
     def test_build_vevent(self):
         ics = _build_vevent(
             "Doctor",
-            datetime(2026, 7, 19, 14, 0, 0, tzinfo=timezone.utc),
-            datetime(2026, 7, 19, 15, 0, 0, tzinfo=timezone.utc),
+            datetime(2026, 7, 19, 14, 0, 0, tzinfo=UTC),
+            datetime(2026, 7, 19, 15, 0, 0, tzinfo=UTC),
             uid="doc-1",
             description="Checkup",
             location="Clinic",
@@ -110,8 +108,8 @@ class TestICalendarParsing:
     def test_build_vevent_auto_uid(self):
         ics = _build_vevent(
             "Test",
-            datetime(2026, 7, 19, 14, 0, 0, tzinfo=timezone.utc),
-            datetime(2026, 7, 19, 15, 0, 0, tzinfo=timezone.utc),
+            datetime(2026, 7, 19, 14, 0, 0, tzinfo=UTC),
+            datetime(2026, 7, 19, 15, 0, 0, tzinfo=UTC),
         )
         assert "UID:" in ics
 
@@ -198,12 +196,12 @@ class TestEventStore:
         )
         await conn.commit()
 
-        from augmentum.calendar.store import upsert_event, list_events
+        from augmentum.calendar.store import list_events, upsert_event
 
         ev = CalendarEvent(
             uid="u1", summary="Standup",
-            start=datetime(2026, 7, 19, 9, 0, 0, tzinfo=timezone.utc),
-            end=datetime(2026, 7, 19, 9, 30, 0, tzinfo=timezone.utc),
+            start=datetime(2026, 7, 19, 9, 0, 0, tzinfo=UTC),
+            end=datetime(2026, 7, 19, 9, 30, 0, tzinfo=UTC),
             location="Room A", calendar_name="Work",
         )
         await upsert_event(conn, user_id="user-1", service_id="radicale", event=ev)
@@ -245,12 +243,12 @@ class TestEventStore:
         )
         await conn.commit()
 
-        from augmentum.calendar.store import upsert_event, list_events
+        from augmentum.calendar.store import list_events, upsert_event
 
         ev1 = CalendarEvent(uid="u1", summary="Original",
-                            start=datetime(2026, 7, 19, 9, 0, 0, tzinfo=timezone.utc))
+                            start=datetime(2026, 7, 19, 9, 0, 0, tzinfo=UTC))
         ev2 = CalendarEvent(uid="u1", summary="Updated",
-                            start=datetime(2026, 7, 19, 10, 0, 0, tzinfo=timezone.utc))
+                            start=datetime(2026, 7, 19, 10, 0, 0, tzinfo=UTC))
 
         await upsert_event(conn, user_id="user-1", service_id="radicale", event=ev1)
         await upsert_event(conn, user_id="user-1", service_id="radicale", event=ev2)
@@ -297,12 +295,12 @@ class TestEventStore:
         )
         await conn.commit()
 
-        from augmentum.calendar.store import upsert_event, delete_stale_events
+        from augmentum.calendar.store import delete_stale_events, upsert_event
 
         ev = CalendarEvent(uid="keep", summary="Keep",
-                           start=datetime(2026, 7, 19, 9, 0, 0, tzinfo=timezone.utc))
+                           start=datetime(2026, 7, 19, 9, 0, 0, tzinfo=UTC))
         ev2 = CalendarEvent(uid="gone", summary="Gone",
-                            start=datetime(2026, 7, 19, 10, 0, 0, tzinfo=timezone.utc))
+                            start=datetime(2026, 7, 19, 10, 0, 0, tzinfo=UTC))
 
         await upsert_event(conn, user_id="user-1", service_id="radicale", event=ev)
         await upsert_event(conn, user_id="user-1", service_id="radicale", event=ev2)
@@ -349,10 +347,10 @@ class TestEventStore:
         )
         await conn.commit()
 
-        from augmentum.calendar.store import upsert_event, delete_stale_events
+        from augmentum.calendar.store import delete_stale_events, upsert_event
 
         ev = CalendarEvent(uid="x", summary="X",
-                           start=datetime(2026, 7, 19, 9, 0, 0, tzinfo=timezone.utc))
+                           start=datetime(2026, 7, 19, 9, 0, 0, tzinfo=UTC))
         await upsert_event(conn, user_id="user-1", service_id="radicale", event=ev)
 
         deleted = await delete_stale_events(

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import os
 import tempfile
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -441,14 +440,13 @@ class TestDocumentParseTool:
             path = f.name
         try:
             tool = DocumentParseTool()
-            with patch.dict("sys.modules", {"pdfplumber": None}):
-                with patch(
-                    "augmentum.tools.document_parse._parse_pdf",
-                    side_effect=ImportError("pdfplumber not installed"),
-                ):
-                    result = await tool.execute(path=path)
-                    assert result.success is False
-                    assert "pdfplumber" in result.error.lower() or "install" in result.error.lower()
+            with patch.dict("sys.modules", {"pdfplumber": None}), patch(
+                "augmentum.tools.document_parse._parse_pdf",
+                side_effect=ImportError("pdfplumber not installed"),
+            ):
+                result = await tool.execute(path=path)
+                assert result.success is False
+                assert "pdfplumber" in result.error.lower() or "install" in result.error.lower()
         finally:
             os.unlink(path)
 

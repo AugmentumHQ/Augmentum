@@ -32,7 +32,6 @@ from __future__ import annotations
 
 import re
 
-
 # Apostrophes + curly quotes + backtick are *removed* (empty replacement)
 # so "O'Brien" → "obrien" matches "OBrien". Treating them as separators
 # would split "O'Brien" into ["o", "brien"] and (combined with the single-

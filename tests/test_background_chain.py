@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import time
 import unittest
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -127,7 +126,7 @@ class TestBackgroundChainManagerNotifications(unittest.TestCase):
         event = {"type": "flow_complete", "task_id": "t1"}
         asyncio.run(mgr._push_notification("sess-1", event))
 
-        assert not q2.empty() is False  # q2 should be empty
+        assert q2.empty() is not False  # q2 should be empty
         assert q1.get_nowait() == event
         assert q2.empty()
 

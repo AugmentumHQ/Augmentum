@@ -10,7 +10,6 @@ from datetime import UTC, datetime
 from html import unescape
 from html.parser import HTMLParser
 
-import httpx
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 

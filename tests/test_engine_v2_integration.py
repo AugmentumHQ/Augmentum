@@ -1,17 +1,14 @@
 """Integration tests for Engine v2: manager → discovery → profile caching → token cache → resolve."""
 from __future__ import annotations
 
+import os
 import struct
 import tempfile
-import os
 from pathlib import Path
 
-import pytest
-
 from augmentum.models.llama_server_manager import LlamaServerManager, ProcessState
-from augmentum.models.model_profile_cache import ModelProfile, ModelProfileCache, scan_gguf_header
+from augmentum.models.model_profile_cache import ModelProfileCache, scan_gguf_header
 from augmentum.models.token_count_cache import TokenCountCache
-
 
 # ---------------------------------------------------------------------------
 # Helper: write a minimal valid GGUF v3 file

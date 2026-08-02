@@ -5,8 +5,6 @@ from __future__ import annotations
 import sys
 from unittest.mock import MagicMock
 
-import pytest
-
 from augmentum.image.vram import _get_vram_mb, flush_cuda_cache
 
 

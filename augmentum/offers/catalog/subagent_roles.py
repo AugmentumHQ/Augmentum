@@ -51,7 +51,7 @@ def _role_file_path(name: str) -> Path:
     return _user_agents_dir() / f"{name}.md"
 
 
-def _role_frontmatter(role: "AgentRole") -> str:
+def _role_frontmatter(role: AgentRole) -> str:
     """Serialize the role's key fields as YAML frontmatter.
 
     Built deliberately by hand rather than via PyYAML — the role
@@ -101,7 +101,7 @@ def _role_frontmatter(role: "AgentRole") -> str:
     return "\n".join(lines)
 
 
-def _make_entry(role: "AgentRole") -> CatalogEntry:
+def _make_entry(role: AgentRole) -> CatalogEntry:
     name = role.name
     description = role.description or ""
 
@@ -121,7 +121,7 @@ def _make_entry(role: "AgentRole") -> CatalogEntry:
             },
         )
 
-    async def _accept(payload: dict[str, Any], request: "Request") -> dict[str, Any]:
+    async def _accept(payload: dict[str, Any], request: Request) -> dict[str, Any]:
         path = _role_file_path(name)
         if path.exists():
             return {

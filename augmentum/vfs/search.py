@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from augmentum.vfs.models import SearchResult
 from augmentum.utils.logging import get_logger
+from augmentum.vfs.models import SearchResult
 
 if TYPE_CHECKING:
     from augmentum.vfs.index import FileIndexService

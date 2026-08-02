@@ -56,6 +56,8 @@ from augmentum.proxy.harness import (
 )
 from augmentum.proxy.openai_routes import (
     openai_chat as openai_chat_handler,
+)
+from augmentum.proxy.openai_routes import (
     to_internal_chat_request,
 )
 from augmentum.utils.logging import get_logger
@@ -422,7 +424,7 @@ async def _stream_anthropic_messages(
         while not task.done():
             try:
                 await asyncio.wait_for(asyncio.shield(task), timeout=_PING_INTERVAL_S)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 yield build_ping_event()
         oa_dict, error = task.result()
     except asyncio.CancelledError:

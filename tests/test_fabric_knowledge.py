@@ -21,9 +21,6 @@ import aiosqlite
 import httpx
 import pytest
 
-from augmentum.fabric.capabilities import (
-    KnowledgeSearchCapability,
-)
 from augmentum.fabric.coordinator import FabricCoordinator
 from augmentum.fabric.director import RoutingDirector
 from augmentum.fabric.identity import FabricIdentity
@@ -33,7 +30,6 @@ from augmentum.fabric.knowledge_client import (
 )
 from augmentum.fabric.peer_auth import PairedPeer
 from augmentum.state.settings_store import SettingsStore
-
 
 # ── Helpers ───────────────────────────────────────────────────────
 

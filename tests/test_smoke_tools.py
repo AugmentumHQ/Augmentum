@@ -4,9 +4,6 @@ from __future__ import annotations
 
 import importlib
 
-import pytest
-
-
 # ---------------------------------------------------------------------------
 # Module import smoke tests
 # ---------------------------------------------------------------------------

@@ -42,7 +42,6 @@ free, since the interrupt itself is the cost).
 from __future__ import annotations
 
 import time
-from typing import Any
 
 from augmentum.companion.growth.actions import (
     ActionContext,

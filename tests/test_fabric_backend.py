@@ -467,6 +467,7 @@ async def test_chat_stream_cancel_sends_ws_backstop():
     which is best-effort under proxies / kernel buffering.
     """
     import asyncio as _asyncio
+
     import aiosqlite
 
     from augmentum.fabric.capabilities import LLMInferenceCapability
@@ -541,7 +542,7 @@ def _load_resp(status: str, *, current_model: str = "", reason: str = "") -> Mag
     return r
 
 
-async def _make_signed_backend() -> "FabricBackend":
+async def _make_signed_backend() -> FabricBackend:
     """Construct a real FabricBackend with identity + user_id wired so
     ensure_peer_model_loaded actually runs its signed-call path.
     """

@@ -22,7 +22,6 @@ import json
 import shlex
 from typing import Any
 
-
 _ACTIONS = frozenset({"schema", "tables", "sample", "query", "integrity"})
 
 # Cap on returned rows + total result size. Each row is JSON-encoded so

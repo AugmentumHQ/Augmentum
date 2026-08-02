@@ -23,7 +23,7 @@ to user, receiver, title, origin, TTL).
 from __future__ import annotations
 
 from typing import Any
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 
 import httpx
 from fastapi import APIRouter, HTTPException, Request, Response

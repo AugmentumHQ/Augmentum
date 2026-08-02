@@ -74,7 +74,7 @@ class RemoteImageError(Exception):
 async def generate_image_via_peer(
     *,
     http_client: httpx.AsyncClient,
-    identity: "FabricIdentity",
+    identity: FabricIdentity,
     user_id: str,
     peer_addr: str,
     generate_request_payload: dict[str, Any],

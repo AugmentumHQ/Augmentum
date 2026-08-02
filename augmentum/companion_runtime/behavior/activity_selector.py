@@ -24,8 +24,10 @@ from __future__ import annotations
 import math
 import random
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable
+from datetime import UTC
+from typing import TYPE_CHECKING
 
 from augmentum.companion_runtime import gates
 from augmentum.companion_runtime.scoping import owner_clause
@@ -769,10 +771,10 @@ async def _perform_creation(runtime: CompanionRuntime) -> None:
     if last_at_iso:
         # SQLite datetime('now') is UTC, "YYYY-MM-DD HH:MM:SS"
         try:
-            from datetime import datetime, timezone
+            from datetime import datetime
             norm = last_at_iso.replace("T", " ").split(".", 1)[0]
             last_dt = datetime.strptime(norm, "%Y-%m-%d %H:%M:%S").replace(
-                tzinfo=timezone.utc,
+                tzinfo=UTC,
             )
             elapsed_s = time.time() - last_dt.timestamp()
             if elapsed_s < interval_s:

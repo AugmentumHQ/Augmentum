@@ -14,7 +14,6 @@ import re
 import time
 import uuid
 from collections.abc import AsyncIterator
-from contextlib import suppress
 from typing import TYPE_CHECKING
 
 from augmentum.config import settings
@@ -3396,7 +3395,8 @@ class PassthroughHandler(ModeHandler):
         if self._ssos:
             self._current_model = request.model or ""
             from augmentum.tools.events import (
-                make_tool_complete, make_tool_start,
+                make_tool_complete,
+                make_tool_start,
             )
 
             _ssos_q: asyncio.Queue[InternalStreamChunk | None] = asyncio.Queue()
@@ -3607,6 +3607,8 @@ class PassthroughHandler(ModeHandler):
 
         from augmentum.modes.analytical.tool_calling import (
             ToolCallingTier as _ToolCallingTier,
+        )
+        from augmentum.modes.analytical.tool_calling import (
             select_tier as _select_tier,
         )
         _tier = _select_tier(self._backend, request.model or "")

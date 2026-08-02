@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-import io
 from unittest.mock import AsyncMock, MagicMock
-
-from fastapi.testclient import TestClient
 
 
 def _mock_doc_store():

@@ -73,7 +73,7 @@ def _read_persisted_servers() -> list[dict[str, Any]]:
 
 
 async def _persist_servers(
-    request: "Request", servers: list[dict[str, Any]],
+    request: Request, servers: list[dict[str, Any]],
 ) -> None:
     """Match the persistence shape used by ``/v1/mcp/connect``."""
 
@@ -100,7 +100,7 @@ def _server_already_present(name: str) -> bool:
 
 
 async def _install_http_server(
-    name: str, url: str, request: "Request",
+    name: str, url: str, request: Request,
     headers: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """Persist + live-connect a Streamable HTTP MCP server.
@@ -163,7 +163,7 @@ async def _install_http_server(
 
 
 async def _install_stdio_server(
-    name: str, command: str, request: "Request",
+    name: str, command: str, request: Request,
     args: list[str] | None = None,
     env: dict[str, str] | None = None,
 ) -> dict[str, Any]:
@@ -250,7 +250,7 @@ def _http_entry(
             },
         )
 
-    async def _accept(payload: dict[str, Any], request: "Request") -> dict[str, Any]:
+    async def _accept(payload: dict[str, Any], request: Request) -> dict[str, Any]:
         # Allow the model to forward user-supplied custom headers via
         # ``extra.headers`` (e.g. a pre-issued bearer token), but URL
         # itself comes from the curated catalog — the model can't
@@ -306,7 +306,7 @@ def _stdio_entry(
             },
         )
 
-    async def _accept(payload: dict[str, Any], request: "Request") -> dict[str, Any]:
+    async def _accept(payload: dict[str, Any], request: Request) -> dict[str, Any]:
         # If the entry requires an argument (path, repository, etc.)
         # pull it from extras; otherwise the entry connects with just
         # its template args. The args list is rebuilt from the
@@ -351,7 +351,7 @@ async def _gmail_preview(target_id: str, user_id: str) -> OfferPreview | None:
 
 
 async def _gmail_accept(
-    payload: dict[str, Any], request: "Request",
+    payload: dict[str, Any], request: Request,
 ) -> dict[str, Any]:
     if _server_already_present("gmail"):
         return {

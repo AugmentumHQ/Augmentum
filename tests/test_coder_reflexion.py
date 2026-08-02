@@ -18,19 +18,15 @@ from augmentum.config import settings as _global_settings
 from augmentum.models.base import (
     InternalChatRequest,
     InternalStreamChunk,
-    Message,
 )
 from augmentum.modes.coder.handler import CoderHandler
-
 from tests.test_coder_handler import (
     _ExtendedContainerManager,
     _FakeChunk,
-    _FakeTool,
     _force_native_tier,
     _make_request,
     _tc_delta,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers

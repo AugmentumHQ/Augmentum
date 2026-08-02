@@ -49,8 +49,8 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
 from augmentum.notifications.catalog import (
-    ChannelTemplate,
     DEFAULT_CHANNELS,
+    ChannelTemplate,
     catalog_channel,
     normalise_importance,
 )
@@ -177,7 +177,7 @@ def _resolved_from_row(
 
 
 async def resolved_channels(
-    conn: "aiosqlite.Connection", *, user_id: str,
+    conn: aiosqlite.Connection, *, user_id: str,
 ) -> list[NotificationChannel]:
     """Catalog defaults merged with this user's customizations.
 
@@ -216,7 +216,7 @@ async def resolved_channels(
 
 
 async def mute_channel(
-    conn: "aiosqlite.Connection", *,
+    conn: aiosqlite.Connection, *,
     user_id: str, channel_id: str, until_iso: str | None,
 ) -> None:
     """Set or clear a per-user mute on a channel.
@@ -286,7 +286,7 @@ def _expires_to_iso(expires_at: int | str | None) -> str | None:
 
 
 async def publish(
-    conn: "aiosqlite.Connection", *,
+    conn: aiosqlite.Connection, *,
     user_id: str,
     channel_id: str,
     source: str,
@@ -462,7 +462,7 @@ _SELECT_COLS = (
 
 
 async def list_for_user(
-    conn: "aiosqlite.Connection", *,
+    conn: aiosqlite.Connection, *,
     user_id: str,
     include_read: bool = True,
     include_dismissed: bool = False,
@@ -505,7 +505,7 @@ async def list_for_user(
 
 
 async def get_notification(
-    conn: "aiosqlite.Connection", *, user_id: str, notification_id: str,
+    conn: aiosqlite.Connection, *, user_id: str, notification_id: str,
 ) -> Notification | None:
     """Fetch one notification. Returns None if missing or wrong user."""
 
@@ -522,7 +522,7 @@ async def get_notification(
 
 
 async def mark_delivered(
-    conn: "aiosqlite.Connection", *, user_id: str, notification_id: str,
+    conn: aiosqlite.Connection, *, user_id: str, notification_id: str,
 ) -> bool:
     """Stamp ``delivered_at``. Idempotent. Returns whether it changed."""
 
@@ -537,7 +537,7 @@ async def mark_delivered(
 
 
 async def mark_read(
-    conn: "aiosqlite.Connection", *, user_id: str, notification_id: str,
+    conn: aiosqlite.Connection, *, user_id: str, notification_id: str,
 ) -> bool:
     """Stamp ``read_at``. Idempotent. Returns whether it changed."""
 
@@ -552,7 +552,7 @@ async def mark_read(
 
 
 async def dismiss(
-    conn: "aiosqlite.Connection", *, user_id: str, notification_id: str,
+    conn: aiosqlite.Connection, *, user_id: str, notification_id: str,
 ) -> bool:
     """Stamp ``dismissed_at``. Idempotent. Returns whether it changed."""
 
@@ -567,7 +567,7 @@ async def dismiss(
 
 
 async def dismiss_by_dedupe_key(
-    conn: "aiosqlite.Connection", *,
+    conn: aiosqlite.Connection, *,
     user_id: str, source: str, dedupe_key: str,
 ) -> int:
     """Stamp ``dismissed_at`` on every notification matching the dedupe
@@ -594,7 +594,7 @@ async def dismiss_by_dedupe_key(
 
 
 async def expire_transient(
-    conn: "aiosqlite.Connection", *, now_iso: str | None = None,
+    conn: aiosqlite.Connection, *, now_iso: str | None = None,
 ) -> int:
     """Sweep transient notifications past expires_at.
 
@@ -628,7 +628,7 @@ class NotificationStore:
     pure sugar; tests can keep using free functions directly.
     """
 
-    def __init__(self, conn: "aiosqlite.Connection") -> None:
+    def __init__(self, conn: aiosqlite.Connection) -> None:
         self._conn = conn
 
     async def publish(self, **kwargs: Any) -> str:

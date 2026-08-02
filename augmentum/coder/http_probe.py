@@ -19,7 +19,6 @@ from typing import Any
 
 from augmentum.coder.services import _container_reachable_url
 
-
 # Max bytes of response body the script returns. Larger responses are
 # truncated and flagged via ``body_truncated=True`` so the agent knows
 # the cut happened. 50 KB is enough for typical JSON API responses while

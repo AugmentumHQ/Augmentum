@@ -74,7 +74,7 @@ class ProposeOfferResult:
 
 
 async def _count_pending_offers(
-    conn: "aiosqlite.Connection", *, user_id: str, thread_id: str = "",
+    conn: aiosqlite.Connection, *, user_id: str, thread_id: str = "",
 ) -> int:
     """Count non-dismissed offers for this user (optionally per session).
 
@@ -104,7 +104,7 @@ async def _count_pending_offers(
 
 
 async def _count_offers_today(
-    conn: "aiosqlite.Connection", *, user_id: str,
+    conn: aiosqlite.Connection, *, user_id: str,
 ) -> int:
     """Count offers created today (UTC) — for the per-day global cap.
 
@@ -170,7 +170,7 @@ def _expires_at(days: int) -> str:
 
 
 async def propose_offer(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
     hub: NotificationHub | None,
     user_id: str,

@@ -24,6 +24,7 @@ Resource posture:
 
 from __future__ import annotations
 
+from datetime import UTC
 from typing import TYPE_CHECKING
 
 from augmentum.state.backends.sqlite import transactional_write
@@ -152,8 +153,9 @@ async def daily_heal(runtime: CompanionRuntime) -> dict:
         settled = 0
         for uid in users:
             # Settle the date that just rolled (yesterday in local).
-            from datetime import datetime as _dt, timedelta as _td
             import time as _t
+            from datetime import datetime as _dt
+            from datetime import timedelta as _td
             yest = (_dt(*_t.localtime()[:6]) - _td(days=1)).strftime("%Y-%m-%d")
             await _today.settle_date(runtime, user_id=uid, date_local=yest)
             settled += 1
@@ -206,8 +208,9 @@ async def weekly_consolidate(runtime: CompanionRuntime, *, user_id: str) -> dict
 
     Returns counters for the Observatory.
     """
-    from augmentum.config import settings
     import json
+
+    from augmentum.config import settings
     if not getattr(settings, "companion_healing_enabled", False):
         return {"skipped": True, "reason": "disabled"}
     if not user_id:
@@ -240,14 +243,14 @@ async def weekly_consolidate(runtime: CompanionRuntime, *, user_id: str) -> dict
         return results
 
     # Group by 7-day window (UTC).
-    from datetime import datetime, timedelta, timezone
+    from datetime import datetime, timedelta
     windows: dict[str, list] = {}
     for row in rows:
         try:
             created = datetime.strptime(
                 str(row[3]).replace("T", " ").split(".", 1)[0],
                 "%Y-%m-%d %H:%M:%S",
-            ).replace(tzinfo=timezone.utc)
+            ).replace(tzinfo=UTC)
         except (ValueError, TypeError) as exc:
             log.debug("healing_row_parse_failed", raw=row[3] if row else None, error=str(exc))
             continue

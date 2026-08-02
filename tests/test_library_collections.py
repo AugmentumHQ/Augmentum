@@ -14,7 +14,6 @@ from augmentum.library.activity import ActivityStore
 from augmentum.library.collections import CollectionStore, SlugCollision
 from augmentum.library.home import build_home_payload
 
-
 _SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY,

@@ -19,13 +19,12 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-
 # ── RRF unit tests ────────────────────────────────────────────────────
 
 
 def test_rrf_merge_single_leg():
     """Single-leg result: ranking preserved, score = 1/(k+rank)."""
-    from augmentum.resolver.core import _rrf_merge, _RRF_K
+    from augmentum.resolver.core import _RRF_K, _rrf_merge
 
     legs = {
         "file_vec": [

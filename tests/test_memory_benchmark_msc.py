@@ -22,7 +22,6 @@ import os
 import statistics
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
 
 import pytest
 
@@ -181,11 +180,9 @@ def _load_dialogs() -> list[DialogChain]:
 
 from augmentum.memory.extractor import (
     _cosine_similarity,
-    batch_extract_and_store,
     heuristic_extract,
     should_extract,
 )
-
 
 _BOOTSTRAP_SQL = """
 CREATE TABLE IF NOT EXISTS schema_version (

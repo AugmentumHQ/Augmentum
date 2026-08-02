@@ -1,31 +1,31 @@
 """Tests for augmentum/coder/tools.py — 8 workspace-aware coder tools."""
 from __future__ import annotations
 
+from unittest.mock import AsyncMock, MagicMock
+
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
 
 from augmentum.coder.models import FileEntry
-from augmentum.coder.state import CoderState, CoderPhase
+from augmentum.coder.state import CoderState
 from augmentum.coder.tools import (
+    ALL_CODER_TOOLS,
+    READ_ONLY_TOOLS,
+    ApplyPatchTool,
+    CodeEditTool,
+    CodeGlobTool,
+    CodeGrepTool,
+    CodeMultiEditTool,
+    ContainerInfoTool,
+    DirTreeTool,
+    FileListTool,
     FileReadTool,
     FileWriteTool,
-    FileListTool,
-    DirTreeTool,
-    CodeEditTool,
-    CodeMultiEditTool,
-    ApplyPatchTool,
-    CodeGrepTool,
-    CodeGlobTool,
+    PublishPortsTool,
     ShellExecTool,
     ShellReadTool,
-    ContainerInfoTool,
-    PublishPortsTool,
     create_coder_tools,
-    READ_ONLY_TOOLS,
-    ALL_CODER_TOOLS,
 )
 from augmentum.tools.base import ToolCategory
-
 
 # ---------------------------------------------------------------------------
 # Fixtures

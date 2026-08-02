@@ -33,13 +33,10 @@ Run: python -m pytest tests/test_coder_native_termination_gate.py -v
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
-
 import pytest
 
-from augmentum.modes.coder.handler import CoderHandler
 from augmentum.models.base import InternalStreamChunk
-
+from augmentum.modes.coder.handler import CoderHandler
 from tests.test_coder_handler import (
     _ExtendedContainerManager,
     _FakeChunk,

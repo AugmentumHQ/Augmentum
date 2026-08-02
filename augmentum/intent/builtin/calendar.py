@@ -14,7 +14,7 @@ have access to your calendar" rather than a generic error.
 
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from typing import Any
 
 from augmentum.intent.action import ActionFanout, ActionResult, SessionContext
@@ -208,7 +208,7 @@ def _parse_when(when: str, now: datetime) -> datetime:
         target_date = now.date()
 
     target = datetime(target_date.year, target_date.month, target_date.day,
-                      hour, minute, 0, tzinfo=timezone.utc)
+                      hour, minute, 0, tzinfo=UTC)
 
     # If the resolved time is in the past today, push to tomorrow
     # (unless the user explicitly said "today")
@@ -367,7 +367,6 @@ async def _calendar_add(
 
     # Find an active CalDAV service.
     try:
-        from augmentum.marketplace.store import MarketplaceStore
 
         # Best-effort: query for connected calendar services via the
         # calendar_events table — if there are events cached, we have
@@ -419,7 +418,7 @@ async def _calendar_add(
     calendar_path = cfg.get("calendar_path", f"/{service_id}/")
 
     # Parse the LLM-extracted natural-language time into a real datetime.
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     start_dt = _parse_when(when, now)
     end_dt = start_dt + timedelta(hours=1)
 

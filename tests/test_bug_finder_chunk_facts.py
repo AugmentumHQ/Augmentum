@@ -10,8 +10,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from augmentum.bug_finder.chunk_facts import (
     ChunkFacts,
     compute_chunk_facts,
@@ -21,7 +19,6 @@ from augmentum.bug_finder.workspace_substrate import (
     WorkspacePattern,
     upsert_pattern,
 )
-
 
 # ---------------------------------------------------------------------------
 # compute_chunk_facts
@@ -236,8 +233,9 @@ def test_detector_template_blank_block_renders_cleanly() -> None:
 def test_orchestrator_run_config_default_chunk_facts_on() -> None:
     """Pre-compute defaults to ON because the cost is local AST work
     in exchange for token-priced round-trips — a net win."""
-    from augmentum.bug_finder.orchestrator import BugFinderRunConfig
     import inspect
+
+    from augmentum.bug_finder.orchestrator import BugFinderRunConfig
     sig = inspect.signature(BugFinderRunConfig)
     assert sig.parameters["enable_chunk_facts_precompute"].default is True
 
@@ -246,8 +244,9 @@ def test_orchestrator_detector_path_references_chunk_facts() -> None:
     """The detector subagent path imports + calls the pre-compute.
     A regression that strips it would silently disable the
     optimization without breaking tests."""
-    from augmentum.bug_finder import orchestrator
     import inspect
+
+    from augmentum.bug_finder import orchestrator
     src = inspect.getsource(orchestrator._run_detector_for_chunk)
     assert "compute_chunk_facts" in src
     assert "render_chunk_facts" in src

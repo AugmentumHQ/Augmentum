@@ -33,10 +33,9 @@ import asyncio
 import pytest
 
 from augmentum.coder.run_broker import CoderRunBroker
-from augmentum.coder.state import CoderPhase, CoderState
-from augmentum.models.base import InternalChatRequest, InternalStreamChunk, Message
+from augmentum.coder.state import CoderPhase
+from augmentum.models.base import InternalStreamChunk
 from augmentum.modes.coder.handler import CoderHandler
-
 from tests.test_coder_handler import (
     _ExtendedContainerManager,
     _FakeBackend,
@@ -256,7 +255,7 @@ def test_resolve_cancel_reason_falls_back_when_run_missing():
 
 def test_classify_timeout_error():
     handler = _make_handler()
-    assert handler._classify_runtime_error(asyncio.TimeoutError()) == "timeout"
+    assert handler._classify_runtime_error(TimeoutError()) == "timeout"
     assert handler._classify_runtime_error(TimeoutError("read timed out")) == "timeout"
 
 

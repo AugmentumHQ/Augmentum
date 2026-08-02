@@ -37,7 +37,6 @@ from augmentum.models.base import (
     Usage,
 )
 
-
 # ─── SSE event validator (mirrors Anthropic SDK invariants) ──────────
 
 
@@ -637,6 +636,7 @@ class TestAnthropicMessagesRoute:
 
     async def test_non_stream_text_response(self, monkeypatch):
         from fastapi.responses import JSONResponse
+
         from augmentum.proxy.anthropic_routes import anthropic_messages
 
         async def stub(body, request):
@@ -661,6 +661,7 @@ class TestAnthropicMessagesRoute:
 
     async def test_non_stream_tool_use_response(self, monkeypatch):
         from fastapi.responses import JSONResponse
+
         from augmentum.proxy.anthropic_routes import anthropic_messages
 
         async def stub(body, request):
@@ -691,6 +692,7 @@ class TestAnthropicMessagesRoute:
 
     async def test_stream_full_event_sequence(self, monkeypatch):
         from fastapi.responses import JSONResponse, StreamingResponse
+
         from augmentum.proxy.anthropic_routes import anthropic_messages
 
         async def stub(body, request):
@@ -730,6 +732,7 @@ class TestAnthropicMessagesRoute:
         waiting on bytes for the full model duration and the connection
         looks dead to intermediaries."""
         from fastapi.responses import JSONResponse
+
         from augmentum.proxy.anthropic_routes import anthropic_messages
 
         handler_started_event = asyncio.Event()
@@ -770,6 +773,7 @@ class TestAnthropicMessagesRoute:
         block carrying the message — CC's TUI displays the error text
         instead of the user seeing a silent close."""
         from fastapi.responses import JSONResponse
+
         from augmentum.proxy.anthropic_routes import anthropic_messages
 
         async def err_stub(body, request):
@@ -799,6 +803,7 @@ class TestAnthropicMessagesRoute:
 
     async def test_non_stream_error_returns_anthropic_error_shape(self, monkeypatch):
         from fastapi.responses import JSONResponse
+
         from augmentum.proxy.anthropic_routes import anthropic_messages
 
         async def err_stub(body, request):
@@ -856,8 +861,8 @@ class TestToolCallDispatch:
         """The bug we fixed: PassthroughHandler was filtering CC's tool
         calls. Now /v1/messages with tools must NOT call openai_chat
         at all — it should go straight to the backend."""
+        from augmentum.models.base import InternalChatResponse, Message, Usage
         from augmentum.proxy.anthropic_routes import anthropic_messages
-        from augmentum.models.base import Message, Usage, InternalChatResponse
 
         openai_chat_calls = []
         backend_calls = []
@@ -926,7 +931,7 @@ class TestToolCallDispatch:
     async def _capture_chat_template_kwargs(self, monkeypatch, model_name: str):
         """Helper: send a tool-bearing request with ``model_name`` and
         capture the chat_template_kwargs that landed on backend.chat."""
-        from augmentum.models.base import Message, Usage, InternalChatResponse
+        from augmentum.models.base import InternalChatResponse, Message, Usage
         from augmentum.proxy.anthropic_routes import anthropic_messages
 
         captured = []
@@ -1008,7 +1013,7 @@ class TestToolCallDispatch:
         cost). The key is per-user + "claude-code" suffix so different
         clients of the same backend don't collide and CC stays on its
         own slot vs Augmentum chat traffic."""
-        from augmentum.models.base import Message, Usage, InternalChatResponse
+        from augmentum.models.base import InternalChatResponse, Message, Usage
         from augmentum.proxy.anthropic_routes import anthropic_messages
 
         seen_keys = []
@@ -1060,8 +1065,9 @@ class TestToolCallDispatch:
         structurally broken. With aliasing, the subagent reaches the
         user's chosen local model."""
         from fastapi.responses import JSONResponse
-        from augmentum.proxy.anthropic_routes import anthropic_messages
+
         from augmentum.config import settings as cfg
+        from augmentum.proxy.anthropic_routes import anthropic_messages
 
         monkeypatch.setattr(cfg, "primary_chat_model", "Local-35B")
 
@@ -1087,8 +1093,9 @@ class TestToolCallDispatch:
         """anthropic_alias_haiku → small fast model, anthropic_alias_opus
         → big model. Per-tier aliases beat the global default + primary."""
         from fastapi.responses import JSONResponse
-        from augmentum.proxy.anthropic_routes import anthropic_messages
+
         from augmentum.config import settings as cfg
+        from augmentum.proxy.anthropic_routes import anthropic_messages
 
         monkeypatch.setattr(cfg, "primary_chat_model", "Big-35B", raising=False)
         monkeypatch.setattr(cfg, "anthropic_alias_haiku", "Tiny-4B", raising=False)
@@ -1115,8 +1122,9 @@ class TestToolCallDispatch:
         """Local model names (Qwen3.6-*, etc.) must pass through
         untouched. Aliasing is claude-specific."""
         from fastapi.responses import JSONResponse
-        from augmentum.proxy.anthropic_routes import anthropic_messages
+
         from augmentum.config import settings as cfg
+        from augmentum.proxy.anthropic_routes import anthropic_messages
 
         monkeypatch.setattr(cfg, "primary_chat_model", "Local-35B", raising=False)
 
@@ -1141,8 +1149,8 @@ class TestToolCallDispatch:
     async def test_claude_alias_falls_back_through_chain(self, monkeypatch):
         """No tier-specific alias, no anthropic_alias_default — must
         fall back to primary_chat_model."""
-        from augmentum.proxy.anthropic_routes import _resolve_claude_alias
         from augmentum.config import settings as cfg
+        from augmentum.proxy.anthropic_routes import _resolve_claude_alias
 
         # Clear any tier/default aliases
         monkeypatch.setattr(cfg, "anthropic_alias_sonnet", "", raising=False)
@@ -1158,8 +1166,8 @@ class TestToolCallDispatch:
         claude-* name passes through unchanged so the downstream
         ModelUnavailableError gives a clear diagnostic instead of
         silently routing to nothing."""
-        from augmentum.proxy.anthropic_routes import _resolve_claude_alias
         from augmentum.config import settings as cfg
+        from augmentum.proxy.anthropic_routes import _resolve_claude_alias
 
         monkeypatch.setattr(cfg, "anthropic_alias_haiku", "", raising=False)
         monkeypatch.setattr(cfg, "anthropic_alias_default", "", raising=False)
@@ -1174,6 +1182,7 @@ class TestToolCallDispatch:
         external tools go through openai_chat for full orchestration
         (memory/knowledge/dream/mode/etc)."""
         from fastapi.responses import JSONResponse
+
         from augmentum.proxy.anthropic_routes import anthropic_messages
 
         openai_chat_calls = []

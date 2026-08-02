@@ -4,7 +4,6 @@ from __future__ import annotations
 import os
 import sys
 import tempfile
-import time
 
 import numpy as np
 

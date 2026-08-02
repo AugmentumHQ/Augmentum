@@ -18,7 +18,6 @@ from augmentum.bug_finder.symbolic_gate import (
     extract_patched_files,
 )
 
-
 # ---------------------------------------------------------------------------
 # extract_patched_files
 # ---------------------------------------------------------------------------

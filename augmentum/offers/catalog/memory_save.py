@@ -119,7 +119,7 @@ def _make_entry(spec: _MemorySpec) -> CatalogEntry:
             },
         )
 
-    async def _accept(payload: dict[str, Any], request: "Request") -> dict[str, Any]:
+    async def _accept(payload: dict[str, Any], request: Request) -> dict[str, Any]:
         store = getattr(request.app.state, "memory_store", None)
         user = request.scope.get("user")
         user_id = getattr(user, "id", "") if user is not None else ""

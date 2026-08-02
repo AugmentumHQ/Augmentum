@@ -17,17 +17,14 @@ Run: python -m pytest tests/test_coder_loop_guards.py -v
 """
 from __future__ import annotations
 
-import json
-
 import pytest
 
+from augmentum.models.base import InternalStreamChunk
 from augmentum.modes.coder.handler import (
-    CoderHandler,
     _CREATION_VERB_RE,
+    CoderHandler,
     _intent_key,
 )
-from augmentum.models.base import InternalStreamChunk
-
 from tests.test_coder_handler import (
     _ExtendedContainerManager,
     _FakeChunk,
@@ -36,7 +33,6 @@ from tests.test_coder_handler import (
     _make_request,
     _tc_delta,
 )
-
 
 # ---------------------------------------------------------------------------
 # Creation-verb regex

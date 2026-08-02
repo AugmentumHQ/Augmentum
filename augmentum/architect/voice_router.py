@@ -626,7 +626,7 @@ async def classify_voice(
 
     try:
         resp = await asyncio.wait_for(backend.chat(req), timeout=timeout_s)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         elapsed = int((_time.monotonic() - started_at) * 1000)
         log.info("voice_router_timeout", ms=elapsed, model=resolved_model)
         # Salvage rather than silent-drop. The regex misses vocab drift

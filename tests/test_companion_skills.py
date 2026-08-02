@@ -176,7 +176,9 @@ async def test_outcome_moves_confidence_toward_signal():
     """Positive outcome → confidence rises; negative → falls. EWMA-style
     so one good doesn't fully promote and one bad doesn't fully demote."""
     from augmentum.companion.skills import (
-        OUTCOME_ACCEPTED, OUTCOME_REJECTED, SkillGraph,
+        OUTCOME_ACCEPTED,
+        OUTCOME_REJECTED,
+        SkillGraph,
     )
 
     backend = await _boot_backend()
@@ -226,7 +228,9 @@ async def test_outcome_moves_confidence_toward_signal():
 async def test_outcome_increments_counters_for_strong_signals():
     """successes_count rises on signal > 0.5; failures_count on signal < -0.5."""
     from augmentum.companion.skills import (
-        OUTCOME_REJECTED, OUTCOME_SHIPPED, SkillGraph,
+        OUTCOME_REJECTED,
+        OUTCOME_SHIPPED,
+        SkillGraph,
     )
 
     backend = await _boot_backend()
@@ -263,7 +267,8 @@ async def test_outcome_increments_counters_for_strong_signals():
 @pytest.mark.asyncio
 async def test_bus_emits_on_register_and_instance_and_outcome():
     from augmentum.companion.skills import (
-        OUTCOME_ACCEPTED, SkillGraph,
+        OUTCOME_ACCEPTED,
+        SkillGraph,
     )
     from augmentum.companion_runtime.bus import PresenceBus
 
@@ -278,7 +283,7 @@ async def test_bus_emits_on_register_and_instance_and_outcome():
         for _ in range(6):
             try:
                 ev = await asyncio.wait_for(sub.queue.get(), timeout=0.5)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 break
             if ev is None:
                 break
@@ -478,7 +483,6 @@ async def test_view_relevant_skills_respects_feature_flag(monkeypatch):
     """When companion_skills_enabled is off, view.relevant_skills
     returns empty regardless of graph state."""
     from augmentum.companion import Companion
-    from augmentum.companion.skills import SkillGraph
     from augmentum.companion_runtime.bus import PresenceBus
     from augmentum.config import settings as _settings
 

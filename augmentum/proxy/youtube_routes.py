@@ -111,7 +111,7 @@ async def get_related_videos(request: Request, q: str = "", exclude: str = "") -
         return JSONResponse({"results": []})
 
     from augmentum.config import settings
-    from augmentum.tools.youtube import _extract_video_id, _humanize_views, _humanize_date
+    from augmentum.tools.youtube import _extract_video_id, _humanize_date, _humanize_views
 
     http_client = getattr(request.app.state, "http_client", None)
     if not http_client or not settings.searxng_base_url:

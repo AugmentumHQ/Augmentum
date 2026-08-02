@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from augmentum.voice.hbe import extend_bandwidth, _upsample_simple, _SRC_SR, _TGT_SR
+from augmentum.voice.hbe import _SRC_SR, _TGT_SR, _upsample_simple, extend_bandwidth
 
 
 class TestExtendBandwidth:

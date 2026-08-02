@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-import pytest
-
-from augmentum.modes.narrative.context_builder import ContextBuilder, BuiltContext, ContextBlock
+from augmentum.modes.narrative.context_builder import BuiltContext, ContextBlock, ContextBuilder
+from augmentum.modes.narrative.lore_engine import LoreEngine, check_secondary, match_keywords
 from augmentum.modes.narrative.macro_expander import expand_macros, expand_messages
-from augmentum.modes.narrative.lore_engine import LoreEngine, match_keywords, check_secondary
 from augmentum.modes.narrative.world_info_buffer import WorldInfoBuffer
 from augmentum.modes.narrative.world_info_groups import filter_by_groups
 from augmentum.state.narrative_state import LorebookEntry, LorebookPosition, SelectiveLogic

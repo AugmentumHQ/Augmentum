@@ -16,16 +16,14 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import asyncio
 import json
 import re
 import sys
 import time
-from dataclasses import dataclass, field
-from pathlib import Path
-
-import urllib.request
 import urllib.error
+import urllib.request
+from dataclasses import dataclass
+from pathlib import Path
 
 # ---------------------------------------------------------------------------
 # Test Projects (realistic multi-file apps)

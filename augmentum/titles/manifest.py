@@ -27,7 +27,6 @@ import json
 from dataclasses import dataclass, field
 from typing import Any
 
-
 # ── Recognised title kinds ────────────────────────────────────────────
 #
 # Adding a new kind = one constant + register a Source that produces
@@ -120,7 +119,7 @@ class TitleManifest:
         row: dict,
         *,
         total_play_time_s: int = 0,
-    ) -> "TitleManifest | None":
+    ) -> TitleManifest | None:
         """Project an artifacts row into a TitleManifest.
 
         Returns None if the row is not a title (wrong ``metadata.kind``).

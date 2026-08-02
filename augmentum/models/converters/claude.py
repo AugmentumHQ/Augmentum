@@ -10,11 +10,9 @@ import re
 from copy import deepcopy
 from typing import Any
 
-from augmentum.models.converters.base import MessageConverter
 from augmentum.models.converters.utils import (
     ZWS,
     extract_system_prefix,
-    merge_consecutive_messages,
     prepend_name,
 )
 

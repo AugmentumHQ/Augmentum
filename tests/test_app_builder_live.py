@@ -9,7 +9,6 @@ These are SLOW (2-5 min per test) — run manually, not in CI.
 
 from __future__ import annotations
 
-import asyncio
 import json
 import os
 import sys

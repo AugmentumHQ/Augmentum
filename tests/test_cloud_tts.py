@@ -3,15 +3,15 @@
 from __future__ import annotations
 
 import pytest
+
 from augmentum.proxy.audio_routes import (
+    _KNOWN_VOICES,
     _build_headers,
+    _fetch_voices_from_provider,
     _is_deepgram,
     _is_elevenlabs,
     _is_openai_tts,
-    _KNOWN_VOICES,
-    _fetch_voices_from_provider,
 )
-
 
 # ---------------------------------------------------------------------------
 # Provider detection helpers

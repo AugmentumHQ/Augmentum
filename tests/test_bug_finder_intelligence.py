@@ -7,8 +7,6 @@ import time
 
 from augmentum.bug_finder.call_graph import CallGraph, CallSite
 from augmentum.bug_finder.intelligence import (
-    CallerInfo,
-    PatternRecurrence,
     callees_of,
     is_reachable_from,
     pattern_recurrence,
@@ -17,7 +15,6 @@ from augmentum.bug_finder.intelligence import (
     who_calls,
 )
 from augmentum.bug_finder.patterns import Pattern
-
 
 # ---------------------------------------------------------------------------
 # Helpers

@@ -18,7 +18,6 @@ inference per 250 ms hop on CPU.
 
 from __future__ import annotations
 
-import asyncio
 import io
 import json
 import math

@@ -22,7 +22,6 @@ from __future__ import annotations
 import secrets
 import time
 from dataclasses import dataclass
-from typing import Optional
 
 from augmentum.utils.logging import get_logger
 
@@ -104,7 +103,7 @@ class LiveTvSessionStore:
         )
         return session
 
-    def get(self, token: str, *, user_id: str) -> Optional[LiveTvSession]:
+    def get(self, token: str, *, user_id: str) -> LiveTvSession | None:
         """Return the session if it exists, belongs to ``user_id``, and
         isn't stale. Bumps last_activity as a side effect — a session
         that's actively being polled by the HLS player never expires.
@@ -123,7 +122,7 @@ class LiveTvSessionStore:
         session.last_activity = now
         return session
 
-    def remove(self, token: str, *, user_id: str) -> Optional[LiveTvSession]:
+    def remove(self, token: str, *, user_id: str) -> LiveTvSession | None:
         session = self._sessions.get(token)
         if session is None or session.user_id != user_id:
             return None

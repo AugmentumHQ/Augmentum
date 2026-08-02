@@ -23,14 +23,13 @@ def test_known_rails_derived_from_catalog():
     `rails_visible` would accept slugs the data layer can't render
     (or reject ones it can).
     """
-    assert KNOWN_RAILS == tuple(spec.slug for spec in RAIL_CATALOG)
+    assert tuple(spec.slug for spec in RAIL_CATALOG) == KNOWN_RAILS
 
 
 def test_receiver_prefs_uses_catalog_known_rails():
     """receiver_prefs re-exports KNOWN_RAILS from rail_catalog. If
     someone re-introduces a hardcoded list there, this fails."""
-    from augmentum.cast import rail_catalog
-    from augmentum.cast import receiver_prefs
+    from augmentum.cast import rail_catalog, receiver_prefs
     assert receiver_prefs.KNOWN_RAILS is rail_catalog.KNOWN_RAILS
 
 

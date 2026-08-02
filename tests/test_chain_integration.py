@@ -9,21 +9,20 @@ and safety edge cases (Unit 7).
 from __future__ import annotations
 
 import asyncio
-import json
 import time
 import unittest
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import aiosqlite
 
-from augmentum.config import settings
 from augmentum.classifier.router import Mode
+from augmentum.config import settings
 from augmentum.tools.base import ToolCategory
 from augmentum.tools.chain import (
+    _TEMPLATE_MAX_CHARS,
     ChainPlan,
     ChainStep,
     StepResult,
-    _TEMPLATE_MAX_CHARS,
     execute_chain,
     resolve_templates,
 )
@@ -199,12 +198,13 @@ class TestFlowRunRateLimit(unittest.TestCase):
     """Per-flow rate limiting returns 429 on excess."""
 
     def test_rate_limit_deque_logic(self):
+        from collections import deque
+
         from augmentum.proxy.flow_routes import (
             _FLOW_RUN_LIMIT,
             _FLOW_RUN_WINDOW,
             _flow_run_timestamps,
         )
-        from collections import deque
 
         flow_id = "test_rate_limit"
         _flow_run_timestamps[flow_id] = deque()
@@ -233,9 +233,9 @@ class TestFallbackHandlerPlumbing(unittest.TestCase):
     """All fallback paths construct PassthroughHandler with custom_flow_store."""
 
     def test_narrative_fallback_has_flow_store(self):
-        from augmentum.proxy.handler_factory import get_handler_for_mode
-        from augmentum.modes.passthrough.handler import PassthroughHandler
         from augmentum.classifier.router import Mode
+        from augmentum.modes.passthrough.handler import PassthroughHandler
+        from augmentum.proxy.handler_factory import get_handler_for_mode
 
         app_state = MagicMock()
         app_state.narrative_engines = None  # Force fallback
@@ -252,9 +252,9 @@ class TestFallbackHandlerPlumbing(unittest.TestCase):
         self.assertEqual(handler._custom_flow_store, app_state.custom_flow_store)
 
     def test_analytical_fallback_has_flow_store(self):
-        from augmentum.proxy.handler_factory import get_handler_for_mode
-        from augmentum.modes.passthrough.handler import PassthroughHandler
         from augmentum.classifier.router import Mode
+        from augmentum.modes.passthrough.handler import PassthroughHandler
+        from augmentum.proxy.handler_factory import get_handler_for_mode
 
         app_state = MagicMock()
         app_state.tool_registry = None  # Force AnalyticalHandler to fail
@@ -270,9 +270,9 @@ class TestFallbackHandlerPlumbing(unittest.TestCase):
         self.assertEqual(handler._custom_flow_store, app_state.custom_flow_store)
 
     def test_agentic_fallback_has_flow_store(self):
-        from augmentum.proxy.handler_factory import get_handler_for_mode
-        from augmentum.modes.passthrough.handler import PassthroughHandler
         from augmentum.classifier.router import Mode
+        from augmentum.modes.passthrough.handler import PassthroughHandler
+        from augmentum.proxy.handler_factory import get_handler_for_mode
 
         app_state = MagicMock()
         app_state.custom_flow_store = MagicMock()
@@ -722,9 +722,9 @@ class TestChainUserIdPropagation(unittest.TestCase):
         return tool, captured
 
     def test_image_category_tool_receives_user_id(self):
+        from augmentum.models.base import InternalChatRequest, Message
         from augmentum.tools.base import ToolCategory
         from augmentum.tools.chain import execute_chain
-        from augmentum.models.base import InternalChatRequest, Message
 
         async def _test():
             tool, captured = self._make_capturing_tool(
@@ -758,9 +758,9 @@ class TestChainUserIdPropagation(unittest.TestCase):
 
     def test_artifact_category_tool_receives_user_id(self):
         """Same contract for ARTIFACT — keeps the existing behavior."""
+        from augmentum.models.base import InternalChatRequest, Message
         from augmentum.tools.base import ToolCategory
         from augmentum.tools.chain import execute_chain
-        from augmentum.models.base import InternalChatRequest, Message
 
         async def _test():
             tool, captured = self._make_capturing_tool(
@@ -792,9 +792,9 @@ class TestChainUserIdPropagation(unittest.TestCase):
         """SEARCH tools (web_search) shouldn't get user_id injected — they
         don't write to user-scoped tables. Keeps the injection narrow.
         """
+        from augmentum.models.base import InternalChatRequest, Message
         from augmentum.tools.base import ToolCategory
         from augmentum.tools.chain import execute_chain
-        from augmentum.models.base import InternalChatRequest, Message
 
         async def _test():
             tool, captured = self._make_capturing_tool(

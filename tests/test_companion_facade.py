@@ -26,7 +26,6 @@ from pathlib import Path
 
 import pytest
 
-
 # ── Companion façade construction ─────────────────────────────────────
 
 
@@ -185,6 +184,7 @@ async def test_view_journal_writes_through_memory():
 @pytest.mark.asyncio
 async def test_companion_publish_topic_emits_with_correct_source():
     import asyncio
+
     from augmentum.companion import Companion
 
     runtime = _make_fake_runtime()
@@ -196,7 +196,7 @@ async def test_companion_publish_topic_emits_with_correct_source():
     async def _drain():
         try:
             ev = await asyncio.wait_for(sub.queue.get(), timeout=0.5)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return
         if ev:
             captured.append({"topic": ev.topic, "source": ev.source_companion_id})

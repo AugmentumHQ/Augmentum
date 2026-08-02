@@ -217,6 +217,7 @@ async def _apply_migration(conn, version: int) -> None:
 async def _create_store(with_vec: bool = True):
     """Create MemoryStore with optional vec + association table."""
     import aiosqlite
+
     from augmentum.memory.store import MemoryStore
 
     vec_enabled = False
@@ -1157,7 +1158,7 @@ class TestResonanceReport:
             conv_limit = int(os.environ.get("RESONANCE_CONV_LIMIT", "3"))
             convs = all_convs[:conv_limit] if conv_limit > 0 else all_convs
             r.append(f"  Conversations: {len(convs)}/{len(all_convs)}" +
-                     (f" (set RESONANCE_CONV_LIMIT=0 for all)" if conv_limit > 0 else ""))
+                     (" (set RESONANCE_CONV_LIMIT=0 for all)" if conv_limit > 0 else ""))
 
             # Check if LLM is available
             llm_ok = _llm_available()
@@ -1216,7 +1217,7 @@ class TestResonanceReport:
 
             # --- Track 2: Non-Obvious ---
             r.append("")
-            r.append("  Track 2: Non-Obvious Retrieval ({} scenarios)".format(len(SCENARIOS)))
+            r.append(f"  Track 2: Non-Obvious Retrieval ({len(SCENARIOS)} scenarios)")
             r.append("  " + "-" * 72)
 
             track2: dict[str, list[dict]] = {}

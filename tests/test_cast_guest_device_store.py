@@ -14,7 +14,6 @@ import pytest
 from augmentum.state.guest_device_store import GuestDeviceStore
 from augmentum.state.guest_store import GuestStore
 
-
 _USERS_SQL = """
 CREATE TABLE users (
     id TEXT PRIMARY KEY,

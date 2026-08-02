@@ -124,7 +124,7 @@ def _target_state(
     return AttentionState.DORMANT
 
 
-async def drive_once(runtime: "CompanionRuntime") -> bool:
+async def drive_once(runtime: CompanionRuntime) -> bool:
     """Compute target state, transition if changed. Returns True on fire."""
     observed_state = getattr(runtime, "observed_state", None)
     if not observed_state:

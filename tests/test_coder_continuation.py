@@ -36,7 +36,6 @@ from augmentum.modes.coder.handler import (
     _is_continuation_request,
 )
 
-
 # ---------------------------------------------------------------------------
 # Continuation detector — positive matches
 # ---------------------------------------------------------------------------

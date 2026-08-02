@@ -4,9 +4,6 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock, MagicMock
 
-from augmentum.models.base import ModelInfo
-
-
 # ---------------------------------------------------------------------------
 # GET /api/models/status
 # ---------------------------------------------------------------------------
@@ -508,8 +505,7 @@ class TestRouterShape:
     def test_three_routers_registered(self):
         """Three routers ship in this file — regressions that drop one would
         silently break the UI's model management surface."""
-        from augmentum.proxy.model_routes import (engine_router, llamacpp_router,
-                                                   router)
+        from augmentum.proxy.model_routes import engine_router, llamacpp_router, router
         assert router.prefix == "/api/models"
         assert llamacpp_router.prefix == "/api/llamacpp"
         assert engine_router.prefix == "/api/engine"

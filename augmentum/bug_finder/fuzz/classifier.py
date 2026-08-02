@@ -35,7 +35,6 @@ from __future__ import annotations
 import ast
 from dataclasses import dataclass
 
-
 # Parameter names that suggest a bytes-shaped input when no type hint is
 # present. Conservative on purpose — adding a name here is cheap, but
 # every false-positive entry routes a function through the fuzz leg and

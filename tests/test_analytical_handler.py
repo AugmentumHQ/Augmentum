@@ -2,10 +2,6 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
-
-import pytest
-
 from augmentum.modes.analytical.state import (
     AnalyticalPhase,
     AnalyticalResult,
@@ -159,8 +155,8 @@ class TestAnalyticalEngineImport:
 
     def test_engine_constants(self):
         from augmentum.modes.analytical.engine import (
-            _MAX_PHASE_RETRIES,
             _CONFIDENCE_THRESHOLD,
+            _MAX_PHASE_RETRIES,
             _MAX_TOOL_CALLS_PER_PHASE,
         )
         assert _MAX_PHASE_RETRIES == 2

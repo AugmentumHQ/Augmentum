@@ -17,8 +17,6 @@ from __future__ import annotations
 import json
 import time
 
-import pytest
-
 
 def _post_start(client, **body) -> dict:
     payload = {"card_type": "single", "source": "describe"}
@@ -219,6 +217,7 @@ class TestParentSessionInheritance:
 class TestFinalizeUniverseFlag:
     def test_finalize_without_wiki_returns_false(self, sqlite_client, mock_backend):
         from unittest.mock import AsyncMock
+
         from augmentum.modes.narrative.cardsmith import get_or_create_session
 
         sess = get_or_create_session(
@@ -252,6 +251,7 @@ class TestFinalizeUniverseFlag:
         self, sqlite_client, mock_backend,
     ):
         from unittest.mock import AsyncMock
+
         from augmentum.modes.narrative.cardsmith import get_or_create_session
 
         sess = get_or_create_session(

@@ -46,18 +46,15 @@ from augmentum.connect.protocol import (
     EVENT_INVITE,
     MSG_INVITE,
     ConnectEnvelope,
-    deserialise_envelope,
 )
 from augmentum.notifications import (
     IMPORTANCE_CRITICAL,
-    Notification,
 )
 from augmentum.notifications.hub import NotificationHub
 from augmentum.notifications.store import (
     get_notification,
     list_for_user,
 )
-
 
 CONNECT_MIGRATION = Path(
     "augmentum/state/migrations/219_connect_substrate.sql"

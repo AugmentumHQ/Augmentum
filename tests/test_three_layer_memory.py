@@ -7,17 +7,16 @@ and config defaults.
 
 from __future__ import annotations
 
-import asyncio
-import json
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
+from augmentum.modes.narrative.context_builder import ContextBuilder
 from augmentum.modes.narrative.memory import (
-    CardType,
-    MemoryEntry,
     MEMORY_CATEGORIES,
     STATE_FIELDS,
+    CardType,
+    MemoryEntry,
     StateSnapshot,
     SummaryMode,
     build_compaction_prompt,
@@ -26,9 +25,7 @@ from augmentum.modes.narrative.memory import (
     format_state_for_context,
     parse_state_memory_response,
 )
-from augmentum.modes.narrative.context_builder import ContextBuilder
 from augmentum.state.narrative_state import NarrativeSessionState
-
 
 # =====================================================================
 # 1. Template / Prompt generation (8 tests)

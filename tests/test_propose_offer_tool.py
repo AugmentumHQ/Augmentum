@@ -28,7 +28,6 @@ from augmentum.offers.dispatcher import (
 from augmentum.state.backends.sqlite import SQLiteBackend
 from augmentum.tools.propose_offer import ProposeOfferTool
 
-
 MIG_221 = Path("augmentum/state/migrations/221_notification_substrate.sql").read_text()
 MIG_224 = Path("augmentum/state/migrations/224_offer_suppressions.sql").read_text()
 

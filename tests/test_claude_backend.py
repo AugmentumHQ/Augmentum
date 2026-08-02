@@ -2,10 +2,6 @@
 
 from __future__ import annotations
 
-import json
-
-import pytest
-
 from augmentum.models.converters.claude import (
     ClaudeConverter,
     apply_prompt_caching,
@@ -17,7 +13,6 @@ from augmentum.models.converters.claude import (
     is_thinking_model,
 )
 from augmentum.models.converters.utils import ZWS
-
 
 # ===================================================================
 # TestClaudeMessageConversion

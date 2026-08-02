@@ -503,7 +503,7 @@ class MediaServerStore:
 
 
 async def purge_server_data(
-    db: "aiosqlite.Connection",
+    db: aiosqlite.Connection,
     server_id: str,
     *,
     user_id: str,

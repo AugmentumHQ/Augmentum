@@ -12,7 +12,7 @@ import json
 import secrets
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
 from augmentum.utils.logging import get_logger
@@ -35,7 +35,7 @@ _PAIR_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    return datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S")
 
 
 def _pair_code(length: int = 8) -> str:
@@ -256,9 +256,7 @@ class MobilePairStore:
         now = time.time()
         expired: list[str] = []
         for code, record in self._records.items():
-            if record.expires_at <= now:
-                expired.append(code)
-            elif record.state == STATE_CONSUMED and record.consumed_at:
+            if record.expires_at <= now or record.state == STATE_CONSUMED and record.consumed_at:
                 expired.append(code)
         for code in expired:
             record = self._records.pop(code, None)
@@ -364,7 +362,7 @@ class TrustedMobileDeviceStore:
         "last_seen_at, revoked_at"
     )
 
-    def __init__(self, conn: "aiosqlite.Connection") -> None:
+    def __init__(self, conn: aiosqlite.Connection) -> None:
         self._conn = conn
 
     async def upsert_from_pair(self, record: MobilePairRecord) -> TrustedMobileDevice:

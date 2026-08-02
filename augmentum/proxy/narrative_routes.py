@@ -501,7 +501,6 @@ async def activate_group(group_id: str, request: Request) -> JSONResponse:
     # Set group on the narrative engine for this session.
     # The engine may not exist yet (created on first chat message), so
     # we also persist group_id to the narrative_memory table directly.
-    from augmentum.proxy.handler_factory import _get_or_create_engine
 
     engines = getattr(request.app.state, "narrative_engines", None)
     if engines is None:
@@ -510,8 +509,8 @@ async def activate_group(group_id: str, request: Request) -> JSONResponse:
         request.app.state.narrative_engines = engines
 
     # Create engine now if it doesn't exist — ensures group_id is set
-    from augmentum.modes.narrative.engine import NarrativeEngine
     from augmentum.config import settings
+    from augmentum.modes.narrative.engine import NarrativeEngine
     uid = _user_id(request)
     cache_key: str | tuple[str, str] = (uid, session_id) if uid else session_id
     engine = engines.get(cache_key)

@@ -1,11 +1,8 @@
 """Tests for continuous batching engine."""
 from __future__ import annotations
 
-import asyncio
 import sys
-import time
 from pathlib import Path
-from unittest.mock import MagicMock
 
 import numpy as np
 import pytest
@@ -13,7 +10,6 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "services" / "engine"))
 
 from batch_engine import BatchEngine, BatchSequence, SeqState
-
 
 # ---------------------------------------------------------------------------
 # Mock Llama for batch engine testing

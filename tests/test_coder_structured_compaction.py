@@ -18,9 +18,8 @@ import json
 
 import pytest
 
-from augmentum.modes.coder.handler import CoderHandler
 from augmentum.models.base import Message
-
+from augmentum.modes.coder.handler import CoderHandler
 
 # Reuse the scaffolding the other compaction tests use.
 from tests.test_coder_context_preservation import (

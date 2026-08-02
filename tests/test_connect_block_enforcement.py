@@ -24,7 +24,6 @@ the store, so the assertions are end-to-end.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
@@ -36,21 +35,20 @@ from augmentum.connect.contact_store import add_contact, set_blocked
 from augmentum.connect.contacts import local_did_for
 from augmentum.connect.hub import ConnectHub
 from augmentum.connect.message_routing import handle_message_envelope
-from augmentum.connect.message_store import get_message, get_thread
+from augmentum.connect.message_store import get_message
 from augmentum.connect.protocol import (
     MSG_INVITE,
     MSG_TEXT_DELETE,
     MSG_TEXT_DELIVERED,
     MSG_TEXT_EDIT,
-    MSG_TEXT_READ,
     MSG_TEXT_REACT,
+    MSG_TEXT_READ,
     MSG_TEXT_SEND,
     MSG_TYPING_START,
     ConnectEnvelope,
 )
 from augmentum.notifications.hub import NotificationHub
 from augmentum.notifications.store import list_for_user
-
 
 CONNECT_MIGRATION = Path(
     "augmentum/state/migrations/219_connect_substrate.sql"

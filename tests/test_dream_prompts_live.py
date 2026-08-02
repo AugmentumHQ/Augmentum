@@ -11,9 +11,10 @@ from __future__ import annotations
 import json
 import sys
 import time
+
 import httpx
 
-from augmentum.dream.prompts import build_dream_prompt, build_portrait_prompt, DREAM_ANTI_PATTERNS
+from augmentum.dream.prompts import DREAM_ANTI_PATTERNS, build_dream_prompt, build_portrait_prompt
 
 LMSTUDIO_URL = "http://localhost:1234/v1"
 
@@ -283,7 +284,7 @@ def run_test(model_filter: str | None = None):
         print(f"  Avg length: {scores['avg_length']:.0f} chars")
         print(f"  Grounded: {'✅' if scores['grounded'] else '❌'}")
         print(f"  In character: {'✅' if scores['in_character'] else '❌ ' + str(scores['anti_pattern_hits'])}")
-        print(f"\n  Raw output (first 800 chars):")
+        print("\n  Raw output (first 800 chars):")
         # Strip thinking tags for display
         display = raw
         if "<think>" in display:
@@ -295,7 +296,7 @@ def run_test(model_filter: str | None = None):
             print(f"    ... ({len(display) - 800} more chars)")
 
         # Portrait synthesis test
-        print(f"\n▶ PORTRAIT SYNTHESIS")
+        print("\n▶ PORTRAIT SYNTHESIS")
         raw2, duration2 = call_model(model, portrait_sys, portrait_usr)
         scores2 = score_portrait_output(raw2)
 
@@ -306,7 +307,7 @@ def run_test(model_filter: str | None = None):
         print(f"  Impressions: {'✅' if scores2['has_impressions'] else '❌'}")
         print(f"  Grounded: {'✅' if scores2['grounded'] else '❌'}")
         print(f"  In character: {'✅' if scores2['in_character'] else '❌'}")
-        print(f"\n  Raw output (first 800 chars):")
+        print("\n  Raw output (first 800 chars):")
         display2 = raw2
         if "<think>" in display2:
             import re

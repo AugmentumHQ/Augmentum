@@ -22,16 +22,16 @@ Coverage:
 from __future__ import annotations
 
 import asyncio
-from dataclasses import dataclass
-from typing import Any
 
 import pytest
 
 from augmentum.companion_runtime.tool_protocol import (
-    Promise, ToolCall, ToolError, ToolResult,
+    Promise,
+    ToolCall,
+    ToolError,
+    ToolResult,
 )
 from augmentum.companion_runtime.voice import BeccaVoice
-
 
 # ── Promise dataclass shape ───────────────────────────────────────────
 
@@ -229,7 +229,7 @@ def test_deliver_prompt_failure_no_jargon_in_system():
 @pytest.mark.asyncio
 async def test_resolve_deliver_tier_primary_default(monkeypatch):
     """Default tier ('primary') → tiers.primary first."""
-    from augmentum.companion_runtime import tiers, voice as voice_mod
+    from augmentum.companion_runtime import tiers
 
     called: list[str] = []
 
@@ -254,7 +254,8 @@ async def test_resolve_deliver_tier_primary_default(monkeypatch):
 @pytest.mark.asyncio
 async def test_resolve_deliver_tier_primary_falls_back_to_utility(monkeypatch):
     """Primary unresolvable + strict=false → silent fallback to utility."""
-    from augmentum.companion_runtime import tiers, voice as voice_mod
+    from augmentum.companion_runtime import tiers
+    from augmentum.companion_runtime import voice as voice_mod
 
     async def fake_primary(_rt):
         raise RuntimeError("no primary backend")
@@ -279,7 +280,8 @@ async def test_resolve_deliver_tier_primary_falls_back_to_utility(monkeypatch):
 @pytest.mark.asyncio
 async def test_resolve_deliver_tier_strict_refuses_fallback(monkeypatch):
     """Primary unresolvable + strict=true → (None, '')."""
-    from augmentum.companion_runtime import tiers, voice as voice_mod
+    from augmentum.companion_runtime import tiers
+    from augmentum.companion_runtime import voice as voice_mod
 
     async def fake_primary(_rt):
         raise RuntimeError("no primary backend")
@@ -303,7 +305,7 @@ async def test_resolve_deliver_tier_strict_refuses_fallback(monkeypatch):
 @pytest.mark.asyncio
 async def test_resolve_deliver_tier_utility_explicit(monkeypatch):
     """When configured for utility, skip primary entirely."""
-    from augmentum.companion_runtime import tiers, voice as voice_mod
+    from augmentum.companion_runtime import tiers
 
     async def fake_primary(_rt):
         raise AssertionError("primary must not be consulted")
@@ -347,7 +349,8 @@ class _FakeBackend:
 async def test_synthesize_ok_returns_in_voice_text(monkeypatch):
     """Success path: deliver returns the model's continuation, stripped
     of any echoed tag syntax."""
-    from augmentum.companion_runtime import tiers, voice as voice_mod
+    from augmentum.companion_runtime import tiers
+    from augmentum.companion_runtime import voice as voice_mod
     from augmentum.companion_runtime.prompt_compose import ComposedPrompt
 
     fake = _FakeBackend(text="Dune's queued up in the living room.")
@@ -388,7 +391,8 @@ async def test_synthesize_ok_returns_in_voice_text(monkeypatch):
 async def test_synthesize_failure_returns_in_character_narration(monkeypatch):
     """Failure path: deliver model writes the miss in voice. Affordances
     fallback only on empty / timeout."""
-    from augmentum.companion_runtime import tiers, voice as voice_mod
+    from augmentum.companion_runtime import tiers
+    from augmentum.companion_runtime import voice as voice_mod
     from augmentum.companion_runtime.prompt_compose import ComposedPrompt
 
     fake = _FakeBackend(text="Tried to put it on, but I don't have it.")

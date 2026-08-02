@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import re
 from unittest.mock import MagicMock
 
 import pytest
@@ -20,7 +19,6 @@ from augmentum.tools.preferred_sources import (
     sort_urls_by_quality,
 )
 from augmentum.tools.result_processing import truncate_tool_result
-
 
 # ---------------------------------------------------------------------------
 # Preferred sources tests

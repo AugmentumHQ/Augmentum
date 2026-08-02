@@ -62,7 +62,7 @@ A: hello
 
 async def expand_query(
     query: str,
-    backend: "ModelBackend | None",
+    backend: ModelBackend | None,
     model: str = "",
     *,
     max_chars: int = 400,

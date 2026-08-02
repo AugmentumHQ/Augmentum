@@ -1,8 +1,6 @@
 """Tests for Dream System data models."""
 from __future__ import annotations
 
-import pytest
-
 from augmentum.dream.models import (
     ContextSegment,
     DreamCycle,

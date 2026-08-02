@@ -7,13 +7,11 @@ import json
 import os
 
 from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
-from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field
 
 from augmentum.auth.guards import require_admin
 from augmentum.config import settings
-from augmentum.proxy import system_events
-from augmentum.utils.secrets import decrypt_api_key, sanitize_error_detail
 from augmentum.image.schemas import (
     AspectRatio,
     BatchDeleteRequest,
@@ -29,7 +27,9 @@ from augmentum.image.schemas import (
     ModelInfo,
     ModelPullRequest,
 )
+from augmentum.proxy import system_events
 from augmentum.utils.logging import get_logger
+from augmentum.utils.secrets import decrypt_api_key, sanitize_error_detail
 
 log = get_logger(__name__)
 
@@ -115,9 +115,9 @@ async def _resolve_cloud_provider(
     the model name in cloud provider catalogs from the DB.
     """
     from augmentum.proxy.cloud_image_routes import (
+        _fetch_cloud_models,
         _get_conn,
         _get_default_image_provider,
-        _fetch_cloud_models,
     )
 
     is_cloud_prefix = (
@@ -168,7 +168,7 @@ async def _resolve_cloud_provider(
 
 
 async def _maybe_route_image_to_peer(
-    req: "GenerateRequest", request: Request, model: str,
+    req: GenerateRequest, request: Request, model: str,
 ) -> JSONResponse | None:
     """If a fabric peer advertises this image model and we don't have it
     locally, run the generation there and return the result.
@@ -492,7 +492,6 @@ async def generate_scene_image(req: SceneImageRequest, request: Request):
             raise HTTPException(503, "Image generation is not enabled (no local GPU or cloud provider)")
 
     from augmentum.classifier.router import Mode
-    from augmentum.image.queue import GenerationJob
     from augmentum.models.base import InternalChatRequest, Message
     from augmentum.proxy.handler_factory import get_handler_for_mode
 
@@ -1089,7 +1088,7 @@ async def unload_model(request: Request):
 @router.post("/{image_id}/upscale")
 async def upscale_image_route(image_id: str, request: Request):
     """Upscale an image using spandrel. Saves as a new image."""
-    import os
+
     from augmentum.image.postprocess import upscale_image
 
     body = {}
@@ -1499,7 +1498,7 @@ async def list_models(request: Request):
             ))
 
     # Cloud models from enabled image providers
-    from augmentum.proxy.cloud_image_routes import _get_conn, _fetch_cloud_models
+    from augmentum.proxy.cloud_image_routes import _fetch_cloud_models, _get_conn
 
     conn = _get_conn(request)
     if conn:
@@ -1706,6 +1705,7 @@ def _detect_source_type(source: str) -> str:
 async def _detect_civitai(source: str, request: Request) -> dict:
     """Query CivitAI API for model variants."""
     import re
+
     import httpx
 
     # Parse model ID and optional version ID from URL or bare ID

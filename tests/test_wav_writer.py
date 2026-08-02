@@ -113,7 +113,11 @@ def test_empty_writer_flag(tmp_path):
 def test_narration_synth_helpers_import():
     """The job handler's reusable helpers (used by the studio long path too) load."""
     from augmentum.jobs.handlers.narration_synth import (
-        _chunk_text, _concat_wav, _engine_wav_blobs, _resolve_synth_engine, _partial_path,
+        _chunk_text,
+        _concat_wav,
+        _engine_wav_blobs,
+        _partial_path,
+        _resolve_synth_engine,
     )
     assert _chunk_text("Hi. Bye.") == ["Hi. Bye."]   # short → one chunk
     assert "narration_work" in _partial_path("/data", "u", "file", "x")

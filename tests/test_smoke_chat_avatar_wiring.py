@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import pathlib
 
-
 _RENDERER_PATH = pathlib.Path("ui/scripts/chat/renderer.js")
 
 

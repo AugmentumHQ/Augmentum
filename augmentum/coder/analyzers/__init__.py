@@ -20,22 +20,32 @@ without round-tripping to the model.
 
 from __future__ import annotations
 
+# Import builtin handlers so their @register_analyzer side-effects run. These
+# names are intentionally unused — the import IS the registration.
+from augmentum.coder.analyzers.builtin import (  # noqa: F401
+    archive_analyzer as _archive_analyzer,
+)
+from augmentum.coder.analyzers.builtin import (
+    audio_analyzer as _audio_analyzer,
+)
+from augmentum.coder.analyzers.builtin import (
+    gguf_analyzer as _gguf_analyzer,
+)
+from augmentum.coder.analyzers.builtin import (
+    gltf_analyzer as _gltf_analyzer,
+)
+from augmentum.coder.analyzers.builtin import (
+    safetensors_analyzer as _safetensors_analyzer,
+)
+from augmentum.coder.analyzers.builtin import (
+    sqlite_analyzer as _sqlite_analyzer,
+)
 from augmentum.coder.analyzers.registry import (
     AnalysisReport,
     FileAnalyzer,
     analyze_file,
     is_analyzable,
     register_analyzer,
-)
-
-# Import builtin handlers so their @register_analyzer side-effects run.
-from augmentum.coder.analyzers.builtin import (
-    archive_analyzer as _archive_analyzer,
-    audio_analyzer as _audio_analyzer,
-    gguf_analyzer as _gguf_analyzer,
-    gltf_analyzer as _gltf_analyzer,
-    safetensors_analyzer as _safetensors_analyzer,
-    sqlite_analyzer as _sqlite_analyzer,
 )
 
 __all__ = [

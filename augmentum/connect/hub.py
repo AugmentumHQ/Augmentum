@@ -62,7 +62,7 @@ log = get_logger(__name__)
 class _Attachment:
     """One open WS for one user."""
 
-    ws: "WebSocket"
+    ws: WebSocket
     connection_id: str
     user_id: str
     user_did: str
@@ -105,7 +105,7 @@ class ConnectHub:
             log.warning("connect_presence_sink_failed", user_id=user_id, exc_info=True)
 
     async def attach(
-        self, *, ws: "WebSocket", user_id: str, user_did: str,
+        self, *, ws: WebSocket, user_id: str, user_did: str,
     ) -> _Attachment:
         """Register a freshly-accepted WS for ``user_id``."""
 

@@ -43,7 +43,6 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 
-
 THIS_INSTANCE_SENTINEL = "this-instance"
 log = logging.getLogger(__name__)
 

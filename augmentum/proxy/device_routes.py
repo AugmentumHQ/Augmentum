@@ -164,7 +164,7 @@ async def _tokenize_content_url(
     # the well-known params we know about into the token so the blob
     # path can replay them when calling the upstream stream route.
     if args.get("content_url"):
-        from urllib.parse import urlsplit, parse_qsl
+        from urllib.parse import parse_qsl, urlsplit
         parsed = urlsplit(str(args["content_url"]))
         for k, v in parse_qsl(parsed.query, keep_blank_values=True):
             if k in ("file", "episode_id", "subtitle_stream_index", "audio_stream_index"):

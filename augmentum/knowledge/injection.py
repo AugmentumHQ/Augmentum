@@ -36,7 +36,7 @@ from augmentum.utils.logging import get_logger
 if TYPE_CHECKING:
     from starlette.datastructures import State
 
-    from augmentum.knowledge.packs import PackManager, PackResult
+    from augmentum.knowledge.packs import PackResult
 
 log = get_logger(__name__)
 
@@ -627,7 +627,7 @@ async def _call_condense(
 
     try:
         result = await asyncio.wait_for(backend.chat(req), timeout=0.5)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         log.warning("knowledge_condense_timeout", model=model)
         return ""
     except Exception:

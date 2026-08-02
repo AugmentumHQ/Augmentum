@@ -43,7 +43,7 @@ log = get_logger(__name__)
 KIND: str = "workspace_profile"
 
 
-def _make_entry(profile: "ToolingProfile") -> CatalogEntry:
+def _make_entry(profile: ToolingProfile) -> CatalogEntry:
     profile_id = profile.id
     label = profile.label
     description = profile.description
@@ -64,7 +64,7 @@ def _make_entry(profile: "ToolingProfile") -> CatalogEntry:
             },
         )
 
-    async def _accept(payload: dict[str, Any], request: "Request") -> dict[str, Any]:
+    async def _accept(payload: dict[str, Any], request: Request) -> dict[str, Any]:
         mgr = getattr(request.app.state, "container_manager", None)
         user = request.scope.get("user")
         user_id = getattr(user, "id", "") if user is not None else ""

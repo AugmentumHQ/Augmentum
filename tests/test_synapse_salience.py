@@ -26,7 +26,6 @@ import json
 
 import pytest
 
-
 # ── Substrate: PresenceEvent + propagation_for_mode ───────────────────
 
 
@@ -307,7 +306,7 @@ async def test_emit_chat_turn_completed_runs_pipeline_when_enabled(monkeypatch):
         for _ in range(2):
             try:
                 ev = await asyncio.wait_for(sub.queue.get(), timeout=1.0)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 break
             if ev is None:
                 break
@@ -401,7 +400,7 @@ async def test_emit_chat_turn_completed_respects_coder_propagation(monkeypatch):
         for _ in range(3):
             try:
                 ev = await asyncio.wait_for(sub.queue.get(), timeout=0.5)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 break
             if ev is None:
                 break

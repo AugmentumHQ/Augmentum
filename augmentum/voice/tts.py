@@ -11,8 +11,6 @@ from typing import TYPE_CHECKING
 from augmentum.config import settings
 from augmentum.proxy.audio_routes import (
     _build_tts_stream,
-    _get_default_provider,
-    _get_provider_by_id,
     _is_csm_provider,
 )
 from augmentum.utils.http_client import normalize_base_url

@@ -11,14 +11,11 @@ Covers:
 
 from __future__ import annotations
 
-import asyncio
 import json
-import tempfile
 from pathlib import Path
 
 import aiosqlite
 import pytest
-
 
 # Schema fixture mirrors migrations 123 + 124 for the AXF surfaces this
 # test file touches. The artifacts table is the same as in
@@ -361,7 +358,9 @@ async def test_marketplace_discover_returns_items():
 @pytest.mark.asyncio
 async def test_marketplace_discover_query_filter():
     from augmentum.marketplace import (
-        MarketplaceListing, MarketplaceSource, MarketplaceStore,
+        MarketplaceListing,
+        MarketplaceSource,
+        MarketplaceStore,
     )
     from augmentum.titles import InternalSource, SourceRegistry
 
@@ -388,7 +387,9 @@ async def test_marketplace_install_delegates_to_underlying_source():
     """The marketplace's install_for_user must round-trip through the
     underlying installer Source, not duplicate its logic."""
     from augmentum.marketplace import (
-        MarketplaceListing, MarketplaceSource, MarketplaceStore,
+        MarketplaceListing,
+        MarketplaceSource,
+        MarketplaceStore,
     )
     from augmentum.titles import InternalSource, SourceRegistry
 
@@ -451,14 +452,19 @@ async def test_marketplace_install_404_for_missing_listing():
 
 @pytest.mark.asyncio
 async def test_discover_titles_decorates_installed_flag():
+    from augmentum.marketplace import (
+        MarketplaceListing,
+        MarketplaceSource,
+        MarketplaceStore,
+    )
     from augmentum.titles import (
-        BrowserIframeRuntime, RuntimeRegistry, SourceRegistry, TitleService,
+        BrowserIframeRuntime,
+        InternalSource,
+        RuntimeRegistry,
+        SourceRegistry,
+        TitleService,
         TitleStore,
     )
-    from augmentum.marketplace import (
-        MarketplaceListing, MarketplaceSource, MarketplaceStore,
-    )
-    from augmentum.titles import InternalSource
 
     conn = await _mkdb()
     mstore = MarketplaceStore(conn)

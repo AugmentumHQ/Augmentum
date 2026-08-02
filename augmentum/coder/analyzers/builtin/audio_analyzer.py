@@ -34,7 +34,7 @@ class AudioAnalyzer:
         if audio is None:
             return AnalysisReport(
                 format="audio (unrecognized)",
-                summary=f"File extension says audio but mutagen couldn't parse it.",
+                summary="File extension says audio but mutagen couldn't parse it.",
             )
 
         info = audio.info

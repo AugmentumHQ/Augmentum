@@ -10,8 +10,6 @@ import asyncio
 
 from fastapi.testclient import TestClient
 
-from augmentum.config import settings
-
 
 def _setup_settings_store(app):
     """Wire a SettingsStore on the app's SQLite backend."""

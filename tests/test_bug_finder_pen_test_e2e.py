@@ -26,20 +26,23 @@ import asyncio
 import socket
 import sys
 from pathlib import Path
-from typing import AsyncIterator
 
 import pytest
 
 from augmentum.bug_finder.pen_test import (
-    ProbeRequest, execute_probe, load_probe_receipts,
+    ProbeRequest,
+    execute_probe,
+    load_probe_receipts,
 )
 from augmentum.bug_finder.pen_test_attacks import (
-    authz_matrix_probe, concurrent_probe,
+    authz_matrix_probe,
+    concurrent_probe,
 )
 from augmentum.bug_finder.pen_test_boot import (
-    BootSpec, _UnderTestRegistry, boot_under_test,
+    BootSpec,
+    _UnderTestRegistry,
+    boot_under_test,
 )
-
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 

@@ -28,7 +28,8 @@ import json
 import tarfile
 import uuid
 import zipfile
-from typing import TYPE_CHECKING, Any, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 from augmentum.builds.contract import (
     derive_behaviors,
@@ -426,9 +427,9 @@ async def run_build(
     """
     # Deferred heavy imports — keep the pure helpers above import-light.
     from augmentum.agents.budget import SubagentBudget
-    from augmentum.agents.loop import SubagentProgress, SubagentSpec, run_subagent
-    from augmentum.builds.budgets import build_budget
+    from augmentum.agents.loop import SubagentSpec, run_subagent
     from augmentum.agents.tools import filter_tools
+    from augmentum.builds.budgets import build_budget
     from augmentum.coder.builder_tools import create_builder_tools
     from augmentum.coder.state import CoderState
     from augmentum.coder.tools import create_coder_tools

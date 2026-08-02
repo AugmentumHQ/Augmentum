@@ -6,14 +6,14 @@ Each token is a JSON object: {host, username, token, created_at}.
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from augmentum.utils.logging import get_logger
 from augmentum.utils.secrets import decrypt_api_key, encrypt_api_key
 
 if TYPE_CHECKING:
-    from augmentum.state.settings_store import SettingsStore
+    pass
 
 log = get_logger(__name__)
 
@@ -43,7 +43,7 @@ class GitTokenStore:
             "host": host,
             "username": username,
             "token": encrypt_api_key(token),
-            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": datetime.now(UTC).isoformat(),
         }
         key = f"{_KEY_PREFIX}{host}"
         if user_id:

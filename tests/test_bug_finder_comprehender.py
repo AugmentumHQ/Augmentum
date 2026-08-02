@@ -15,17 +15,9 @@ from __future__ import annotations
 import json
 
 from augmentum.bug_finder.comprehender import (
-    ComprehenderOutput,
     parse_comprehender_output,
 )
-from augmentum.bug_finder.knowledge_store import (
-    EntryPoint,
-    Pillar,
-    RiskSurface,
-    Subsystem,
-)
 from augmentum.bug_finder.orchestrator import UserGoal
-
 
 # ---------------------------------------------------------------------------
 # parse_comprehender_output

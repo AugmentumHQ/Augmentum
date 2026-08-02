@@ -202,8 +202,8 @@ def test_reflection_ignores_unknown_traits():
 
 @pytest.mark.asyncio
 async def test_apply_disabled_returns_skip(monkeypatch):
-    from augmentum.config import settings
     from augmentum.companion_runtime.reflection import maybe_apply_nudge
+    from augmentum.config import settings
     monkeypatch.setattr(settings, "companion_reflection_trait_nudge_enabled", False)
 
     backend = await _boot_backend()
@@ -218,9 +218,9 @@ async def test_apply_disabled_returns_skip(monkeypatch):
 @pytest.mark.asyncio
 async def test_apply_skips_on_low_bias(monkeypatch):
     """When recent feedback is negative, we don't apply nudges."""
-    from augmentum.config import settings
     from augmentum.companion_runtime import feedback
     from augmentum.companion_runtime.reflection import maybe_apply_nudge
+    from augmentum.config import settings
     monkeypatch.setattr(settings, "companion_reflection_trait_nudge_enabled", True)
 
     backend = await _boot_backend()
@@ -242,9 +242,9 @@ async def test_apply_skips_when_facet_not_elevated(monkeypatch):
 
     Uses a real runtime so identity.get_identity works correctly.
     """
-    from augmentum.config import settings
     from augmentum.companion_runtime.reflection import maybe_apply_nudge
     from augmentum.companion_runtime.runtime import CompanionRuntime
+    from augmentum.config import settings
     from augmentum.state.backends.sqlite import SQLiteBackend
 
     monkeypatch.setattr(settings, "companion_reflection_trait_nudge_enabled", True)
@@ -272,9 +272,9 @@ async def test_apply_skips_when_facet_not_elevated(monkeypatch):
 @pytest.mark.asyncio
 async def test_apply_succeeds_when_facet_elevated(monkeypatch):
     """With both bias OK and facet elevated, the nudge applies."""
-    from augmentum.config import settings
     from augmentum.companion_runtime.reflection import maybe_apply_nudge
     from augmentum.companion_runtime.runtime import CompanionRuntime
+    from augmentum.config import settings
     from augmentum.state.backends.sqlite import SQLiteBackend
 
     monkeypatch.setattr(settings, "companion_reflection_trait_nudge_enabled", True)

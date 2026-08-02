@@ -38,10 +38,10 @@ async def dispatch_render(
     job: RenderJob,
     *,
     user_id: str,
-    director: "RoutingDirector | None" = None,
-    http_client: "httpx.AsyncClient | None" = None,
-    html_renderer: "HTMLRenderer | None" = None,
-    output_store: "RenderOutputStore | None" = None,
+    director: RoutingDirector | None = None,
+    http_client: httpx.AsyncClient | None = None,
+    html_renderer: HTMLRenderer | None = None,
+    output_store: RenderOutputStore | None = None,
 ) -> RenderResult:
     """Route + execute a render job.
 

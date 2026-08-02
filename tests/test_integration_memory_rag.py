@@ -2,13 +2,10 @@
 
 from __future__ import annotations
 
-import json
 import struct
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
-import pytest
-
-from augmentum.memory.models import ExtractedFact, Memory, MemoryTier, MemoryType, SourceType
+from augmentum.memory.models import ExtractedFact, MemoryTier, MemoryType, SourceType
 from augmentum.state.backends.sqlite import SQLiteBackend
 
 

@@ -10,8 +10,6 @@ from __future__ import annotations
 import tempfile
 from unittest.mock import MagicMock
 
-import pytest
-
 from augmentum.image.model_manager import ModelManager
 
 

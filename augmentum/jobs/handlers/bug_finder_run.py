@@ -32,17 +32,17 @@ from __future__ import annotations
 from dataclasses import replace as dataclass_replace
 from typing import Any
 
+from augmentum.bug_finder.knowledge_store import KnowledgeStore
 from augmentum.bug_finder.orchestrator import (
     BugFinderIntake,
     BugFinderRunConfig,
     BugFinderRunReport,
     run_bug_finder,
 )
-from augmentum.bug_finder.knowledge_store import KnowledgeStore
 from augmentum.bug_finder.patterns import PatternStore, render_pattern_brief
-from augmentum.bug_finder.task_queue import TaskQueue
 from augmentum.bug_finder.role_models import RoleModelConfig
 from augmentum.bug_finder.store import BugFinderRunStore
+from augmentum.bug_finder.task_queue import TaskQueue
 from augmentum.jobs.context import JobContext
 from augmentum.utils.logging import get_logger
 

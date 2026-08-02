@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from zoneinfo import ZoneInfo
 
 _log = logging.getLogger(__name__)
@@ -55,7 +55,7 @@ def _get_local_tz() -> ZoneInfo | timezone:
         # astimezone() can fail on platforms without tzdata; UTC is the
         # documented contract for any unresolvable case.
         pass
-    return timezone.utc
+    return UTC
 
 
 def get_datetime_context() -> str:

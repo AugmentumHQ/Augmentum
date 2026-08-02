@@ -55,6 +55,7 @@ async def preference_delta(
     from augmentum.companion_runtime import skill_archive
     try:
         import asyncio
+
         from augmentum.memory.embeddings import EmbeddingService
         query_embedding = await asyncio.to_thread(
             EmbeddingService.embed_one, intent.text,

@@ -98,9 +98,7 @@ def scope_search_context(search_context: str, phase: str) -> str:
         urls: list[str] = []
         for line in search_context.splitlines():
             stripped = line.strip()
-            if stripped.startswith("URL:"):
-                urls.append(stripped)
-            elif stripped.startswith("[") and "]" in stripped:
+            if stripped.startswith("URL:") or stripped.startswith("[") and "]" in stripped:
                 urls.append(stripped)
         if not urls:
             return ""

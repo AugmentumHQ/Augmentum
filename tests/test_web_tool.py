@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -10,11 +10,10 @@ from augmentum.tools.base import ToolCategory, ToolResult
 from augmentum.tools.web import (
     WebTool,
     _build_search_query,
-    _extract_urls,
     _extract_result_urls,
+    _extract_urls,
     _strip_urls,
 )
-
 
 # ---------------------------------------------------------------------------
 # URL detection

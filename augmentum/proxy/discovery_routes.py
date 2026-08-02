@@ -434,7 +434,7 @@ async def _distill_and_store(
 ) -> None:
     """Background task: distill content into chunks and embed into the library."""
     try:
-        from augmentum.discovery.distiller import chunk_text, distill_article, distill_transcript
+        from augmentum.discovery.distiller import chunk_text, distill_article
         from augmentum.memory.embeddings import EmbeddingService
 
         if source_type == "video_transcript":

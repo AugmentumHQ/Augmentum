@@ -8,7 +8,6 @@ import-smoke stub that gave false confidence in security-critical code.
 from __future__ import annotations
 
 import asyncio
-import re
 
 import pytest
 from fastapi.testclient import TestClient
@@ -768,16 +767,18 @@ class TestRouterShape:
         assert not _USERNAME_RE.match("bad@user")
 
     def test_get_ip_forwarded(self):
-        from augmentum.proxy.auth_routes import _get_ip
         from unittest.mock import MagicMock
+
+        from augmentum.proxy.auth_routes import _get_ip
         req = MagicMock()
         req.headers = {"x-forwarded-for": "1.2.3.4, 5.6.7.8"}
         req.client = None
         assert _get_ip(req) == "1.2.3.4"
 
     def test_get_ip_direct(self):
-        from augmentum.proxy.auth_routes import _get_ip
         from unittest.mock import MagicMock
+
+        from augmentum.proxy.auth_routes import _get_ip
         req = MagicMock()
         req.headers = {}
         req.client.host = "10.0.0.1"

@@ -19,8 +19,8 @@ import pytest
 from augmentum.modes.narrative.cardsmith import (
     DEFAULT_WORLD_RPG_PROMPT,
     get_prompt,
+    state,
 )
-from augmentum.modes.narrative.cardsmith import state
 from augmentum.modes.narrative.cardsmith.output_mapper import build_character_payload
 
 

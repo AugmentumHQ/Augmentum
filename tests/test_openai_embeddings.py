@@ -14,7 +14,6 @@ from fastapi.testclient import TestClient
 
 from augmentum.proxy.openai_routes import OpenAIEmbeddingsRequest
 
-
 # ----------------------------------------------------------------------
 # Request schema
 # ----------------------------------------------------------------------
@@ -53,6 +52,7 @@ def test_request_rejects_missing_model():
 def _build_app(backend):
     """Minimal FastAPI app with the openai_router + a fake registry."""
     from fastapi import FastAPI
+
     from augmentum.proxy.openai_routes import router
 
     app = FastAPI()

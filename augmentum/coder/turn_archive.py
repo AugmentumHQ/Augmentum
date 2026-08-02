@@ -109,7 +109,7 @@ def _resolve_row_cap() -> int:
 
 
 async def _next_turn_index(
-    conn: "aiosqlite.Connection", *, user_id: str, workspace_id: str,
+    conn: aiosqlite.Connection, *, user_id: str, workspace_id: str,
 ) -> int:
     """Monotonic per-workspace counter. 1-based; first turn = 1.
 
@@ -131,7 +131,7 @@ async def _next_turn_index(
 
 
 async def _prune_to_cap(
-    conn: "aiosqlite.Connection", *, user_id: str, workspace_id: str, cap: int,
+    conn: aiosqlite.Connection, *, user_id: str, workspace_id: str, cap: int,
 ) -> int:
     """Drop oldest rows until total ≤ ``cap``. Returns pruned count.
 
@@ -177,7 +177,7 @@ async def _prune_to_cap(
 
 
 async def append_turn(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
     user_id: str,
     workspace_id: str,
@@ -288,7 +288,7 @@ def _parse_json_list(raw: str) -> list:
 
 
 async def list_recent_turns(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
     user_id: str,
     workspace_id: str,
@@ -351,7 +351,7 @@ async def list_recent_turns(
 
 
 async def get_turn_window(
-    conn: "aiosqlite.Connection",
+    conn: aiosqlite.Connection,
     *,
     user_id: str,
     workspace_id: str,
@@ -416,7 +416,7 @@ async def get_turn_window(
 
 
 async def count_turns(
-    conn: "aiosqlite.Connection", *, user_id: str, workspace_id: str,
+    conn: aiosqlite.Connection, *, user_id: str, workspace_id: str,
 ) -> int:
     """Total archived turn count for the inspector header chip."""
     try:

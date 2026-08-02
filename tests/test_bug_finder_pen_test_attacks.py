@@ -10,21 +10,16 @@ this file covers the orchestration logic + edge cases.
 from __future__ import annotations
 
 import json
-from pathlib import Path
-from typing import Any
 
 import pytest
 
 from augmentum.bug_finder import pen_test_attacks
 from augmentum.bug_finder.agent_tools import (
-    AuthzMatrixProbeTool, ConcurrentProbeTool,
+    AuthzMatrixProbeTool,
+    ConcurrentProbeTool,
 )
 from augmentum.bug_finder.pen_test import ProbeReceipt, ProbeResponse
 from augmentum.bug_finder.pen_test_attacks import (
-    AuthzMatrixRow,
-    AuthzMatrixVerdict,
-    ConcurrentProbeOutcome,
-    ConcurrentProbeVerdict,
     authz_matrix_probe,
     concurrent_probe,
 )
@@ -575,10 +570,15 @@ async def test_concurrent_tool_clamps_replicas_to_safe_range(
 
 def test_concurrent_probe_in_pen_test_canonical_set() -> None:
     from augmentum.agents.tools import (
-        PEN_TEST_TOOL_NAMES, PEN_TESTER_TOOL_NAMES,
-        DETECTOR_TOOL_NAMES, FIXER_TOOL_NAMES,
-        INVESTIGATOR_TOOL_NAMES, LEAD_TOOL_NAMES,
-        PLANNER_TOOL_NAMES, READ_ONLY_TOOL_NAMES, VERIFIER_TOOL_NAMES,
+        DETECTOR_TOOL_NAMES,
+        FIXER_TOOL_NAMES,
+        INVESTIGATOR_TOOL_NAMES,
+        LEAD_TOOL_NAMES,
+        PEN_TEST_TOOL_NAMES,
+        PEN_TESTER_TOOL_NAMES,
+        PLANNER_TOOL_NAMES,
+        READ_ONLY_TOOL_NAMES,
+        VERIFIER_TOOL_NAMES,
     )
     assert "concurrent_probe" in PEN_TEST_TOOL_NAMES
     assert "concurrent_probe" in PEN_TESTER_TOOL_NAMES

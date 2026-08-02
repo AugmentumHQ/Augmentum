@@ -87,7 +87,7 @@ class FabricEnvelope:
         sender_node_id: str,
         payload: dict,
         signing_key: Ed25519PrivateKey,
-    ) -> "FabricEnvelope":
+    ) -> FabricEnvelope:
         """Build + sign an envelope. The signature covers a
         deterministic, canonical-form serialisation of the contents so
         two peers signing/verifying the same logical message reach
@@ -133,7 +133,7 @@ class FabricEnvelope:
         raw: str,
         *,
         expected_sender_pubkey_b64: str,
-    ) -> "FabricEnvelope":
+    ) -> FabricEnvelope:
         """Parse a wire-form envelope and verify its signature.
 
         Raises :class:`FabricProtocolError` on any malformed input,

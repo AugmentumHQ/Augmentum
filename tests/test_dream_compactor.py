@@ -18,9 +18,8 @@ import pytest
 from augmentum.dream.compactor import DreamCompactor
 from augmentum.dream.consolidator import try_consolidate_dream
 from augmentum.dream.journal import DreamJournal
-from augmentum.dream.models import DreamEntry, DreamEntryType
+from augmentum.dream.models import DreamEntryType
 from augmentum.utils.vector import cosine_similarity, parse_merged_response
-
 
 UID = "user_test"
 OTHER_UID = "user_other"

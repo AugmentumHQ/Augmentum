@@ -38,7 +38,7 @@ from __future__ import annotations
 import json
 import re
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from augmentum.agents.loop import SubagentResult, SubagentSpec, run_subagent

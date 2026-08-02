@@ -24,10 +24,9 @@ from __future__ import annotations
 import pytest
 
 from augmentum.architect.voice_router import (
-    _regex_fallback,
     VoiceRouterDecision,
+    _regex_fallback,
 )
-
 
 # ── Token budget ────────────────────────────────────────────────
 

@@ -13,9 +13,7 @@ on environments without the extension.
 
 from __future__ import annotations
 
-import json
 import struct
-import secrets
 
 import pytest
 

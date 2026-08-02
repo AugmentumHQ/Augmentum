@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from augmentum.providers.models import (
-    GpuRequirements,
     ManagedService,
     ServiceCategory,
     ServiceDefinition,

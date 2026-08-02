@@ -40,9 +40,9 @@ from __future__ import annotations
 from augmentum.companion.presence.audio_history import (
     DEFAULT_RETENTION_DAYS,
     DEFAULT_WINDOW_SECONDS,
-    MimiAudioHistory,
     SPEAKER_BECCA,
     SPEAKER_USER,
+    MimiAudioHistory,
     Turn,
     deserialize_mimi_tokens,
     serialize_mimi_tokens,
@@ -52,9 +52,9 @@ from augmentum.companion.presence.pipeline import (
     StateTransition,
 )
 from augmentum.companion.presence.state import (
+    VALID_TRANSITIONS,
     PresenceContext,
     PresenceState,
-    VALID_TRANSITIONS,
     is_valid_transition,
 )
 

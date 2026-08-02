@@ -137,7 +137,7 @@ async def system_events_stream(request: Request) -> StreamingResponse:
                     return
                 try:
                     event = await asyncio.wait_for(sub.queue.get(), timeout=_KEEPALIVE_S)
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     yield ": keepalive\n\n"
                     continue
                 payload = json.dumps({

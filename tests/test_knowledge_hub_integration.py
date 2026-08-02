@@ -44,8 +44,9 @@ class TestSettingsWiring:
 class TestCatalogIntegration:
     @pytest.mark.asyncio
     async def test_browse_returns_dicts(self, tmp_path):
-        from augmentum.knowledge.catalog import CatalogClient, CatalogEntry
         from unittest.mock import AsyncMock, patch
+
+        from augmentum.knowledge.catalog import CatalogClient, CatalogEntry
 
         client = CatalogClient(cache_dir=tmp_path, cache_ttl=3600)
         entries = [

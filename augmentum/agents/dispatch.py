@@ -37,7 +37,6 @@ from augmentum.agents.context_bridge import (
 )
 from augmentum.agents.guards import role_guard
 from augmentum.agents.loop import (
-    SubagentProgress,
     SubagentProgressCallback,
     SubagentResult,
     SubagentSpec,
@@ -46,7 +45,6 @@ from augmentum.agents.loop import (
 from augmentum.agents.persistence import SubagentRunStore
 from augmentum.agents.registry import AgentRegistry
 from augmentum.agents.resolve import (
-    SubagentModelUnavailableError,
     resolve_subagent_model,
 )
 from augmentum.agents.spec import AgentRole
@@ -100,10 +98,10 @@ _FAST_FANOUT_ROLES: frozenset[str] = frozenset({"explore", "research"})
 # duplicate state with dispatcher._active_tasks; the registry only
 # carries the dispatcher reference, the task is still owned by the
 # dispatcher's _active_tasks dict.
-_active_subagent_owners: dict[str, "SubagentDispatcher"] = {}
+_active_subagent_owners: dict[str, SubagentDispatcher] = {}
 
 
-def find_subagent_owner(instance_id: str) -> "SubagentDispatcher | None":
+def find_subagent_owner(instance_id: str) -> SubagentDispatcher | None:
     """Return the dispatcher that owns ``instance_id`` if it's
     currently in-flight. Used by the cancel route + admin tools."""
     return _active_subagent_owners.get(instance_id)
