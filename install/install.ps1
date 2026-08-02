@@ -34,15 +34,23 @@ if (-not $wslInstalled) {
 Write-Host "[OK] WSL2 detected" -ForegroundColor Green
 
 # --- Ubuntu distro --------------------------------------------------------
-$distros = wsl --list --quiet 2>&1
+# `wsl --list` emits UTF-16LE; PowerShell string-matching chokes on the null
+# bytes, so an existing Ubuntu gets missed and we wrongly try to reinstall
+# (ERROR_ALREADY_EXISTS). Strip the nulls before matching.
+$distros = ((wsl --list --quiet 2>$null) -join "`n") -replace "`0", ""
 if ($distros -notmatch "Ubuntu") {
     Write-Host "[!] Installing Ubuntu in WSL..." -ForegroundColor Yellow
     wsl --install -d Ubuntu --no-launch
     Write-Host "[OK] Ubuntu installed (you may be prompted to create a UNIX user on first launch)" -ForegroundColor Green
+} else {
+    Write-Host "[OK] Ubuntu already installed" -ForegroundColor Green
 }
 
 # --- Docker Engine inside WSL --------------------------------------------
-$dockerCheck = wsl -d Ubuntu -- bash -c "command -v docker" 2>&1
+# 2>$null (not 2>&1): under $ErrorActionPreference=Stop, merging WSL's benign
+# stderr (e.g. "Processing /etc/fstab with mount -a failed") into a captured
+# variable throws a NativeCommandError and kills the install. We only want stdout.
+$dockerCheck = wsl -d Ubuntu -- bash -c "command -v docker" 2>$null
 if (-not $dockerCheck) {
     Write-Host "[!] Installing Docker Engine in WSL..." -ForegroundColor Yellow
     wsl -d Ubuntu -- bash -c "curl -fsSL https://get.docker.com | sudo sh && sudo usermod -aG docker `$USER"
@@ -51,7 +59,7 @@ if (-not $dockerCheck) {
 Write-Host "[OK] Docker available" -ForegroundColor Green
 
 # Start the Docker daemon if it isn't running.
-$dockerInfo = wsl -d Ubuntu -- bash -c "docker info 2>/dev/null" 2>&1
+$dockerInfo = wsl -d Ubuntu -- bash -c "docker info 2>/dev/null" 2>$null
 if (-not $dockerInfo) {
     Write-Host "Starting Docker daemon..." -ForegroundColor Yellow
     wsl -d Ubuntu -- bash -c "sudo service docker start"
