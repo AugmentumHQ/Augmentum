@@ -420,10 +420,10 @@ Other, rarer causes:
 ### Stuck, or want it tuned to your setup? Point your AI agent at the repo
 
 Augmentum is a big system, and the fastest way to get it installed *your* way is
-to let a coding agent drive. Point **Claude Code, Codex, Cursor, Cline — or
-Augmentum's own coder mode** at a checkout and it has everything it needs:
-[`AGENTS.md`](AGENTS.md) (and [`CLAUDE.md`](CLAUDE.md)) give it the install/run
-flow, a map of the codebase, and the invariants not to break. It can:
+to let a coding agent drive. Point **Claude Code, Codex, Cursor, or Cline** at a
+checkout and it has everything it needs: [`AGENTS.md`](AGENTS.md) (and
+[`CLAUDE.md`](CLAUDE.md)) give it the install/run flow, a map of the codebase,
+and the invariants not to break. It can:
 
 - **Diagnose install issues** — the MTU/TLS timeout above, Docker/WSL2 setup,
   port conflicts, GPU passthrough — against your actual machine and error output.
