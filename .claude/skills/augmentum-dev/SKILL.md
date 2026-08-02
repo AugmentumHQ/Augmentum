@@ -223,7 +223,7 @@ The model is rebuilt opportunistically into `.augmentum-dev-cache/codebase.db` (
 Live counts as of this doc render:
 - Endpoints: <!--fact:endpoints.count-->1335<!--/--> · JS calls: <!--fact:js_calls.count-->1218<!--/--> · Orphaned (strict join): <!--fact:orphaned_endpoints.count-->464<!--/-->
 - Settings: <!--fact:settings.count-->610<!--/--> total · <!--fact:settings.fully_wired-->0<!--/--> fully-wired (4/4 layers) · <!--fact:settings.incomplete-->554<!--/--> incomplete (3/4 layers)
-- Tests: <!--fact:test_files.count-->1068<!--/--> files · <!--fact:test_files.test_count_total-->18904<!--/--> `def test_*` functions · <!--fact:untested_routes.count-->24<!--/--> untested route files
+- Tests: <!--fact:test_files.count-->1068<!--/--> files · <!--fact:test_files.test_count_total-->18907<!--/--> `def test_*` functions · <!--fact:untested_routes.count-->24<!--/--> untested route files
 - Multi-tenant audit: <!--fact:multi_tenant_audit.count-->219<!--/--> route handlers in user-scoped subsystems with no detected `user_id` wiring (candidate list — review for cross-tenant leak risk)
 
 Add new facts in `facts/registry.py`; new queries as a module in `queries/`; embed facts in docs with the same `<!--fact:NAME-->...<!--/-->` syntax.
@@ -472,7 +472,7 @@ API-only toggle.
 
 Every route file must be:
 1. Imported in `server.py` (inside `create_app()` — exact line drifts; locate with the grep below)
-2. Registered with `app.include_router()` (~line <!--fact:registrations.first_line-->9083<!--/--> onward — <!--fact:registrations.count-->119<!--/--> registrations today)
+2. Registered with `app.include_router()` (~line <!--fact:registrations.first_line-->9084<!--/--> onward — <!--fact:registrations.count-->119<!--/--> registrations today)
 
 The exact line range drifts; locate with:
 ```bash

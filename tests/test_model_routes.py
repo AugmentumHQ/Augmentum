@@ -434,6 +434,91 @@ class TestEngineV2LoadModel:
         assert kwargs["load_options"]["gpu_layers"] == 24
         assert kwargs["load_options"]["kv_cache_type"] == "q8_0"
 
+    def test_load_same_ready_auto_profile_does_not_reload_autofit_layers(self, app, client, tmp_path):
+        """Saved auto profiles carry a stale gpu_layers form value. Re-selecting
+        the already-resident model must not compare that against autofit's
+        applied layer count and reload the process.
+        """
+        from augmentum.models.llama_server_manager import ProcessState
+
+        model_file = tmp_path / "resident.gguf"
+        model_file.write_bytes(b"fake")
+
+        mgr = _mock_llama_manager()
+        mgr.state = ProcessState.READY
+        mgr.model_path = str(model_file)
+        mgr.model_id = model_file.stem
+        mgr.current_ctx_size = 8192
+        mgr.current_gpu_layers_mode = "auto"
+        mgr.current_gpu_layers = 34
+        app.state.llama_manager = mgr
+
+        r = client.post("/api/engine/v2/models/load", json={
+            "model_path": str(model_file),
+            "ctx_size": 8192,
+            "gpu_layers_mode": "auto",
+            "gpu_layers": 999,
+        })
+
+        assert r.status_code == 200
+        mgr.start.assert_not_awaited()
+        mgr.swap.assert_not_awaited()
+
+    def test_load_same_ready_auto_profile_accepts_moe_auto_promotion(self, app, client, tmp_path):
+        """A requested auto load may apply as moe_auto_vram for large MoEs;
+        re-selecting that resident model is still a no-op.
+        """
+        from augmentum.models.llama_server_manager import ProcessState
+
+        model_file = tmp_path / "moe.gguf"
+        model_file.write_bytes(b"fake")
+
+        mgr = _mock_llama_manager()
+        mgr.state = ProcessState.READY
+        mgr.model_path = str(model_file)
+        mgr.model_id = model_file.stem
+        mgr.current_ctx_size = 8192
+        mgr.current_gpu_layers_mode = "moe_auto_vram"
+        mgr.current_gpu_layers = 61
+        app.state.llama_manager = mgr
+
+        r = client.post("/api/engine/v2/models/load", json={
+            "model_path": str(model_file),
+            "ctx_size": 8192,
+            "gpu_layers_mode": "auto",
+            "gpu_layers": 0,
+        })
+
+        assert r.status_code == 200
+        mgr.start.assert_not_awaited()
+        mgr.swap.assert_not_awaited()
+
+    def test_load_same_ready_custom_layer_change_still_swaps(self, app, client, tmp_path):
+        from augmentum.models.llama_server_manager import ProcessState
+
+        model_file = tmp_path / "resident.gguf"
+        model_file.write_bytes(b"fake")
+
+        mgr = _mock_llama_manager()
+        mgr.state = ProcessState.READY
+        mgr.model_path = str(model_file)
+        mgr.model_id = model_file.stem
+        mgr.current_ctx_size = 8192
+        mgr.current_gpu_layers_mode = "custom"
+        mgr.current_gpu_layers = 34
+        app.state.llama_manager = mgr
+
+        r = client.post("/api/engine/v2/models/load", json={
+            "model_path": str(model_file),
+            "ctx_size": 8192,
+            "gpu_layers_mode": "custom",
+            "gpu_layers": 24,
+        })
+
+        assert r.status_code == 200
+        mgr.start.assert_not_awaited()
+        mgr.swap.assert_awaited_once()
+
 
 class TestEngineV2LoadPlan:
     def test_plan_returns_manager_preview(self, app, client, tmp_path):

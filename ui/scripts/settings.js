@@ -14107,43 +14107,34 @@ export async function waitForUiSettingsReady() {
   }
 }
 
-function canonicalEngineModelRef(value = '') {
-  return String(value || '').trim().replace(/\\/g, '/').toLowerCase();
-}
-
-function engineModelRefsMatch(left, right) {
-  const a = canonicalEngineModelRef(left);
-  const b = canonicalEngineModelRef(right);
-  if (!a || !b) return !a && !b;
-  if (a === b) return true;
-  const aStem = a.split('/').pop()?.replace(/\.gguf$/, '') || a;
-  const bStem = b.split('/').pop()?.replace(/\.gguf$/, '') || b;
-  return aStem === bStem;
-}
-
-function engineProfileMatchesStatus(profile, status) {
-  if (!profile || !status) return false;
-  const cfg = status.load_config || {};
-  const wantsDraft = String(profile.draft_model || '').trim();
-  const hasDraft = String(cfg.draft_model || '').trim();
-  return (
-    Number(cfg.ctx_size || 0) === Number(profile.ctx_size || 0) &&
-    String(cfg.gpu_layers_mode || 'auto') === String(profile.gpu_layers_mode || 'auto') &&
-    Number(cfg.gpu_layers || 0) === (profile.gpu_layers_mode === 'custom' ? Number(profile.gpu_layers || 0) : Number(cfg.gpu_layers || 0)) &&
-    Number(cfg.batch_size || 0) === Number(profile.batch_size || 0) &&
-    String(cfg.kv_cache_type || '') === String(profile.kv_cache_type || '') &&
-    Boolean(cfg.flash_attn) === Boolean(profile.flash_attn) &&
-    Number(cfg.idle_timeout || 0) === Number(profile.idle_timeout || 0) &&
-    engineModelRefsMatch(wantsDraft, hasDraft) &&
-    (!wantsDraft || Number(cfg.draft_max || 0) === Number(profile.draft_max || 5))
-  );
-}
 
 async function ensureEngineModelReadyForSelection(model, {
   openLoadSheetIfMissing = true,
   showLoadToast = true,
 } = {}) {
   await waitForUiSettingsReady();
+  let status = null;
+  try {
+    const statusResp = await fetch('/api/engine/v2/status');
+    if (statusResp.ok) status = await statusResp.json();
+  } catch { /* best effort */ }
+
+  // Chat-model selection adopts an already resident engine model as-is. Load
+  // setup is the place for applying a changed ctx/GPU profile; switching back
+  // from an API model must not unload and replay the local model.
+  const alreadyReady = status?.state === 'ready' && status?.model_id === model.name;
+  if (alreadyReady) return true;
+
+  const alreadyLoading = status?.state === 'starting' && status?.model_id === model.name;
+  if (alreadyLoading) {
+    if (showLoadToast) showToast(`${model.name} is already loading`, 'info');
+    // The user's selection is accepted even though the engine has not reached
+    // READY yet. Returning false here makes activateChatModelByName roll back
+    // its optimistic primary_chat_model update, which is exactly the wrong
+    // thing when a same-model load is already in flight.
+    return true;
+  }
+
   const profile = getEngineModelLoadProfile(model.name);
   if (!profile) {
     if (!openLoadSheetIfMissing) return false;
@@ -14153,21 +14144,6 @@ async function ensureEngineModelReadyForSelection(model, {
     } else {
       document.getElementById('manage-models-btn')?.click();
     }
-    return false;
-  }
-
-  let status = null;
-  try {
-    const statusResp = await fetch('/api/engine/v2/status');
-    if (statusResp.ok) status = await statusResp.json();
-  } catch { /* best effort */ }
-
-  const alreadyReady = status?.state === 'ready' && status?.model_id === model.name && engineProfileMatchesStatus(profile, status);
-  if (alreadyReady) return true;
-
-  const alreadyLoading = status?.state === 'starting' && status?.model_id === model.name;
-  if (alreadyLoading) {
-    if (showLoadToast) showToast(`${model.name} is already loading`, 'info');
     return false;
   }
 

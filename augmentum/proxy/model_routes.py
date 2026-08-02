@@ -1913,38 +1913,60 @@ def _engine_load_config_changed(load_options: dict, mgr) -> bool:
     """True if ``load_options`` would change the VRAM-shaping config vs the
     currently-loaded model, so an already-resident model must still reload.
 
-    Only the three fields the manager actually tracks + reports as the
-    applied config (``ctx_size`` / ``gpu_layers`` / ``gpu_layers_mode``, see
-    ``LlamaServerManager.status``) drive the reload decision. A key that is
-    absent from the request means "no opinion" and never forces a reload.
-    Conservative by construction: it errs toward reporting a change (=>
-    reload, today's behaviour) rather than a false "unchanged" that would
-    skip a reload the user actually wanted. The point is only to catch the
-    common re-select-the-resident-model case, where the saved profile
-    replays exactly the applied ctx/GPU layout.
+    Only hard resident-shaping fields drive the reload decision. In
+    particular, ``gpu_layers`` is meaningful only when the requested mode is
+    ``custom``. Saved ``auto`` profiles still carry a numeric form value, but
+    the manager replaces it with the autofit result at load time; comparing
+    that stale form value made "switch from API back to the already-loaded
+    local model" unload and reload the same process every time.
     """
     if not load_options:
         return False
-    current = {
-        "ctx_size": getattr(mgr, "current_ctx_size", None),
-        "gpu_layers": getattr(mgr, "current_gpu_layers", None),
-        "gpu_layers_mode": getattr(mgr, "current_gpu_layers_mode", None),
-    }
-    for key, cur in current.items():
-        if key not in load_options or load_options[key] in (None, ""):
-            continue
-        req = load_options[key]
-        # numeric fields: coerce so 8192 == "8192" and 33 == 33.0
-        if key in ("ctx_size", "gpu_layers"):
-            try:
-                if int(req) != int(cur if cur is not None else -1):
-                    return True
-            except (TypeError, ValueError):
-                if str(req) != str(cur):
-                    return True
-        else:
-            if str(req) != str(cur if cur is not None else ""):
-                return True
+
+    def _int_differs(requested: object, current: object) -> bool:
+        try:
+            return int(requested) != int(current if current is not None else -1)
+        except (TypeError, ValueError):
+            return str(requested) != str(current)
+
+    valid_modes = {"auto", "cpu", "custom", "moe_cpu", "moe_first_n_cpu", "moe_auto_vram"}
+
+    def _mode(value: object, default: str = "auto") -> str:
+        mode = str(value or default or "auto").strip().lower()
+        return mode if mode in valid_modes else "auto"
+
+    if load_options.get("ctx_size") not in (None, ""):
+        if _int_differs(load_options["ctx_size"], getattr(mgr, "current_ctx_size", None)):
+            return True
+
+    current_mode = _mode(getattr(mgr, "current_gpu_layers_mode", None))
+    requested_mode_raw = load_options.get("gpu_layers_mode")
+    requested_mode = _mode(requested_mode_raw)
+    requested_mode_explicit = requested_mode_raw not in (None, "")
+
+    if requested_mode_explicit:
+        # ``auto`` may apply as plain auto or as the MoE VRAM-balanced auto
+        # promotion. Both are the result of the same caller intent: let the
+        # manager choose the fit for the current machine.
+        auto_matches_current = requested_mode == "auto" and current_mode in {"auto", "moe_auto_vram"}
+        if requested_mode != current_mode and not auto_matches_current:
+            return True
+
+    compare_mode = requested_mode if requested_mode_explicit else current_mode
+    if compare_mode == "custom" and load_options.get("gpu_layers") not in (None, ""):
+        if _int_differs(load_options["gpu_layers"], getattr(mgr, "current_gpu_layers", None)):
+            return True
+
+    if compare_mode == "moe_first_n_cpu" and load_options.get("moe_cpu_layers") not in (None, ""):
+        current_moe_cpu_layers = None
+        last_plan = getattr(mgr, "_last_load_plan", None)
+        if isinstance(last_plan, dict):
+            applied = last_plan.get("applied")
+            if isinstance(applied, dict):
+                current_moe_cpu_layers = applied.get("moe_cpu_layers")
+        if current_moe_cpu_layers is not None and _int_differs(load_options["moe_cpu_layers"], current_moe_cpu_layers):
+            return True
+
     return False
 
 
