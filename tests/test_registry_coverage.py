@@ -16,6 +16,10 @@ from pathlib import Path
 import pytest
 
 _SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "registry_coverage.py"
+if not _SCRIPT.exists():
+    # This dev/CI script is not shipped in every build (e.g. the public cut's
+    # scripts/ default-deny allowlist). Skip rather than fail collection.
+    pytest.skip("scripts/registry_coverage.py not present in this build", allow_module_level=True)
 _spec = importlib.util.spec_from_file_location("registry_coverage", _SCRIPT)
 rc = importlib.util.module_from_spec(_spec)
 sys.modules["registry_coverage"] = rc

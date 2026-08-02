@@ -16,6 +16,10 @@ from pathlib import Path
 import pytest
 
 _SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "serve_acceptance.py"
+if not _SCRIPT.exists():
+    # Dev/CI script, not shipped in every build (public cut's scripts/
+    # default-deny allowlist). Skip rather than fail collection.
+    pytest.skip("scripts/serve_acceptance.py not present in this build", allow_module_level=True)
 _spec = importlib.util.spec_from_file_location("serve_acceptance", _SCRIPT)
 sa = importlib.util.module_from_spec(_spec)
 # Must be registered BEFORE exec_module: @dataclass under
