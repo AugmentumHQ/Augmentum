@@ -54,35 +54,35 @@ try:
         Message,
         Usage,
     )
+    from augmentum.modes.analytical.tool_calling import (
+        ToolCallingTier,
+        build_structured_output_schema,
+        coerce_tool_params,
+        parse_json_tool_calls,
+        parse_native_tool_calls_all,
+        parse_python_style_tool_call,
+        parse_react_tool_call,
+        parse_structured_output,
+        parse_xml_tool_call,
+        tools_to_native_format,
+    )
+    from augmentum.tools.base import Tool, ToolCategory, ToolResult
+    from augmentum.tools.chain import (
+        ChainPlan,
+        ChainStep,
+        StepResult,
+        ToolChainPlanner,
+        build_synthesis_prompt,
+        detect_complexity,
+        execute_step,
+        parse_plan_from_json,
+        parse_plan_from_response,
+    )
+    from augmentum.tools.registry import ToolRegistry
+    from augmentum.utils.logging import get_logger
 except ImportError as _import_exc:
     import pytest as _pytest_skip  # noqa: E402
-    _pytest_skip.skip(f"augmentum.models.base not importable in this build: {_import_exc}", allow_module_level=True)
-from augmentum.modes.analytical.tool_calling import (
-    ToolCallingTier,
-    build_structured_output_schema,
-    coerce_tool_params,
-    parse_json_tool_calls,
-    parse_native_tool_calls_all,
-    parse_python_style_tool_call,
-    parse_react_tool_call,
-    parse_structured_output,
-    parse_xml_tool_call,
-    tools_to_native_format,
-)
-from augmentum.tools.base import Tool, ToolCategory, ToolResult
-from augmentum.tools.chain import (
-    ChainPlan,
-    ChainStep,
-    StepResult,
-    ToolChainPlanner,
-    build_synthesis_prompt,
-    detect_complexity,
-    execute_step,
-    parse_plan_from_json,
-    parse_plan_from_response,
-)
-from augmentum.tools.registry import ToolRegistry
-from augmentum.utils.logging import get_logger
+    _pytest_skip.skip(f"live_model_test deps not importable in this build: {_import_exc}", allow_module_level=True)
 
 log = get_logger(__name__)
 
@@ -347,7 +347,11 @@ def _build_registry() -> ToolRegistry:
 # ---------------------------------------------------------------------------
 
 
-from augmentum.models.openai_compat import OpenAIBackend as _OpenAIBackend
+try:
+    from augmentum.models.openai_compat import OpenAIBackend as _OpenAIBackend
+except ImportError as _import_exc:
+    import pytest as _pytest_skip  # noqa: E402
+    _pytest_skip.skip(f"augmentum.models.openai_compat not importable in this build: {_import_exc}", allow_module_level=True)
 
 
 class LiveTestBackend(_OpenAIBackend):
