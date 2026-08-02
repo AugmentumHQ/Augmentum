@@ -13,7 +13,7 @@ FROM ${LLAMA_SERVER_IMAGE} AS llama-builder
 # ``scripts/upgrade_base_images.sh`` — that script pulls the latest
 # manifest digest for each pinned tag and rewrites these lines so the
 # diff is auditable.
-FROM python:3.11-slim-bookworm@sha256:8dca233de9f3d9bb410665f00a4da6dd06f331083137e0e98ccf227236fcc438
+FROM python:3.14-slim-bookworm@sha256:86f975aca15cf04a40b399eebede9aea7c82eae084d1f1a0a6ef6bcaae871a30
 
 WORKDIR /app
 
