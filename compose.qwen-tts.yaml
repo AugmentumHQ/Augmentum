@@ -1,0 +1,58 @@
+services:
+  augmentum:
+    environment:
+      - AUGMENTUM_TTS_QWEN_URL=http://qwen-tts:8880
+    volumes:
+      - qwen_voices:/data/qwen_voices
+
+  qwen-tts:
+    build:
+      context: ./services/qwen-tts
+      dockerfile: Dockerfile
+      target: production
+    user: root
+    shm_size: "2gb"
+    ports:
+      - "6500:8880"
+    volumes:
+      - qwen_models:/root/.cache/huggingface
+      - qwen_voices:/app/voice_library
+      - ./config/qwen-tts.yaml:/app/qwen-tts-config.yaml:ro
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "8880"
+      WORKERS: "1"
+      TTS_BACKEND: "optimized"
+      TTS_CONFIG: "/app/qwen-tts-config.yaml"
+      TTS_WARMUP_ON_START: "true"
+      VOICE_LIBRARY_DIR: "/app/voice_library"
+      NVIDIA_DRIVER_CAPABILITIES: "compute,utility"
+      HF_HOME: "/root/.cache/huggingface"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8880/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 600s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    logging:
+      options:
+        max-size: "50m"
+        max-file: "3"
+    # Host-RAM backstop. Must clear the 2gb shm_size above — tmpfs pages count
+    # against the container's memory cgroup, so a limit near shm_size would
+    # OOM the moment torch's dataloader/IPC fills it. On top of that: HF weight
+    # staging into VRAM and the start-up warmup pass (TTS_WARMUP_ON_START).
+    # Unverified estimate — this service isn't running. Raise it alongside
+    # shm_size or WORKERS.
+    mem_limit: ${AUGMENTUM_QWEN_TTS_MEM_LIMIT:-12g}
+
+volumes:
+  qwen_models:
+  qwen_voices:

@@ -1,0 +1,2425 @@
+/* ==========================================================================
+   The Grove — Augmentum Control Center
+   Bioluminescent garden aesthetic: colors glow from within, surfaces have
+   depth, animations breathe like living things. The Grove is a place, not
+   a panel — it should feel like stepping into a terrarium of light.
+   ========================================================================== */
+
+/* ── Panel Container ────────────────────────────────────────────────── */
+.grove-panel {
+  position: absolute;
+  top: calc(var(--header-height) + 6px);
+  right: 10px;
+  width: 400px;
+  max-height: calc(100dvh - var(--header-height) - 24px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: color-mix(in srgb, var(--bg-elevated) 97%, transparent);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  border-radius: 16px;
+  z-index: var(--z-modal);
+  box-shadow:
+    0 12px 48px rgba(0, 0, 0, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  display: none;
+}
+
+.grove-panel.visible {
+  display: block;
+  animation: grove-panel-in 0.25s var(--ease-decelerate, ease-out) both;
+  /* Exclude from view transitions so the panel doesn't flash during
+     the circular-wipe theme change animation. It stays static while
+     the page behind it transitions. */
+  view-transition-name: grove-panel;
+}
+@keyframes grove-panel-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Living border — a slow-moving aurora of the grove's signature colors */
+.grove-panel::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 17px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(74, 222, 128, 0.08) 45deg,
+    rgba(56, 189, 248, 0.06) 90deg,
+    transparent 135deg,
+    rgba(167, 139, 250, 0.05) 200deg,
+    transparent 250deg,
+    rgba(251, 191, 36, 0.04) 310deg,
+    transparent 360deg
+  );
+  animation: grove-aurora 20s linear infinite;
+  z-index: -1;
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+@keyframes grove-aurora {
+  0% { transform: rotate(0deg); opacity: 0.5; }
+  50% { opacity: 0.8; }
+  100% { transform: rotate(360deg); opacity: 0.5; }
+}
+
+/* Scrollbar — whisper-thin */
+.grove-panel::-webkit-scrollbar { width: 3px; }
+.grove-panel::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-muted) 30%, transparent);
+  border-radius: 2px;
+}
+
+/* ── Section Layout ─────────────────────────────────────────────────── */
+.grove-section {
+  padding: 14px 18px;
+}
+
+.grove-section + .grove-section {
+  border-top: 1px solid color-mix(in srgb, var(--border-light) 50%, transparent);
+}
+
+.grove-section-compact {
+  padding: 12px 18px;
+}
+
+.grove-section-primary {
+  padding: 16px 18px 18px;
+}
+
+.grove-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+/* ── Section Icons — glowing orbs with depth ──────────────────────── */
+.grove-section-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.grove-section-icon svg {
+  width: 13px;
+  height: 13px;
+  position: relative;
+  z-index: 1;
+}
+
+.grove-section-icon.atmosphere {
+  background: linear-gradient(145deg, rgba(251, 191, 36, 0.14), rgba(251, 191, 36, 0.04));
+  color: var(--color-amber);
+  box-shadow: inset 0 1px 0 rgba(251, 191, 36, 0.08);
+}
+.grove-section-icon.typo {
+  background: linear-gradient(145deg, rgba(167, 139, 250, 0.14), rgba(167, 139, 250, 0.04));
+  color: #a78bfa;
+  box-shadow: inset 0 1px 0 rgba(167, 139, 250, 0.08);
+}
+.grove-section-icon.soundscape {
+  background: linear-gradient(145deg, rgba(74, 222, 128, 0.14), rgba(74, 222, 128, 0.04));
+  color: #34d399;
+  box-shadow: inset 0 1px 0 rgba(74, 222, 128, 0.08);
+}
+.grove-section-icon.vitals {
+  background: linear-gradient(145deg, rgba(56, 189, 248, 0.14), rgba(56, 189, 248, 0.04));
+  color: #38bdf8;
+  box-shadow: inset 0 1px 0 rgba(56, 189, 248, 0.08);
+}
+
+.grove-section-title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+}
+
+.grove-section-meta {
+  margin-left: auto;
+}
+
+/* ── Atmosphere (Theme Preview Cards) ───────────────────────────────── */
+.atmo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* Each card shows a miniature UI preview + label */
+.atmo-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--surface);
+  transition: border-color 200ms, box-shadow 200ms, transform 150ms;
+  padding: 0;
+  text-align: left;
+  font-family: var(--font-sans);
+}
+
+.atmo-card:hover {
+  border-color: color-mix(in srgb, var(--atmo-accent, var(--accent)) 40%, var(--border));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.atmo-card:active {
+  transform: scale(0.97);
+}
+
+.atmo-card.active {
+  border-color: var(--atmo-accent, var(--accent));
+  box-shadow:
+    0 0 0 1px var(--atmo-accent, var(--accent)),
+    0 0 16px color-mix(in srgb, var(--atmo-accent, var(--accent)) 15%, transparent);
+}
+
+/* Miniature UI preview — shows what the theme actually looks like */
+.atmo-card__preview {
+  height: 48px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px 8px 0 0;
+}
+
+/* Theme-specific preview backgrounds */
+.atmo-card__preview[data-preview="dark"] {
+  background: linear-gradient(160deg, #17171f 0%, #111118 100%);
+}
+.atmo-card__preview[data-preview="light"] {
+  background: linear-gradient(160deg, #fafaf9 0%, #f0efed 100%);
+}
+.atmo-card__preview[data-preview="midnight"] {
+  background: linear-gradient(160deg, #0c0e18 0%, #060810 100%);
+}
+.atmo-card__preview[data-preview="sepia"] {
+  background: linear-gradient(160deg, #211c14 0%, #1a1610 100%);
+}
+
+/* Miniature top bar inside preview */
+.atmo-card__bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 8px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+}
+
+.atmo-card__preview[data-preview="dark"] .atmo-card__bar { background: #1d1d28; }
+.atmo-card__preview[data-preview="light"] .atmo-card__bar { background: #f5f5f4; }
+.atmo-card__preview[data-preview="midnight"] .atmo-card__bar { background: #111420; }
+.atmo-card__preview[data-preview="sepia"] .atmo-card__bar { background: #28221a; }
+
+/* Miniature text lines — simulated content */
+.atmo-card__lines {
+  position: absolute;
+  top: 14px; left: 10px; right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.atmo-card__lines span {
+  display: block;
+  height: 3px;
+  border-radius: 1.5px;
+  width: 100%;
+}
+
+.atmo-card__lines span.short { width: 60%; }
+
+.atmo-card__preview[data-preview="dark"] .atmo-card__lines span { background: rgba(236, 236, 241, 0.12); }
+.atmo-card__preview[data-preview="light"] .atmo-card__lines span { background: rgba(28, 25, 23, 0.08); }
+.atmo-card__preview[data-preview="midnight"] .atmo-card__lines span { background: rgba(200, 210, 230, 0.08); }
+.atmo-card__preview[data-preview="sepia"] .atmo-card__lines span { background: rgba(212, 165, 90, 0.1); }
+
+/* Accent dot — represents the theme's primary color */
+.atmo-card__dot {
+  position: absolute;
+  bottom: 6px; right: 8px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--atmo-accent, var(--accent));
+  box-shadow: 0 0 6px color-mix(in srgb, var(--atmo-accent, var(--accent)) 40%, transparent);
+}
+
+/* Midnight: stars in preview */
+.atmo-card__preview[data-preview="midnight"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(0.8px 0.8px at 25% 35%, rgba(255, 255, 255, 0.4), transparent),
+    radial-gradient(0.6px 0.6px at 65% 20%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(0.7px 0.7px at 45% 70%, rgba(255, 255, 255, 0.25), transparent),
+    radial-gradient(0.5px 0.5px at 80% 55%, rgba(56, 189, 248, 0.3), transparent);
+  animation: grove-twinkle 6s ease-in-out infinite;
+}
+
+@keyframes grove-twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+/* Sepia: warm glow in preview */
+.atmo-card__preview[data-preview="sepia"]::after {
+  content: '';
+  position: absolute;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.3), transparent 70%);
+  top: 10px; right: 12px;
+  animation: grove-ember 4s ease-in-out infinite;
+  filter: blur(3px);
+}
+
+@keyframes grove-ember {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  30% { opacity: 0.5; transform: scale(1.2); }
+  60% { opacity: 0.3; transform: scale(0.9); }
+}
+
+/* Card info area — name + description */
+.atmo-card__info {
+  padding: 7px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.atmo-card__name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.2px;
+}
+
+.atmo-card__desc {
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.1px;
+}
+
+.atmo-card.active .atmo-card__name {
+  color: var(--atmo-accent, var(--accent));
+}
+
+/* Active indicator — subtle checkmark */
+.atmo-card.active::before {
+  content: '\2713';
+  position: absolute;
+  top: 4px; right: 4px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--atmo-accent, var(--accent));
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Typography ─────────────────────────────────────────────────────── */
+.grove-typo-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.grove-font-picker {
+  flex: 1;
+  position: relative;
+  min-width: 0;
+}
+
+.grove-font-selected {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  cursor: pointer;
+  transition: border-color 150ms, box-shadow 150ms;
+}
+
+.grove-font-selected:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.grove-font-selected-label {
+  flex: 1;
+  font-size: 12px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.grove-font-selected .grove-select-chevron {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: transform 150ms;
+}
+
+.grove-font-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  z-index: 10;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.grove-font-dropdown.open { display: block; }
+
+.grove-font-option {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 14px;
+  color: var(--text-primary);
+  transition: background 100ms;
+}
+
+.grove-font-option:hover { background: var(--surface-hover); }
+.grove-font-option.active {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--accent);
+}
+
+.grove-size-ctrl {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  gap: 1px;
+}
+
+.grove-size-btn {
+  width: 26px; height: 26px;
+  border-radius: 5px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 100ms;
+}
+
+.grove-size-btn:hover { background: var(--surface-hover); color: var(--text-primary); }
+.grove-size-btn:active { background: var(--surface-active); transform: scale(0.92); }
+
+.grove-size-val {
+  min-width: 38px;
+  text-align: center;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
+
+/* ── Soundscape (Primary Section) ───────────────────────────────────── */
+
+/* Now-playing card — the heart of the Grove */
+.grove-stream-card {
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 12px 14px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 300ms, box-shadow 300ms;
+}
+
+/* Flowing stream — bioluminescent ribbon */
+.grove-stream-card::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(52, 211, 153, 0.25) 15%,
+    rgba(56, 189, 248, 0.3) 40%,
+    rgba(167, 139, 250, 0.25) 65%,
+    rgba(251, 191, 36, 0.2) 85%,
+    transparent
+  );
+  background-size: 200% 100%;
+  opacity: 0;
+  transition: opacity 400ms;
+}
+
+.grove-stream-card.playing::before {
+  opacity: 1;
+  animation: grove-stream 5s linear infinite;
+}
+
+.grove-stream-card.playing {
+  border-color: rgba(52, 211, 153, 0.15);
+  box-shadow:
+    0 0 20px rgba(52, 211, 153, 0.04),
+    inset 0 0 20px rgba(52, 211, 153, 0.02);
+}
+
+@keyframes grove-stream {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+.grove-stream-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Waveform visualizer — bioluminescent orb */
+.grove-stream-vis {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: var(--surface-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 300ms, box-shadow 300ms;
+}
+
+.grove-stream-card.playing .grove-stream-vis {
+  background: rgba(52, 211, 153, 0.08);
+  box-shadow: 0 0 12px rgba(52, 211, 153, 0.06);
+}
+
+.grove-stream-vis svg { width: 28px; height: 28px; }
+
+.grove-wave { fill: none; stroke-width: 1.5; stroke-linecap: round; opacity: 0.2; }
+
+/* Playing waves — each a different hue from the bio palette */
+.grove-stream-card.playing .grove-wave { opacity: 1; }
+.grove-stream-card.playing .grove-wave-1 { stroke: rgba(52, 211, 153, 0.55); animation: grove-wave 3.2s ease-in-out infinite; }
+.grove-stream-card.playing .grove-wave-2 { stroke: rgba(56, 189, 248, 0.45); animation: grove-wave 4.1s ease-in-out infinite 0.6s; }
+.grove-stream-card.playing .grove-wave-3 { stroke: rgba(167, 139, 250, 0.35); animation: grove-wave 3.6s ease-in-out infinite 1.2s; }
+
+/* Idle: faint traces */
+.grove-wave-1, .grove-wave-2, .grove-wave-3 { stroke: var(--text-muted); }
+
+@keyframes grove-wave {
+  0%, 100% { d: path('M4,18 C10,14 14,22 20,18 C26,14 30,22 36,18'); }
+  50% { d: path('M4,18 C10,22 14,14 20,18 C26,22 30,14 36,18'); }
+}
+
+.grove-stream-info { flex: 1; min-width: 0; }
+
+.grove-stream-title {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.1px;
+}
+
+.grove-stream-card:not(.playing) .grove-stream-title {
+  color: var(--text-muted);
+}
+
+.grove-stream-desc {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Transport controls */
+.grove-stream-controls { display: flex; align-items: center; gap: 2px; }
+
+.grove-sc-btn {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 120ms;
+}
+
+.grove-sc-btn:hover { color: var(--text-primary); background: var(--surface-hover); }
+.grove-sc-btn:active { background: var(--surface-active); transform: scale(0.92); }
+
+.grove-sc-btn.primary {
+  background: rgba(52, 211, 153, 0.1);
+  color: #34d399;
+  width: 36px; height: 36px;
+}
+.grove-sc-btn.primary:hover {
+  background: rgba(52, 211, 153, 0.18);
+  box-shadow: 0 0 12px rgba(52, 211, 153, 0.12);
+}
+.grove-sc-btn.primary:active {
+  transform: scale(0.93);
+}
+.grove-sc-btn svg { width: 13px; height: 13px; }
+.grove-sc-btn.primary svg { width: 15px; height: 15px; }
+
+/* Volume */
+.grove-volume {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--border-light) 50%, transparent);
+}
+.grove-volume svg { color: var(--text-muted); flex-shrink: 0; }
+
+.grove-vol-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border-light);
+  outline: none;
+  cursor: pointer;
+}
+
+.grove-vol-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--text-primary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform 100ms, box-shadow 100ms;
+}
+
+.grove-vol-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+}
+
+.grove-vol-pct {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  min-width: 26px;
+  text-align: right;
+}
+
+/* Station chips — organic pills */
+.grove-stations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.grove-station-chip {
+  padding: 5px 12px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--border-light) 70%, transparent);
+  background: transparent;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 150ms;
+  font-family: var(--font-sans);
+  line-height: 1.3;
+}
+
+.grove-station-chip:hover {
+  border-color: rgba(52, 211, 153, 0.2);
+  color: var(--text-secondary);
+  background: rgba(52, 211, 153, 0.03);
+}
+
+.grove-station-chip.active {
+  border-color: rgba(52, 211, 153, 0.3);
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.06);
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.06);
+}
+
+
+/* Discover-more chip */
+.grove-station-chip.discover-more {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 15%, transparent);
+  border-style: dashed;
+  font-weight: 500;
+}
+.grove-station-chip.discover-more:hover {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  background: color-mix(in srgb, var(--accent) 4%, transparent);
+}
+
+/* Live badge — bioluminescent pulse */
+.grove-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.08);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.grove-live-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: #34d399;
+  animation: grove-pulse 2.5s ease-in-out infinite;
+  box-shadow: 0 0 4px rgba(52, 211, 153, 0.3);
+}
+
+@keyframes grove-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+/* ── Discover View ──────────────────────────────────────────────────── */
+.grove-discover { display: none; }
+.grove-discover.visible { display: block; }
+
+.grove-discover-header {
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border-light) 50%, transparent);
+}
+
+.grove-back-btn {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  border: none;
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 100ms;
+}
+.grove-back-btn:hover { background: var(--surface-hover); color: var(--text-primary); }
+.grove-back-btn:active { transform: scale(0.92); }
+.grove-back-btn svg { width: 13px; height: 13px; }
+
+.grove-discover-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.grove-discover-body {
+  padding: 12px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 200px;
+  max-height: calc(100dvh - var(--header-height) - 100px);
+  overflow-y: auto;
+}
+
+/* Search — with bio glow on focus */
+.grove-discover-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  transition: border-color 150ms, box-shadow 150ms;
+}
+.grove-discover-search:focus-within {
+  border-color: rgba(52, 211, 153, 0.35);
+  box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.06);
+}
+.grove-discover-search svg { width: 13px; height: 13px; color: var(--text-muted); flex-shrink: 0; }
+.grove-discover-search input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-family: var(--font-sans);
+  outline: none;
+}
+.grove-discover-search input::placeholder { color: var(--text-muted); opacity: 0.6; }
+
+/* Source tabs — segmented control */
+.grove-source-tabs {
+  display: flex;
+  gap: 1px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+}
+
+.grove-source-tab {
+  flex: 1;
+  padding: 5px 8px;
+  border-radius: 5px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  text-align: center;
+  transition: all 120ms;
+  letter-spacing: 0.2px;
+}
+.grove-source-tab:hover { color: var(--text-secondary); }
+.grove-source-tab.active {
+  background: rgba(52, 211, 153, 0.1);
+  color: #34d399;
+  box-shadow: 0 1px 4px rgba(52, 211, 153, 0.06);
+}
+
+/* Genre chips — prominent, scrollable row */
+.grove-filter-chips {
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.grove-filter-chips::-webkit-scrollbar { display: none; }
+
+.grove-filter-chip {
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--border-light) 70%, transparent);
+  background: transparent;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all 120ms;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.grove-filter-chip:hover {
+  border-color: rgba(52, 211, 153, 0.25);
+  color: var(--text-secondary);
+  background: rgba(52, 211, 153, 0.03);
+}
+.grove-filter-chip.active {
+  border-color: rgba(52, 211, 153, 0.35);
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.07);
+  box-shadow: 0 0 6px rgba(52, 211, 153, 0.06);
+}
+
+/* Section divider */
+
+/* Station rows */
+.grove-station-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 100ms;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-sans);
+}
+.grove-station-row:hover { background: var(--surface-hover); }
+.grove-station-row.active,
+.grove-station-row.playing { background: rgba(52, 211, 153, 0.04); }
+
+.grove-station-row.playing .grove-sr-name { color: #34d399; }
+
+.grove-station-art {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  background: var(--surface);
+  transition: transform 150ms;
+}
+
+.grove-station-row:hover .grove-station-art {
+  transform: scale(1.06);
+}
+
+/* Shared row info */
+
+.grove-station-row-info { flex: 1; min-width: 0; }
+
+.grove-sr-name{
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.grove-sr-desc{
+  font-size: 9.5px;
+  color: var(--text-muted);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+
+.grove-station-row-source {
+  font-size: 8px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* SomaFM badge — curated, gets special treatment */
+.grove-station-row-source.somafm {
+  background: rgba(52, 211, 153, 0.08);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.12);
+}
+
+.grove-station-row-fav { color: var(--color-amber); font-size: 11px; flex-shrink: 0; }
+
+.grove-sr-play {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(52, 211, 153, 0.08);
+  color: #34d399;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 120ms, transform 100ms;
+}
+.grove-station-row:hover .grove-sr-play { opacity: 1; }
+.grove-station-row.playing .grove-sr-play { opacity: 1; }
+.grove-sr-play:active { transform: scale(0.9); }
+.grove-sr-play svg { width: 11px; height: 11px; }
+
+/* Loading / empty */
+.grove-discover-loading,
+.grove-discover-empty {
+  padding: 28px 16px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.grove-discover-loading::before {
+  content: '';
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: #34d399;
+  border-radius: 50%;
+  animation: grove-spin 0.8s linear infinite;
+  margin-bottom: 4px;
+}
+
+@keyframes grove-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Footer ─────────────────────────────────────────────────────────── */
+.grove-footer {
+  padding: 8px 18px;
+  border-top: 1px solid color-mix(in srgb, var(--border-light) 50%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.grove-shortcut {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9px;
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+.grove-shortcut kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0px 4px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--text-muted);
+  min-width: 14px;
+  line-height: 1.5;
+}
+
+/* ── Header Button ──────────────────────────────────────────────────── */
+#grove-btn {
+  position: relative;
+}
+
+#grove-btn .grove-playing-dot {
+  display: none;
+  position: absolute;
+  top: 3px; right: 3px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #34d399;
+  animation: grove-pulse 2.5s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(52, 211, 153, 0.4);
+}
+
+#grove-btn.playing .grove-playing-dot { display: block; }
+
+/* ── Mobile — full-width bottom sheet ──────────────────────────────── */
+@media (max-width: 767px) {
+  .grove-panel {
+    position: fixed;
+    top: auto;
+    bottom: calc(var(--orb-bar-height) + env(safe-area-inset-bottom, 0px));
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: 70vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    z-index: calc(var(--z-modal) + 1);
+  }
+  .grove-panel.visible {
+    animation: grove-panel-mobile-in 0.25s var(--ease-decelerate, ease-out) both;
+  }
+  @keyframes grove-panel-mobile-in {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: none; }
+  }
+  .grove-panel::before {
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  .grove-section {
+    padding: 12px 14px;
+  }
+}
+
+/* ── Reduced Motion ─────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .grove-panel.visible { animation: none; }
+  .grove-panel::before { animation: none; opacity: 0.5; }
+  .grove-wave-1, .grove-wave-2, .grove-wave-3 { animation: none; }
+  .grove-stream-card::before { animation: none; }
+  .grove-live-dot { animation: none; }
+}
+
+/* ===================================================================
+   Ambient Window — The Orb
+   =================================================================== */
+
+.grove-ambient-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0 8px;
+  position: relative;
+  --orb-color: 52, 211, 153;
+  --orb-hex: #34d399;
+}
+
+.grove-orb-container {
+  position: relative;
+  width: 220px;
+  height: 220px;
+}
+
+.grove-orb-aura {
+  position: absolute;
+  inset: -25px;
+  pointer-events: none;
+}
+.grove-orb-aura-layer {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+.grove-orb-aura-1 {
+  background: conic-gradient(from 0deg,
+    rgba(var(--orb-color), 0.3),
+    rgba(56, 189, 248, 0.2),
+    rgba(167, 139, 250, 0.25),
+    rgba(var(--orb-color), 0.3));
+  filter: blur(22px);
+  animation: grove-orb-aura-rotate 12s linear infinite;
+  opacity: 0.7;
+}
+.grove-orb-aura-2 {
+  background: conic-gradient(from 180deg,
+    rgba(var(--orb-color), 0.2),
+    rgba(167, 139, 250, 0.15),
+    rgba(56, 189, 248, 0.2),
+    rgba(var(--orb-color), 0.2));
+  filter: blur(14px);
+  animation: grove-orb-aura-rotate 8s linear infinite reverse;
+  opacity: 0.6;
+}
+
+.grove-orb-bleed {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(var(--orb-color), 0.12) 0%,
+    rgba(var(--orb-color), 0.04) 40%,
+    transparent 70%);
+  pointer-events: none;
+  animation: grove-orb-breathe 4s ease-in-out infinite;
+}
+
+.grove-orb-arc {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 6; /* above hover overlay so the ring stays grabbable */
+  pointer-events: none; /* container; only the hit-circle is interactive */
+  outline: none;
+}
+.grove-orb-arc-track {
+  fill: none;
+  stroke: rgba(var(--orb-color), 0.08);
+  stroke-width: 2.5;
+  transition: stroke-width 0.2s var(--ease-standard), stroke 0.3s var(--ease-standard);
+}
+.grove-orb-arc-fill {
+  fill: none;
+  stroke: rgba(var(--orb-color), 0.6);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transition: stroke-dashoffset 0.15s linear, stroke 0.3s var(--ease-standard);
+  filter: drop-shadow(0 0 6px rgba(var(--orb-color), 0.35));
+  pointer-events: none;
+}
+/* Wide invisible touch/hover target wrapping the ring */
+.grove-orb-arc-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 22;
+  cursor: pointer;
+  pointer-events: stroke;
+}
+/* Scrubber dot — sits on the ring at current progress, rotates via parent */
+.grove-orb-arc-dot {
+  fill: var(--orb-hex);
+  filter: drop-shadow(0 0 6px rgba(var(--orb-color), 0.6));
+  transform-origin: 110px 110px;
+  transform: rotate(0deg);
+  transition: transform 0.15s linear, r 0.2s var(--ease-standard);
+  pointer-events: none;
+  opacity: 0;
+}
+.grove-orb-arc.has-duration .grove-orb-arc-dot { opacity: 1; }
+.grove-orb-arc.has-duration .grove-orb-arc-hit:hover ~ .grove-orb-arc-dot,
+.grove-orb-arc.scrubbing .grove-orb-arc-dot { r: 7; }
+/* Hover/scrub state — thicker ring for clear affordance */
+.grove-orb-arc:hover .grove-orb-arc-track,
+.grove-orb-arc.scrubbing .grove-orb-arc-track {
+  stroke-width: 4;
+  stroke: rgba(var(--orb-color), 0.18);
+}
+.grove-orb-arc:hover .grove-orb-arc-fill,
+.grove-orb-arc.scrubbing .grove-orb-arc-fill {
+  stroke-width: 4.5;
+}
+.grove-orb-arc:focus-visible .grove-orb-arc-track {
+  stroke: rgba(var(--orb-color), 0.25);
+  stroke-width: 4;
+}
+/* Disabled (livestream / no duration) */
+.grove-orb-arc.disabled .grove-orb-arc-hit { cursor: default; pointer-events: none; }
+.grove-orb-arc.disabled .grove-orb-arc-fill { opacity: 0.4; }
+
+/* Seek tooltip — floats above the orb, follows the pointer along the ring */
+.grove-orb-seek-tooltip {
+  position: absolute;
+  top: 0; left: 0;
+  transform: translate(-50%, -150%);
+  padding: 3px 8px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(var(--orb-color), 0.4);
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(var(--orb-color), 0.25);
+  pointer-events: none;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.grove-orb {
+  position: absolute;
+  top: 8px; left: 8px;
+  width: 204px; height: 204px;
+  border-radius: 50%;
+  overflow: hidden;
+  z-index: 1;
+  background: radial-gradient(circle at 40% 35%,
+    rgba(var(--orb-color), 0.12) 0%,
+    rgba(15, 23, 42, 0.97) 65%);
+  box-shadow:
+    0 0 30px rgba(var(--orb-color), 0.25),
+    0 0 60px rgba(var(--orb-color), 0.12),
+    0 0 120px rgba(var(--orb-color), 0.06),
+    inset 0 0 40px rgba(var(--orb-color), 0.1),
+    inset 0 0 80px rgba(56, 189, 248, 0.04);
+  transition: box-shadow 0.5s var(--ease-standard);
+  cursor: pointer;
+}
+
+.grove-orb-iframe-wrap {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 362px; height: 204px;
+  pointer-events: none;
+  display: none;
+}
+.grove-orb-iframe-wrap iframe,
+.grove-orb-iframe-wrap video,
+.grove-orb-iframe-wrap .grove-orb-media-el {
+  width: 100%; height: 100%;
+  border: none;
+  object-fit: cover;
+  display: block;
+}
+.grove-orb-iframe-wrap.active {
+  display: block;
+  filter: saturate(0.8) brightness(0.85) blur(0.5px);
+}
+
+.grove-orb-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(var(--orb-color), 0.5);
+  transition: opacity 0.3s;
+  z-index: 3;
+}
+.grove-orb-empty svg {
+  filter: drop-shadow(0 0 8px rgba(var(--orb-color), 0.3));
+  transition: opacity 0.2s;
+  opacity: 0.6;
+}
+.grove-orb-empty:hover svg {
+  opacity: 0.9;
+}
+.grove-orb-empty.hidden { display: none; }
+
+.grove-orb-empty::before,
+.grove-orb-empty::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.grove-orb-empty::before {
+  background:
+    radial-gradient(circle at 25% 65%, rgba(var(--orb-color), 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 75% 25%, rgba(56, 189, 248, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(167, 139, 250, 0.07) 0%, transparent 35%);
+  animation: grove-orb-drift 8s ease-in-out infinite alternate;
+}
+.grove-orb-empty::after {
+  background:
+    radial-gradient(circle at 65% 70%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 30% 30%, rgba(167, 139, 250, 0.06) 0%, transparent 35%);
+  animation: grove-orb-drift 6s ease-in-out infinite alternate-reverse;
+}
+
+.grove-orb-hover {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.2s var(--ease-standard);
+}
+.grove-orb-hover.visible {
+  display: flex;
+  opacity: 1;
+}
+
+.grove-orb-ctrl {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 4px;
+  filter: drop-shadow(0 0 4px rgba(var(--orb-color), 0.3));
+  transition: color var(--duration-fast);
+}
+.grove-orb-ctrl:hover { color: rgba(255, 255, 255, 0.9); }
+
+.grove-orb-loop { color: rgba(255, 255, 255, 0.35); }
+.grove-orb-loop:hover { color: rgba(255, 255, 255, 0.7); }
+.grove-orb-loop.active {
+  color: rgb(var(--orb-color));
+  filter: drop-shadow(0 0 6px rgba(var(--orb-color), 0.5));
+}
+.grove-orb-loop[hidden] { display: none; }
+
+.grove-orb-play {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: rgba(var(--orb-color), 0.15);
+  border: 1.5px solid rgba(var(--orb-color), 0.4);
+  box-shadow: 0 0 20px rgba(var(--orb-color), 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.grove-orb-music-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  display: none;
+  z-index: 2;
+}
+.grove-orb-music-overlay.active {
+  display: block;
+  background:
+    radial-gradient(circle at 40% 60%, rgba(var(--orb-color), 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 60% 30%, rgba(var(--orb-color), 0.1) 0%, transparent 45%);
+  animation: grove-orb-drift 6s ease-in-out infinite alternate;
+}
+
+.grove-ambient-volume {
+  width: 180px;
+  margin-top: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.grove-ambient-section:hover .grove-ambient-volume,
+.grove-ambient-volume.always-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.grove-ambient-slider {
+  width: 100%;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(var(--orb-color), 0.15);
+  border-radius: 2px;
+  outline: none;
+}
+.grove-ambient-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: rgba(var(--orb-color), 0.8);
+  box-shadow: 0 0 8px rgba(var(--orb-color), 0.3);
+  cursor: pointer;
+}
+.grove-ambient-slider::-moz-range-thumb {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: rgba(var(--orb-color), 0.8);
+  box-shadow: 0 0 8px rgba(var(--orb-color), 0.3);
+  cursor: pointer;
+  border: none;
+}
+
+.grove-ambient-info {
+  text-align: center;
+  margin-top: 4px;
+  min-height: 28px;
+}
+.grove-ambient-title {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--orb-hex);
+  text-shadow: 0 0 12px rgba(var(--orb-color), 0.3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 280px;
+}
+.grove-ambient-meta {
+  display: block;
+  font-size: 10px;
+  color: var(--text-muted, rgba(255,255,255,0.35));
+  margin-top: 2px;
+}
+
+/* Title row — title + favorite heart */
+.grove-ambient-title-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  max-width: 280px;
+}
+.grove-ambient-title-row .grove-ambient-title {
+  max-width: 240px;
+}
+.grove-ambient-fav {
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  color: rgba(var(--orb-color), 0.55);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: color var(--duration-fast), transform var(--duration-fast), filter var(--duration-fast);
+}
+.grove-ambient-fav:hover {
+  color: rgba(var(--orb-color), 0.95);
+  transform: scale(1.1);
+}
+.grove-ambient-fav.active {
+  color: var(--orb-hex);
+  filter: drop-shadow(0 0 6px rgba(var(--orb-color), 0.5));
+}
+.grove-ambient-fav.active svg path {
+  fill: currentColor;
+}
+
+/* Favorites ring tray — horizontal scroller with atmospheric edge fade */
+.grove-ambient-chips-wrap {
+  width: 300px;
+  margin-top: 6px;
+  /* Edge fade: overflow reads as atmosphere, not a hard cutoff */
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+}
+.grove-ambient-chips {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 18px;
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+.grove-ambient-chips::-webkit-scrollbar { display: none; }
+
+.grove-ambient-chip {
+  position: relative;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  overflow: visible;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s, box-shadow 0.3s, transform 0.2s;
+  flex-shrink: 0;
+  background: none;
+  padding: 0;
+  scroll-snap-align: center;
+}
+.grove-ambient-chip img {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.grove-ambient-chip:hover {
+  border-color: rgba(var(--orb-color), 0.5);
+  box-shadow: 0 0 8px rgba(var(--orb-color), 0.25);
+  transform: scale(1.06);
+}
+.grove-ambient-chip.active {
+  border-color: rgba(var(--orb-color), 0.85);
+  box-shadow:
+    0 0 10px rgba(var(--orb-color), 0.4),
+    0 0 22px rgba(var(--orb-color), 0.18);
+  transform: scale(1.12);
+}
+
+/* ============================================================
+   Favorites Bloom — long-press a chip to spread all favorites
+   into a 5×6 grid for drag-reorder without scrolling.
+   ============================================================ */
+.grove-fav-bloom {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s var(--ease-standard);
+}
+.grove-fav-bloom.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.grove-fav-bloom-scrim {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--bg-elevated) 80%, transparent);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  border-radius: inherit;
+}
+.grove-fav-bloom-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, 38px);
+  gap: 12px;
+  padding: 18px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--bg-elevated) 70%, transparent);
+  border: 1px solid rgba(var(--orb-color), 0.18);
+  box-shadow:
+    0 0 0 1px rgba(var(--orb-color), 0.08),
+    0 12px 36px rgba(0, 0, 0, 0.4),
+    0 0 60px rgba(var(--orb-color), 0.08);
+  max-height: calc(100% - 60px);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.grove-fav-bloom-grid::-webkit-scrollbar { display: none; }
+
+.grove-fav-cell {
+  position: relative;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: grab;
+  transition: left 0.22s var(--ease-standard),
+              top 0.22s var(--ease-standard),
+              transform 0.22s var(--ease-standard),
+              border-color 0.18s,
+              box-shadow 0.22s;
+  touch-action: none;
+  background: none;
+  padding: 0;
+}
+.grove-fav-cell img {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  pointer-events: none;
+}
+.grove-fav-cell.active {
+  border-color: rgba(var(--orb-color), 0.85);
+  box-shadow: 0 0 12px rgba(var(--orb-color), 0.35);
+}
+.grove-fav-cell.target {
+  transform: scale(1.08);
+  border-color: rgba(var(--orb-color), 0.6);
+  box-shadow:
+    0 0 0 4px rgba(var(--orb-color), 0.18),
+    0 0 18px rgba(var(--orb-color), 0.35);
+}
+.grove-fav-cell.dragging {
+  z-index: 5;
+  cursor: grabbing;
+  transform: scale(1.18);
+  border-color: rgba(var(--orb-color), 0.95);
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.5),
+    0 0 24px rgba(var(--orb-color), 0.5);
+  transition: none; /* follows pointer in real time */
+}
+.grove-fav-bloom-hint {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: rgba(var(--orb-color), 0.7);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  text-shadow: 0 0 8px rgba(var(--orb-color), 0.3);
+}
+
+/* Themed remove badge — orb color, not danger red */
+.grove-chip-remove {
+  position: absolute; top: -4px; right: -4px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(var(--orb-color), 0.6);
+  color: rgba(var(--orb-color), 0.95);
+  font-size: 11px; line-height: 11px; text-align: center;
+  cursor: pointer; opacity: 0; pointer-events: none;
+  transition: opacity var(--duration-fast);
+  z-index: 1;
+}
+.grove-ambient-chip:hover .grove-chip-remove {
+  opacity: 1; pointer-events: auto;
+}
+
+/* YouTube result thumbnail in Discover */
+.grove-yt-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.grove-yt-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.grove-yt-fav {
+  opacity: 0.3;
+  cursor: pointer;
+  transition: opacity var(--duration-fast);
+}
+.grove-yt-fav:hover { opacity: 0.6; }
+.grove-yt-fav.active { opacity: 1; color: var(--color-amber); }
+
+/* Buffering state */
+.grove-orb.buffering {
+  animation: grove-orb-buffer-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes grove-orb-aura-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes grove-orb-breathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(1.08); opacity: 0.7; }
+}
+@keyframes grove-orb-drift {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(10px, -8px) scale(1.05); }
+}
+@keyframes grove-orb-buffer-pulse {
+  0%, 100% { box-shadow:
+    0 0 30px rgba(var(--orb-color), 0.25),
+    0 0 60px rgba(var(--orb-color), 0.12),
+    0 0 120px rgba(var(--orb-color), 0.06),
+    inset 0 0 40px rgba(var(--orb-color), 0.1); }
+  50% { box-shadow:
+    0 0 40px rgba(var(--orb-color), 0.4),
+    0 0 80px rgba(var(--orb-color), 0.2),
+    0 0 140px rgba(var(--orb-color), 0.1),
+    inset 0 0 50px rgba(var(--orb-color), 0.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grove-orb-aura-1,
+  .grove-orb-aura-2 { animation: none; }
+  .grove-orb-bleed { animation: none; }
+  .grove-orb-empty::before,
+  .grove-orb-empty::after { animation: none; }
+  .grove-orb-music-overlay.active { animation: none; }
+  .grove-orb.buffering { animation: none; }
+}
+
+/* ==========================================================================
+   Floating Orb — detached state (in-place position:fixed)
+   The orb container stays in its grove-panel DOM slot to preserve the
+   YouTube iframe's browsing context. When detached it promotes to
+   position: fixed + transform-based drag, while the grove panel soft-closes
+   (visibility: hidden) so the orb escapes via explicit visibility: visible.
+   ========================================================================== */
+
+/* Soft-close — used when the orb is detached so the panel doesn't take
+   descendants (including the orb) down with it. display: none on an
+   ancestor would evict the orb from the render tree; visibility: hidden
+   is non-propagating to descendants that declare visibility: visible. */
+.grove-panel.soft-closed {
+  visibility: hidden;
+  /* DO NOT add pointer-events: none here — pointer-events is an inherited
+     property, and would cascade to the detached orb descendant, swallowing
+     every click. visibility: hidden on the panel itself is already enough
+     to stop clicks from hitting the panel's own box; the orb is a visible
+     descendant (via explicit visibility: visible + pointer-events: auto). */
+  /* Kill the entrance animation + force opacity:1/transform:none so the
+     detached orb descendant isn't affected by a mid-animation parent
+     opacity (opacity cascades; visibility doesn't). */
+  animation: none !important;
+  opacity: 1;
+  transform: none;
+  /* Keep display: block (no override needed — grove-panel is display: block
+     when .visible). Caller must also keep .visible applied so the cascade
+     resolves. */
+}
+
+/* When the orb is detached, the panel must:
+     1) Lift its stacking context so the orb (at z-index: 9999 inside)
+        isn't capped below unrelated UI at z > 50.
+     2) Drop backdrop-filter. On iOS Safari, backdrop-filter creates a
+        containing block for position: fixed descendants, trapping the
+        orb inside the panel's (soft-closed, off-screen) box. The visual
+        cost is zero because the panel is invisible while orb is floating.
+     3) Drop filter on the ::before aurora (same containing-block trap). */
+.grove-panel.orb-is-detached {
+  z-index: var(--z-fullscreen, 9000);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.grove-panel.orb-is-detached::before {
+  filter: none;
+}
+
+/* Detached state — the orb escapes the panel's layout and becomes a
+   viewport-anchored, transform-driven floater. The inline style.transform
+   controls position (translate3d). No left/top reflow. */
+/* Detached state — orb is a viewport-anchored floater. Position is driven
+   by inline style.left/top (NOT transform). We deliberately avoid filter,
+   transform, and will-change on this node: all three force a cross-origin
+   iframe into its own compositor layer, which Chromium re-rasters, and
+   YouTube's internal page-visibility observer treats that as "hidden" and
+   pauses playback. The drop shadow is expressed via box-shadow on the
+   inner .grove-orb element instead — box-shadow doesn't isolate iframes. */
+.grove-orb-container.detached {
+  position: fixed;
+  z-index: 9999;
+  /* Explicit visibility so the orb escapes .grove-panel.soft-closed, which
+     sets visibility: hidden on the ancestor chain. */
+  visibility: visible;
+  /* Explicit pointer-events so we're not poisoned if an ancestor ever sets
+     pointer-events: none (it inherits). */
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
+  cursor: grab;
+}
+
+.grove-orb-container.detached:active { cursor: grabbing; }
+
+/* Enhanced drop-shadow ring on the inner orb when detached — expressed via
+   box-shadow so the iframe's ancestor chain stays free of filter/transform. */
+.grove-orb-container.detached .grove-orb {
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.45),
+    0 6px 12px rgba(0, 0, 0, 0.24),
+    0 0 40px rgba(var(--orb-color), 0.38),
+    0 0 80px rgba(var(--orb-color), 0.2),
+    inset 0 0 40px rgba(var(--orb-color), 0.12);
+  transition: box-shadow 0.3s var(--ease-standard);
+}
+
+/* Docked state — suppress iOS text-selection callout so the 280ms long-press
+   can land cleanly on touch devices without a system callout. */
+.grove-orb-container {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@keyframes grove-orb-pluck-in {
+  from { filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0)); }
+  to   { filter: drop-shadow(0 18px 36px rgba(0, 0, 0, 0.38)); }
+}
+
+/* Size modes — applied ONLY when detached (via JS guard). Docked orb keeps
+   stock 220px via the existing .grove-orb-container rule. */
+.grove-orb-container.detached.size-compact  { width: 160px; height: 160px; }
+.grove-orb-container.detached.size-standard { width: 220px; height: 220px; }
+.grove-orb-container.detached.size-focus    { width: 320px; height: 320px; }
+
+/* When detached, the aura bleed scales proportionally so it doesn't look
+   oversized on compact or undersized on focus. */
+.grove-orb-container.detached .grove-orb-bleed {
+  width: calc(100% + 180px);
+  height: calc(100% + 180px);
+}
+
+/* Scale the inner orb circle + iframe-wrap for each size mode. The orb is
+   normally hard-sized at 204px (8px inset inside the 220px container). We
+   keep that inset ratio (~3.6%) so the seek-ring gap stays consistent at
+   every size. iframe dimensions maintain the original 16:9 ratio so YT
+   fills the circle without black bars. */
+
+/* Compact — 160px container → 148px orb */
+.grove-orb-container.detached.size-compact .grove-orb {
+  top: 6px; left: 6px;
+  width: 148px; height: 148px;
+}
+.grove-orb-container.detached.size-compact .grove-orb-iframe-wrap {
+  width: 264px; height: 148px;
+}
+
+/* Standard — default 220/204 dimensions already apply */
+
+/* Focus — 320px container → 296px orb */
+.grove-orb-container.detached.size-focus .grove-orb {
+  top: 12px; left: 12px;
+  width: 296px; height: 296px;
+}
+.grove-orb-container.detached.size-focus .grove-orb-iframe-wrap {
+  width: 526px; height: 296px;
+}
+
+/* The seek-arc SVG uses viewBox 0 0 220 220 and width/height:100%, so it
+   scales faithfully; stroke width is in viewBox units so it gets thinner
+   on focus and thicker on compact visually — nudge it back in each mode. */
+.grove-orb-container.detached.size-focus .grove-orb-arc-track,
+.grove-orb-container.detached.size-focus .grove-orb-arc-fill {
+  stroke-width: 2;  /* keeps optical weight consistent at 320px */
+}
+.grove-orb-container.detached.size-compact .grove-orb-arc-track,
+.grove-orb-container.detached.size-compact .grove-orb-arc-fill {
+  stroke-width: 3.5;
+}
+
+/* Always-visible seek arc when detached — the ring *is* the aura here.
+   Low opacity at rest, full on hover. Livestream (no duration) pulses. */
+.grove-orb-container.detached .grove-orb-arc {
+  opacity: 0.55;
+  transition: opacity 0.25s var(--ease-standard);
+}
+.grove-orb-container.detached:hover .grove-orb-arc,
+.grove-orb-container.detached:focus-within .grove-orb-arc {
+  opacity: 1;
+}
+.grove-orb-container.detached .grove-orb-arc.disabled {
+  animation: grove-orb-arc-livestream 2.4s ease-in-out infinite;
+}
+@keyframes grove-orb-arc-livestream {
+  0%, 100% { opacity: 0.35; }
+  50%      { opacity: 0.65; }
+}
+
+/* Pressing state — tiny "lift" cue during the 0–280ms hold window. */
+.grove-orb-container.pressing .grove-orb-bleed {
+  opacity: 1.15;
+  transition: opacity 0.15s var(--ease-standard);
+}
+.grove-orb-container.pressing .grove-orb-aura-1,
+.grove-orb-container.pressing .grove-orb-aura-2 {
+  opacity: 0.85;
+  transition: opacity 0.15s var(--ease-standard);
+}
+
+/* ──────────────── Chrome buttons (× dock size) ────────────────
+   Chrome lives inside #grove-orb-container so it travels with the orb
+   without any reparent. Hidden by default; the container shows them only
+   when .detached AND .chrome-visible are both set. */
+.grove-orb-float-btn {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: rgba(15, 23, 42, 0.78);
+  color: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(var(--orb-color, 52, 211, 153), 0.45);
+  border-radius: 50%;
+  cursor: pointer;
+  display: none; /* invisible in the grove slot */
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  opacity: 0;
+  transform: scale(0.85);
+  transition:
+    opacity 0.2s var(--ease-standard),
+    transform 0.2s var(--ease-standard),
+    background 0.15s var(--ease-standard),
+    border-color 0.15s var(--ease-standard);
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* Show chrome only when the orb is detached. */
+.grove-orb-container.detached .grove-orb-float-btn {
+  display: flex;
+}
+
+.grove-orb-container.detached.chrome-visible .grove-orb-float-btn,
+.grove-orb-container.detached:focus-within  .grove-orb-float-btn {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.grove-orb-float-btn:hover {
+  background: rgba(15, 23, 42, 0.94);
+  border-color: rgba(var(--orb-color, 52, 211, 153), 0.75);
+  color: #fff;
+}
+
+.grove-orb-float-btn:focus-visible {
+  outline: 2px solid rgba(var(--orb-color, 52, 211, 153), 0.9);
+  outline-offset: 2px;
+}
+
+/* Button positions — absolute relative to #grove-orb-container */
+.grove-orb-float-dock  { top: 6px;    left: 6px; }
+.grove-orb-float-close { top: 6px;    right: 6px; }
+.grove-orb-float-size  { bottom: 6px; right: 6px; }
+
+/* ──────────────── Touch-device tuning ────────────────
+   Coarse pointers (touch) need bigger hit zones and can't rely on
+   mouse-hover to keep chrome up. Bump to Apple-recommended 44px target
+   so the user isn't fighting a 28px square next to the 22px-wide seek
+   arc. Visual chrome stays subtle; only the tap area grows. */
+@media (pointer: coarse) {
+  .grove-orb-float-btn {
+    width: 44px;
+    height: 44px;
+  }
+  .grove-orb-float-dock  { top: 4px;    left: 4px; }
+  .grove-orb-float-close { top: 4px;    right: 4px; }
+  .grove-orb-float-size  { bottom: 4px; right: 4px; }
+}
+
+/* ──────────────── Drag hint (small label, top-center) ──────────────── */
+.grove-orb-float-hint {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(15, 23, 42, 0.78);
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--orb-color, 52, 211, 153), 0.3);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s var(--ease-standard);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  white-space: nowrap;
+  z-index: 10;
+  display: none;
+}
+
+.grove-orb-container.detached .grove-orb-float-hint { display: block; }
+.grove-orb-container.detached.chrome-visible .grove-orb-float-hint { opacity: 0.75; }
+
+/* ──────────────── Grove-slot placeholder (shown while detached) ──────── */
+.grove-orb-slot-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 16px;
+  width: 220px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.grove-orb-slot-placeholder[hidden] { display: none; }
+
+.grove-orb-slot-ring {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(var(--orb-color, 52, 211, 153), 0.35);
+  background:
+    radial-gradient(circle,
+      rgba(var(--orb-color, 52, 211, 153), 0.06) 0%,
+      transparent 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.grove-orb-slot-pulse {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(var(--orb-color, 52, 211, 153), 0.8);
+  box-shadow:
+    0 0 10px rgba(var(--orb-color, 52, 211, 153), 0.6),
+    0 0 20px rgba(var(--orb-color, 52, 211, 153), 0.3);
+  animation: grove-orb-slot-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes grove-orb-slot-pulse {
+  0%, 100% { transform: scale(1);   opacity: 0.85; }
+  50%      { transform: scale(1.35); opacity: 1; }
+}
+
+.grove-orb-slot-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.grove-orb-slot-title {
+  font-size: 13px;
+  color: var(--text-primary);
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.grove-orb-slot-redock {
+  margin-top: 4px;
+  padding: 7px 16px;
+  background: transparent;
+  color: rgba(var(--orb-color, 52, 211, 153), 0.95);
+  border: 1px solid rgba(var(--orb-color, 52, 211, 153), 0.5);
+  border-radius: 999px;
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    background 0.15s var(--ease-standard),
+    border-color 0.15s var(--ease-standard);
+}
+
+.grove-orb-slot-redock:hover {
+  background: rgba(var(--orb-color, 52, 211, 153), 0.1);
+  border-color: rgba(var(--orb-color, 52, 211, 153), 0.8);
+}
+
+/* ──────────────── First-use hint tooltip ──────────────── */
+.grove-orb-hint-tip {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translate(-50%, 8px);
+  padding: 6px 12px;
+  background: rgba(15, 23, 42, 0.94);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 11px;
+  border-radius: 8px;
+  border: 1px solid rgba(var(--orb-color, 52, 211, 153), 0.5);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-standard), transform 0.3s var(--ease-standard);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 8;
+}
+
+.grove-orb-hint-tip.visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.grove-orb-hint-tip::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  border-bottom-color: rgba(15, 23, 42, 0.94);
+}
+
+/* ──────────────── Reduced-motion accommodations ──────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .grove-orb-container.detached { animation: none; }
+  .grove-orb-slot-pulse  { animation: none; }
+  .grove-orb-container.detached .grove-orb-arc.disabled { animation: none; }
+}
+
+/* ──────────────── Chrome-label case toggle (Aa / AA) ──────────────── */
+.grove-typo-case {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  gap: 1px;
+  flex-shrink: 0;
+}
+.grove-typo-case-btn {
+  height: 26px;
+  min-width: 30px;
+  padding: 0 7px;
+  border-radius: 5px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background 100ms, color 100ms;
+}
+.grove-typo-case-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+.grove-typo-case-btn.active {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--text-primary);
+}
+
+/* ── Playlist section ─────────────────────────────────────────────── */
+.grove-playlist-section .grove-section-icon {
+  background: linear-gradient(145deg, rgba(244, 114, 182, 0.14), rgba(244, 114, 182, 0.04));
+  color: #f472b6;
+  box-shadow: inset 0 1px 0 rgba(244, 114, 182, 0.08);
+}
+.grove-playlist-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.grove-playlist-select {
+  flex: 1;
+  min-width: 0;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-family: inherit;
+}
+.grove-playlist-select:disabled {
+  opacity: 0.6;
+}
+.grove-playlist-btn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 100ms, color 100ms, border-color 100ms;
+  font-size: 14px;
+  line-height: 1;
+}
+.grove-playlist-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+.grove-playlist-btn.active,
+.grove-playlist-btn[aria-pressed="true"] {
+  background: color-mix(in srgb, #f472b6 18%, transparent);
+  color: #f472b6;
+  border-color: color-mix(in srgb, #f472b6 30%, transparent);
+}
+.grove-playlist-items {
+  max-height: 180px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  background: var(--surface);
+  padding: 4px;
+}
+.grove-playlist-empty {
+  padding: 10px 8px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-align: center;
+  font-style: italic;
+}
+.grove-playlist-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 80ms, color 80ms;
+}
+.grove-playlist-item:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+.grove-playlist-item.playing {
+  background: color-mix(in srgb, #f472b6 12%, transparent);
+  color: var(--text-primary);
+}
+.grove-playlist-type {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: var(--surface-2);
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+.grove-playlist-item.playing .grove-playlist-type {
+  background: color-mix(in srgb, #f472b6 22%, transparent);
+  color: #f472b6;
+}
+.grove-playlist-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.grove-playlist-remove {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  border-radius: 3px;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 100ms, background 100ms, color 100ms;
+}
+.grove-playlist-item:hover .grove-playlist-remove {
+  opacity: 1;
+}
+.grove-playlist-remove:hover {
+  background: color-mix(in srgb, var(--color-red, #ef4444) 18%, transparent);
+  color: var(--color-red, #ef4444);
+}
+
+
+/* ── Add-to-playlist chooser ─────────────────────────────────────────── */
+.playlist-add-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--bg, #000) 55%, transparent);
+  backdrop-filter: blur(2px);
+  animation: playlist-add-fade 160ms ease-out;
+}
+@keyframes playlist-add-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.playlist-add-sheet {
+  width: min(420px, calc(100vw - 32px));
+  max-height: min(70vh, 560px);
+  overflow-y: auto;
+  background: var(--bg-elevated, var(--surface));
+  border: 1px solid var(--surface-border, var(--border));
+  border-radius: 14px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.32);
+  padding: 18px;
+  color: var(--text-primary);
+  animation: playlist-add-rise 180ms ease-out;
+}
+@keyframes playlist-add-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.playlist-add-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.playlist-add-title { font-size: 15px; font-weight: 600; }
+.playlist-add-fam {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.playlist-add-new { display: flex; gap: 8px; }
+.playlist-add-name {
+  flex: 1;
+  padding: 9px 12px;
+  border-radius: 9px;
+  border: 1px solid var(--surface-border, var(--border));
+  background: var(--surface);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 13px;
+}
+.playlist-add-name:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.playlist-add-create {
+  padding: 9px 14px;
+  border-radius: 9px;
+  border: none;
+  background: var(--accent);
+  color: var(--accent-contrast, #fff);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.playlist-add-create:hover { filter: brightness(1.06); }
+
+.playlist-add-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 8px;
+  color: var(--text-muted, var(--text-secondary));
+  font-size: 11px;
+}
+.playlist-add-divider::before,
+.playlist-add-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--surface-border, var(--border));
+}
+
+.playlist-add-list { list-style: none; margin: 0; padding: 0; }
+.playlist-add-existing {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: var(--surface);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+.playlist-add-existing:hover { border-color: var(--accent); }
+.playlist-add-pl-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.playlist-add-pl-count {
+  flex: 0 0 auto;
+  margin-left: 10px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.playlist-add-empty {
+  margin: 12px 0 4px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.playlist-add-foot { margin-top: 14px; text-align: right; }
+.playlist-add-cancel {
+  padding: 8px 14px;
+  border-radius: 9px;
+  border: 1px solid var(--surface-border, var(--border));
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.playlist-add-cancel:hover { color: var(--text-primary); }

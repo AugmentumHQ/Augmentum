@@ -1,0 +1,928 @@
+/* =============================================================
+   connected-devices.css
+
+     .cd-*  — devices section inside the Connected Devices
+              panel (rendered alongside .ms-* server rows)
+
+   Mirrors the visual style of media-servers.css so the two
+   sections feel like one panel. The previous active-cast pill
+   (.cast-remote-*) was folded into cast-shelf — see
+   ui/styles/cast-shelf.css for the transport-card styling.
+   ============================================================= */
+
+
+/* --- Section divider between Media Sources and Receivers ------- */
+
+/* .ms-section-divider was replaced with spacing-based section separation.
+   The Connected Devices panel hosts Media Sources first, then
+   data-cd-host (Devices + Phone + History). Give the host a wide top
+   margin so the two halves read as distinct groups without a hard line. */
+
+[data-cd-host] {
+  display: block;
+  margin-top: 28px;
+}
+
+
+/* --- Devices section in the panel ------------------------------ */
+
+/* Container for the whole devices area. Each child <section> gets its
+   own header and its own list — generous gap between sections so the
+   eye finds the boundaries without needing dividers. */
+.cd-root {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.cd-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cd-section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+}
+
+.cd-section-titles {
+  flex: 1;
+  min-width: 0;
+}
+
+.cd-section-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 650;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.cd-section-sub {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.cd-section-action {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Quiet "On this device" row — quick links to /ui/cast-receiver/ and
+   /ui/cast-control/ so the user can flip the browser they're sitting at
+   into either a cast target or a remote without typing URLs. */
+.cd-self-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 2px 2px 0;
+}
+.cd-self-actions-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  margin-right: 2px;
+}
+.cd-self-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-secondary) 8%, transparent);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 12px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.cd-self-link:hover {
+  background: color-mix(in srgb, var(--accent-primary, #6366f1) 14%, transparent);
+  color: var(--accent-primary, #6366f1);
+}
+.cd-self-link svg { flex: 0 0 auto; opacity: 0.85; }
+.cd-self-link:hover svg { opacity: 1; }
+
+
+/* --- Discovery banner ------------------------------------------ */
+
+.cd-banner {
+  background: color-mix(in srgb, var(--accent-primary, #6366f1) 10%, var(--bg-secondary));
+  border: 1px solid color-mix(in srgb, var(--accent-primary, #6366f1) 30%, transparent);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cd-banner-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.cd-banner-head svg { color: var(--accent-primary, #6366f1); flex: 0 0 auto; }
+
+.cd-banner-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cd-banner-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--bg-primary) 70%, transparent);
+}
+
+.cd-banner-meta { flex: 1; min-width: 0; }
+.cd-banner-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cd-banner-sub {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+
+/* --- Saved device rows ----------------------------------------- */
+
+.cd-saved-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cd-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: border-color 0.15s ease, box-shadow 0.18s ease;
+  position: relative;
+}
+.cd-row:hover { border-color: color-mix(in srgb, var(--text-secondary) 25%, var(--border)); }
+
+/* Armed row — subtle accent border + halo so the user can see at a glance
+   which device is currently primed without reading the row text. */
+/* Left-edge status dot replaces the chunky status chip. */
+.cd-row-dot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.cd-dot-online    { background: #22c55e; }
+.cd-dot-paired    { background: #22c55e; }
+.cd-dot-offline   { background: color-mix(in srgb, var(--text-secondary) 50%, transparent); }
+.cd-dot-unverified { background: #f59e0b; }
+
+.cd-row-icon {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--accent-primary, #6366f1) 12%, transparent);
+  color: var(--accent-primary, #6366f1);
+  border-radius: 9px;
+}
+
+.cd-row-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cd-row-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cd-row-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cd-cap {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-secondary) 12%, transparent);
+  color: var(--text-secondary);
+}
+
+.cd-row-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cd-row-disarm {
+  background: color-mix(in srgb, var(--accent-primary, #6366f1) 14%, transparent);
+  color: var(--accent-primary, #6366f1);
+  border: 1px solid color-mix(in srgb, var(--accent-primary, #6366f1) 35%, transparent);
+}
+.cd-row-disarm:hover {
+  background: color-mix(in srgb, var(--accent-primary, #6366f1) 22%, transparent);
+}
+
+
+/* --- Phone app pairing ----------------------------------------- */
+
+/* .cd-mobile / .cd-mobile-head / .cd-mobile-title / .cd-mobile-sub were
+   removed when the mobile section was folded into the shared
+   .cd-section-head pattern. The pair card and paired-phone rows below
+   keep their own chrome. */
+
+.cd-mobile-empty {
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 8px 0 2px;
+}
+
+.cd-mobile-pair {
+  border: 1px solid color-mix(in srgb, var(--accent-primary, #6366f1) 28%, var(--border));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--accent-primary, #6366f1) 9%, var(--bg-primary));
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cd-mobile-pair-claimed {
+  border-color: color-mix(in srgb, #22c55e 50%, var(--border));
+  background: color-mix(in srgb, #22c55e 9%, var(--bg-primary));
+}
+
+.cd-mobile-pair-expired {
+  border-color: color-mix(in srgb, #ef4444 35%, var(--border));
+  background: color-mix(in srgb, #ef4444 7%, var(--bg-primary));
+}
+
+.cd-mobile-pair-main {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.cd-mobile-qr-wrap {
+  flex: 0 0 auto;
+}
+
+.cd-mobile-qr {
+  width: 116px;
+  height: 116px;
+  display: block;
+  border-radius: 8px;
+  background: #fff;
+  padding: 6px;
+  object-fit: contain;
+}
+
+.cd-mobile-qr-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--text-secondary) 12%, var(--bg-primary));
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0;
+}
+
+.cd-mobile-pair-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.cd-mobile-pair-state {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cd-mobile-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 20px;
+  letter-spacing: 0;
+  color: var(--text-primary);
+}
+
+.cd-mobile-claim {
+  width: 100%;
+  border-top: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
+  padding-top: 8px;
+}
+
+.cd-mobile-claim-title {
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--text-primary);
+}
+
+.cd-mobile-claim-sub {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.cd-mobile-caps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 7px;
+}
+
+.cd-mobile-caps span {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-secondary) 12%, transparent);
+  color: var(--text-secondary);
+}
+
+.cd-mobile-pair-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+.cd-mobile-waiting,
+.cd-mobile-revoked-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.cd-mobile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cd-mobile-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
+  padding-top: 10px;
+}
+
+.cd-mobile-row-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.cd-mobile-row-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cd-mobile-row-sub {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cd-mobile-row-revoked {
+  opacity: 0.64;
+}
+
+@media (max-width: 560px) {
+  .cd-section-head,
+  .cd-mobile-pair-main {
+    flex-direction: column;
+  }
+
+  .cd-section-action,
+  .cd-mobile-pair-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .cd-mobile-pair-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* Manual-add form: collapse the 2-up Label/Host/Port/Type grid to a
+     single column so the fields aren't cramped on a phone. */
+  .cd-add-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Kebab button + popover. Self-positioned relative to the row's
+   actions cluster so the menu doesn't escape the panel. */
+.cd-row-kebab-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.cd-row-kebab {
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.cd-row-kebab:hover {
+  background: color-mix(in srgb, var(--text-secondary) 14%, transparent);
+  color: var(--text-primary);
+}
+
+.cd-row-kebab-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
+  display: none;
+  flex-direction: column;
+  min-width: 180px;
+  padding: 4px;
+  z-index: 5;
+}
+.cd-row-kebab-menu.open { display: flex; }
+.cd-row-kebab-menu button {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.cd-row-kebab-menu button:hover {
+  background: color-mix(in srgb, var(--accent-primary, #6366f1) 14%, transparent);
+}
+.cd-row-kebab-menu .cd-row-kebab-danger {
+  color: #ef4444;
+}
+.cd-row-kebab-menu .cd-row-kebab-danger:hover {
+  background: color-mix(in srgb, #ef4444 14%, transparent);
+}
+
+
+/* --- Status badges --------------------------------------------- */
+
+/* --- Empty state ----------------------------------------------- */
+
+.cd-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 36px 24px;
+  background: var(--bg-secondary);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  color: var(--text-secondary);
+}
+
+.cd-empty svg { color: var(--text-secondary); opacity: 0.6; margin-bottom: 10px; }
+
+.cd-empty-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.cd-empty-sub {
+  font-size: 12px;
+  max-width: 36ch;
+  line-height: 1.5;
+}
+
+.cd-empty-why {
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: left;
+  max-width: 50ch;
+}
+.cd-empty-why summary {
+  cursor: pointer;
+  color: var(--accent-primary, #6366f1);
+  font-weight: 500;
+  text-align: center;
+  list-style: none;
+}
+.cd-empty-why summary::-webkit-details-marker { display: none; }
+.cd-empty-why summary:hover { text-decoration: underline; }
+.cd-empty-why-body {
+  margin-top: 8px;
+  padding: 10px 14px;
+  background: color-mix(in srgb, var(--text-secondary) 8%, transparent);
+  border-radius: 8px;
+  line-height: 1.55;
+}
+
+
+/* --- Manual-add disclosure ------------------------------------- */
+
+.cd-add {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+}
+.cd-add[open] { padding-bottom: 14px; }
+
+.cd-add-summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 14px 16px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.cd-add-summary::-webkit-details-marker { display: none; }
+
+.cd-add-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 16px;
+  padding: 0 16px;
+}
+
+.cd-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.cd-field-wide { grid-column: 1 / -1; }
+
+.cd-field input,
+.cd-field select {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 7px 10px;
+  font-size: 13px;
+}
+.cd-field input:focus,
+.cd-field select:focus {
+  outline: none;
+  border-color: var(--accent-primary, #6366f1);
+}
+
+.cd-add-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+
+/* --- Recently cast & favorites disclosure ---------------------- */
+
+.cd-history {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.cd-history-summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.cd-history-summary::-webkit-details-marker { display: none; }
+.cd-history-summary:hover { background: color-mix(in srgb, var(--text-secondary) 6%, transparent); }
+
+.cd-history-chevron {
+  color: var(--text-secondary);
+  transition: transform 0.18s ease;
+  flex: 0 0 auto;
+}
+.cd-history[open] .cd-history-chevron { transform: rotate(180deg); }
+
+.cd-history-body {
+  padding: 4px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cd-history-group-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.cd-history-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.cd-history-fav {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 2px 7px;
+  font-size: 14px;
+  line-height: 1;
+}
+.cd-history-fav:hover {
+  color: #f59e0b;
+  border-color: color-mix(in srgb, #f59e0b 45%, var(--border));
+}
+.cd-history-fav[data-cd-fav-state="1"] { color: #f59e0b; }
+
+.cd-history-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.cd-history-title {
+  font-size: 13px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cd-history-sub {
+  margin-top: 1px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.cd-history-empty,
+.cd-history-loading {
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 4px 0;
+}
+
+
+/* =============================================================
+   Cast picker popover — anchored to a Cast button.
+   ============================================================= */
+
+.cast-picker {
+  position: fixed;
+  inset: 0;
+  /* Must sit above .fv-root (z:10000) so the picker is visible when
+     opened from the floating video's "Saved TVs and speakers" button.
+     Higher than any in-app modal so the picker is always on top of
+     whatever invoked it. */
+  z-index: 10500;
+  pointer-events: none;
+}
+
+.cp-popover {
+  position: fixed;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+  overflow: hidden;
+  animation: cp-popover-in 0.16s ease-out;
+}
+
+@keyframes cp-popover-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.cp-manage {
+  background: transparent;
+  border: none;
+  color: var(--accent-primary, #6366f1);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.cp-manage:hover { text-decoration: underline; }
+
+.cp-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.cp-loading {
+  padding: 22px 18px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.cp-empty {
+  padding: 22px 18px;
+  text-align: center;
+}
+.cp-empty-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.cp-empty-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.cp-empty-sub strong { color: var(--accent-primary, #6366f1); }
+
+.cp-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  cursor: pointer;
+  text-align: left;
+  color: var(--text-primary);
+  transition: background 0.12s ease;
+}
+.cp-item:last-child { border-bottom: none; }
+.cp-item:hover {
+  background: color-mix(in srgb, var(--accent-primary, #6366f1) 10%, transparent);
+}
+.cp-item:disabled,
+.cp-item.cp-item-loading {
+  cursor: default;
+  opacity: 0.65;
+}
+.cp-item[data-cp-offline="1"] {
+  opacity: 0.55;
+}
+
+.cp-item-icon {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--accent-primary, #6366f1) 12%, transparent);
+  color: var(--accent-primary, #6366f1);
+}
+
+.cp-item-meta {
+  flex: 1;
+  min-width: 0;
+}
+.cp-item-label {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cp-item-sub {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 1px;
+}
+.cp-offline-tag {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.cp-item-arrow {
+  flex: 0 0 auto;
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+.cp-item:hover .cp-item-arrow { opacity: 1; color: var(--accent-primary, #6366f1); }
+
+.cp-foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: color-mix(in srgb, var(--bg-primary) 60%, transparent);
+}
+.cp-foot a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-bottom: 1px dashed color-mix(in srgb, var(--text-secondary) 40%, transparent);
+  cursor: pointer;
+  transition: color 0.12s ease, border-color 0.12s ease;
+}
+.cp-foot a:hover {
+  color: var(--accent-primary, #6366f1);
+  border-bottom-color: color-mix(in srgb, var(--accent-primary, #6366f1) 50%, transparent);
+}
+.cp-foot-sep {
+  opacity: 0.45;
+}
+
+/* Cast button on media-mini-player */
+.mp-cast-btn { position: relative; }
+.mp-cast-btn:hover { color: var(--accent-primary, #6366f1); }

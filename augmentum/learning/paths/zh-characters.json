@@ -1,0 +1,1079 @@
+{
+  "lang": "zh",
+  "version": "1.0.0",
+  "name": "Hanzi Decomposition — HSK1",
+  "credits": "Radical and decomposition data adapted from the Make Me a Hanzi project (BSD-licensed, https://github.com/skishore/makemeahanzi) and Wikipedia's Kangxi radical list. HSK1 character set per HSK 3.0 syllabus. Mnemonics original to this curriculum, hand-authored 2026 — they emphasize compositional logic over folk etymology when the two diverge.",
+  "license": "CC BY 4.0",
+  "characters": [
+    {
+      "char": "你",
+      "pinyin": "nǐ",
+      "meaning": "you",
+      "stroke_count": 7,
+      "radicals": ["亻 (person, left)", "尔 (you, archaic; phonetic)"],
+      "mnemonic": "A PERSON (亻) addressing another with the old word for 'you' (尔). The 亻 radical signals 'this is about people'; the right side gives the sound.",
+      "common_words": ["你好 (nǐ hǎo — hello)", "你们 (nǐ men — you all)", "你的 (nǐ de — your)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "好",
+      "pinyin": "hǎo",
+      "meaning": "good",
+      "stroke_count": 6,
+      "radicals": ["女 (woman)", "子 (child)"],
+      "mnemonic": "A WOMAN with her CHILD — in the ancient view of the character, family harmony equals 'good'. Memorable as 'mom + kid = good'.",
+      "common_words": ["你好 (nǐ hǎo — hello)", "好的 (hǎo de — okay)", "好吃 (hǎo chī — delicious)", "好看 (hǎo kàn — good-looking)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "我",
+      "pinyin": "wǒ",
+      "meaning": "I / me",
+      "stroke_count": 7,
+      "radicals": ["戈 (dagger-axe weapon)", "丿 (slash)"],
+      "mnemonic": "A HAND holding a WEAPON (戈). The character originally depicted a serrated battle-axe; the meaning 'I/me' is a phonetic loan — the warrior whose weapon this is. Visual hook: 'me with my axe'.",
+      "common_words": ["我们 (wǒ men — we)", "我的 (wǒ de — my)", "我是 (wǒ shì — I am)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "是",
+      "pinyin": "shì",
+      "meaning": "to be / yes",
+      "stroke_count": 9,
+      "radicals": ["日 (sun, top)", "正 (correct, bottom; phonetic)"],
+      "mnemonic": "The SUN (日) is CORRECT (正) — the sun's position is the standard by which everything else is judged. 是 means 'is' and also 'correct/yes', and the components carry both meanings at once.",
+      "common_words": ["是的 (shì de — yes)", "不是 (bú shì — is not)", "可是 (kě shì — but)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "不",
+      "pinyin": "bù",
+      "meaning": "no / not",
+      "stroke_count": 4,
+      "radicals": ["一 (one, top)", "(stem and roots below)"],
+      "mnemonic": "A bird flies UP toward the SKY (一) but cannot pass through it — it cannot reach. The negation comes from 'cannot get through'. The horizontal stroke on top is the barrier.",
+      "common_words": ["不是 (bú shì — is not)", "不要 (bú yào — don't want)", "不会 (bú huì — cannot)", "不客气 (bú kè qi — you're welcome)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "人",
+      "pinyin": "rén",
+      "meaning": "person",
+      "stroke_count": 2,
+      "radicals": ["人 (person — pictograph)"],
+      "mnemonic": "A person standing with legs apart, seen from the side. Two strokes, one stick figure. The 亻 form on the left of other characters is the same component squashed.",
+      "common_words": ["中国人 (Zhōng guó rén — Chinese person)", "男人 (nán rén — man)", "女人 (nǚ rén — woman)", "客人 (kè rén — guest)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "中",
+      "pinyin": "zhōng",
+      "meaning": "middle / center",
+      "stroke_count": 4,
+      "radicals": ["口 (mouth / box)", "丨 (vertical line through it)"],
+      "mnemonic": "An ARROW or POLE piercing through the CENTER of a BOX. The vertical line marks the dead-center of the rectangle. This is the 中 in 中国 (China = 'middle kingdom').",
+      "common_words": ["中国 (Zhōng guó — China)", "中文 (Zhōng wén — Chinese)", "中间 (zhōng jiān — middle)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "国",
+      "pinyin": "guó",
+      "meaning": "country / nation",
+      "stroke_count": 8,
+      "radicals": ["囗 (enclosure)", "玉 (jade, inside)"],
+      "mnemonic": "A JADE (玉) treasure locked inside a WALLED ENCLOSURE (囗). A nation is its precious territory, bounded and defended. The traditional form 國 has 或 (region) inside instead.",
+      "common_words": ["中国 (Zhōng guó — China)", "美国 (Měi guó — USA)", "英国 (Yīng guó — UK)", "国家 (guó jiā — country)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "大",
+      "pinyin": "dà",
+      "meaning": "big",
+      "stroke_count": 3,
+      "radicals": ["大 (person with arms outstretched — pictograph)"],
+      "mnemonic": "A person standing with arms STRETCHED WIDE to show how BIG. Take the 人 character and add a horizontal stroke for outstretched arms — that's 大.",
+      "common_words": ["大学 (dà xué — university)", "大家 (dà jiā — everyone)", "大小 (dà xiǎo — size)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "小",
+      "pinyin": "xiǎo",
+      "meaning": "small",
+      "stroke_count": 3,
+      "radicals": ["小 (small — pictograph)"],
+      "mnemonic": "Three TINY GRAINS or particles. The central stroke is one grain; the two flanking strokes are smaller flecks. Whatever it is, it's small.",
+      "common_words": ["小学 (xiǎo xué — primary school)", "小心 (xiǎo xīn — careful)", "小时 (xiǎo shí — hour)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "有",
+      "pinyin": "yǒu",
+      "meaning": "to have / there is",
+      "stroke_count": 6,
+      "radicals": ["月 (moon / flesh, bottom)", "𠂇 (hand, top)"],
+      "mnemonic": "A HAND (𠂇) holding a piece of MEAT (月 here = 'flesh radical', not moon). To possess = to have meat in hand. Wealth in the ancient view was having food.",
+      "common_words": ["有人 (yǒu rén — someone)", "没有 (méi yǒu — don't have)", "有的 (yǒu de — some)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "在",
+      "pinyin": "zài",
+      "meaning": "to be at / located in",
+      "stroke_count": 6,
+      "radicals": ["土 (earth, bottom)", "才 (just / talent, top)"],
+      "mnemonic": "A sprout JUST (才) emerging from the EARTH (土) — at a location, present, situated. The character marks existence-in-a-place.",
+      "common_words": ["在家 (zài jiā — at home)", "现在 (xiàn zài — now)", "正在 (zhèng zài — in the middle of)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "什",
+      "pinyin": "shén / shí",
+      "meaning": "(in 什么 — what); ten units",
+      "stroke_count": 4,
+      "radicals": ["亻 (person)", "十 (ten)"],
+      "mnemonic": "TEN PEOPLE — used in 什么 (shén me) for 'what'. The character itself originally meant 'a group of ten soldiers'.",
+      "common_words": ["什么 (shén me — what)", "为什么 (wèi shén me — why)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "么",
+      "pinyin": "me",
+      "meaning": "(question particle)",
+      "stroke_count": 3,
+      "radicals": ["丿 (slash)", "厶 (private)"],
+      "mnemonic": "A small suffix particle that softens questions. Used almost exclusively in compound function words: 什么, 这么, 那么, 怎么. Just recognize it.",
+      "common_words": ["什么 (shén me — what)", "这么 (zhè me — so)", "那么 (nà me — that much)", "怎么 (zěn me — how)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "这",
+      "pinyin": "zhè",
+      "meaning": "this",
+      "stroke_count": 7,
+      "radicals": ["辶 (walk/movement)", "文 (writing)"],
+      "mnemonic": "WALK (辶) up to a WRITING (文) on the wall — this one, the one right here in front of you. The 辶 radical means 'motion toward'.",
+      "common_words": ["这个 (zhè ge — this one)", "这里 (zhè lǐ — here)", "这样 (zhè yàng — like this)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "那",
+      "pinyin": "nà",
+      "meaning": "that",
+      "stroke_count": 6,
+      "radicals": ["阝 (city, right)", "冄 (fluff, left; phonetic)"],
+      "mnemonic": "A CITY (阝, on the right side it means 'city') in the distance — that one, over there. The right-side 阝 always means 'city'; the left-side 阝 means 'mound/hill'.",
+      "common_words": ["那个 (nà ge — that one)", "那里 (nà lǐ — there)", "那么 (nà me — so / in that case)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "一",
+      "pinyin": "yī",
+      "meaning": "one",
+      "stroke_count": 1,
+      "radicals": ["一 (one — single stroke)"],
+      "mnemonic": "One horizontal stroke. The simplest character in the language.",
+      "common_words": ["一个 (yí gè — one)", "一起 (yì qǐ — together)", "一定 (yí dìng — certainly)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "二",
+      "pinyin": "èr",
+      "meaning": "two",
+      "stroke_count": 2,
+      "radicals": ["二 (two — pictograph)"],
+      "mnemonic": "Two horizontal strokes. Used for the number 'two' in counting and dates; 两 is used as a quantifier ('two of').",
+      "common_words": ["二月 (èr yuè — February)", "第二 (dì èr — second)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "三",
+      "pinyin": "sān",
+      "meaning": "three",
+      "stroke_count": 3,
+      "radicals": ["三 (three — pictograph)"],
+      "mnemonic": "Three horizontal strokes.",
+      "common_words": ["三月 (sān yuè — March)", "三个 (sān ge — three)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "四",
+      "pinyin": "sì",
+      "meaning": "four",
+      "stroke_count": 5,
+      "radicals": ["囗 (enclosure)", "儿 (legs/man)"],
+      "mnemonic": "A box with legs sticking out the bottom — the figure for four broke away from the simple four-stroke 亖 form early in history.",
+      "common_words": ["四月 (sì yuè — April)", "四个 (sì ge — four)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "五",
+      "pinyin": "wǔ",
+      "meaning": "five",
+      "stroke_count": 4,
+      "radicals": ["一 (top line)", "一 (bottom line)", "X (crossed middle)"],
+      "mnemonic": "Heaven and earth (two horizontals) with an X between them — a hand-counting symbol.",
+      "common_words": ["五月 (wǔ yuè — May)", "五十 (wǔ shí — fifty)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "六",
+      "pinyin": "liù",
+      "meaning": "six",
+      "stroke_count": 4,
+      "radicals": ["亠 (lid)", "八 (eight)"],
+      "mnemonic": "A roof (亠) over an 八.",
+      "common_words": ["六月 (liù yuè — June)", "星期六 (xīng qī liù — Saturday)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "七",
+      "pinyin": "qī",
+      "meaning": "seven",
+      "stroke_count": 2,
+      "radicals": ["一 (one)", "乚 (hook)"],
+      "mnemonic": "A horizontal stroke crossed by a hook. Two strokes only.",
+      "common_words": ["七月 (qī yuè — July)", "星期 (xīng qī — week)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "八",
+      "pinyin": "bā",
+      "meaning": "eight",
+      "stroke_count": 2,
+      "radicals": ["八 (split — pictograph)"],
+      "mnemonic": "Two strokes splitting outward. The character originally meant 'to divide'.",
+      "common_words": ["八月 (bā yuè — August)", "八个 (bā ge — eight)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "九",
+      "pinyin": "jiǔ",
+      "meaning": "nine",
+      "stroke_count": 2,
+      "radicals": ["丿 (slash)", "乙 (curl)"],
+      "mnemonic": "A curled bent figure — visually distinct from 几.",
+      "common_words": ["九月 (jiǔ yuè — September)", "九十 (jiǔ shí — ninety)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "十",
+      "pinyin": "shí",
+      "meaning": "ten",
+      "stroke_count": 2,
+      "radicals": ["十 (cross — pictograph)"],
+      "mnemonic": "A cross. The Roman numeral X equivalent — count to ten on your fingers, then mark a cross.",
+      "common_words": ["十一 (shí yī — eleven)", "二十 (èr shí — twenty)", "十月 (shí yuè — October)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "百",
+      "pinyin": "bǎi",
+      "meaning": "hundred",
+      "stroke_count": 6,
+      "radicals": ["一 (one)", "白 (white)"],
+      "mnemonic": "ONE (一) over WHITE (白) — phonetic build on bái → bǎi.",
+      "common_words": ["一百 (yì bǎi — one hundred)", "百分 (bǎi fēn — percent)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "两",
+      "pinyin": "liǎng",
+      "meaning": "two (of)",
+      "stroke_count": 7,
+      "radicals": ["一 (one, top)", "丿 (slash)", "入入 (two enters)"],
+      "mnemonic": "Two people entering under one roof = the quantifier 'two of'. Use 两 before measure words (两个), not 二.",
+      "common_words": ["两个 (liǎng ge — two)", "两点 (liǎng diǎn — 2 o'clock)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "个",
+      "pinyin": "gè",
+      "meaning": "(general measure word)",
+      "stroke_count": 3,
+      "radicals": ["人 (person, top)", "丨 (line, bottom)"],
+      "mnemonic": "A PERSON with a vertical mark — the default 'unit' marker. Used for almost any countable noun when you don't know the specific measure word.",
+      "common_words": ["一个 (yí gè — one)", "几个 (jǐ gè — how many)", "这个 (zhè ge — this one)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "家",
+      "pinyin": "jiā",
+      "meaning": "home / family",
+      "stroke_count": 10,
+      "radicals": ["宀 (roof)", "豕 (pig)"],
+      "mnemonic": "A PIG (豕) under a ROOF (宀) — ancient Chinese homes kept livestock indoors, so a roof + pig literally meant 'household'. Memorable and historical.",
+      "common_words": ["家人 (jiā rén — family)", "回家 (huí jiā — go home)", "国家 (guó jiā — country)", "大家 (dà jiā — everyone)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "爸",
+      "pinyin": "bà",
+      "meaning": "dad",
+      "stroke_count": 8,
+      "radicals": ["父 (father, top)", "巴 (bā, phonetic)"],
+      "mnemonic": "FATHER (父) + the sound 巴 (bā). The semantic component tells you the meaning; the phonetic gives the sound.",
+      "common_words": ["爸爸 (bà ba — dad)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "妈",
+      "pinyin": "mā",
+      "meaning": "mom",
+      "stroke_count": 6,
+      "radicals": ["女 (woman, left)", "马 (horse, phonetic)"],
+      "mnemonic": "A WOMAN (女) + the sound HORSE (马 mǎ → mā). Classic phono-semantic compound: woman radical for meaning, horse for sound.",
+      "common_words": ["妈妈 (mā ma — mom)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "儿",
+      "pinyin": "ér",
+      "meaning": "son / child",
+      "stroke_count": 2,
+      "radicals": ["儿 (legs / man — pictograph)"],
+      "mnemonic": "A walking child. Also serves as the diminutive 'r' suffix in northern Mandarin (花儿 huār, 一点儿 yìdiǎnr).",
+      "common_words": ["儿子 (ér zi — son)", "女儿 (nǚ ér — daughter)", "一点儿 (yì diǎnr — a little)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "女",
+      "pinyin": "nǚ",
+      "meaning": "woman / female",
+      "stroke_count": 3,
+      "radicals": ["女 (woman — pictograph)"],
+      "mnemonic": "A kneeling figure with crossed legs. Appears as the left-side radical in many family/gender characters: 妈, 姐, 妹, 好.",
+      "common_words": ["女人 (nǚ rén — woman)", "女儿 (nǚ ér — daughter)", "女孩 (nǚ hái — girl)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "男",
+      "pinyin": "nán",
+      "meaning": "man / male",
+      "stroke_count": 7,
+      "radicals": ["田 (field, top)", "力 (strength, bottom)"],
+      "mnemonic": "STRENGTH (力) working in the FIELDS (田) — the ancient definition of manhood. A clear semantic compound, no phonetic.",
+      "common_words": ["男人 (nán rén — man)", "男孩 (nán hái — boy)", "男朋友 (nán péng you — boyfriend)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "子",
+      "pinyin": "zǐ / zi",
+      "meaning": "child / suffix",
+      "stroke_count": 3,
+      "radicals": ["子 (baby — pictograph)"],
+      "mnemonic": "A swaddled baby with arms out. As a neutral-tone suffix (zi) it just nominalizes: 桌子, 椅子, 杯子.",
+      "common_words": ["儿子 (ér zi — son)", "孩子 (hái zi — child)", "桌子 (zhuō zi — table)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "哥",
+      "pinyin": "gē",
+      "meaning": "older brother",
+      "stroke_count": 10,
+      "radicals": ["可 (can) stacked twice"],
+      "mnemonic": "Two 可 stacked — older brother is doubly capable. Used reduplicated: 哥哥.",
+      "common_words": ["哥哥 (gē ge — older brother)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "姐",
+      "pinyin": "jiě",
+      "meaning": "older sister",
+      "stroke_count": 8,
+      "radicals": ["女 (woman)", "且 (also/moreover)"],
+      "mnemonic": "Woman + 且 (phonetic). 且 reads jiě here.",
+      "common_words": ["姐姐 (jiě jie — older sister)", "小姐 (xiǎo jiě — miss)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "弟",
+      "pinyin": "dì",
+      "meaning": "younger brother",
+      "stroke_count": 7,
+      "radicals": ["弓 (bow component)", "丿 (slash)"],
+      "mnemonic": "Originally a pictograph of a leather strap wound around a stake — the order of wrapping = order among siblings.",
+      "common_words": ["弟弟 (dì di — younger brother)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "妹",
+      "pinyin": "mèi",
+      "meaning": "younger sister",
+      "stroke_count": 8,
+      "radicals": ["女 (woman)", "未 (not yet)"],
+      "mnemonic": "Woman + NOT YET — a younger sister, not yet grown.",
+      "common_words": ["妹妹 (mèi mei — younger sister)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "朋",
+      "pinyin": "péng",
+      "meaning": "friend",
+      "stroke_count": 8,
+      "radicals": ["月月 (two moons)"],
+      "mnemonic": "Two MOONS side by side — two faces shining together = friends.",
+      "common_words": ["朋友 (péng you — friend)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "友",
+      "pinyin": "yǒu",
+      "meaning": "friend / friendly",
+      "stroke_count": 4,
+      "radicals": ["𠂇 (hand)", "又 (right hand)"],
+      "mnemonic": "Two HANDS clasping — friends shaking hands.",
+      "common_words": ["朋友 (péng you — friend)", "友好 (yǒu hǎo — friendly)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "老",
+      "pinyin": "lǎo",
+      "meaning": "old",
+      "stroke_count": 6,
+      "radicals": ["耂 (old man, top)", "匕 (spoon, bottom)"],
+      "mnemonic": "An old man with a cane — the top of the character represents bent posture and long hair.",
+      "common_words": ["老师 (lǎo shī — teacher)", "老人 (lǎo rén — elderly)", "老板 (lǎo bǎn — boss)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "师",
+      "pinyin": "shī",
+      "meaning": "teacher / master",
+      "stroke_count": 6,
+      "radicals": ["巾 (cloth)", "(left component)"],
+      "mnemonic": "Combines with 老 to mean 'old master' = teacher.",
+      "common_words": ["老师 (lǎo shī — teacher)", "医师 (yī shī — doctor)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "学",
+      "pinyin": "xué",
+      "meaning": "to study",
+      "stroke_count": 8,
+      "radicals": ["⺍ (small / hands, top)", "子 (child, bottom)"],
+      "mnemonic": "A CHILD (子) with HANDS reaching for knowledge under a roof. Top represents the schoolhouse; bottom is the student.",
+      "common_words": ["学生 (xué sheng — student)", "学校 (xué xiào — school)", "学习 (xué xí — to study)", "大学 (dà xué — university)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "生",
+      "pinyin": "shēng",
+      "meaning": "to be born / life",
+      "stroke_count": 5,
+      "radicals": ["丿 (slash)", "土 (earth)"],
+      "mnemonic": "A SPROUT emerging from the EARTH (土) — birth, life, growth.",
+      "common_words": ["学生 (xué sheng — student)", "医生 (yī shēng — doctor)", "生日 (shēng rì — birthday)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "医",
+      "pinyin": "yī",
+      "meaning": "medicine / doctor",
+      "stroke_count": 7,
+      "radicals": ["匚 (box)", "矢 (arrow)"],
+      "mnemonic": "An arrow stored in a box — the surgeon's case of tools.",
+      "common_words": ["医生 (yī shēng — doctor)", "医院 (yī yuàn — hospital)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "院",
+      "pinyin": "yuàn",
+      "meaning": "courtyard / institution",
+      "stroke_count": 9,
+      "radicals": ["阝 (mound)", "完 (complete)"],
+      "mnemonic": "A walled mound + complete — a finished enclosure, an institution.",
+      "common_words": ["医院 (yī yuàn — hospital)", "学院 (xué yuàn — college)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "校",
+      "pinyin": "xiào",
+      "meaning": "school",
+      "stroke_count": 10,
+      "radicals": ["木 (tree)", "交 (cross / phonetic)"],
+      "mnemonic": "Tree + phonetic 交 (jiāo → xiào). Original meaning was wooden stocks/discipline — now a school.",
+      "common_words": ["学校 (xué xiào — school)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "今",
+      "pinyin": "jīn",
+      "meaning": "now / present",
+      "stroke_count": 4,
+      "radicals": ["人 (person, top)", "(hold mark, bottom)"],
+      "mnemonic": "A person with something pinned underneath — fixing this moment.",
+      "common_words": ["今天 (jīn tiān — today)", "今年 (jīn nián — this year)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "天",
+      "pinyin": "tiān",
+      "meaning": "day / sky / heaven",
+      "stroke_count": 4,
+      "radicals": ["一 (one, top)", "大 (big)"],
+      "mnemonic": "ONE thing above a BIG person — the sky above all. Same as 大 with an extra line on top representing the heavens.",
+      "common_words": ["今天 (jīn tiān — today)", "明天 (míng tiān — tomorrow)", "天气 (tiān qì — weather)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "明",
+      "pinyin": "míng",
+      "meaning": "bright / tomorrow",
+      "stroke_count": 8,
+      "radicals": ["日 (sun)", "月 (moon)"],
+      "mnemonic": "SUN + MOON together = BRIGHT. The two great light sources, side by side. By extension, 'tomorrow' = the next bright day.",
+      "common_words": ["明天 (míng tiān — tomorrow)", "明白 (míng bai — to understand)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "昨",
+      "pinyin": "zuó",
+      "meaning": "yesterday",
+      "stroke_count": 9,
+      "radicals": ["日 (sun)", "乍 (suddenly; phonetic)"],
+      "mnemonic": "Sun + phonetic — the day just past.",
+      "common_words": ["昨天 (zuó tiān — yesterday)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "年",
+      "pinyin": "nián",
+      "meaning": "year",
+      "stroke_count": 6,
+      "radicals": ["丿 (slash)", "(stalks)"],
+      "mnemonic": "Originally a man carrying a sheaf of grain on his back — one harvest cycle = one year.",
+      "common_words": ["今年 (jīn nián — this year)", "明年 (míng nián — next year)", "新年 (xīn nián — New Year)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "月",
+      "pinyin": "yuè",
+      "meaning": "month / moon",
+      "stroke_count": 4,
+      "radicals": ["月 (moon — pictograph)"],
+      "mnemonic": "A crescent moon. As 'month' it's the lunar cycle; as a component on the left of a character it usually means 'flesh' (肉) — context tells you which.",
+      "common_words": ["一月 (yī yuè — January)", "月亮 (yuè liang — moon)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "日",
+      "pinyin": "rì",
+      "meaning": "day / sun",
+      "stroke_count": 4,
+      "radicals": ["日 (sun — pictograph)"],
+      "mnemonic": "A boxed sun. Originally a circle with a dot; squared off for ease of writing.",
+      "common_words": ["生日 (shēng rì — birthday)", "日本 (Rì běn — Japan)", "星期日 (xīng qī rì — Sunday)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "星",
+      "pinyin": "xīng",
+      "meaning": "star",
+      "stroke_count": 9,
+      "radicals": ["日 (sun)", "生 (born)"],
+      "mnemonic": "What is BORN (生) of the SUN (日) — stars, the tiny suns of the night.",
+      "common_words": ["星期 (xīng qī — week)", "星期一 (xīng qī yī — Monday)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "期",
+      "pinyin": "qī",
+      "meaning": "period / phase",
+      "stroke_count": 12,
+      "radicals": ["其 (its; phonetic)", "月 (moon)"],
+      "mnemonic": "Moon cycle + phonetic — a recurring period.",
+      "common_words": ["星期 (xīng qī — week)", "时期 (shí qī — period)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "点",
+      "pinyin": "diǎn",
+      "meaning": "dot / o'clock",
+      "stroke_count": 9,
+      "radicals": ["占 (occupy; phonetic)", "灬 (fire-dots, bottom)"],
+      "mnemonic": "Tiny embers (灬) — points of light, dots. Also 'o'clock' (the dot the hour hand points to).",
+      "common_words": ["几点 (jǐ diǎn — what time)", "三点 (sān diǎn — 3 o'clock)", "一点儿 (yì diǎnr — a little)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "分",
+      "pinyin": "fēn",
+      "meaning": "minute / to divide",
+      "stroke_count": 4,
+      "radicals": ["八 (split)", "刀 (knife)"],
+      "mnemonic": "A KNIFE (刀) SPLITTING (八) something in two — to divide, to share, to apportion. A 'minute' is a portion of the hour.",
+      "common_words": ["分钟 (fēn zhōng — minute)", "十分 (shí fēn — very / 10 minutes)", "百分 (bǎi fēn — percent)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "现",
+      "pinyin": "xiàn",
+      "meaning": "present / appear",
+      "stroke_count": 8,
+      "radicals": ["王 (jade)", "见 (see)"],
+      "mnemonic": "JADE that you can SEE — present, visible, current.",
+      "common_words": ["现在 (xiàn zài — now)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "上",
+      "pinyin": "shàng",
+      "meaning": "above / up / previous",
+      "stroke_count": 3,
+      "radicals": ["一 (one, base)", "丨丶 (above mark)"],
+      "mnemonic": "A mark ABOVE the baseline — up. Mirror of 下.",
+      "common_words": ["上午 (shàng wǔ — morning)", "上班 (shàng bān — work)", "桌子上 (zhuō zi shàng — on the table)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "下",
+      "pinyin": "xià",
+      "meaning": "below / down / next",
+      "stroke_count": 3,
+      "radicals": ["一 (one)", "丨丶 (below mark)"],
+      "mnemonic": "A mark BELOW the baseline — down. Mirror of 上.",
+      "common_words": ["下午 (xià wǔ — afternoon)", "下雨 (xià yǔ — to rain)", "下次 (xià cì — next time)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "来",
+      "pinyin": "lái",
+      "meaning": "to come",
+      "stroke_count": 7,
+      "radicals": ["木 (tree)", "(grain marks)"],
+      "mnemonic": "Originally a pictograph of wheat — wheat 'came' in from the harvest. Now means 'to come'.",
+      "common_words": ["来 (lái — come)", "回来 (huí lái — come back)", "出来 (chū lái — come out)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "去",
+      "pinyin": "qù",
+      "meaning": "to go",
+      "stroke_count": 5,
+      "radicals": ["土 (earth)", "厶 (private)"],
+      "mnemonic": "Leave the earth (土) and go elsewhere (厶).",
+      "common_words": ["去 (qù — go)", "回去 (huí qù — go back)", "过去 (guò qù — past)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "看",
+      "pinyin": "kàn",
+      "meaning": "to look / watch",
+      "stroke_count": 9,
+      "radicals": ["手 (hand, top)", "目 (eye, bottom)"],
+      "mnemonic": "HAND (手) shading the EYE (目) — looking into the distance, shielding your eyes. A perfect compositional character.",
+      "common_words": ["看书 (kàn shū — read a book)", "看电视 (kàn diàn shì — watch TV)", "好看 (hǎo kàn — good-looking)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "听",
+      "pinyin": "tīng",
+      "meaning": "to listen",
+      "stroke_count": 7,
+      "radicals": ["口 (mouth)", "斤 (axe; phonetic)"],
+      "mnemonic": "Simplified form. Traditional 聽 was 'ear + heart + virtue' — true listening engages all three.",
+      "common_words": ["听 (tīng — listen)", "好听 (hǎo tīng — pleasant to hear)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "说",
+      "pinyin": "shuō",
+      "meaning": "to speak",
+      "stroke_count": 9,
+      "radicals": ["讠 (speech)", "兑 (exchange)"],
+      "mnemonic": "The SPEECH radical (讠) marks every word about saying or speaking — appears in 说, 话, 请, 谢. Always on the left.",
+      "common_words": ["说 (shuō — speak)", "说话 (shuō huà — to talk)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "话",
+      "pinyin": "huà",
+      "meaning": "speech / talk",
+      "stroke_count": 8,
+      "radicals": ["讠 (speech)", "舌 (tongue)"],
+      "mnemonic": "SPEECH + TONGUE = words. The two relevant body/concept parts together.",
+      "common_words": ["说话 (shuō huà — talk)", "电话 (diàn huà — telephone)", "中国话 (Zhōng guó huà — Chinese speech)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "电",
+      "pinyin": "diàn",
+      "meaning": "electricity",
+      "stroke_count": 5,
+      "radicals": ["日 (sun/box)", "乚 (hook)"],
+      "mnemonic": "A lightning bolt curling out of a cloud — electricity, the basis of all modern compounds: 电话, 电视, 电脑.",
+      "common_words": ["电话 (diàn huà — phone)", "电视 (diàn shì — TV)", "电脑 (diàn nǎo — computer)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "视",
+      "pinyin": "shì",
+      "meaning": "to look / vision",
+      "stroke_count": 8,
+      "radicals": ["礻 (show)", "见 (see)"],
+      "mnemonic": "SHOW + SEE = vision.",
+      "common_words": ["电视 (diàn shì — TV)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "脑",
+      "pinyin": "nǎo",
+      "meaning": "brain",
+      "stroke_count": 10,
+      "radicals": ["月 (flesh)", "(scalp)"],
+      "mnemonic": "FLESH radical + an abstract scalp/brain shape.",
+      "common_words": ["电脑 (diàn nǎo — computer)", "头脑 (tóu nǎo — head/brain)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "书",
+      "pinyin": "shū",
+      "meaning": "book",
+      "stroke_count": 4,
+      "radicals": ["书 (simplified — written by hand)"],
+      "mnemonic": "Simplified pictograph of a writing brush over paper. Traditional 書 was 'brush + sound 者'.",
+      "common_words": ["书 (shū — book)", "看书 (kàn shū — read)", "书店 (shū diàn — bookstore)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "字",
+      "pinyin": "zì",
+      "meaning": "character / word",
+      "stroke_count": 6,
+      "radicals": ["宀 (roof)", "子 (child)"],
+      "mnemonic": "A CHILD (子) under a ROOF (宀) — learning their characters at school. Original meaning was 'to give birth/breed', extended to 'literary character' since characters multiply like children.",
+      "common_words": ["汉字 (Hàn zì — Chinese character)", "名字 (míng zi — name)", "字典 (zì diǎn — dictionary)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "汉",
+      "pinyin": "Hàn",
+      "meaning": "Han (Chinese)",
+      "stroke_count": 5,
+      "radicals": ["氵 (water)", "又 (right hand)"],
+      "mnemonic": "Refers to the Han dynasty and Han Chinese identity. The 氵 marks the Han River.",
+      "common_words": ["汉语 (Hàn yǔ — Chinese)", "汉字 (Hàn zì — Chinese character)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "语",
+      "pinyin": "yǔ",
+      "meaning": "language",
+      "stroke_count": 9,
+      "radicals": ["讠 (speech)", "吾 (I; phonetic)"],
+      "mnemonic": "SPEECH + 'I' — the speech of a people.",
+      "common_words": ["汉语 (Hàn yǔ — Chinese)", "英语 (Yīng yǔ — English)", "外语 (wài yǔ — foreign language)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "英",
+      "pinyin": "yīng",
+      "meaning": "hero / England (phonetic)",
+      "stroke_count": 8,
+      "radicals": ["艹 (grass)", "央 (center; phonetic)"],
+      "mnemonic": "Used for 'England' purely as a phonetic match for 'Eng-'.",
+      "common_words": ["英国 (Yīng guó — UK)", "英语 (Yīng yǔ — English)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "美",
+      "pinyin": "měi",
+      "meaning": "beautiful / America (phonetic)",
+      "stroke_count": 9,
+      "radicals": ["羊 (sheep, top)", "大 (big, bottom)"],
+      "mnemonic": "A BIG (大) SHEEP (羊) — in ancient China, a big well-fed sheep was the very definition of beautiful and prized. Also used phonetically for America (美国).",
+      "common_words": ["美国 (Měi guó — USA)", "美丽 (měi lì — beautiful)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "吃",
+      "pinyin": "chī",
+      "meaning": "to eat",
+      "stroke_count": 6,
+      "radicals": ["口 (mouth)", "乞 (beg; phonetic)"],
+      "mnemonic": "MOUTH + phonetic 乞. The mouth is the radical you'll see on every eating/drinking/saying character: 喝, 叫, 吗.",
+      "common_words": ["吃饭 (chī fàn — eat a meal)", "好吃 (hǎo chī — delicious)", "吃药 (chī yào — take medicine)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "喝",
+      "pinyin": "hē",
+      "meaning": "to drink",
+      "stroke_count": 12,
+      "radicals": ["口 (mouth)", "曷 (why; phonetic)"],
+      "mnemonic": "MOUTH + phonetic 曷.",
+      "common_words": ["喝水 (hē shuǐ — drink water)", "喝茶 (hē chá — drink tea)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "水",
+      "pinyin": "shuǐ",
+      "meaning": "water",
+      "stroke_count": 4,
+      "radicals": ["水 (water — pictograph)"],
+      "mnemonic": "Three streams flowing — a pictograph. The left-side radical form is 氵 (three drops): 河, 海, 江, 汉 all involve water.",
+      "common_words": ["水 (shuǐ — water)", "热水 (rè shuǐ — hot water)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "茶",
+      "pinyin": "chá",
+      "meaning": "tea",
+      "stroke_count": 9,
+      "radicals": ["艹 (grass)", "人 (person)", "木 (tree)"],
+      "mnemonic": "GRASS over a PERSON over a TREE — the leaf of the tea plant, picked by a person. A beautiful semantic stack.",
+      "common_words": ["茶 (chá — tea)", "喝茶 (hē chá — drink tea)", "茶杯 (chá bēi — teacup)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "饭",
+      "pinyin": "fàn",
+      "meaning": "rice / meal",
+      "stroke_count": 7,
+      "radicals": ["饣 (food)", "反 (opposite; phonetic)"],
+      "mnemonic": "The FOOD radical (饣) on the left marks anything cooked or eaten: 饭, 饮, 饿, 饺.",
+      "common_words": ["米饭 (mǐ fàn — cooked rice)", "吃饭 (chī fàn — eat a meal)", "早饭 (zǎo fàn — breakfast)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "菜",
+      "pinyin": "cài",
+      "meaning": "vegetable / dish",
+      "stroke_count": 11,
+      "radicals": ["艹 (grass)", "采 (pluck)"],
+      "mnemonic": "GRASS + PLUCK — vegetables you pick from the garden.",
+      "common_words": ["菜 (cài — dish)", "白菜 (bái cài — cabbage)", "点菜 (diǎn cài — order food)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "苹",
+      "pinyin": "píng",
+      "meaning": "apple (in 苹果)",
+      "stroke_count": 8,
+      "radicals": ["艹 (grass/plant)", "平 (flat; phonetic)"],
+      "mnemonic": "Plant radical + phonetic 平.",
+      "common_words": ["苹果 (píng guǒ — apple)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "果",
+      "pinyin": "guǒ",
+      "meaning": "fruit / result",
+      "stroke_count": 8,
+      "radicals": ["田 (field)", "木 (tree)"],
+      "mnemonic": "A FRUIT on top of a TREE (木) — a perfect pictograph. The top is the round fruit, the bottom is the tree it grew on.",
+      "common_words": ["苹果 (píng guǒ — apple)", "水果 (shuǐ guǒ — fruit)", "如果 (rú guǒ — if)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "想",
+      "pinyin": "xiǎng",
+      "meaning": "to think / want",
+      "stroke_count": 13,
+      "radicals": ["相 (look; phonetic)", "心 (heart, bottom)"],
+      "mnemonic": "What you LOOK AT (相) in your HEART (心) — to think, to want.",
+      "common_words": ["想 (xiǎng — want)", "我想 (wǒ xiǎng — I think)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "喜",
+      "pinyin": "xǐ",
+      "meaning": "to like / joy",
+      "stroke_count": 12,
+      "radicals": ["士 (scholar, top)", "口 (mouth, bottom)"],
+      "mnemonic": "Sound and mouth combined — a happy outburst.",
+      "common_words": ["喜欢 (xǐ huan — like)", "恭喜 (gōng xǐ — congrats)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "欢",
+      "pinyin": "huān",
+      "meaning": "happy / joyful",
+      "stroke_count": 6,
+      "radicals": ["又 (hand)", "欠 (yawn/owe)"],
+      "mnemonic": "Used reduplicated with 喜 — 喜欢, the standard 'to like'.",
+      "common_words": ["喜欢 (xǐ huan — like)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "会",
+      "pinyin": "huì",
+      "meaning": "can / meeting",
+      "stroke_count": 6,
+      "radicals": ["人 (person, top)", "云 (cloud, bottom)"],
+      "mnemonic": "People meeting under one cover — gathering, ability, knowing how.",
+      "common_words": ["会 (huì — can)", "不会 (bú huì — cannot)", "开会 (kāi huì — have a meeting)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "能",
+      "pinyin": "néng",
+      "meaning": "can / be able",
+      "stroke_count": 10,
+      "radicals": ["月 (flesh)", "(bear-like component)"],
+      "mnemonic": "Originally a pictograph of a bear — strong, capable. By extension, 'able to'.",
+      "common_words": ["能 (néng — can)", "可能 (kě néng — possibly)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "可",
+      "pinyin": "kě",
+      "meaning": "may / can",
+      "stroke_count": 5,
+      "radicals": ["口 (mouth)", "丁 (nail)"],
+      "mnemonic": "MOUTH + a hook — an approving sound. 可 means 'permissible'.",
+      "common_words": ["可以 (kě yǐ — may)", "可是 (kě shì — but)", "可能 (kě néng — possibly)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "以",
+      "pinyin": "yǐ",
+      "meaning": "by means of / take",
+      "stroke_count": 4,
+      "radicals": ["人 (person)", "(ploughshare)"],
+      "mnemonic": "A person using a tool — by means of.",
+      "common_words": ["可以 (kě yǐ — may)", "所以 (suǒ yǐ — so)", "以后 (yǐ hòu — afterward)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "和",
+      "pinyin": "hé",
+      "meaning": "and / with / peace",
+      "stroke_count": 8,
+      "radicals": ["禾 (grain)", "口 (mouth)"],
+      "mnemonic": "GRAIN (禾) feeding a MOUTH (口) — peace, harmony, 'and'.",
+      "common_words": ["和 (hé — and)", "和平 (hé píng — peace)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "也",
+      "pinyin": "yě",
+      "meaning": "also",
+      "stroke_count": 3,
+      "radicals": ["也 (pictograph)"],
+      "mnemonic": "A simple frequent function word. Memorize as a unit — three strokes.",
+      "common_words": ["也 (yě — also)", "我也 (wǒ yě — me too)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "都",
+      "pinyin": "dōu",
+      "meaning": "all / both",
+      "stroke_count": 10,
+      "radicals": ["者 (the one who)", "阝 (city)"],
+      "mnemonic": "ALL the people of a CITY (阝). Pronounced dōu = 'all'; pronounced dū = 'capital city'.",
+      "common_words": ["都 (dōu — all)", "我们都 (wǒ men dōu — we all)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "很",
+      "pinyin": "hěn",
+      "meaning": "very",
+      "stroke_count": 9,
+      "radicals": ["彳 (step)", "艮 (hard)"],
+      "mnemonic": "Often functions as a neutral linker between subject and adjective rather than a strong 'very'.",
+      "common_words": ["很好 (hěn hǎo — very good)", "很多 (hěn duō — a lot)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "太",
+      "pinyin": "tài",
+      "meaning": "too (much) / extremely",
+      "stroke_count": 4,
+      "radicals": ["大 (big)", "丶 (dot)"],
+      "mnemonic": "BIG (大) with an extra dot — bigger than big, too much.",
+      "common_words": ["太 (tài — too)", "太贵了 (tài guì le — too expensive)", "太太 (tài tai — wife / Mrs.)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "请",
+      "pinyin": "qǐng",
+      "meaning": "please / invite",
+      "stroke_count": 10,
+      "radicals": ["讠 (speech)", "青 (green/young; phonetic)"],
+      "mnemonic": "SPEECH + phonetic — a polite spoken request.",
+      "common_words": ["请 (qǐng — please)", "请问 (qǐng wèn — may I ask)", "请客 (qǐng kè — treat)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "谢",
+      "pinyin": "xiè",
+      "meaning": "thanks",
+      "stroke_count": 12,
+      "radicals": ["讠 (speech)", "射 (shoot; phonetic)"],
+      "mnemonic": "SPEECH + phonetic — spoken acknowledgment.",
+      "common_words": ["谢谢 (xiè xie — thanks)", "感谢 (gǎn xiè — to thank)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "再",
+      "pinyin": "zài",
+      "meaning": "again / further",
+      "stroke_count": 6,
+      "radicals": ["一 (one)", "冂 (cover)"],
+      "mnemonic": "Repeat the action — again, once more.",
+      "common_words": ["再见 (zài jiàn — goodbye)", "再来 (zài lái — come again)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "见",
+      "pinyin": "jiàn",
+      "meaning": "to see / meet",
+      "stroke_count": 4,
+      "radicals": ["目 (eye, top)", "儿 (legs, bottom)"],
+      "mnemonic": "An EYE (目) on LEGS (儿) — a person looking, seeing. The simplified form keeps the 'eye-with-legs' silhouette.",
+      "common_words": ["再见 (zài jiàn — goodbye)", "看见 (kàn jiàn — to see)", "意见 (yì jiàn — opinion)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "口",
+      "pinyin": "kǒu",
+      "meaning": "mouth / opening",
+      "stroke_count": 3,
+      "radicals": ["口 (square — pictograph)"],
+      "mnemonic": "A square — the open mouth. As a radical, it appears in every speech/eating character: 吃, 喝, 叫, 听, 吗, 哥, 名.",
+      "common_words": ["人口 (rén kǒu — population)", "门口 (mén kǒu — doorway)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "名",
+      "pinyin": "míng",
+      "meaning": "name",
+      "stroke_count": 6,
+      "radicals": ["夕 (evening)", "口 (mouth)"],
+      "mnemonic": "In the EVENING (夕) when you cannot see, you call out with your MOUTH (口) to identify yourself — that is your NAME. A beautiful old etymology.",
+      "common_words": ["名字 (míng zi — name)", "有名 (yǒu míng — famous)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "叫",
+      "pinyin": "jiào",
+      "meaning": "to be called / shout",
+      "stroke_count": 5,
+      "radicals": ["口 (mouth)", "丩 (entwine; phonetic)"],
+      "mnemonic": "MOUTH + phonetic. Used for naming: 我叫… = 'I'm called…'.",
+      "common_words": ["叫 (jiào — called)", "我叫 (wǒ jiào — I'm called)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "吗",
+      "pinyin": "ma",
+      "meaning": "(yes/no question)",
+      "stroke_count": 6,
+      "radicals": ["口 (mouth)", "马 (horse; phonetic)"],
+      "mnemonic": "MOUTH + HORSE (sound). Tagged onto the end of a statement to make it a yes/no question: 你好吗？",
+      "common_words": ["好吗 (hǎo ma — okay?)", "是吗 (shì ma — really?)"],
+      "hsk": "HSK1"
+    },
+    {
+      "char": "呢",
+      "pinyin": "ne",
+      "meaning": "(continuing question)",
+      "stroke_count": 8,
+      "radicals": ["口 (mouth)", "尼 (nun; phonetic)"],
+      "mnemonic": "MOUTH + phonetic. Used to bounce a question back: 我很好，你呢？ = 'I'm fine — and you?'",
+      "common_words": ["你呢 (nǐ ne — and you?)"],
+      "hsk": "HSK1"
+    }
+  ]
+}

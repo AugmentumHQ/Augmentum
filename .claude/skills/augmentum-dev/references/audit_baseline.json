@@ -1,0 +1,74 @@
+{
+ "async_blocking": {
+  "errors": 0,
+  "warnings": 5
+ },
+ "code_quality": {
+  "console_log": 0,
+  "dead_css": 61,
+  "missing_css": 130,
+  "mixed_errors": 3,
+  "model_map_misuse": 2,
+  "silent_catches": 5,
+  "tech_debt": 19,
+  "ws_gaps": 2
+ },
+ "coverage": {
+  "coverage_gaps": 3,
+  "modules_covered": 1249,
+  "modules_total": 1252,
+  "routes_covered": 106,
+  "routes_total": 106
+ },
+ "db_contention": {
+  "locked": 0,
+  "skipped": 0,
+  "slow_begin": 0
+ },
+ "db_safety": {
+  "errors": 0,
+  "warnings": 6
+ },
+ "dead_code": {
+  "dependency_drift": 11,
+  "ghost_calls": 1,
+  "orphaned_endpoints": 50
+ },
+ "doc_facts": {
+  "doc_inaccuracies": 0
+ },
+ "doc_coverage": {
+  "subsystems_undocumented": 10,
+  "modes_undocumented": 0,
+  "provider_cards_undocumented": 0
+ },
+ "exceptions": {
+  "parse_failed": 0,
+  "stale_entries": 0
+ },
+ "red_team": {
+  "high": 2,
+  "total": 2
+ },
+ "registry": {
+  "check_failed": 0,
+  "drift": 3,
+  "findings": 0,
+  "registered": 431
+ },
+ "runtime": {
+  "errors": 13,
+  "warnings": 231
+ },
+ "security": {
+  "critical": 0,
+  "high": 0,
+  "low": 123,
+  "medium": 16,
+  "total": 139
+ },
+ "wiring": {
+  "errors": 0,
+  "warnings": 78
+ }
+}

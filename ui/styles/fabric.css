@@ -1,0 +1,450 @@
+/* Fabric tab styling.
+ *
+ * Follows the Model Manager visual language (`.mm-section`, `.mm-section-title`,
+ * etc.) so the tab feels native. New `.mm-fabric-*` classes scope our additions.
+ */
+
+.mm-fabric-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  margin-top: 12px;
+  background: var(--bg-elevated, #232328);
+  border: 1px solid var(--border-subtle, #38383f);
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.mm-fabric-toggle input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+}
+
+.mm-fabric-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-secondary, #9a9aa3);
+  font-style: italic;
+}
+
+/* Identity card */
+.mm-fabric-identity {
+  margin-top: 14px;
+  padding: 14px 16px;
+  background: var(--bg-elevated, #232328);
+  border: 1px solid var(--border-subtle, #38383f);
+  border-radius: 8px;
+}
+
+.mm-fabric-identity-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 0;
+}
+
+.mm-fabric-identity-row + .mm-fabric-identity-row {
+  border-top: 1px solid var(--border-subtle, #38383f);
+  margin-top: 6px;
+  padding-top: 12px;
+}
+
+.mm-fabric-identity-label {
+  min-width: 90px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary, #9a9aa3);
+}
+
+.mm-fabric-identity-value {
+  flex: 1;
+  word-break: break-all;
+  font-size: 13px;
+  color: var(--text-primary, #e6e6ea);
+}
+
+.mm-fabric-mono {
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 12px;
+}
+
+.mm-fabric-copy {
+  flex-shrink: 0;
+}
+
+/* Peer list */
+.mm-fabric-peer-list {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mm-fabric-peer {
+  padding: 12px 14px;
+  background: var(--bg-elevated, #232328);
+  border: 1px solid var(--border-subtle, #38383f);
+  border-radius: 8px;
+}
+
+.mm-fabric-peer-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mm-fabric-peer-name {
+  font-weight: 600;
+  font-size: 14px;
+  flex: 1;
+  min-width: 100px;
+}
+
+.mm-fabric-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mm-fabric-pill-on {
+  background: var(--accent-success-bg, #1f3f2a);
+  color: var(--accent-success, #6fd49a);
+}
+
+.mm-fabric-pill-off {
+  background: var(--bg-muted, #2a2a30);
+  color: var(--text-secondary, #9a9aa3);
+}
+
+.mm-fabric-unpair {
+  flex-shrink: 0;
+}
+
+.mm-fabric-peer-meta {
+  margin-top: 8px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--text-secondary, #9a9aa3);
+}
+
+.mm-fabric-peer-meta strong {
+  color: var(--text-primary, #e6e6ea);
+  margin-right: 4px;
+  font-weight: 600;
+}
+
+.mm-fabric-peer-caps {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-subtle, #38383f);
+  font-size: 12px;
+  color: var(--text-secondary, #9a9aa3);
+}
+
+/* Capability matrix */
+.mm-fabric-matrix-kind {
+  margin-top: 14px;
+  background: var(--bg-elevated, #232328);
+  border: 1px solid var(--border-subtle, #38383f);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.mm-fabric-matrix-title {
+  padding: 10px 14px;
+  font-weight: 600;
+  font-size: 13px;
+  background: var(--bg-muted, #2a2a30);
+  border-bottom: 1px solid var(--border-subtle, #38383f);
+}
+
+.mm-fabric-matrix-empty {
+  margin-top: 14px;
+  padding: 10px 14px;
+  background: var(--bg-elevated, #232328);
+  border: 1px dashed var(--border-subtle, #38383f);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--text-secondary, #9a9aa3);
+}
+
+.mm-fabric-matrix-empty strong {
+  color: var(--text-primary, #e6e6ea);
+}
+
+.mm-fabric-matrix {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.mm-fabric-matrix th,
+.mm-fabric-matrix td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle, #38383f);
+  vertical-align: middle;
+}
+
+.mm-fabric-matrix tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.mm-fabric-matrix th {
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary, #9a9aa3);
+  background: var(--bg-base, #1c1c20);
+}
+
+.mm-fabric-matrix-rowkey-h {
+  width: 30%;
+}
+
+.mm-fabric-matrix-rowkey {
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 12px;
+  word-break: break-all;
+  color: var(--text-primary, #e6e6ea);
+}
+
+.mm-fabric-matrix-cell-missing {
+  color: var(--text-secondary, #9a9aa3);
+  opacity: 0.4;
+}
+
+.mm-fabric-matrix-cell-detail {
+  font-size: 11px;
+  color: var(--text-secondary, #9a9aa3);
+  margin-left: 4px;
+}
+
+/* Pair form */
+.mm-fabric-pair-form {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mm-fabric-pair-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mm-fabric-pair-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary, #9a9aa3);
+}
+
+#mm-fabric-pair-submit {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+/* Phase 8 — peer icon picker */
+.mm-fabric-icon-preview {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+.mm-fabric-icon-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.mm-fabric-icon-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 6px;
+  background: var(--bg-elevated, #232328);
+  border: 1px solid var(--border-subtle, #38383f);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 120ms, background 120ms;
+}
+
+.mm-fabric-icon-btn:hover {
+  border-color: var(--accent, #7aa2f7);
+}
+
+.mm-fabric-icon-btn.active {
+  border-color: var(--accent, #7aa2f7);
+  background: var(--accent-bg, #1f2a3f);
+  box-shadow: 0 0 0 1px var(--accent, #7aa2f7) inset;
+}
+
+.mm-fabric-icon-other {
+  width: 80px;
+  height: 36px;
+  text-align: center;
+  font-size: 16px;
+}
+
+/* Phase 8 — peer icon in peer rows + matrix headers */
+.mm-fabric-peer-icon {
+  display: inline-block;
+  margin-right: 6px;
+  font-size: 18px;
+  vertical-align: middle;
+}
+
+/* Phase 8 — in-chat badge on assistant turns served by a peer */
+.message-peer-badge {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(122, 162, 247, 0.12);
+  font-size: 13px;
+  line-height: 1.2;
+  vertical-align: middle;
+  cursor: help;
+}
+
+.mm-fabric-matrix th .mm-fabric-peer-icon,
+.mm-fabric-matrix-cell-detail .mm-fabric-peer-icon {
+  font-size: 14px;
+  margin-right: 4px;
+}
+
+/* LAN discovery section */
+.mm-fabric-discover-form {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#mm-fabric-scan-btn {
+  align-self: flex-start;
+}
+
+.mm-fabric-discover-summary {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--text-secondary, #9a9aa3);
+}
+
+.mm-fabric-discover-subhead {
+  margin-top: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary, #9a9aa3);
+}
+
+.mm-fabric-discover-results {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mm-fabric-discover-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--bg-elevated, #232328);
+  border: 1px solid var(--border-subtle, #38383f);
+}
+
+.mm-fabric-discover-icon {
+  font-size: 22px;
+  width: 32px;
+  text-align: center;
+  flex: 0 0 auto;
+}
+
+.mm-fabric-discover-meta {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.mm-fabric-discover-host {
+  font-size: 14px;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mm-fabric-discover-fp {
+  font-size: 12px;
+  color: var(--text-secondary, #9a9aa3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mm-fabric-discover-version {
+  font-size: 11px;
+  color: var(--text-tertiary, #6c6c75);
+}
+
+.mm-fabric-discover-action {
+  flex: 0 0 auto;
+}
+
+.mm-fabric-discover-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mm-fabric-discover-badge-paired {
+  background: rgba(122, 162, 247, 0.18);
+  color: #aac1ff;
+}
+
+.mm-fabric-discover-badge-self {
+  background: rgba(154, 154, 163, 0.18);
+  color: var(--text-secondary, #9a9aa3);
+}
+
+.mm-fabric-discover-errors {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mm-fabric-discover-error {
+  font-size: 12px;
+  color: var(--error-fg, #f7768e);
+}

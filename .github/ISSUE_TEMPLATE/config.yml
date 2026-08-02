@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & discussion
+    url: https://github.com/AugmentumHQ/Augmentum/discussions
+    about: Ask a question, share a setup, or propose an idea before filing a feature request.
+  - name: Security vulnerability
+    url: https://github.com/AugmentumHQ/Augmentum/security/advisories/new
+    about: Report security issues privately — do NOT open a public issue. See SECURITY.md.
+  - name: Documentation
+    url: https://github.com/AugmentumHQ/Augmentum/blob/main/README.md
+    about: Read the README, getting-started guide, and docs/ before filing.

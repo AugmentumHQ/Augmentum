@@ -1,0 +1,282 @@
+/* ==========================================================================
+   Mask Editor — portable inpaint mask painter.
+
+   Used by the image lightbox and Studio's image viewer. Shared markup
+   (see ui/scripts/mask-editor.js), two themed variants:
+     - --lightbox : dark chrome to match the lightbox/gallery aesthetic.
+     - --studio   : matches Studio's surface tokens (light-aware via vars).
+   ========================================================================== */
+
+.mask-editor {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Toolbar                                                                    */
+/* -------------------------------------------------------------------------- */
+.mask-editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.mask-editor-back {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-family: var(--font-sans, sans-serif);
+}
+
+.mask-editor-tools { display: flex; gap: 4px; }
+
+.mask-editor-tool {
+  padding: 4px 12px;
+  border-radius: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: var(--font-sans, sans-serif);
+  transition: all var(--duration-fast, 0.12s);
+  background: none;
+}
+
+.mask-editor-label {
+  font-size: 11px;
+  margin-left: 8px;
+}
+
+.mask-editor-slider {
+  width: 80px;
+  accent-color: var(--accent, #6c8aff);
+}
+
+.mask-editor-actions {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.mask-editor-generate {
+  padding: 6px 20px;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent, #6c8aff);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-sans, sans-serif);
+  margin-left: 12px;
+}
+.mask-editor-generate:hover:not(:disabled) { filter: brightness(1.1); }
+.mask-editor-generate:disabled { opacity: 0.55; cursor: wait; }
+
+/* -------------------------------------------------------------------------- */
+/* Canvas stack                                                               */
+/* -------------------------------------------------------------------------- */
+.mask-editor-canvas-wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.mask-editor-canvas {
+  position: absolute;
+  max-width: 95%;
+  max-height: 95%;
+  object-fit: contain;
+  touch-action: none;
+}
+/* Stack order: bg (source) → overlay (red tint) → ui (cursor). Only the
+   UI canvas accepts pointer events so drag-paint works above the tint. */
+[data-canvas="bg"]      { z-index: 1; pointer-events: none; }
+[data-canvas="overlay"] { z-index: 2; pointer-events: none; }
+[data-canvas="ui"]      { z-index: 3; cursor: none; }
+
+.mask-editor.is-busy .mask-editor-canvas-wrap { pointer-events: none; filter: blur(1px); }
+
+/* -------------------------------------------------------------------------- */
+/* Prompt strip — bottom-docked row that turns the editor into a real
+   inpaint panel instead of "paint a mask, hope the sidebar has your prompt." */
+/* -------------------------------------------------------------------------- */
+.mask-editor-prompt {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 16px 14px;
+}
+
+.mask-editor-prompt-input {
+  width: 100%;
+  min-height: 44px;
+  resize: vertical;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-family: var(--font-sans, inherit);
+  font-size: 13px;
+  line-height: 1.4;
+  outline: none;
+}
+
+.mask-editor-prompt-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md, 12px);
+  flex-wrap: wrap;
+}
+
+.mask-editor-prompt-neg {
+  flex: 1;
+  min-width: 180px;
+  padding: 6px 10px;
+  border-radius: 5px;
+  font-family: var(--font-sans, inherit);
+  font-size: 12px;
+  outline: none;
+}
+
+.mask-editor-mode { display: flex; gap: 2px; }
+
+.mask-editor-mode-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  font-family: var(--font-sans, sans-serif);
+  background: none;
+  transition: all var(--duration-fast, 0.12s);
+}
+
+.mask-editor-strength {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.mask-editor-strength input[type="range"] {
+  width: 80px;
+  accent-color: var(--accent, #6c8aff);
+}
+
+/* ==========================================================================
+   Lightbox variant — dark chrome, matches the existing gallery aesthetic
+   so swapping in the extracted module is visually seamless.
+   ========================================================================== */
+.mask-editor--lightbox .mask-editor-toolbar,
+.mask-editor--lightbox .mask-editor-prompt {
+  background: rgba(20, 20, 30, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.mask-editor--lightbox .mask-editor-prompt {
+  border-bottom: none;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.mask-editor--lightbox .mask-editor-back { color: var(--text-secondary, #aaa); }
+.mask-editor--lightbox .mask-editor-back:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.08);
+}
+.mask-editor--lightbox .mask-editor-tool {
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #ccc;
+}
+.mask-editor--lightbox .mask-editor-tool:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.mask-editor--lightbox .mask-editor-tool.active {
+  background: var(--accent, #6c8aff);
+  color: #fff;
+  border-color: var(--accent, #6c8aff);
+}
+.mask-editor--lightbox .mask-editor-label { color: #888; }
+.mask-editor--lightbox .mask-editor-prompt-input,
+.mask-editor--lightbox .mask-editor-prompt-neg {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.mask-editor--lightbox .mask-editor-mode-pill {
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #ccc;
+}
+.mask-editor--lightbox .mask-editor-mode-pill:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.mask-editor--lightbox .mask-editor-mode-pill.active {
+  background: var(--accent, #6c8aff);
+  color: #fff;
+  border-color: var(--accent, #6c8aff);
+}
+.mask-editor--lightbox .mask-editor-strength { color: #bbb; }
+
+/* ==========================================================================
+   Studio variant — matches Studio's surface tokens so the editor feels like
+   a first-class panel inside the image viewer rather than a foreign overlay.
+   ========================================================================== */
+.mask-editor--studio .mask-editor-toolbar,
+.mask-editor--studio .mask-editor-prompt {
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+}
+.mask-editor--studio .mask-editor-prompt {
+  border-bottom: none;
+  border-top: 1px solid var(--border);
+}
+.mask-editor--studio .mask-editor-back { color: var(--text-secondary); }
+.mask-editor--studio .mask-editor-back:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover, color-mix(in srgb, var(--text-primary) 6%, transparent));
+}
+.mask-editor--studio .mask-editor-tool {
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+.mask-editor--studio .mask-editor-tool:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--text-primary);
+}
+.mask-editor--studio .mask-editor-tool.active {
+  background: var(--accent);
+  color: var(--on-accent, #fff);
+  border-color: var(--accent);
+}
+.mask-editor--studio .mask-editor-label { color: var(--text-muted); }
+.mask-editor--studio .mask-editor-prompt-input,
+.mask-editor--studio .mask-editor-prompt-neg {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+.mask-editor--studio .mask-editor-prompt-input:focus,
+.mask-editor--studio .mask-editor-prompt-neg:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.mask-editor--studio .mask-editor-mode-pill {
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+.mask-editor--studio .mask-editor-mode-pill:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--text-primary);
+}
+.mask-editor--studio .mask-editor-mode-pill.active {
+  background: var(--accent);
+  color: var(--on-accent, #fff);
+  border-color: var(--accent);
+}
+.mask-editor--studio .mask-editor-strength { color: var(--text-muted); }

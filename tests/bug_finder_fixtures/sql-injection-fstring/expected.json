@@ -1,0 +1,18 @@
+{
+  "fixture_id": "sql-injection-fstring",
+  "language": "python",
+  "kind": "true_positive",
+  "expected_findings": [
+    {
+      "signature": "injection",
+      "file": "bug.py",
+      "line_start": 10,
+      "line_end": 14,
+      "min_severity": "high",
+      "min_status": "confirmed",
+      "must_build_poc": true
+    }
+  ],
+  "max_extra_findings": 1,
+  "notes": "Classic SQL injection via f-string interpolation. The disproof-oriented verifier should be able to construct a PoC by passing name=`' OR '1'='1` and observing that every row is returned."
+}

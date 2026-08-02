@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#14141a" />
+  <link rel="manifest" href="manifest.json" />
+  <title>Your private line</title>
+  <link rel="stylesheet" href="portal.css" />
+</head>
+<body>
+  <main class="pt-wrap">
+    <header class="pt-head">
+      <div class="pt-mark">●</div>
+      <div class="pt-headline" data-headline>Your private line</div>
+    </header>
+
+    <!-- loading -->
+    <section class="pt-card" data-state="loading">
+      <div class="pt-spin"></div>
+      <p class="pt-muted">Opening your invite…</p>
+    </section>
+
+    <!-- welcome + register -->
+    <section class="pt-card" data-state="welcome" hidden>
+      <div class="pt-avatar" data-avatar>🙂</div>
+      <h1 class="pt-title" data-welcome-title>You're invited</h1>
+      <p class="pt-sub" data-welcome-sub>A private place to message and call — yours, not a big company's.</p>
+      <form class="pt-form" data-register-form novalidate>
+        <label class="pt-field"><span>Your name</span>
+          <input name="display_name" autocomplete="name" maxlength="40" placeholder="What should we call you?" /></label>
+        <label class="pt-field"><span>Username</span>
+          <input name="username" autocomplete="username" minlength="3" maxlength="32" placeholder="pick a handle" required /></label>
+        <label class="pt-field"><span>Password</span>
+          <div class="pt-pw">
+            <input name="password" type="password" autocomplete="new-password" minlength="8" placeholder="at least 8 characters" required />
+            <button type="button" class="pt-eye" data-eye aria-label="Show password"></button>
+          </div></label>
+        <label class="pt-field"><span>Confirm password</span>
+          <div class="pt-pw">
+            <input name="confirm_password" type="password" autocomplete="new-password" minlength="8" placeholder="type it again" required />
+            <button type="button" class="pt-eye" data-eye aria-label="Show password"></button>
+          </div></label>
+        <div class="pt-err" data-register-err hidden></div>
+        <button class="pt-btn pt-btn--go" type="submit" data-register-submit>Create my line</button>
+      </form>
+      <p class="pt-fine">Private &amp; secure. Your host approves you before anything goes through.</p>
+    </section>
+
+    <!-- pending admin confirm -->
+    <section class="pt-card" data-state="pending" hidden>
+      <div class="pt-big">✓</div>
+      <h1 class="pt-title">You're registered!</h1>
+      <p class="pt-sub" data-pending-sub>Your host just needs to confirm you. Add this to your home screen and come back — your messenger will be waiting.</p>
+      <button class="pt-btn pt-btn--go" data-install hidden>Add to home screen</button>
+      <button class="pt-btn" data-goto-signin>I've been confirmed — sign in</button>
+    </section>
+
+    <!-- sign in -->
+    <section class="pt-card" data-state="signin" hidden>
+      <h1 class="pt-title">Welcome back</h1>
+      <form class="pt-form" data-signin-form novalidate>
+        <label class="pt-field"><span>Username</span>
+          <input name="username" autocomplete="username" required /></label>
+        <label class="pt-field"><span>Password</span>
+          <div class="pt-pw">
+            <input name="password" type="password" autocomplete="current-password" required />
+            <button type="button" class="pt-eye" data-eye aria-label="Show password"></button>
+          </div></label>
+        <div class="pt-err" data-signin-err hidden></div>
+        <button class="pt-btn pt-btn--go" type="submit">Sign in</button>
+      </form>
+    </section>
+
+    <!-- waiting (signed in, not yet confirmed) -->
+    <section class="pt-card" data-state="waiting" hidden>
+      <div class="pt-spin"></div>
+      <h1 class="pt-title">Almost there</h1>
+      <p class="pt-sub" data-waiting-sub>Waiting for your host to confirm you. We'll open your messenger the moment they do.</p>
+    </section>
+
+    <!-- new location -->
+    <section class="pt-card" data-state="new_location" hidden>
+      <div class="pt-big">🔒</div>
+      <h1 class="pt-title">New location</h1>
+      <p class="pt-sub">For your security, your host allows specific places you can sign in from. Ask them to allow this one.</p>
+    </section>
+
+    <!-- ready: the comms gateway (messenger + dialer, one page) -->
+    <section class="pt-card pt-card--comms" data-state="ready" hidden>
+      <div class="pm" data-comms></div>
+      <p class="pt-fine">Private &amp; secure — your conversations stay between you and your host.</p>
+    </section>
+  </main>
+  <script type="module" src="portal.js"></script>
+</body>
+</html>

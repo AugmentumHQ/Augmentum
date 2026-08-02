@@ -1,0 +1,679 @@
+/* ==========================================================================
+   YouTube Experience — Discovery Cards + Video Panel
+   ========================================================================== */
+
+/* --- Discovery Cards (inline in chat) --- */
+.yt-discovery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  margin: var(--space-md) 0;
+  max-width: 720px;
+}
+
+@media (max-width: 768px) {
+  .yt-discovery { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .yt-discovery { grid-template-columns: 1fr; }
+}
+
+.yt-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform var(--duration-fast, 100ms) var(--ease-standard, ease),
+              box-shadow var(--duration-fast, 100ms) var(--ease-standard, ease);
+  background: var(--surface);
+}
+
+.yt-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.yt-card-thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--surface-hover, #222);
+}
+
+.yt-card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 200ms var(--ease-standard, ease);
+}
+
+.yt-card:hover .yt-card-thumb img {
+  transform: scale(1.05);
+}
+
+/* Cast-to-TV overlay on YouTube search-result cards. Hover-revealed via
+ * the cast-btn-hover-reveal contract from cast-button.css. Top-right
+ * so it doesn't fight the duration badge (bottom-right). */
+.yt-card-cast {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+}
+
+.yt-card-duration {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: var(--font-mono, monospace);
+  line-height: 1.3;
+}
+
+.yt-card-info {
+  padding: var(--space-sm, 8px) var(--space-md, 12px) var(--space-md, 12px);
+}
+
+.yt-card-title {
+  font-size: var(--text-sm, 13px);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.yt-card-channel {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.yt-card-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* --- Video Panel (slide-out) --- */
+.yt-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 58%;
+  height: 100dvh;
+  background: var(--bg-elevated, var(--bg));
+  border-left: 1px solid var(--border);
+  z-index: var(--z-modal, 1000);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 250ms var(--ease-decelerate, ease-out);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.2);
+}
+
+.yt-panel:not(.hidden) {
+  transform: translateX(0);
+}
+
+@media (max-width: 768px) {
+  .yt-panel {
+    width: 100%;
+    border-left: none;
+  }
+}
+
+.yt-panel-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 8px);
+  padding: var(--space-sm, 8px) var(--space-md, 12px);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  min-height: 48px;
+}
+
+.yt-panel-back,
+.yt-panel-popout,
+.yt-panel-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--space-xs, 4px);
+  border-radius: var(--radius-sm, 4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--duration-fast, 100ms), color var(--duration-fast, 100ms);
+}
+
+.yt-panel-back:hover,
+.yt-panel-popout:hover,
+.yt-panel-close:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.yt-panel-title {
+  flex: 1;
+  font-size: var(--text-sm, 13px);
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.yt-panel-close {
+  margin-left: auto;
+}
+
+/* --- Panel Body --- */
+.yt-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-lg, 20px);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* --- Player --- */
+.yt-player-wrap {
+  aspect-ratio: 16 / 9;
+  max-height: 480px;
+  border-radius: var(--radius-lg, 12px);
+  overflow: hidden;
+  background: #000;
+  margin-bottom: var(--space-md, 12px);
+  position: relative;
+}
+
+@media (min-width: 1800px) {
+  .yt-player-wrap { max-height: 560px; }
+}
+
+.yt-player-wrap iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* End-of-video overlay — covers YouTube's related videos screen */
+.yt-end-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md, 12px);
+  z-index: 3;
+  border-radius: inherit;
+}
+
+.yt-end-btn {
+  padding: var(--space-sm, 8px) var(--space-lg, 20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-md, 8px);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: var(--text-sm, 13px);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 150ms, border-color 150ms;
+}
+
+.yt-end-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.yt-end-replay {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.yt-end-replay:hover {
+  background: var(--accent-hover, var(--accent));
+}
+
+
+/* --- Video Meta --- */
+.yt-video-meta {
+  font-size: var(--text-sm, 13px);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md, 12px);
+}
+
+/* --- Action Buttons --- */
+.yt-actions {
+  display: flex;
+  gap: var(--space-sm, 8px);
+  margin-bottom: var(--space-lg, 20px);
+}
+
+.yt-action-btn {
+  padding: var(--space-xs, 4px) var(--space-md, 12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 8px);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: var(--text-sm, 13px);
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--duration-fast, 100ms), border-color var(--duration-fast, 100ms);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs, 4px);
+}
+
+.yt-action-btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--text-muted);
+}
+
+.yt-action-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.yt-action-btn.yt-summarized {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* --- Summary Section --- */
+.yt-summary {
+  padding: var(--space-md, 12px);
+  background: var(--surface);
+  border-radius: var(--radius-md, 8px);
+  margin-bottom: var(--space-lg, 20px);
+  font-size: var(--text-sm, 13px);
+  line-height: 1.7;
+  border: 1px solid var(--border-light, var(--border));
+}
+
+.yt-summary h3 { margin: 0 0 var(--space-sm, 8px); font-size: 1em; }
+.yt-summary strong { color: var(--text-primary); }
+.yt-summary ul, .yt-summary ol { margin: var(--space-sm, 8px) 0; padding-left: 1.5em; }
+.yt-summary li { margin-bottom: var(--space-xs, 4px); }
+
+.yt-summary-loading {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* --- Transcript --- */
+.yt-transcript-section {
+  margin-top: var(--space-md, 12px);
+}
+
+.yt-transcript-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 4px);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 8px);
+  padding: var(--space-xs, 4px) var(--space-md, 12px);
+  margin-bottom: var(--space-sm, 8px);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--duration-fast, 100ms), color var(--duration-fast, 100ms);
+}
+
+.yt-transcript-toggle:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.yt-transcript-chevron {
+  transition: transform 200ms;
+}
+
+.yt-transcript-toggle.yt-transcript-open .yt-transcript-chevron {
+  transform: rotate(180deg);
+}
+
+.yt-transcript {
+  position: relative;
+}
+
+.yt-paragraph {
+  display: flex;
+  gap: var(--space-sm, 8px);
+  padding: var(--space-sm, 8px) var(--space-sm, 8px) var(--space-sm, 8px) var(--space-md, 12px);
+  border-left: 3px solid transparent;
+  border-radius: 0 var(--radius-sm, 4px) var(--radius-sm, 4px) 0;
+  margin-bottom: 2px;
+  transition: background 150ms, border-color 150ms;
+  cursor: pointer;
+}
+
+.yt-paragraph:hover {
+  background: color-mix(in srgb, var(--surface-hover, #333) 50%, transparent);
+}
+
+.yt-paragraph.yt-line-active {
+  border-left-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+.yt-timestamp {
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  color: var(--accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 42px;
+  padding-top: 2px;
+  user-select: none;
+}
+
+.yt-text {
+  font-size: var(--text-sm, 13px);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+/* --- Resume Following Pill --- */
+.yt-resume-pill {
+  position: sticky;
+  bottom: var(--space-md, 12px);
+  background: var(--bg-elevated, var(--surface));
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: var(--space-xs, 4px) var(--space-lg, 20px);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  z-index: 5;
+  display: block;
+  width: fit-content;
+  margin: 0 auto;
+  opacity: 0;
+  transition: opacity 150ms;
+}
+
+.yt-resume-pill:not(.hidden) {
+  opacity: 1;
+}
+
+.yt-resume-pill:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+/* --- Related Videos (collapsible section under player) --- */
+.yt-related-section {
+  margin-bottom: var(--space-md, 12px);
+}
+
+.yt-related-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 4px);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 8px);
+  padding: var(--space-xs, 4px) var(--space-md, 12px);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--duration-fast, 100ms), color var(--duration-fast, 100ms);
+}
+
+.yt-related-toggle:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.yt-related-chevron {
+  transition: transform 200ms;
+}
+
+.yt-related-toggle.yt-related-open .yt-related-chevron {
+  transform: rotate(180deg);
+}
+
+.yt-related-content {
+  margin-top: var(--space-sm, 8px);
+}
+
+.yt-related-loading {
+  font-size: var(--text-sm, 13px);
+  color: var(--text-muted);
+  font-style: italic;
+  padding: var(--space-sm, 8px) 0;
+}
+
+.yt-related-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm, 8px);
+}
+
+.yt-related-card {
+  display: flex;
+  gap: var(--space-sm, 8px);
+  padding: var(--space-xs, 4px);
+  border-radius: var(--radius-sm, 4px);
+  cursor: pointer;
+  transition: background var(--duration-fast, 100ms);
+}
+
+.yt-related-card:hover {
+  background: var(--surface-hover);
+}
+
+.yt-related-thumb {
+  position: relative;
+  width: 120px;
+  flex-shrink: 0;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-sm, 4px);
+  overflow: hidden;
+  background: var(--surface-hover, #222);
+}
+
+.yt-related-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.yt-related-info {
+  flex: 1;
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.yt-related-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 2px;
+}
+
+.yt-related-channel {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* --- No Transcript State --- */
+.yt-no-transcript {
+  text-align: center;
+  padding: var(--space-xl, 32px);
+  color: var(--text-secondary);
+}
+
+.yt-no-transcript-hint {
+  font-size: var(--text-sm, 13px);
+  color: var(--text-muted);
+  margin-top: var(--space-xs, 4px);
+}
+
+/* --- Panel Tabs (Discover | Library | Queue) --- */
+.yt-panel-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--surface);
+  border-radius: var(--radius-sm, 4px);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.yt-panel-tab {
+  padding: 3px 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  background: none;
+  color: var(--text-muted);
+  transition: background var(--duration-fast, 100ms), color var(--duration-fast, 100ms);
+}
+
+.yt-panel-tab.active {
+  background: var(--bg-elevated, var(--bg));
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,.1));
+}
+
+.yt-panel-tab:hover:not(.active) {
+  color: var(--text-secondary);
+}
+
+/* --- Platform Filter Chips --- */
+.yt-platform-filters {
+  display: flex;
+  gap: 4px;
+  padding: 4px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.yt-platform-filters::-webkit-scrollbar { display: none; }
+
+.yt-platform-chip {
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all var(--duration-fast, 100ms);
+}
+
+.yt-platform-chip.active {
+  background: var(--accent-subtle, color-mix(in srgb, var(--accent) 10%, transparent));
+  border-color: var(--accent);
+  color: var(--accent-text, var(--accent));
+}
+
+.yt-platform-chip:hover:not(.active) {
+  border-color: var(--text-muted);
+}
+
+/* --- Tab Content Areas --- */
+.yt-tab-content {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.yt-tab-content.active {
+  display: flex;
+}
+
+/* Ensure discover tab scrolls like the old panel body */
+#yt-tab-discover {
+  overflow-y: auto;
+  padding: var(--space-lg, 20px);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Library and queue tabs also scroll */
+#yt-tab-library,
+#yt-tab-queue {
+  overflow-y: auto;
+  padding: var(--space-md, 12px);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* When tabs are active, body padding is handled by tab content, not body */
+.yt-panel-body:has(.yt-tab-content) {
+  padding: 0;
+}
+
+/* --- Library Day Groups --- */
+.yt-library-day {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  padding: 8px 12px 4px;
+  font-weight: 600;
+}
+
+/* --- Queue Empty State --- */
+.yt-queue-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: var(--text-sm, 13px);
+}
+
+/* --- Queue Remove Button --- */
+.yt-queue-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  padding: 4px;
+  border-radius: var(--radius-sm, 4px);
+  font-size: 12px;
+  transition: opacity var(--duration-fast, 100ms);
+}
+
+.media-card:hover .yt-queue-remove,
+div:hover > .yt-queue-remove {
+  opacity: 1;
+}
+
+.yt-queue-remove:hover {
+  color: var(--error, #ef4444);
+}

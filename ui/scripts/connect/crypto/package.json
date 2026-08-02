@@ -1,0 +1,4 @@
+{
+  "//": "Marks the client E2E crypto modules as ES modules for Node test tooling. The browser serves them as static ES modules regardless; this only affects Node's module resolution (the cross-language interop tests).",
+  "type": "module"
+}

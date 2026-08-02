@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Augmentum · TV Control</title>
+  <link rel="stylesheet" href="cast-control.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-left">
+      <a class="back" href="/ui/" aria-label="Back to Augmentum">←</a>
+      <div class="title-group">
+        <span class="title-overline">augmentum</span>
+        <h1 class="title">TV Control</h1>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <!-- "Follow on TV" — when on, the TV's idle screen mirrors the
+           controller's current browsing view so a group can see what's
+           being picked. Stays out of the way (hidden until a receiver
+           is selected) and never auto-flips state on its own. -->
+      <button class="follow-toggle hidden" data-cc-follow-toggle type="button"
+              aria-pressed="false" title="Mirror this view onto the TV">
+        <span class="follow-toggle-dot"></span>
+        <span class="follow-toggle-label">Follow on TV</span>
+      </button>
+      <!-- Per-receiver preferences (rail visibility, backdrop cycle,
+           subtitle default, follow-mode allowed). Only meaningful
+           when a receiver is selected — same gating as the follow
+           toggle. Opens a sheet bottom-of-screen with the controls. -->
+      <button class="prefs-button hidden" data-cc-prefs-button type="button"
+              aria-label="TV preferences" title="Display preferences for this TV">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
+             stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68 1.65 1.65 0 0 0 10 3.17V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+      <div class="receiver-picker" data-cc-picker>
+        <button class="receiver-picker-button" type="button" data-cc-picker-button>
+          <span class="receiver-dot" data-cc-picker-dot></span>
+          <span class="receiver-label" data-cc-picker-label>No TVs paired</span>
+          <span class="receiver-caret">▾</span>
+        </button>
+        <div class="receiver-picker-menu hidden" data-cc-picker-menu role="listbox">
+          <div class="receiver-picker-empty" data-cc-picker-empty>
+            No TVs paired yet.
+          </div>
+          <div class="receiver-picker-items" data-cc-picker-items></div>
+          <form class="receiver-picker-pair-form" data-cc-pair-form>
+            <div class="receiver-picker-section">Pair by code</div>
+            <div class="receiver-picker-pair-row">
+              <input class="receiver-picker-pair-input"
+                     data-cc-pair-input
+                     type="text"
+                     placeholder="Code from TV"
+                     maxlength="16"
+                     autocomplete="off" autocorrect="off"
+                     autocapitalize="characters" spellcheck="false"
+                     aria-label="Pair code shown on the TV">
+              <button class="receiver-picker-pair-btn" type="submit" data-cc-pair-submit>Pair</button>
+            </div>
+            <p class="receiver-picker-pair-hint">
+              Open <a href="/ui/cast-receiver/" target="_blank" rel="noopener">/ui/cast-receiver/</a> on the TV to see a code.
+            </p>
+            <p class="receiver-picker-pair-msg" data-cc-pair-msg aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="library" data-cc-library>
+    <div class="loading" data-cc-loading>Loading library…</div>
+  </main>
+
+  <!-- Library drill-in sheet. Used for two flows:
+       1) "See all →" tap on a rail → paginated section view
+       2) Series tile tap → season-grouped episode list
+
+       Single overlay reused for both; the body shape is rebuilt by
+       JS each time. Open animates from below; tap scrim or × dismisses. -->
+  <div class="library-sheet hidden" data-cc-lib-sheet role="dialog" aria-modal="true">
+    <div class="library-sheet-scrim" data-cc-lib-sheet-scrim></div>
+    <div class="library-sheet-card">
+      <header class="library-sheet-head">
+        <div class="library-sheet-titles">
+          <span class="library-sheet-overline" data-cc-lib-sheet-overline></span>
+          <h2 class="library-sheet-title" data-cc-lib-sheet-title>Library</h2>
+        </div>
+        <button class="library-sheet-close" data-cc-lib-sheet-close
+                type="button" aria-label="Close">×</button>
+      </header>
+      <!-- Controls strip — search + sort + filter for sections that
+           support them. JS hides the row for sections with no controls,
+           hides the search box for sections where it's meaningless
+           (gallery, resume), and swaps the sort + chip groups in/out
+           by slug. -->
+      <div class="library-sheet-controls hidden" data-cc-lib-sheet-controls>
+        <label class="library-sheet-search-wrap" data-cc-lib-sheet-search-wrap>
+          <span class="library-sheet-controls-label">Search</span>
+          <input class="library-sheet-search" type="search"
+                 data-cc-lib-sheet-search
+                 autocomplete="off" autocorrect="off"
+                 autocapitalize="none" spellcheck="false"
+                 placeholder="Title…"
+                 aria-label="Search titles in this section">
+        </label>
+        <!-- Sort dropdown — options are repopulated per-slug by JS
+             (see SECTION_CONTROLS in cast-control.js). The single
+             option below is a placeholder; openSectionBrowser swaps
+             it out before the sheet first renders. -->
+        <label class="library-sheet-sort-wrap" data-cc-lib-sheet-sort-wrap>
+          <span class="library-sheet-controls-label">Sort</span>
+          <select class="library-sheet-sort" data-cc-lib-sheet-sort>
+            <option value="name">A → Z</option>
+          </select>
+        </label>
+        <!-- Comic series-status chips (Ongoing / Completed / Unknown).
+             Distinct from the ``status`` chip group below — these are
+             reading-status on the series, not watched-status on the
+             user's progress. -->
+        <div class="library-sheet-filter-chips" data-cc-lib-sheet-filter-chips hidden>
+          <button class="library-sheet-chip is-active" data-cc-lib-sheet-filter="all">All</button>
+          <button class="library-sheet-chip" data-cc-lib-sheet-filter="ongoing">Ongoing</button>
+          <button class="library-sheet-chip" data-cc-lib-sheet-filter="completed">Completed</button>
+          <button class="library-sheet-chip" data-cc-lib-sheet-filter="unknown">Unknown</button>
+        </div>
+        <!-- Watch/listen-status chips for movies, shows, audiobooks.
+             "Unwatched" label is rewritten to "Unstarted" on the
+             audiobooks slug — see SECTION_CONTROLS.statusLabels in
+             cast-control.js. -->
+        <div class="library-sheet-filter-chips" data-cc-lib-sheet-status-chips hidden>
+          <button class="library-sheet-chip is-active" data-cc-lib-sheet-status="all">All</button>
+          <button class="library-sheet-chip" data-cc-lib-sheet-status="not_started">Unwatched</button>
+          <button class="library-sheet-chip" data-cc-lib-sheet-status="in_progress">In progress</button>
+          <button class="library-sheet-chip" data-cc-lib-sheet-status="finished">Finished</button>
+        </div>
+        <!-- Recently-added kind chips. Narrows the "everything new"
+             rail down to one media kind without leaving the drill-in. -->
+        <div class="library-sheet-filter-chips" data-cc-lib-sheet-kind-chips hidden>
+          <button class="library-sheet-chip is-active" data-cc-lib-sheet-kind="all">All</button>
+          <button class="library-sheet-chip" data-cc-lib-sheet-kind="movie">Movies</button>
+          <button class="library-sheet-chip" data-cc-lib-sheet-kind="series">Shows</button>
+          <button class="library-sheet-chip" data-cc-lib-sheet-kind="audio">Audiobooks</button>
+          <button class="library-sheet-chip" data-cc-lib-sheet-kind="comic">Comics</button>
+        </div>
+      </div>
+      <div class="library-sheet-body" data-cc-lib-sheet-body>
+        <div class="library-sheet-loading" data-cc-lib-sheet-loading>Loading…</div>
+      </div>
+      <footer class="library-sheet-foot hidden" data-cc-lib-sheet-foot>
+        <button class="library-sheet-loadmore" data-cc-lib-sheet-loadmore type="button">
+          Load more
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Display preferences sheet for the selected TV. Reuses the
+       library-sheet chrome (scrim + sliding card + ✕ close) so the
+       visual language stays consistent. Body is a flat list of toggle
+       rows; changes save immediately to /api/cast/trusted-receivers
+       /{id}/prefs and reflect in cast-receiver / cast-home on its
+       next refresh. -->
+  <div class="prefs-sheet hidden" data-cc-prefs-sheet role="dialog" aria-modal="true">
+    <div class="prefs-sheet-scrim" data-cc-prefs-sheet-scrim></div>
+    <div class="prefs-sheet-card">
+      <header class="prefs-sheet-head">
+        <div class="prefs-sheet-titles">
+          <span class="prefs-sheet-overline">TV preferences</span>
+          <h2 class="prefs-sheet-title" data-cc-prefs-sheet-title>Display</h2>
+        </div>
+        <button class="prefs-sheet-close" data-cc-prefs-sheet-close
+                type="button" aria-label="Close">×</button>
+      </header>
+      <div class="prefs-sheet-body" data-cc-prefs-sheet-body>
+        <div class="prefs-sheet-loading">Loading…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll pad — auto-shows when the TV is in webtoon mode (or any
+       comic mode + user opens it). Sits above the now-playing card so
+       it doesn't compete with the transport strip. Captures pointer /
+       wheel / arrow-key input and sends scroll_delta_px patches to
+       the TV in near-real-time. Per-session dismiss via × button. -->
+  <aside class="scroll-pad hidden" data-cc-scroll-pad
+         tabindex="0" aria-label="Scroll the TV">
+    <div class="scroll-pad-head">
+      <span class="scroll-pad-glyph" aria-hidden="true">↕</span>
+      <span class="scroll-pad-label">Scroll the TV</span>
+      <button class="scroll-pad-close" data-cc-scroll-pad-close
+              type="button" aria-label="Dismiss scroll pad">×</button>
+    </div>
+    <div class="scroll-pad-surface" data-cc-scroll-pad-surface>
+      <div class="scroll-pad-hint">drag &middot; wheel &middot; ↑↓ keys</div>
+      <div class="scroll-pad-indicator" data-cc-scroll-pad-indicator></div>
+    </div>
+  </aside>
+
+  <footer class="now-playing hidden" data-cc-now-playing>
+    <!-- Compact strip — always visible while something is playing. -->
+    <div class="np-strip">
+      <div class="np-art" data-cc-np-art></div>
+      <div class="np-meta">
+        <div class="np-title" data-cc-np-title>—</div>
+        <div class="np-sub" data-cc-np-sub>—</div>
+        <!-- Progress + elapsed/duration. Polls /api/cast/playback-status
+             every ~3s while the card is visible. Tap-to-seek lives on
+             the bar for quick scrubbing without opening the sheet. -->
+        <div class="np-progress" data-cc-np-progress hidden>
+          <div class="np-progress-bar" data-cc-np-bar>
+            <div class="np-progress-fill" data-cc-np-bar-fill></div>
+          </div>
+          <div class="np-progress-time">
+            <span data-cc-np-elapsed>0:00</span>
+            <span class="np-time-sep">/</span>
+            <span data-cc-np-duration>—:—</span>
+          </div>
+        </div>
+      </div>
+      <div class="np-controls">
+        <button class="np-btn np-btn-back" data-cc-np-back title="Skip back" hidden></button>
+        <button class="np-btn np-btn-toggle" data-cc-np-toggle title="Play / Pause" hidden>⏯</button>
+        <button class="np-btn np-btn-fwd" data-cc-np-fwd title="Skip forward" hidden></button>
+        <button class="np-btn np-btn-invite" data-cc-np-invite title="Invite players" hidden>＋</button>
+        <button class="np-btn np-btn-more" data-cc-np-more title="More controls" hidden>⋯</button>
+        <button class="np-btn np-btn-stop" data-cc-np-stop title="Stop casting">⏹</button>
+      </div>
+    </div>
+    <!-- Couch co-op waiting panel — shown after host taps + Players.
+         Lists slots remaining + a Revoke button. The QR itself lives
+         on the TV, not here. -->
+    <div class="np-invite-panel" data-cc-np-invite-panel hidden>
+      <div class="np-invite-status" data-cc-np-invite-status>
+        Inviting…
+      </div>
+      <button class="np-btn np-btn-revoke" data-cc-np-invite-revoke>
+        Stop inviting
+      </button>
+    </div>
+    <!-- Expanded sheet — slides up over the strip when ⋯ tapped. -->
+    <div class="np-sheet" data-cc-np-sheet hidden>
+      <button class="np-sheet-close" data-cc-np-sheet-close aria-label="Close">×</button>
+
+      <section class="np-sheet-section np-sheet-section-cc" hidden>
+        <h3 class="np-sheet-title">Subtitles</h3>
+        <div class="np-cc-list" data-cc-np-cc-list>
+          <button class="np-cc-item is-active" data-cc-cc-idx="-1">Off</button>
+        </div>
+      </section>
+
+      <section class="np-sheet-section np-sheet-section-speed" hidden>
+        <h3 class="np-sheet-title">Playback speed</h3>
+        <div class="np-speed-row" data-cc-np-speed-row>
+          <button class="np-speed" data-speed="0.75">0.75×</button>
+          <button class="np-speed is-active" data-speed="1.0">1.0×</button>
+          <button class="np-speed" data-speed="1.25">1.25×</button>
+          <button class="np-speed" data-speed="1.5">1.5×</button>
+          <button class="np-speed" data-speed="2.0">2.0×</button>
+        </div>
+      </section>
+
+      <section class="np-sheet-section np-sheet-section-jump" hidden>
+        <h3 class="np-sheet-title">Jump</h3>
+        <div class="np-jump-row">
+          <button class="np-jump" data-skip="-300">−5 min</button>
+          <button class="np-jump" data-skip="-60">−1 min</button>
+          <button class="np-jump" data-skip="60">+1 min</button>
+          <button class="np-jump" data-skip="300">+5 min</button>
+        </div>
+      </section>
+
+      <section class="np-sheet-section np-sheet-section-volume" hidden>
+        <h3 class="np-sheet-title">Cast level</h3>
+        <div class="np-volume-row">
+          <button class="np-volume-mute" data-cc-np-mute aria-label="Mute toggle">🔊</button>
+          <input
+            class="np-volume-slider"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value="100"
+            data-cc-np-volume
+            aria-label="Cast level"
+          >
+          <span class="np-volume-readout" data-cc-np-volume-readout>100</span>
+        </div>
+        <p class="np-volume-hint">
+          Per-cast level — scales the audio on top of the TV master.
+        </p>
+      </section>
+
+      <!-- TV master volume — only shown when the receiver advertises
+           ``android-tv`` platform, since that's the only context where
+           the AugmentumTV JS bridge exists. Browser-tab receivers and
+           generic DLNA targets hide this row. -->
+      <section class="np-sheet-section np-sheet-section-tv-volume" hidden>
+        <h3 class="np-sheet-title">TV master volume</h3>
+        <div class="np-volume-row">
+          <button class="np-volume-mute" data-cc-np-tv-mute aria-label="TV mute toggle">📺</button>
+          <input
+            class="np-volume-slider"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value="50"
+            data-cc-np-tv-volume
+            aria-label="TV master volume"
+          >
+          <span class="np-volume-readout" data-cc-np-tv-volume-readout>50</span>
+        </div>
+        <p class="np-volume-hint">
+          The TV's own audio level — same as pressing volume on the remote.
+        </p>
+      </section>
+
+      <!-- A/V sync — lip-sync compensation. Inserts a Web Audio DelayNode
+           on the receiver so audio is delayed by N ms relative to video,
+           fixing the partial-transcode drift you sometimes see on
+           Emby/Jellyfin sources. Persisted per file_id in localStorage.
+           Positive-only by design: DelayNode can't delay into the past,
+           and browsers can't independently delay video frames without a
+           custom rendering pipeline. Almost all transcode drift is
+           audio-ahead-of-video, which positive delay corrects. -->
+      <section class="np-sheet-section np-sheet-section-sync" hidden>
+        <h3 class="np-sheet-title">Delay audio</h3>
+        <div class="np-volume-row">
+          <button class="np-volume-mute" data-cc-np-sync-reset aria-label="Reset to 0 ms" title="Reset to 0 ms">⤺</button>
+          <input
+            class="np-volume-slider"
+            type="range"
+            min="0"
+            max="2000"
+            step="10"
+            value="0"
+            data-cc-np-sync
+            aria-label="Audio delay (ms)"
+          >
+          <span class="np-volume-readout" data-cc-np-sync-readout>0 ms</span>
+        </div>
+        <p class="np-volume-hint">
+          Pushes audio later when it's ahead of video. Remembered per title.
+        </p>
+      </section>
+
+      <!-- ── Comic-only sections ─────────────────────────────────
+           All hidden by default; renderNowPlaying flips visibility
+           based on the active surface kind. Sends patches via the
+           same /api/cast/send/patch wire as audio/video. -->
+
+      <section class="np-sheet-section np-sheet-section-comic-autoplay" hidden>
+        <h3 class="np-sheet-title">Auto-advance</h3>
+        <!-- Paged / dual: discrete page-flip on a timer. -->
+        <div class="np-speed-row" data-cc-np-comic-autoplay-row>
+          <button class="np-speed is-active" data-autoplay="0">Off</button>
+          <button class="np-speed" data-autoplay="8000">8s</button>
+          <button class="np-speed" data-autoplay="15000">15s</button>
+          <button class="np-speed" data-autoplay="30000">30s</button>
+        </div>
+        <!-- Webtoon: continuous scroll at a target velocity. Same
+             section, swapped in by renderComicSheetState when the
+             active TV mode is webtoon. Speeds calibrated against
+             native webtoon-reader pacing (~240 px/sec comfortable
+             median on a 1080p TV — the earlier 40/90/180 set felt
+             glacial because it was tuned for phone viewports). -->
+        <div class="np-speed-row" data-cc-np-comic-autoplay-px-row hidden>
+          <button class="np-speed is-active" data-autoplay-px="0">Off</button>
+          <button class="np-speed" data-autoplay-px="120">Slow</button>
+          <button class="np-speed" data-autoplay-px="240">Med</button>
+          <button class="np-speed" data-autoplay-px="400">Fast</button>
+        </div>
+      </section>
+
+      <section class="np-sheet-section np-sheet-section-comic-jump" hidden>
+        <h3 class="np-sheet-title">Jump</h3>
+        <div class="np-jump-row">
+          <button class="np-jump" data-comic-jump="first">⏮ First</button>
+          <button class="np-jump" data-comic-delta="-10">−10</button>
+          <button class="np-jump" data-comic-delta="-5">−5</button>
+          <button class="np-jump" data-comic-delta="5">+5</button>
+          <button class="np-jump" data-comic-delta="10">+10</button>
+          <button class="np-jump" data-comic-jump="last">Last ⏭</button>
+        </div>
+      </section>
+
+      <section class="np-sheet-section np-sheet-section-comic-mode" hidden>
+        <h3 class="np-sheet-title">Layout</h3>
+        <div class="np-speed-row" data-cc-np-comic-mode-row>
+          <button class="np-speed is-active" data-mode="auto">Auto</button>
+          <button class="np-speed" data-mode="single">Single</button>
+          <button class="np-speed" data-mode="dual">Dual</button>
+          <button class="np-speed" data-mode="webtoon">Webtoon</button>
+        </div>
+      </section>
+
+      <section class="np-sheet-section np-sheet-section-comic-fit" hidden>
+        <h3 class="np-sheet-title">Fit</h3>
+        <div class="np-speed-row" data-cc-np-comic-fit-row>
+          <button class="np-speed is-active" data-fit="smart">Smart</button>
+          <button class="np-speed" data-fit="width">Width</button>
+          <button class="np-speed" data-fit="height">Height</button>
+          <button class="np-speed" data-fit="native">1:1</button>
+        </div>
+      </section>
+
+      <section class="np-sheet-section np-sheet-section-comic-dir" hidden>
+        <h3 class="np-sheet-title">Reading direction</h3>
+        <div class="np-toggle-row">
+          <button class="np-toggle" data-cc-np-comic-dir data-on="false">LTR</button>
+          <span class="np-toggle-hint">Switch to RTL for manga</span>
+        </div>
+      </section>
+
+      <section class="np-sheet-section np-sheet-section-comic-crop" hidden>
+        <h3 class="np-sheet-title">Border crop</h3>
+        <div class="np-toggle-row">
+          <button class="np-toggle" data-cc-np-comic-crop data-on="true">On</button>
+          <span class="np-toggle-hint">Trim margins on scanned pages</span>
+        </div>
+      </section>
+
+      <section class="np-sheet-section np-sheet-section-comic-pad" hidden>
+        <h3 class="np-sheet-title">Scroll pad</h3>
+        <div class="np-toggle-row">
+          <button class="np-toggle" data-cc-np-comic-pad data-on="true">Shown</button>
+          <span class="np-toggle-hint">Drag/wheel/keys to scroll the TV</span>
+        </div>
+      </section>
+    </div>
+  </footer>
+
+  <div class="toast hidden" data-cc-toast aria-live="polite"></div>
+
+  <script type="module" src="cast-control.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- See console-emulation.svg for why this is authored art, not a screenshot. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" width="480" height="300" role="img" aria-label="Luanti worlds">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#16261f"/>
+      <stop offset="1" stop-color="#0f1014"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5fd39b"/>
+      <stop offset="1" stop-color="#38b6d8"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="45%" r="55%">
+      <stop offset="0" stop-color="#5fd39b" stop-opacity=".26"/>
+      <stop offset="1" stop-color="#5fd39b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="480" height="300" fill="url(#bg)"/>
+  <rect width="480" height="300" fill="url(#glow)"/>
+  <g transform="translate(240 140)" fill="none" stroke="url(#accent)" stroke-width="7"
+     stroke-linejoin="round" stroke-linecap="round">
+    <!-- isometric cube: the medium's own vocabulary -->
+    <path d="M0 -62 L62 -26 L62 34 L0 70 L-62 34 L-62 -26 Z"/>
+    <path d="M0 -62 L0 4 L62 -26"/>
+    <path d="M0 4 L-62 -26"/>
+    <path d="M0 4 L0 70"/>
+  </g>
+  <text x="240" y="248" text-anchor="middle" fill="#e7e7ea"
+        font-family="Instrument Sans, system-ui, sans-serif" font-size="26" font-weight="600"
+        letter-spacing="1.5">Luanti worlds</text>
+  <text x="240" y="274" text-anchor="middle" fill="#9aa0ae"
+        font-family="Instrument Sans, system-ui, sans-serif" font-size="15">Voxel sandbox with persistent saves</text>
+</svg>

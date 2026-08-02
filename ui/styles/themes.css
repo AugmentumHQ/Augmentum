@@ -1,0 +1,370 @@
+/* Disable default view transition crossfade — we use circular reveal */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Keep the Grove panel static during theme transitions — no flash/flicker */
+::view-transition-old(grove-panel),
+::view-transition-new(grove-panel) {
+  animation: none;
+}
+
+/* ==========================================================================
+   Color Themes — 4 system-wide themes
+   dark, light, midnight, sepia
+   ========================================================================== */
+
+/* --- Dark Theme (default) --- */
+[data-theme="dark"] {
+  --bg: #111118;
+  --bg-elevated: #17171f;
+  --surface: #1d1d28;
+  --surface-hover: #24242f;
+  --surface-active: #2a2a38;
+  --surface-border: #2e2e3c;
+
+  --text-primary: #ececf1;
+  --text-secondary: #a1a1b5;
+  --text-muted: #6b6b80;
+  --text-inverse: #0f0f1a;
+  --text: var(--text-primary);
+
+  --accent: #6c8aff;
+  --accent-hover: #5a7aef;
+  --accent-subtle: rgba(108, 138, 255, 0.12);
+  --accent-text: #6c8aff;
+  --primary: var(--accent);
+
+  --border: #2d2d45;
+  --border-light: #232338;
+  --border-focus: #6c8aff;
+
+  --input-bg: #1a1a2c;
+  --input-border: #2d2d45;
+  --input-focus: #6c8aff;
+
+  --user-bubble: #292940;
+  --assistant-bubble: transparent;
+
+  --code-bg: #0e0e16;
+  --code-text: #cdd5de;
+  --code-border: #24242f;
+
+  /* Syntax-highlight token palette (One Dark-derived; tuned for
+     --code-bg = #0e0e16 with WCAG AA contrast on every token). Used
+     by both chat code blocks (hljs/Prism) and ZIM reader code blocks
+     so the two surfaces match. */
+  --syntax-keyword: #c678dd;
+  --syntax-string: #98c379;
+  --syntax-number: #d19a66;
+  --syntax-comment: #6b6b80;
+  --syntax-function: #61afef;
+  --syntax-variable: #e06c75;
+  --syntax-type: #56b6c2;
+  --syntax-attr: #d19a66;
+  --syntax-built-in: #56b6c2;
+
+  --scrollbar-thumb: #353550;
+  --scrollbar-track: transparent;
+
+  --success: #4ade80;
+  --success-subtle: rgba(74, 222, 128, 0.12);
+  --warning: #fbbf24;
+  --warning-subtle: rgba(251, 191, 36, 0.12);
+  --error: #f87171;
+  --error-subtle: rgba(248, 113, 113, 0.12);
+
+  --overlay: rgba(0, 0, 0, 0.6);
+  --backdrop-blur: blur(8px);
+
+  --bg-primary: var(--bg);
+  --bg-secondary: var(--bg-elevated);
+  --bg-tertiary: #12121f;
+  --text-tertiary: #4a4a5e;
+  --surface-primary: var(--surface);
+  --surface-secondary: var(--surface-hover);
+  --surface-code: #1a1a2e;
+  --accent-rgb: 108, 138, 255;
+
+  --bg-hover: #1f1f2e;
+  --border-subtle: #24243a;
+  --shadow-colored: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --header-glow: rgba(108, 138, 255, 0.04);
+}
+
+/* --- Light Theme --- */
+/* Warm paper (Stone family, dimmed a few steps). The ladder starts at
+   warm paper rather than near-white — glare was the #1 complaint — and
+   every rung keeps visible separation from its neighbors. No pure
+   #ffffff anywhere; the accent is muted toward the warm greys so it
+   reads as part of the same palette instead of a cool outlier. */
+[data-theme="light"] {
+  --bg: #f3f1ee;
+  --bg-elevated: #edeae6;
+  --surface: #e7e4df;
+  --surface-hover: #ded9d3;
+  --surface-active: #d4cec7;
+  --surface-border: #d9d4cd;
+
+  --text-primary: #1c1917;
+  --text-secondary: #544f4a;
+  --text-muted: #87817a;
+  --text-inverse: #f6f4f1;
+  --text: var(--text-primary);
+
+  --accent: #6070c2;
+  --accent-hover: #4f60b2;
+  --accent-subtle: rgba(96, 112, 194, 0.09);
+  --accent-text: #4c5cae;
+  --primary: var(--accent);
+
+  /* Logo core glow — overrides the dark-theme white default (index.html SVG)
+     so the orbiting-logo center stays visible on the near-white header. */
+  --logo-core-hi: #aebbf2;
+  --logo-core-mid: #7388e0;
+
+  --border: #dcd7d0;
+  --border-light: #e6e2dc;
+  --border-focus: #6070c2;
+
+  /* Inputs sit one step ABOVE the page (was pure #ffffff — the single
+     brightest thing on screen and the main source of the washed-out feel). */
+  --input-bg: #f8f6f3;
+  --input-border: #cfc9c1;
+  --input-focus: #6070c2;
+
+  /* Accent-tinted but grey-warmed so it doesn't read lavender-cool
+     against the stone surfaces. */
+  --user-bubble: #e2e0e9;
+  --assistant-bubble: transparent;
+
+  --code-bg: #edeae5;
+  --code-text: #292524;
+  --code-border: #dcd7d0;
+
+  /* Syntax palette tuned for warm-light --code-bg #edeae5 (One Light
+     derivative). Each token meets WCAG AA against the background. */
+  --syntax-keyword: #9a2699;
+  --syntax-string: #479346;
+  --syntax-number: #8a5e01;
+  --syntax-comment: #97918a;
+  --syntax-function: #3a6fe0;
+  --syntax-variable: #d44c40;
+  --syntax-type: #ac7501;
+  --syntax-attr: #8a5e01;
+  --syntax-built-in: #ac7501;
+
+  --scrollbar-thumb: #cbc5bd;
+  --scrollbar-track: transparent;
+
+  --success: #35935e;
+  --success-subtle: rgba(53, 147, 94, 0.08);
+  --warning: #b07a15;
+  --warning-subtle: rgba(176, 122, 21, 0.08);
+  --error: #c94f4b;
+  --error-subtle: rgba(201, 79, 75, 0.08);
+
+  --overlay: rgba(28, 25, 23, 0.22);
+  --backdrop-blur: blur(8px);
+
+  /* Softer shadows for light mode */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.10);
+
+  --bg-primary: var(--bg);
+  --bg-secondary: var(--bg-elevated);
+  --bg-tertiary: #e9e6e1;
+  --text-tertiary: #b0aaa3;
+  --surface-primary: var(--surface);
+  --surface-secondary: var(--surface-hover);
+  --surface-code: #ece9e3;
+  --accent-rgb: 96, 112, 194;
+
+  --bg-hover: #e8e4df;
+  --border-subtle: #d6d1c9;
+  --shadow-colored: 0 8px 24px rgba(0, 0, 0, 0.06);
+  --header-glow: rgba(96, 112, 194, 0.04);
+}
+
+/* --- Midnight Theme --- deep inky blue, dramatic and immersive --- */
+[data-theme="midnight"] {
+  --bg: #060810;
+  --bg-elevated: #0c0e18;
+  --surface: #111420;
+  --surface-hover: #181c2a;
+  --surface-active: #1f2334;
+  --surface-border: #252a3c;
+
+  --text-primary: #d4d8e8;
+  --text-secondary: #8890a8;
+  --text-muted: #667088;
+  --text-inverse: #060810;
+  --text: var(--text-primary);
+
+  --accent: #7ba0e0;
+  --accent-hover: #6890d0;
+  --accent-subtle: rgba(123, 160, 224, 0.10);
+  --accent-text: #7ba0e0;
+  --primary: var(--accent);
+
+  --border: #1e2334;
+  --border-light: #151928;
+  --border-focus: #7ba0e0;
+
+  --input-bg: #090b14;
+  --input-border: #1e2334;
+  --input-focus: #7ba0e0;
+
+  --user-bubble: #141828;
+  --assistant-bubble: transparent;
+
+  --code-bg: #050710;
+  --code-text: #c9d1d9;
+  --code-border: #151928;
+
+  /* Syntax palette for midnight — slightly bluer tones than the dark
+     theme to fit the deep-inky aesthetic. Against --code-bg #050710. */
+  --syntax-keyword: #b392f0;
+  --syntax-string: #9ecbff;
+  --syntax-number: #ffab70;
+  --syntax-comment: #6e7681;
+  --syntax-function: #79b8ff;
+  --syntax-variable: #f97583;
+  --syntax-type: #b8e0ff;
+  --syntax-attr: #ffab70;
+  --syntax-built-in: #b8e0ff;
+
+  --scrollbar-thumb: #252a3c;
+  --scrollbar-track: transparent;
+
+  --success: #4ade80;
+  --success-subtle: rgba(74, 222, 128, 0.12);
+  --warning: #fbbf24;
+  --warning-subtle: rgba(251, 191, 36, 0.12);
+  --error: #f87171;
+  --error-subtle: rgba(248, 113, 113, 0.12);
+
+  --overlay: rgba(0, 0, 0, 0.65);
+  --backdrop-blur: blur(8px);
+
+  --mode-narrative: #7ba0e0;
+  --mode-connect: #2dd4bf;
+
+  --bg-primary: var(--bg);
+  --bg-secondary: var(--bg-elevated);
+  --bg-tertiary: #0a0d15;
+  --text-tertiary: #3d4560;
+  --surface-primary: var(--surface);
+  --surface-secondary: var(--surface-hover);
+  --surface-code: #141825;
+  --accent-rgb: 123, 160, 224;
+
+  --bg-hover: #141828;
+  --border-subtle: #1a1f30;
+  --shadow-colored: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --header-glow: rgba(123, 160, 224, 0.05);
+}
+
+/* --- Sepia Theme --- warm candlelight parchment --- */
+[data-theme="sepia"] {
+  --bg: #1a1610;
+  --bg-elevated: #211c14;
+  --surface: #28221a;
+  --surface-hover: #312a20;
+  --surface-active: #3a3226;
+  --surface-border: #43392c;
+
+  --text-primary: #e8dcc8;
+  --text-secondary: #b8a88e;
+  --text-muted: #7a6c58;
+  --text-inverse: #1a1610;
+  --text: var(--text-primary);
+
+  --accent: #d4a55a;
+  --accent-hover: #c4954a;
+  --accent-subtle: rgba(212, 165, 90, 0.10);
+  --accent-text: #d4a55a;
+  --primary: var(--accent);
+
+  --border: #3a3228;
+  --border-light: #2c2518;
+  --border-focus: #d4a55a;
+
+  --input-bg: #161210;
+  --input-border: #3a3228;
+  --input-focus: #d4a55a;
+
+  --user-bubble: #252018;
+  --assistant-bubble: transparent;
+
+  --code-bg: #12100c;
+  --code-text: #e8dcc8;
+  --code-border: #2c2518;
+
+  /* Syntax palette for sepia — warm parchment tones: gold/rust/sage
+     against the brown --code-bg. Designed so the code blocks feel like
+     ink on aged paper rather than a generic dark editor. */
+  --syntax-keyword: #e8a35a;
+  --syntax-string: #9bb87c;
+  --syntax-number: #c97a3c;
+  --syntax-comment: #7a6c58;
+  --syntax-function: #5f9ea0;
+  --syntax-variable: #c97a3c;
+  --syntax-type: #c8a868;
+  --syntax-attr: #d4a55a;
+  --syntax-built-in: #5f9ea0;
+
+  --scrollbar-thumb: #43392c;
+  --scrollbar-track: transparent;
+
+  --success: #4ade80;
+  --success-subtle: rgba(74, 222, 128, 0.12);
+  --warning: #fbbf24;
+  --warning-subtle: rgba(251, 191, 36, 0.12);
+  --error: #f87171;
+  --error-subtle: rgba(248, 113, 113, 0.12);
+
+  --overlay: rgba(0, 0, 0, 0.55);
+  --backdrop-blur: blur(8px);
+
+  --mode-narrative: #d4a55a;
+  --mode-connect: #0d9488;
+
+  --bg-primary: var(--bg);
+  --bg-secondary: var(--bg-elevated);
+  --bg-tertiary: #1e1a14;
+  --text-tertiary: #5a5040;
+  --surface-primary: var(--surface);
+  --surface-secondary: var(--surface-hover);
+  --surface-code: #28221a;
+  --accent-rgb: 212, 165, 90;
+
+  --bg-hover: #2e2820;
+  --border-subtle: #342d22;
+  --shadow-colored: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --header-glow: rgba(212, 165, 90, 0.05);
+}
+
+/* ==========================================================================
+   Elevation aliases — --surface-2 / --surface-3
+   Referenced by terminal.js (xterm selection), coder.css and others, but
+   never defined in the theme blocks, so they silently fell back to a
+   hardcoded dark literal in EVERY theme (invisible/wrong in light mode).
+   Define them once here: each references the active theme's --surface-*
+   ramp, so they resolve correctly per-theme without per-theme duplication.
+   ========================================================================== */
+:root {
+  --surface-2: var(--surface-hover);
+  --surface-3: var(--surface-active);
+}
+
+/* ==========================================================================
+   Narrative Mode — transparent assistant bubbles for all themes
+   ========================================================================== */
+.app[data-mode="narrative"] {
+  --assistant-bubble: transparent;
+}

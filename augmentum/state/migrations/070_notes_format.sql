@@ -1,0 +1,3 @@
+ALTER TABLE browse_notes ADD COLUMN format TEXT NOT NULL DEFAULT 'note';
+ALTER TABLE browse_notes ADD COLUMN word_count INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE browse_notes ADD COLUMN reading_time_min INTEGER NOT NULL DEFAULT 0;

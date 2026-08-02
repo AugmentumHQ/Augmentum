@@ -1,0 +1,27 @@
+{
+  "name": "augmentum_named_bug",
+  "workspace_id": "45f1e36d-1b8f-42a0-bdcb-fde282363b30",
+  "workspace_name": "augmentum-self-test",
+  "mode": "named-bug",
+  "goal_desc": "find blanket except-handlers in route handlers that leak internal error context into HTTP responses",
+  "goal_repro": "look at augmentum/proxy/*_routes.py; any route handler that catches `except Exception` and interpolates `str(exc)` into the HTTPException detail is a leak. Confirm by tracing how the detail flows back to the client.",
+  "notes": [
+    "Named-bug run exercising the lead agent's dynamic decision loop.",
+    "The lead should: dispatch a DETECT on auth_routes / openai_routes,",
+    "see findings, then enqueue INVESTIGATE on the recurring pattern to",
+    "surface other handlers with the same shape. Compound discovery is",
+    "the killer feature this run validates.",
+    "",
+    "Suggested command:",
+    "  python scripts/bug_finder_test_bench.py \\",
+    "    --workspace-id 45f1e36d-1b8f-42a0-bdcb-fde282363b30 \\",
+    "    --model deepseek-v4-pro \\",
+    "    --goal-mode named-bug \\",
+    "    --goal-desc \"find blanket except-handlers in route handlers that leak internal error context into HTTP responses\" \\",
+    "    --goal-repro \"look at augmentum/proxy/*_routes.py; any route handler that catches except Exception and interpolates str(exc) into the HTTPException detail is a leak\" \\",
+    "    --max-chunks 6 \\",
+    "    --focus-paths augmentum/proxy \\",
+    "    --fixture tests/bug_finder_bench_fixtures/augmentum_named_bug.json"
+  ],
+  "expected_findings": []
+}

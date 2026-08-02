@@ -1,0 +1,1631 @@
+/* Discover surface — unified browse + install.
+ *
+ * Visual register: cooler than the legacy Marketplace modal, closer
+ * to Library's information-density. The grid is a calm scan, not a
+ * featured-hero rail (we'll add that when there's enough content
+ * to justify it). Spec: docs/superpowers/specs/2026-06-10-discover-
+ * surface-design.md.
+ */
+
+.discover-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: none;
+  z-index: 1900;                /* below modal toasts, above mode chrome */
+  align-items: stretch;
+  justify-content: center;
+  padding: 0;
+  backdrop-filter: blur(4px);
+  overflow: hidden;
+}
+
+.discover-overlay.visible {
+  display: flex;
+}
+
+body.discover-lock-scroll {
+  overflow: hidden;
+}
+
+.discover-panel {
+  width: 100%;
+  max-width: 1200px;
+  box-sizing: border-box;
+  min-width: 0;
+  background: var(--bg-primary, #1a1a1f);
+  color: var(--text-primary, #f0f0f5);
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  border-radius: 0;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  overflow: hidden;
+}
+
+@media (min-width: 900px) {
+  .discover-overlay {
+    padding: 24px;
+    align-items: center;
+  }
+  .discover-panel {
+    max-height: calc(100vh - 48px);
+    border-radius: 14px;
+  }
+}
+
+/* ── Header ───────────────────────────────────────────────────── */
+.discover-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border-soft, rgba(255, 255, 255, 0.08));
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.discover-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.discover-search {
+  justify-self: stretch;
+  max-width: 480px;
+  margin-left: auto;
+  min-width: 0;
+}
+
+.discover-search input[type="search"] {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border-soft, rgba(255, 255, 255, 0.1));
+  background: var(--bg-secondary, rgba(255, 255, 255, 0.04));
+  color: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.discover-search input[type="search"]:focus {
+  border-color: var(--accent, #6b8aff);
+}
+
+.discover-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.6));
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 8px;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.discover-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary, #f0f0f5);
+}
+
+/* ── Category pills ──────────────────────────────────────────── */
+.discover-categories {
+  display: flex;
+  gap: 8px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border-soft, rgba(255, 255, 255, 0.08));
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.discover-cat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 18px;
+  border: 1px solid var(--border-soft, rgba(255, 255, 255, 0.1));
+  background: transparent;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.discover-cat-pill:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary, #f0f0f5);
+}
+
+.discover-cat-pill.active {
+  background: var(--accent, #6b8aff);
+  color: #fff;
+  border-color: var(--accent, #6b8aff);
+}
+
+.discover-cat-count {
+  font-size: 11px;
+  opacity: 0.75;
+  background: rgba(0, 0, 0, 0.18);
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.discover-cat-pill.active .discover-cat-count {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* ── Body / grid ─────────────────────────────────────────────── */
+.discover-body {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px 24px 28px;
+  scrollbar-width: thin;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.discover-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.55));
+  margin: 0 0 12px;
+}
+
+.discover-home {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* ── "Your apps" launcher shelf ──────────────────────────────────
+   Umbrel-home-screen idea: installed apps as an icon row, click to
+   open, ⋯ to manage, live status dot. */
+.discover-installed-shelf[hidden] { display: none !important; }
+
+.discover-shelf-row {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  padding: 4px 2px 10px;
+  scrollbar-width: thin;
+}
+
+.discover-shelf-app {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  width: 84px;
+  flex: 0 0 auto;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: inherit;
+}
+
+.discover-shelf-app .discover-shelf-icon {
+  width: 64px;
+  height: 64px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.discover-shelf-app:hover .discover-shelf-icon,
+.discover-shelf-app:focus-visible .discover-shelf-icon {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+}
+
+.discover-shelf-app .discover-shelf-icon .discover-card-glyph {
+  width: 28px;
+  height: 28px;
+}
+
+.discover-shelf-name {
+  font-size: 12px;
+  line-height: 1.2;
+  text-align: center;
+  max-width: 84px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.75));
+}
+
+.discover-shelf-dot {
+  position: absolute;
+  top: 50px;
+  right: 8px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-primary, #1a1a1f);
+  background: rgba(255, 255, 255, 0.25);
+}
+.discover-shelf-dot[data-state="ok"]   { background: #5cb85c; }
+.discover-shelf-dot[data-state="warn"] { background: #e0a23a; }
+.discover-shelf-dot[data-state="down"] { background: #e5484d; }
+
+.discover-shelf-manage {
+  position: absolute;
+  top: -6px;
+  right: 2px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(128, 128, 128, 0.35);
+  background: var(--bg-secondary, #252832);
+  color: var(--text-secondary, rgba(255, 255, 255, 0.75));
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.discover-shelf-app:hover .discover-shelf-manage,
+.discover-shelf-app:focus-within .discover-shelf-manage {
+  opacity: 1;
+}
+.discover-shelf-manage:hover {
+  color: var(--text-primary, #f0f0f5);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.discover-home[hidden],
+.discover-spotlight[hidden] {
+  display: none !important;
+}
+
+.discover-home-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.85fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+.discover-spotlight {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 188px;
+  display: grid;
+  grid-template-columns: minmax(124px, 150px) minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--border-soft, rgba(255, 255, 255, 0.1)));
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb, var(--accent) 10%, transparent),
+      transparent 46%),
+    color-mix(in srgb, var(--bg-secondary, #252832) 88%, transparent);
+}
+
+.discover-spotlight-art {
+  min-width: 0;
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(160deg,
+    rgba(255, 255, 255, 0.05), transparent 65%);
+}
+
+.discover-spotlight-art .discover-app-icon {
+  width: 96px;
+  height: 96px;
+}
+
+.discover-spotlight-art .discover-card-glyph {
+  width: 46px;
+  height: 46px;
+}
+
+.discover-spotlight-copy {
+  min-width: 0;
+  overflow: hidden;
+  padding: 18px;
+  display: grid;
+  align-content: center;
+  gap: 10px;
+}
+
+.discover-spotlight-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--accent) 78%, var(--text-tertiary, rgba(255, 255, 255, 0.55)));
+}
+
+.discover-spotlight-title {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 650;
+}
+
+.discover-spotlight-text {
+  margin: 0;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.72));
+  font-size: 13px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.discover-spotlight-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.discover-spotlight-stat {
+  display: inline-grid;
+  gap: 1px;
+  padding: 5px 8px;
+  min-width: 64px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.discover-spotlight-stat strong {
+  font-size: 13px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.discover-spotlight-stat span {
+  font-size: 10px;
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.55));
+}
+
+.discover-spotlight-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.discover-spotlight-action {
+  min-width: 92px;
+}
+
+.discover-secondary-action,
+.discover-lane-more {
+  min-height: 32px;
+  padding: 7px 12px;
+  border-radius: 7px;
+  border: 1px solid var(--border-soft, rgba(255, 255, 255, 0.1));
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--text-secondary, rgba(255, 255, 255, 0.72));
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.discover-secondary-action:hover,
+.discover-lane-more:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text-primary, #f0f0f5);
+}
+
+.discover-path-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  height: 100%;
+}
+
+.discover-paths {
+  min-width: 0;
+}
+
+.discover-path-card {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 84px;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--border-soft, rgba(255, 255, 255, 0.09));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--bg-secondary, #252832) 70%, transparent);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s, transform 0.15s;
+}
+
+.discover-path-card:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--accent) 26%, var(--border-soft, rgba(255, 255, 255, 0.1)));
+  background: color-mix(in srgb, var(--accent) 7%, var(--bg-secondary, #252832));
+}
+
+.discover-path-icon,
+.discover-lane-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: color-mix(in srgb, var(--accent) 78%, var(--text-secondary, rgba(255, 255, 255, 0.7)));
+  background:
+    linear-gradient(135deg,
+      hsl(var(--ph-hue, 220) 24% 24% / 0.75),
+      hsl(calc(var(--ph-hue, 220) + 24) 28% 13% / 0.85));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.discover-path-icon svg,
+.discover-lane-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.discover-path-copy {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.discover-path-copy strong {
+  font-size: 13px;
+  line-height: 1.15;
+}
+
+.discover-path-copy span {
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.58));
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.discover-path-count {
+  min-width: 24px;
+  justify-self: end;
+  padding: 3px 7px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary, #f0f0f5);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.discover-lanes {
+  display: grid;
+  gap: 16px;
+}
+
+.discover-lane {
+  min-width: 0;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-soft, rgba(255, 255, 255, 0.075));
+}
+
+.discover-lane-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.discover-lane-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.discover-lane-copy {
+  margin: 3px 0 0;
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.56));
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.discover-lane-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+  gap: 10px;
+}
+
+.discover-lane-card {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--border-soft, rgba(255, 255, 255, 0.08));
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.discover-lane-card-copy {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.discover-lane-card-copy h4 {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.discover-lane-card-copy p {
+  margin: 0;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.68));
+  font-size: 11px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.discover-lane-card-copy span {
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.5));
+  font-size: 10px;
+}
+
+.discover-mini-install {
+  min-height: 30px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.discover-featured-rail {
+  margin-bottom: 28px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border-soft, rgba(255, 255, 255, 0.07));
+}
+
+.discover-featured-grid {
+  display: grid;
+  /* Slightly larger min so featured cards breathe more than the main grid */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 16px;
+}
+
+.discover-main-section {
+  margin-top: 4px;
+}
+
+.discover-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 14px;
+}
+
+/* ── App cards — Umbrel language ─────────────────────────────────
+   Horizontal card: a large rounded-square ("squircle") icon carries
+   all the color; the card itself is quiet glass. Name + one-line
+   tagline + category, install pill bottom-right. */
+.discover-card {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--border-soft, rgba(255, 255, 255, 0.08));
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s,
+              background-color 0.15s;
+}
+
+.discover-card:hover {
+  border-color: var(--border-strong, rgba(255, 255, 255, 0.16));
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+}
+
+/* The squircle app icon — uniform mask + soft shadow so shipped SVG
+   art and glyph placeholders land visually identical. */
+.discover-app-icon {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 22.5%;
+  overflow: hidden;
+  flex: 0 0 auto;
+  background: linear-gradient(135deg, #2d3142, #1f2330);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.discover-app-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Art-free listings get a per-kind glyph on a per-id tinted gradient,
+   so a catalog with no shipped art still reads as a designed icon set.
+   --ph-hue is stamped inline by the renderer. */
+.discover-app-icon.is-placeholder {
+  background: linear-gradient(135deg,
+    hsl(var(--ph-hue, 220) 30% 30%),
+    hsl(calc(var(--ph-hue, 220) + 28) 34% 16%));
+  color: rgba(255, 255, 255, 0.72);
+}
+.discover-app-icon .discover-card-glyph {
+  width: 34px;
+  height: 34px;
+  opacity: 0.92;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+.discover-card:hover .discover-card-glyph {
+  opacity: 1;
+}
+
+.discover-card-body {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  gap: 5px;
+  align-self: stretch;
+}
+
+.discover-card-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  align-self: end;
+  margin-top: 8px;
+}
+
+.discover-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.discover-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+}
+
+.discover-card-featured {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--accent, #6b8aff);
+  color: #fff;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.discover-card-tagline {
+  font-size: 13px;
+  margin: 0;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.65));
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.discover-card-meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.discover-card-kind,
+.discover-card-publisher {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.55));
+}
+
+.discover-card-publisher {
+  background: rgba(107, 138, 255, 0.15);
+  color: var(--accent-light, #97aeff);
+}
+
+.discover-install-btn {
+  padding: 7px 18px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent, #6b8aff);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s, opacity 0.15s;
+}
+
+.discover-install-btn:hover:not(:disabled) {
+  background: var(--accent-strong, #557bff);
+}
+
+.discover-install-btn:disabled,
+.discover-install-btn.is-busy {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.discover-install-btn.is-installed {
+  background: rgba(80, 180, 110, 0.18);
+  color: #6ed992;
+  border: 1px solid rgba(80, 180, 110, 0.28);
+  opacity: 1;
+  cursor: default;
+}
+
+/* Installed media-server card: "Open ▸" front-door launcher + compact
+   "Manage" (⋯) button, replacing the dead "Connected" label. */
+.discover-ms-actions {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.discover-install-btn.is-open {
+  background: var(--accent, #6b8aff);
+  color: #fff;
+}
+
+.discover-install-btn.is-manage {
+  background: rgba(128, 128, 128, 0.14);
+  color: var(--text, inherit);
+  border: 1px solid rgba(128, 128, 128, 0.28);
+  padding: 8px 10px;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.discover-install-btn.is-manage:hover:not(:disabled) {
+  background: rgba(128, 128, 128, 0.22);
+}
+
+.discover-card {
+  position: relative;
+}
+
+.discover-card.is-installed {
+  border-color: rgba(80, 180, 110, 0.25);
+}
+
+.discover-card-installed-pip {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(80, 180, 110, 0.95);
+  color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  z-index: 2;
+}
+
+/* ── Empty / error state ─────────────────────────────────────── */
+.discover-empty {
+  padding: 64px 24px;
+  text-align: center;
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.5));
+}
+
+/* ── Confirm dialog ──────────────────────────────────────────── */
+.discover-confirm-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  animation: discover-confirm-fade 0.15s ease-out;
+}
+
+@keyframes discover-confirm-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.discover-confirm-dialog {
+  width: 100%;
+  max-width: 460px;
+  margin: 0 24px;
+  background: var(--bg-primary, #1a1a1f);
+  color: var(--text-primary, #f0f0f5);
+  border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.14));
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+  animation: discover-confirm-pop 0.18s ease-out;
+}
+
+@keyframes discover-confirm-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.discover-confirm-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+
+.discover-confirm-publisher {
+  font-size: 12px;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.6));
+  margin-bottom: 10px;
+}
+
+.discover-detail-dialog {
+  max-width: 560px;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* ── Detail header: icon · name · tagline (Umbrel app page) ───── */
+.discover-detail-header {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.discover-detail-icon {
+  width: 84px;
+  height: 84px;
+}
+
+.discover-detail-icon .discover-card-glyph {
+  width: 40px;
+  height: 40px;
+}
+
+.discover-detail-headings {
+  min-width: 0;
+}
+
+.discover-detail-headings .discover-confirm-title {
+  margin: 0;
+  font-size: 20px;
+}
+
+.discover-detail-tagline {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+}
+
+.discover-detail-dev {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.5));
+}
+
+/* ── Screenshot gallery — horizontal edge-peek scroll ─────────── */
+.discover-detail-gallery {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  margin: 0 0 16px;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
+}
+
+.discover-detail-gallery img {
+  height: 170px;
+  border-radius: 10px;
+  border: 1px solid var(--border-soft, rgba(255, 255, 255, 0.09));
+  scroll-snap-align: start;
+  flex: 0 0 auto;
+  max-width: 86%;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.discover-detail-caps a {
+  color: var(--accent-light, #97aeff);
+  text-decoration: none;
+}
+.discover-detail-caps a:hover {
+  text-decoration: underline;
+}
+
+.discover-detail-desc {
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0 0 16px;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.82));
+}
+
+.discover-detail-caps {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px 18px;
+  margin: 0 0 16px;
+  font-size: 13px;
+  align-items: baseline;
+}
+
+.discover-detail-caps dt {
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.55));
+  font-weight: 500;
+}
+
+.discover-detail-caps dd {
+  margin: 0;
+  color: var(--text-primary, #f0f0f5);
+}
+
+.discover-detail-caps code {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 12px;
+}
+
+.discover-detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 16px;
+}
+
+.discover-detail-chip {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.7));
+}
+
+.discover-detail-source {
+  display: inline-block;
+  font-size: 12px;
+  color: var(--accent-light, #97aeff);
+  text-decoration: none;
+  margin-bottom: 16px;
+}
+
+.discover-detail-source:hover {
+  text-decoration: underline;
+}
+
+.discover-confirm-warnings {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.discover-confirm-warnings li {
+  font-size: 13px;
+  line-height: 1.4;
+  padding-left: 22px;
+  position: relative;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.78));
+}
+
+.discover-confirm-warnings li::before {
+  content: "•";
+  position: absolute;
+  left: 6px;
+  color: var(--accent, #6b8aff);
+  font-size: 18px;
+  line-height: 1;
+  top: 1px;
+}
+
+.discover-confirm-warnings code {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 12px;
+}
+
+.discover-confirm-aside {
+  font-size: 12px;
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.5));
+}
+
+.discover-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.discover-confirm-cancel,
+.discover-confirm-install {
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.discover-confirm-cancel {
+  background: transparent;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+  border-color: var(--border-soft, rgba(255, 255, 255, 0.14));
+}
+
+.discover-confirm-cancel:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.discover-confirm-install {
+  background: var(--accent, #6b8aff);
+  color: #fff;
+}
+
+.discover-confirm-install:hover {
+  background: var(--accent-strong, #557bff);
+}
+
+.discover-confirm-install.is-installed {
+  background: rgba(80, 180, 110, 0.18);
+  color: #6ed992;
+  border-color: rgba(80, 180, 110, 0.28);
+  cursor: default;
+}
+
+/* ── Toast ───────────────────────────────────────────────────── */
+.discover-toast {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-tertiary, #2a2d38);
+  color: var(--text-primary, #f0f0f5);
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-soft, rgba(255, 255, 255, 0.1));
+  animation: discover-toast-in 0.2s ease-out;
+  z-index: 10;
+}
+
+.discover-toast.is-error {
+  background: rgba(180, 50, 60, 0.96);
+  border-color: rgba(220, 80, 90, 0.5);
+}
+
+@keyframes discover-toast-in {
+  from { opacity: 0; transform: translate(-50%, 6px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* ── Empty / error state polish ──────────────────────────────── */
+/* The base .discover-empty (above) handles padding + color; these add
+   the centred icon + two-line copy that _renderEmpty / _renderError
+   inject, so a no-results or failure state reads as designed rather
+   than a bare sentence. */
+.discover-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.discover-empty-icon {
+  color: var(--accent, #6b8aff);
+  opacity: 0.5;
+  margin-bottom: 6px;
+}
+.discover-empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #f0f0f5);
+  margin: 0;
+}
+.discover-empty-sub {
+  font-size: 13px;
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.5));
+  margin: 0;
+  max-width: 320px;
+}
+
+/* ── Loading skeletons ───────────────────────────────────────── */
+/* Mirror the real card geometry (140px thumb row + body) so the
+   fill-in reads as data arriving in the same scaffold. .skeleton
+   (components.css) supplies the shimmer. */
+.discover-card-skel {
+  pointer-events: none;
+  border-color: var(--border-soft, rgba(255, 255, 255, 0.06));
+}
+.discover-skel-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 22.5%;
+  display: block;
+}
+.discover-card-skel .discover-card-body { gap: 9px; }
+.discover-skel-title {
+  height: 14px;
+  width: 75%;
+  border-radius: 5px;
+  display: block;
+}
+.discover-skel-tag {
+  height: 10px;
+  width: 95%;
+  border-radius: 5px;
+  display: block;
+  opacity: 0.8;
+}
+.discover-skel-short { width: 60%; }
+.discover-skel-btn {
+  height: 32px;
+  width: 84px;
+  border-radius: 8px;
+  display: block;
+  margin-top: 4px;
+}
+
+/* ── Card entrance — subtle assembling stagger ───────────────── */
+/* Skeletons keep their shimmer (excluded here); real cards fade+lift
+   on mount. First ~8 cards stagger; the rest arrive together. */
+.discover-grid > .discover-card:not(.discover-card-skel),
+.discover-featured-grid > .discover-card:not(.discover-card-skel) {
+  animation: discover-card-in 0.34s var(--ease-decelerate, cubic-bezier(0.2, 0.8, 0.2, 1)) both;
+}
+@keyframes discover-card-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+.discover-grid > .discover-card:nth-child(1) { animation-delay: 0ms; }
+.discover-grid > .discover-card:nth-child(2) { animation-delay: 40ms; }
+.discover-grid > .discover-card:nth-child(3) { animation-delay: 80ms; }
+.discover-grid > .discover-card:nth-child(4) { animation-delay: 120ms; }
+.discover-grid > .discover-card:nth-child(5) { animation-delay: 160ms; }
+.discover-grid > .discover-card:nth-child(6) { animation-delay: 200ms; }
+.discover-grid > .discover-card:nth-child(7) { animation-delay: 240ms; }
+.discover-grid > .discover-card:nth-child(8) { animation-delay: 280ms; }
+
+@media (max-width: 820px) {
+  .discover-home-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .discover-path-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .discover-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px 12px;
+  }
+
+  .discover-title {
+    flex: 1 1 auto;
+  }
+
+  .discover-search {
+    flex: 1 0 100%;
+    order: 2;
+    grid-column: auto;
+    grid-row: auto;
+    max-width: none;
+    margin-left: 0;
+  }
+
+  .discover-close {
+    flex: 0 0 auto;
+    order: 1;
+    margin-left: auto;
+    justify-self: auto;
+  }
+
+  .discover-categories {
+    padding: 10px 16px;
+  }
+
+  .discover-body {
+    padding: 16px 16px 24px;
+  }
+
+  .discover-spotlight {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .discover-spotlight-art .discover-card-thumb {
+    min-height: 112px;
+  }
+
+  .discover-spotlight-copy {
+    padding: 14px;
+  }
+
+  .discover-spotlight-title {
+    font-size: 17px;
+  }
+
+  .discover-path-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .discover-spotlight-stats {
+    display: none;
+  }
+
+  .discover-lane-card {
+    grid-template-columns: 36px minmax(0, 1fr);
+  }
+
+  .discover-mini-install {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 380px) {
+  .discover-body {
+    padding-inline: 12px;
+  }
+
+  .discover-path-card {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+
+  .discover-path-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .discover-path-count {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .discover-grid > .discover-card,
+  .discover-featured-grid > .discover-card { animation: none; }
+}
+
+/* Media-server external-library host-path field (install confirm dialog) */
+.discover-media-path-field {
+  display: block;
+  margin: 14px 0 4px;
+}
+.discover-media-path-label {
+  display: block;
+  font-size: 0.85em;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.discover-media-path-opt {
+  font-weight: 400;
+  opacity: 0.6;
+}
+.discover-media-host-path {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font: inherit;
+  color: inherit;
+  background: var(--surface-2, rgba(128, 128, 128, 0.08));
+  border: 1px solid rgba(128, 128, 128, 0.3);
+}
+.discover-media-host-path:focus {
+  outline: none;
+  border-color: var(--accent, #6c8cff);
+}
+.discover-media-path-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.78em;
+  opacity: 0.6;
+  line-height: 1.4;
+}
+
+/* Advanced (collapsed) section of the app detail sheet — memory limit.
+   Collapsed by default on purpose: Augmentum sets no default ceiling, and the
+   right answer for nearly every install is to leave it alone. */
+.discover-advanced {
+  margin-top: 16px;
+  border-top: 1px solid rgba(128, 128, 128, 0.2);
+  padding-top: 4px;
+}
+.discover-advanced-summary {
+  cursor: pointer;
+  font-size: 0.82em;
+  font-weight: 600;
+  opacity: 0.7;
+  padding: 8px 0;
+  list-style: revert;
+}
+.discover-advanced-summary:hover { opacity: 1; }
+.discover-advanced[open] .discover-advanced-summary { opacity: 1; }
+
+/* Inherit the shared field styling so the limit input matches the host-path
+   and env-prompt inputs rather than becoming a third look. */
+.discover-mem-limit {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font: inherit;
+  color: inherit;
+  background: var(--surface-2, rgba(128, 128, 128, 0.08));
+  border: 1px solid rgba(128, 128, 128, 0.3);
+}
+.discover-mem-limit:focus {
+  outline: none;
+  border-color: var(--accent, #6c8cff);
+}
+.discover-mem-limit-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.discover-mem-limit-save {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.85em;
+  cursor: pointer;
+  color: inherit;
+  background: var(--surface-2, rgba(128, 128, 128, 0.12));
+  border: 1px solid rgba(128, 128, 128, 0.35);
+}
+.discover-mem-limit-save:hover:not(:disabled) {
+  border-color: var(--accent, #6c8cff);
+}
+.discover-mem-limit-save:disabled { opacity: 0.55; cursor: default; }
+.discover-mem-limit-status {
+  font-size: 0.8em;
+  opacity: 0.75;
+  /* Errors carry a reason the user can act on, so let them wrap onto their
+     own line instead of being clipped by the button row. */
+  flex: 1 1 100%;
+}
+.discover-mem-limit-status.is-error {
+  color: var(--danger, #e05260);
+  opacity: 1;
+}
+
+/* ── System dashboard (capability cards) ─────────────────────────────────── */
+
+.discover-system-dashboard {
+  margin: 12px 0 20px;
+}
+
+.discover-system-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  background: var(--surface-1, rgba(128, 128, 128, 0.06));
+  border: 1px solid rgba(128, 128, 128, 0.16);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.discover-system-card:hover,
+.discover-system-card:focus-visible {
+  background: var(--surface-2, rgba(128, 128, 128, 0.12));
+}
+
+.discover-system-icon {
+  font-size: 1.4em;
+  flex-shrink: 0;
+  width: 30px;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.discover-system-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.discover-system-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.discover-system-label {
+  font-weight: 600;
+  font-size: 0.94em;
+}
+
+.discover-system-status {
+  font-size: 0.8em;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+.discover-system-sub {
+  font-size: 0.82em;
+  opacity: 0.6;
+  margin-top: 2px;
+}
+
+.discover-system-hint {
+  font-size: 0.8em;
+  opacity: 0.6;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* ── Manage-card integration rows ────────────────────────────────────────── */
+
+.discover-integration-heading {
+  font-size: 0.78em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.5;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.18);
+}
+
+.discover-integration-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.08);
+}
+.discover-integration-row:last-child {
+  border-bottom: none;
+}
+
+.discover-integration-icon {
+  font-size: 1.15em;
+  flex-shrink: 0;
+}
+
+.discover-integration-label {
+  flex: 1;
+  font-size: 0.88em;
+  min-width: 0;
+}
+
+.discover-integration-protocol {
+  opacity: 0.5;
+  font-size: 0.92em;
+}
+
+.discover-integration-status {
+  font-size: 0.78em;
+  opacity: 0.65;
+  white-space: nowrap;
+}
+
+/* Install-time wiring (e.g. Augmentum AI) — a passive badge, not a switch. */
+.discover-integration-builtin {
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  color: var(--accent, #8aa0ff);
+  background: color-mix(in srgb, var(--accent, #8aa0ff) 16%, transparent);
+}
+
+/* Toggle switch (matches settings.js pattern) */
+.discover-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.discover-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.discover-toggle-track {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: rgba(128, 128, 128, 0.3);
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+
+.discover-toggle input:checked + .discover-toggle-track {
+  background: var(--accent, #6c8cff);
+}
+
+.discover-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.discover-toggle input:checked + .discover-toggle-track .discover-toggle-thumb {
+  transform: translateX(16px);
+}
+
+.discover-toggle-label {
+  font-size: 0.78em;
+  opacity: 0.65;
+}

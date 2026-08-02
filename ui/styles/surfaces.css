@@ -1,0 +1,482 @@
+/* ==========================================================================
+   Surface System — Tab bar + full-screen surfaces
+   Phone OS model: one surface fills the screen, tab bar for switching.
+   ========================================================================== */
+
+/* ── Surface Grid (stack, not grid — one visible at a time) ──────── */
+
+/*
+ * .main-area is a flex column (header/chat/input grid area). When the
+ * surface-tab-bar is visible (count > 1), it's inserted as a sibling of
+ * .surface-grid. Use flex: 1 + min-height: 0 so the grid fills the
+ * remaining space after the tab bar shrinks to its content height,
+ * instead of relying on the flex-shrink fallback from height: 100%.
+ * min-height: 0 is critical — without it, flex items refuse to shrink
+ * below their content's intrinsic height, which on a busy chat surface
+ * would overflow .main-area.
+ */
+.surface-grid {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Before JS mounts the first surface, #surface-grid is an empty flex child
+   sitting above the legacy #chat-scroll. Let the visible chat own the space
+   during that boot window instead of splitting the pane in half. */
+.surface-grid:empty {
+  flex: 0 0 0;
+}
+
+/* Transparent when bg image is active so it shows through */
+.app[data-bg-active="true"] .surface-grid {
+  background: transparent;
+}
+
+/* ── Surface Container ────────────────────────────────────────────── */
+
+.surface-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+  overflow: hidden;
+  /* Default: visible and interactive. Only hide when there are
+     multiple surfaces and this one isn't focused. */
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 1;
+  transition: opacity 0.2s ease;
+}
+
+/* Multiple surfaces: hide non-focused ones */
+.surface-container ~ .surface-container {
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.surface-container[data-focused="true"] {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+/* First container also hides when another is focused */
+.surface-container:not([data-focused="true"]):not(:only-child) {
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* When background rotation/image is active, surface containers must be
+   transparent so the bg image (in .main-area) shows through. */
+.app[data-bg-active="true"] .surface-container {
+  background: transparent;
+}
+
+.app[data-bg-active="true"] .surface-content {
+  background: transparent;
+}
+
+/* ── Tab Bar ─────────────────────────────────────────────────────── */
+
+.surface-tab-bar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 8px;
+  height: 32px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-light);
+  flex-shrink: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  z-index: 10;
+}
+
+.surface-tab-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.surface-tab-bar.hidden {
+  display: none;
+}
+
+/* ── Tab ─────────────────────────────────────────────────────────── */
+
+.surface-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  position: relative;
+  max-width: 160px;
+}
+
+.surface-tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.surface-tab.active {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Active indicator line under tab */
+.surface-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 6px;
+  right: 6px;
+  height: 2px;
+  background: var(--tab-color, var(--accent));
+  border-radius: 2px 2px 0 0;
+}
+
+/* Orb dot */
+.surface-tab-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--tab-color, var(--accent));
+  flex-shrink: 0;
+  box-shadow: 0 0 4px color-mix(in srgb, var(--tab-color, var(--accent)) 30%, transparent);
+}
+
+.surface-tab.active .surface-tab-dot {
+  box-shadow: 0 0 8px color-mix(in srgb, var(--tab-color, var(--accent)) 50%, transparent);
+}
+
+/* Title */
+.surface-tab-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Close button */
+.surface-tab-close {
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease;
+  padding: 0 2px;
+  flex-shrink: 0;
+}
+
+.surface-tab:hover .surface-tab-close {
+  opacity: 0.6;
+}
+
+.surface-tab-close:hover {
+  opacity: 1 !important;
+  color: var(--error, #ef4444);
+}
+
+/* ── Surface Content ──────────────────────────────────────────────── */
+
+.surface-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  min-height: 0;
+}
+
+/* Ensure chat scroll works inside surface content. Drop `height: 100%`
+   here — it conflicts with `flex: 1` in a flex column (the explicit
+   height resolves before flex distribution and pushes input-area below
+   the bottom edge, leaving it floating mid-viewport with empty space
+   underneath). flex: 1 + min-height: 0 is what we want: chat-scroll
+   absorbs free space, input-area sits flush against the bottom. */
+.surface-content .chat-scroll,
+.surface-content #chat-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.surface-content .input-area {
+  flex-shrink: 0;
+  position: relative;
+  /* Belt-and-suspenders: pin input to the bottom of the flex column
+     even when chat-scroll's flex:1 fails to grow (e.g. when the surface-
+     content was created before its inline `display: flex` styles took
+     effect, or when an ancestor's height collapses during a mode-swap).
+     Without this, the input floats mid-viewport on the empty wallpaper. */
+  margin-top: auto;
+}
+
+/* ── Surface-Adapted Panels ──────────────────────────────────────── */
+
+/* Browse panel: normally position:fixed. Inside surface: fill. */
+.surface-content .browse-panel {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: auto !important;
+  border: none !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+
+/* Image panel: normally position:fixed. Inside surface: fill. */
+.surface-content .image-panel {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: auto !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  animation: none !important;
+  background: var(--bg-primary) !important;
+}
+
+/* Coder terminal fills surface */
+.surface-content .coder-terminal-pane {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
+.surface-content .coder-editor-split {
+  z-index: 2;
+}
+
+/* Coder status/intent bars */
+.surface-content #coder-status,
+.surface-content #coder-intent {
+  flex-shrink: 0;
+}
+
+/* ── Theme Adaptations ───────────────────────────────────────────── */
+
+[data-theme="light"] .surface-tab-bar {
+  background: var(--bg-card, #ffffff);
+}
+
+[data-theme="light"] .surface-tab:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .surface-tab.active {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="sepia"] .surface-tab-bar {
+  background: var(--bg-secondary);
+  border-color: rgba(180, 160, 130, 0.15);
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  /* Tab bar still visible on mobile when multiple surfaces open. Fade the
+     right edge to hint at horizontal scrollability when tabs overflow —
+     without this, users with 3+ tabs on a narrow phone wouldn't see the
+     extra tabs exist. Mask only applies when the bar is actually
+     scrollable so the fade doesn't falsely suggest hidden content. */
+  .surface-tab-bar {
+    height: 38px;
+    padding: 0 4px;
+    mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
+  }
+  /* Only apply the fade when overflow exists — one or two tabs don't need
+     the hint. scrollbar-width presence isn't reliable so we gate on the
+     tab count via the parent :has() which is well-supported in evergreen
+     browsers. */
+  .surface-tab-bar:not(:has(.surface-tab:nth-child(3))) {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .surface-tab {
+    padding: 6px 8px;
+    font-size: 11px;
+    max-width: 120px;
+    min-height: 32px; /* wider hit target for the whole tab */
+  }
+
+  /* Expand the close-button tap target without changing its visual size
+     (the ::before covers the full tab-height area around the ×, which
+     users can then tap reliably on touchscreens). */
+  .surface-tab-close {
+    opacity: 0.5; /* Always visible on mobile — no hover */
+    position: relative;
+    padding: 0 6px;
+    min-width: 20px;
+    min-height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .surface-tab-close::before {
+    content: '';
+    position: absolute;
+    inset: -8px -4px;
+  }
+}
+
+/* ==========================================================================
+   Late Surface Polish Layer
+   Loaded after most feature CSS so specialized surfaces inherit a common
+   finish without changing their structure or interaction model.
+   ========================================================================== */
+
+.surface-tab-bar {
+  background:
+    linear-gradient(180deg, var(--edge-highlight), transparent 80%),
+    color-mix(in srgb, var(--bg-secondary) 94%, transparent);
+  border-bottom-color: var(--edge-subtle);
+  box-shadow:
+    0 10px 26px color-mix(in srgb, var(--bg) 18%, transparent),
+    inset 0 1px 0 var(--edge-highlight);
+}
+
+.surface-tab {
+  border: 1px solid transparent;
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.surface-tab:hover {
+  background: color-mix(in srgb, var(--surface-hover) 74%, transparent);
+  border-color: color-mix(in srgb, var(--text-primary) 7%, transparent);
+}
+
+.surface-tab.active {
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--tab-color, var(--accent)) 10%, transparent),
+      color-mix(in srgb, var(--surface) 78%, transparent));
+  border-color: color-mix(in srgb, var(--tab-color, var(--accent)) 24%, transparent);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--tab-color, var(--accent)) 8%, transparent),
+    0 8px 18px color-mix(in srgb, var(--bg) 14%, transparent);
+}
+
+.surface-tab.active::after {
+  left: 10px;
+  right: 10px;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--tab-color, var(--accent)) 18% 82%,
+    transparent);
+}
+
+.surface-content {
+  background:
+    radial-gradient(700px circle at 50% 0%,
+      color-mix(in srgb, var(--accent) 4%, transparent),
+      transparent 64%),
+    var(--bg-primary);
+}
+
+:where(.surface-content, .left-panel, .inspector-panel) :where(
+  .card,
+  [class$="-card"],
+  [class*="-card "],
+  [class$="-tile"],
+  [class*="-tile "],
+  [class$="-item"],
+  [class*="-item "],
+  [class$="-row"],
+  [class*="-row "],
+  [class$="-pill"],
+  [class*="-pill "],
+  [class$="-chip"],
+  [class*="-chip "]
+) {
+  border-color: color-mix(in srgb, currentColor 4%, var(--edge-subtle));
+}
+
+:where(.surface-content, .left-panel, .inspector-panel) :where(
+  .card,
+  [class$="-card"],
+  [class*="-card "],
+  [class$="-tile"],
+  [class*="-tile "]
+) {
+  box-shadow:
+    0 10px 26px color-mix(in srgb, var(--bg) 14%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #ffffff 3%, transparent);
+}
+
+:where(.surface-content, .left-panel, .inspector-panel) :where(
+  .card,
+  [class$="-card"],
+  [class*="-card "],
+  [class$="-tile"],
+  [class*="-tile "],
+  [class$="-item"],
+  [class*="-item "]
+):where(:hover, :focus-within) {
+  border-color: color-mix(in srgb, var(--accent) 18%, var(--edge-subtle));
+}
+
+:where(.surface-content, .left-panel, .inspector-panel) :where(
+  .badge,
+  [class$="-badge"],
+  [class*="-badge "],
+  .pill,
+  [class$="-pill"],
+  [class*="-pill "],
+  .chip,
+  [class$="-chip"],
+  [class*="-chip "]
+) {
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #ffffff 4%, transparent),
+    0 1px 2px color-mix(in srgb, var(--bg) 16%, transparent);
+}
+
+:where(.surface-content, .left-panel, .inspector-panel) :where(
+  .sheet,
+  [class$="-sheet"],
+  [class*="-sheet "],
+  .drawer,
+  [class$="-drawer"],
+  [class*="-drawer "],
+  .popover,
+  [class$="-popover"],
+  [class*="-popover "],
+  .dropdown,
+  [class$="-dropdown"],
+  [class*="-dropdown "]
+) {
+  border-color: var(--edge-strong);
+  box-shadow:
+    var(--shadow-popover),
+    inset 0 1px 0 var(--edge-highlight);
+}

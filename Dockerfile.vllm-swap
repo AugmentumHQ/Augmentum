@@ -1,0 +1,48 @@
+# syntax=docker/dockerfile:1
+#
+# Combined llama-swap + vLLM image — the unsupported-architecture fallback tier.
+#
+# Based on the official vLLM image, which already ships torch + CUDA +
+# transformers AND the `vllm` CLI. We drop in the llama-swap Go binary and make
+# IT the entrypoint; llama-swap then spawns `vllm serve …` upstreams on demand
+# (the CLI is already on PATH) and swaps models by name. Basing on the vLLM image
+# is deliberate: it's the heavy part, and it gives llama-swap the exact `vllm`
+# command its config invokes.
+#
+# Built locally today (single-click Add in Discover kicks the build). Publishing
+# this as a pinned registry image later is a drop-in: the install UX doesn't
+# change — the build just becomes a pull. See:
+#   docs/superpowers/specs/2026-07-22-unsupported-arch-serving-vllm-safetensors-design.md
+#
+# Build inputs are pinned ARGs (verify-before-long-compile discipline — a vLLM
+# image is large). Bump deliberately, never float :latest.
+#   VLLM_TAG           — official vllm/vllm-openai tag (a real published tag)
+#   LLAMA_SWAP_VERSION — mostlygeek/llama-swap release; asset name is the fixed
+#                        `llama-swap-linux-<arch>` per release.
+
+# vLLM 0.25.1 (CUDA 12.9). Newer vLLM bundles a current transformers, which is
+# what recognizes brand-new archs (qwen3_5 etc.) — the v0.13.0 pin's transformers
+# 4.57.3 was too old and failed to load them. cu12.9 for broad driver compat.
+ARG VLLM_TAG=v0.25.1-x86_64-cu129-ubuntu2404
+FROM vllm/vllm-openai:${VLLM_TAG}
+
+# llama-swap release: tag is `v<N>`, but the asset filename uses the bare number.
+# The asset is a tarball containing the `llama-swap` binary at its root (verified
+# against the GitHub releases API — do not assume a bare-binary asset).
+ARG LLAMA_SWAP_VERSION=241
+ARG TARGETARCH=amd64
+
+ADD https://github.com/mostlygeek/llama-swap/releases/download/v${LLAMA_SWAP_VERSION}/llama-swap_${LLAMA_SWAP_VERSION}_linux_${TARGETARCH}.tar.gz /tmp/llama-swap.tar.gz
+RUN tar -xzf /tmp/llama-swap.tar.gz -C /usr/local/bin llama-swap \
+ && chmod +x /usr/local/bin/llama-swap \
+ && rm /tmp/llama-swap.tar.gz
+
+# Bake a default config so llama-swap starts cleanly on a fresh install with
+# zero models (`models: {}` is valid). Live model entries are added later
+# (Phase 3) via a shared config volume + reload. Override the vLLM image's
+# entrypoint so llama-swap runs instead — it launches vLLM upstreams itself.
+COPY config/llama-swap/llama-swap.yaml /config/llama-swap.yaml
+
+EXPOSE 8080
+ENTRYPOINT ["/usr/local/bin/llama-swap"]
+CMD ["--config", "/config/llama-swap.yaml", "--listen", "0.0.0.0:8080"]

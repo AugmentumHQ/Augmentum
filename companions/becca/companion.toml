@@ -1,0 +1,36 @@
+# Becca — companion manifest
+#
+# This is the canonical root config for the companion living in this
+# directory. Augmentum's runtime mounts companions by reading this
+# file. See docs/superpowers/specs/2026-05-23-accumulation-thesis.md
+# for the design intent of the companion directory layout.
+
+[companion]
+# Stable id used throughout the code + DB. Don't rename casually —
+# it's the foreign-key value across ~30 tables. The display_name +
+# personality doc are where her "name" actually shows up to the user.
+id = "becca"
+
+# Seed date: when this companion's continuity clock started.
+# Migrations, drift audits, and the accumulation-clock telemetry
+# anchor on this date. Format: YYYY-MM-DD.
+seed_date = "2026-05-14"
+
+# Manifest schema version. Bump when companion.toml's structure
+# changes; the runtime uses this to decide whether to migrate the
+# directory layout.
+schema_version = 1
+
+[paths]
+# Paths inside this companion's directory. Resolved relative to the
+# directory containing this file. Each subdirectory is described in
+# README.md.
+personality_doc = "identity/personality.md"
+behavior_contract = "identity/behavior_contract.yaml"   # Phase 2+ (not yet written)
+genesis_snapshot = "identity/genesis.snapshot.json"     # Phase 2+ (not yet written)
+avatar_vrm = "body/avatar.vrm"                          # Phase 2+ (not yet migrated)
+voice_bundle = "body/voice.bundle.json"                 # Phase 2+ (not yet migrated)
+topology_nodes = "topology/nodes.yaml"                  # Phase 2+ (hyper-network step)
+exemplars_db = "artifacts/exemplars.db"                 # Phase 2+ (skill graph step)
+anti_patterns_db = "artifacts/anti_patterns.db"         # Phase 2+
+signatures = "artifacts/signatures.yaml"                # Phase 2+

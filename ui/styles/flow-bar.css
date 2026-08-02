@@ -1,0 +1,763 @@
+/* ==========================================================================
+   Flow Command Bar + Flow Picker
+   Compact flow selector, execution progress, and flow selection popover
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   Command Bar — the always-visible nerve center
+   --------------------------------------------------------------------------- */
+
+.flow-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  height: 36px;
+  padding: 0 var(--space-sm);
+  flex: 1 1 0;
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  position: relative;
+  cursor: default;
+  user-select: none;
+  animation: flowBarIn 200ms var(--ease-out) both;
+  transition: border-color var(--duration-fast) var(--ease-standard),
+              background var(--duration-fast) var(--ease-standard);
+}
+
+.flow-bar:hover {
+  border-color: color-mix(in srgb, var(--flow-bar-accent, var(--mode-analytical)) 40%, var(--border));
+}
+
+.flow-bar--hidden {
+  display: none !important;
+}
+
+@keyframes flowBarIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Name Zone (left — clickable, opens picker) --- */
+
+.flow-bar__name-zone {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 4px 8px 4px 4px;
+  border-radius: var(--radius-sm);
+  transition: background var(--duration-fast) var(--ease-standard);
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.flow-bar__name-zone:hover {
+  background: var(--surface-hover);
+}
+
+.flow-bar__diamond {
+  width: 8px;
+  height: 8px;
+  background: var(--flow-bar-accent, var(--mode-analytical));
+  transform: rotate(45deg);
+  border-radius: 1.5px;
+  flex-shrink: 0;
+}
+
+.flow-bar__name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+/* --- Pipeline Zone (center — step dots) --- */
+
+.flow-bar__pipeline {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+  padding: 0 var(--space-sm);
+}
+
+.flow-bar__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background var(--duration-normal) var(--ease-out),
+              box-shadow var(--duration-normal) var(--ease-out);
+}
+
+.flow-bar__dot--idle {
+  background: var(--text-muted);
+}
+
+.flow-bar__dot--disabled {
+  background: transparent;
+  border: 1px solid var(--border);
+  width: 4px;
+  height: 4px;
+}
+
+.flow-bar__dot--pending {
+  background: var(--border);
+}
+
+.flow-bar__dot--running {
+  background: var(--flow-bar-accent, var(--mode-analytical));
+  box-shadow: 0 0 6px color-mix(in srgb, var(--flow-bar-accent, var(--mode-analytical)) 50%, transparent);
+  animation: flowDotPulse 2s ease-in-out infinite;
+}
+
+.flow-bar__dot--complete {
+  background: var(--success);
+}
+
+.flow-bar__dot--skipped {
+  background: var(--border);
+  opacity: 0.4;
+}
+
+.flow-bar__connector {
+  width: 8px;
+  height: 1px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+@keyframes flowDotPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
+/* --- Tune Button (compact trigger, always visible) --- */
+
+.flow-bar__tune-btn {
+  display: none; /* Hidden on desktop where pipeline is clickable */
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+}
+
+.flow-bar__tune-btn:hover {
+  color: var(--flow-bar-accent, var(--mode-analytical));
+  border-color: var(--flow-bar-accent, var(--mode-analytical));
+}
+
+/* --- Meta Zone (right — metadata + chevron) --- */
+
+.flow-bar__meta-zone {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.flow-bar__meta {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.flow-bar__status {
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.flow-bar__chevron {
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: color var(--duration-fast) var(--ease-standard),
+              background var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard);
+  flex-shrink: 0;
+}
+
+.flow-bar__chevron:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+}
+
+.flow-bar__chevron--open {
+  transform: rotate(180deg);
+}
+
+/* --- Progress Line (bottom edge, during execution) --- */
+
+.flow-bar__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--flow-bar-accent, var(--mode-analytical));
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  width: 0%;
+  transition: width 300ms var(--ease-out);
+  opacity: 0;
+}
+
+.flow-bar--executing .flow-bar__progress {
+  opacity: 1;
+}
+
+/* --- Execution State Modifiers --- */
+
+.flow-bar--executing {
+  border-color: color-mix(in srgb, var(--flow-bar-accent, var(--mode-analytical)) 30%, var(--border));
+}
+
+.flow-bar--complete {
+  animation: flowBarFlash 300ms var(--ease-standard);
+}
+
+@keyframes flowBarFlash {
+  0%   { background: var(--surface); }
+  30%  { background: color-mix(in srgb, var(--success) 8%, var(--surface)); }
+  100% { background: var(--surface); }
+}
+
+/* ---------------------------------------------------------------------------
+   Flow Picker — popover card grid
+   --------------------------------------------------------------------------- */
+
+.flow-picker__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+}
+
+.flow-picker {
+  position: fixed;
+  z-index: calc(var(--z-overlay) + 1);
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  max-height: 420px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: flowPickerIn 200ms var(--ease-out) both;
+}
+
+@keyframes flowPickerIn {
+  from { opacity: 0; transform: scale(0.96) translateY(4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* --- Picker Header --- */
+
+.flow-picker__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.flow-picker__search {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: var(--text-xs);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.flow-picker__search::placeholder {
+  color: var(--text-muted);
+}
+
+.flow-picker__search:focus {
+  border-color: var(--fp-accent, var(--mode-analytical));
+}
+
+.flow-picker__create-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+}
+
+.flow-picker__create-btn:hover {
+  color: var(--fp-accent, var(--mode-analytical));
+  border-color: var(--fp-accent, var(--mode-analytical));
+}
+
+/* --- Picker Grid --- */
+
+.flow-picker__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Scrollbar */
+.flow-picker__grid::-webkit-scrollbar { width: 4px; }
+.flow-picker__grid::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 2px;
+}
+
+/* --- Flow Card --- */
+
+.flow-picker__card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color var(--duration-fast) var(--ease-standard),
+              box-shadow var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-out);
+  animation: flowCardIn 150ms var(--ease-out) both;
+}
+
+/* Stagger card entry */
+.flow-picker__card:nth-child(1) { animation-delay: 0ms; }
+.flow-picker__card:nth-child(2) { animation-delay: 40ms; }
+.flow-picker__card:nth-child(3) { animation-delay: 80ms; }
+.flow-picker__card:nth-child(4) { animation-delay: 120ms; }
+.flow-picker__card:nth-child(5) { animation-delay: 160ms; }
+.flow-picker__card:nth-child(6) { animation-delay: 200ms; }
+
+@keyframes flowCardIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.flow-picker__card:hover {
+  border-color: color-mix(in srgb, var(--fp-accent, var(--mode-analytical)) 40%, var(--border));
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.flow-picker__card--active {
+  border-color: var(--fp-accent, var(--mode-analytical));
+  background: color-mix(in srgb, var(--fp-accent, var(--mode-analytical)) 4%, var(--bg-elevated));
+}
+
+.flow-picker__card-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.flow-picker__card-active {
+  color: var(--fp-accent, var(--mode-analytical));
+  font-size: 10px;
+}
+
+.flow-picker__card-desc {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.flow-picker__card-footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.flow-picker__card-pipeline {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+}
+
+.flow-picker__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.flow-picker__line {
+  width: 6px;
+  height: 1px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.flow-picker__card--active .flow-picker__dot {
+  background: var(--fp-accent, var(--mode-analytical));
+}
+
+.flow-picker__card-count {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.flow-picker__card-caps {
+  font-size: 11px;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+/* --- Picker Footer --- */
+
+.flow-picker__footer {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-xs) var(--space-md);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.flow-picker__edit-link {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.flow-picker__edit-link:hover {
+  color: var(--text-primary);
+}
+
+/* --- Empty state --- */
+
+.flow-picker__empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--space-lg);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+/* --- Hidden utility (scoped to flow-bar so it doesn't leak) --- */
+
+.flow-bar .hidden {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Quick Tune Panel — expandable step/tool overrides
+   --------------------------------------------------------------------------- */
+
+.flow-bar__tune {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%; /* Force onto its own row in flex-wrap layout */
+  padding: var(--space-sm) var(--space-md) var(--space-xs);
+  border-top: 1px solid var(--border);
+  animation: flowTuneIn 250ms var(--ease-out) both;
+}
+
+.flow-bar--tuning .flow-bar__tune {
+  display: flex;
+}
+
+.flow-bar--tuning {
+  height: auto;
+  flex-wrap: wrap;
+}
+
+@keyframes flowTuneIn {
+  from { opacity: 0; max-height: 0; }
+  to   { opacity: 1; max-height: 200px; }
+}
+
+/* --- Tune Header Row --- */
+
+.flow-bar__tune-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.flow-bar__tune-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  min-width: 36px;
+  flex-shrink: 0;
+}
+
+/* --- Step Pills --- */
+
+.flow-bar__tune-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface-active);
+  color: var(--text-primary);
+  transition: background var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard),
+              opacity var(--duration-fast) var(--ease-standard);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.flow-bar__tune-pill:hover {
+  border-color: var(--flow-bar-accent, var(--mode-analytical));
+}
+
+.flow-bar__tune-pill--disabled {
+  background: var(--bg);
+  color: var(--text-muted);
+  border-style: dashed;
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.flow-bar__tune-pill--disabled:hover {
+  opacity: 0.85;
+}
+
+/* Connector dashes between pills */
+.flow-bar__tune-conn {
+  width: 10px;
+  height: 1px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.flow-bar__tune-conn--disabled {
+  border-top: 1px dashed var(--border);
+  background: none;
+}
+
+/* --- Tool Chips --- */
+
+.flow-bar__tune-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  background: var(--surface-active);
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  transition: background var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard),
+              opacity var(--duration-fast) var(--ease-standard);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.flow-bar__tune-tool:hover {
+  background: var(--surface-hover);
+}
+
+.flow-bar__tune-tool--disabled {
+  color: var(--text-muted);
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+.flow-bar__tune-tool--disabled:hover {
+  opacity: 0.7;
+}
+
+/* --- Tune Footer --- */
+
+.flow-bar__tune-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 2px;
+}
+
+.flow-bar__tune-done {
+  background: none;
+  border: none;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--flow-bar-accent, var(--mode-analytical));
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.flow-bar__tune-done:hover {
+  background: var(--surface-hover);
+}
+
+.flow-bar__tune-edit {
+  background: none;
+  border: none;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.flow-bar__tune-edit:hover {
+  color: var(--text-primary);
+}
+
+/* ---------------------------------------------------------------------------
+   Responsive
+   --------------------------------------------------------------------------- */
+
+/* Compact / halfscreen treatment kicks in below 900px so halfscreen on
+   common 1080p / 1440p / 4K monitors gets the always-reachable bottom-
+   sheet layout instead of an anchored popover that clips off the viewport
+   edge when the flow-bar anchor sits right of center.
+   Bar-internal styling (heights, badge sizes) only needs the tighter
+   true-mobile pass at 767px — kept in a separate block below. */
+
+@media (max-width: 899px) {
+  /* Picker becomes bottom sheet */
+  .flow-picker {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    max-height: 75vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    animation: flowPickerSlideUp 250ms var(--ease-out) both;
+  }
+
+  @keyframes flowPickerSlideUp {
+    from { opacity: 0; transform: translateY(100%); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Two-column grid still fits at 768-899px and lets users see more
+     flows at a glance — only collapse to one column at true mobile. */
+}
+
+@media (max-width: 767px) {
+  .flow-bar {
+    height: 36px;
+    padding: 0 var(--space-sm);
+  }
+
+  .flow-bar__name {
+    max-width: 120px;
+    font-size: var(--text-xs);
+  }
+
+  .flow-bar__pipeline {
+    display: none;
+  }
+
+  .flow-bar__tune-btn {
+    display: inline-flex;
+  }
+
+  .flow-bar__meta {
+    font-size: 10px;
+  }
+
+  /* Tune panel on mobile — show pipeline since bar hides it */
+  .flow-bar--tuning .flow-bar__pipeline {
+    display: none;
+  }
+
+  .flow-bar__tune-row {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .flow-bar__tune-row::-webkit-scrollbar { display: none; }
+
+  .flow-picker__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 500px) {
+  .flow-bar__meta-zone {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Reduced motion
+   --------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-bar,
+  .flow-picker,
+  .flow-picker__card,
+  .flow-bar__tune {
+    animation-duration: 0ms !important;
+  }
+
+  .flow-bar__dot--running {
+    animation: none;
+  }
+}

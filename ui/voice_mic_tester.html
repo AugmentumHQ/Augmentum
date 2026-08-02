@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Augmentum Voice Mic Diagnostic</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --bg: #0f1115; --panel: #161922; --border: #2a2f3c;
+    --text: #e6e8ec; --muted: #8a909c; --accent: #4f8cff;
+    --good: #2dd47e; --warn: #f5a524; --bad: #ef4444;
+    --mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  }
+  body {
+    margin: 0; padding: 24px;
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-size: 14px; line-height: 1.5;
+  }
+  h1 { margin: 0 0 4px; font-size: 22px; }
+  .sub { color: var(--muted); margin-bottom: 24px; }
+  .grid { display: grid; gap: 16px; grid-template-columns: 1fr; max-width: 980px; }
+  @media (min-width: 760px) { .grid { grid-template-columns: 1fr 1fr; } }
+  .panel {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px;
+  }
+  .panel h2 { margin: 0 0 12px; font-size: 14px; text-transform: uppercase;
+              letter-spacing: 0.06em; color: var(--muted); }
+  button {
+    background: var(--accent); color: white; border: 0;
+    padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px;
+    font-weight: 500;
+  }
+  button:hover { opacity: 0.9; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  button.secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  select, input[type="text"] {
+    background: var(--bg); color: var(--text); border: 1px solid var(--border);
+    border-radius: 6px; padding: 6px 10px; font-size: 13px; width: 100%;
+    margin-top: 4px;
+  }
+  pre, code {
+    font-family: var(--mono); font-size: 12px;
+    background: var(--bg); padding: 2px 6px; border-radius: 4px;
+  }
+  pre {
+    padding: 10px; overflow-x: auto; max-height: 320px; overflow-y: auto;
+    border: 1px solid var(--border); white-space: pre-wrap; word-break: break-word;
+  }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 13px; }
+  .kv b { color: var(--muted); font-weight: 500; }
+  .level-row { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+  .level-meter {
+    flex: 1; height: 12px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+    position: relative;
+  }
+  .level-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--good) 0%, var(--good) 60%, var(--warn) 80%, var(--bad) 100%);
+    width: 0%; transition: width 80ms linear;
+  }
+  .level-num { font-family: var(--mono); font-size: 11px; color: var(--muted); min-width: 60px; text-align: right; }
+  canvas { width: 100%; height: 96px; background: var(--bg); border-radius: 6px; border: 1px solid var(--border); }
+  .verdict {
+    padding: 12px; border-radius: 6px; font-size: 13px;
+    margin-top: 8px;
+  }
+  .verdict.good { background: color-mix(in srgb, var(--good) 16%, transparent);
+                  border: 1px solid color-mix(in srgb, var(--good) 40%, transparent); }
+  .verdict.warn { background: color-mix(in srgb, var(--warn) 16%, transparent);
+                  border: 1px solid color-mix(in srgb, var(--warn) 40%, transparent); }
+  .verdict.bad  { background: color-mix(in srgb, var(--bad) 16%, transparent);
+                  border: 1px solid color-mix(in srgb, var(--bad) 40%, transparent); }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .pill {
+    display: inline-block; padding: 2px 8px; font-size: 11px;
+    border-radius: 999px; background: var(--bg); border: 1px solid var(--border);
+    font-family: var(--mono);
+  }
+  .pill.good { color: var(--good); border-color: color-mix(in srgb, var(--good) 60%, transparent); }
+  .pill.warn { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 60%, transparent); }
+  .pill.bad  { color: var(--bad);  border-color: color-mix(in srgb, var(--bad) 60%, transparent); }
+  audio { width: 100%; margin-top: 8px; }
+  details { margin-top: 8px; }
+  details summary { cursor: pointer; color: var(--muted); font-size: 12px; }
+  a { color: var(--accent); }
+  .full { grid-column: 1 / -1; }
+  /* iOS Safari auto-zooms when a focused input has font-size < 16px and
+   * never zooms back out cleanly. Bump form controls to 16px on coarse
+   * pointers so loading this diagnostic on a phone stays usable. */
+  @media (pointer: coarse) {
+    input, textarea, select { font-size: 16px !important; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Voice Mic Diagnostic</h1>
+<p class="sub">
+  Captures mic input, runs it through every check that matters for the Augmentum voice path,
+  and shows you exactly where the empty-transcript chain is breaking.
+  Run from the same origin as the augmentum server so the session cookie comes along.
+</p>
+
+<div class="grid">
+
+  <!-- ─────────── Device + browser capabilities ─────────── -->
+  <div class="panel">
+    <h2>Browser + Device</h2>
+    <div class="kv" id="env-kv"></div>
+    <div style="margin-top: 12px;">
+      <label>Input device</label>
+      <select id="device-select"></select>
+    </div>
+    <div style="margin-top: 12px;">
+      <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted);">
+        <input type="checkbox" id="raw-mic" />
+        Raw mic (disable browser noise-suppression + AGC + echo-cancel)
+      </label>
+      <p style="font-size: 11px; color: var(--muted); margin: 4px 0 0;">
+        On USB condenser mics like the Razer Seiren X, browser-level processing
+        sometimes strips speech as noise. Try toggling this on if the level
+        meter stays low even when you're speaking clearly.
+      </p>
+    </div>
+    <div style="margin-top: 12px;">
+      <button id="start-mic">Start mic</button>
+      <button id="stop-mic" class="secondary" disabled>Stop</button>
+    </div>
+    <div id="env-verdict"></div>
+  </div>
+
+  <!-- ─────────── Live level + waveform ─────────── -->
+  <div class="panel">
+    <h2>Live Capture</h2>
+    <div class="level-row">
+      <span style="width: 40px; color: var(--muted); font-size: 12px;">Peak</span>
+      <div class="level-meter"><div id="peak-fill" class="level-fill"></div></div>
+      <span class="level-num" id="peak-num">—</span>
+    </div>
+    <div class="level-row">
+      <span style="width: 40px; color: var(--muted); font-size: 12px;">RMS</span>
+      <div class="level-meter"><div id="rms-fill" class="level-fill"></div></div>
+      <span class="level-num" id="rms-num">—</span>
+    </div>
+    <canvas id="waveform" width="500" height="96"></canvas>
+    <div id="live-verdict"></div>
+  </div>
+
+  <!-- ─────────── Record + playback + analysis ─────────── -->
+  <div class="panel full">
+    <h2>Record &amp; Analyze (3 seconds)</h2>
+    <p style="color: var(--muted); margin: 0 0 12px;">
+      Click record, speak normally for ~3 seconds. The captured audio gets
+      analyzed locally AND sent to the server's STT endpoint — both results
+      shown side-by-side so you can see where it breaks.
+    </p>
+    <button id="record-btn" disabled>Record 3s</button>
+    <span id="record-status" style="margin-left: 12px; color: var(--muted);"></span>
+    <audio id="playback" controls></audio>
+    <div id="record-verdict"></div>
+    <div class="kv" id="record-kv" style="margin-top: 12px;"></div>
+    <details>
+      <summary>Download captured audio (WAV)</summary>
+      <p><a id="download-link" href="#" download="mic-test.wav">Download mic-test.wav</a></p>
+    </details>
+  </div>
+
+  <!-- ─────────── STT round-trip ─────────── -->
+  <div class="panel">
+    <h2>STT Round-Trip</h2>
+    <p style="color: var(--muted); margin: 0 0 12px;">
+      After recording, this POSTs the audio to <code>/v1/audio/transcriptions</code>
+      and shows the response — the same call your voice WS makes internally.
+    </p>
+    <button id="stt-btn" disabled>Send to STT</button>
+    <div id="stt-verdict"></div>
+    <pre id="stt-output">— no STT call yet —</pre>
+  </div>
+
+  <!-- ─────────── Server config dump ─────────── -->
+  <div class="panel">
+    <h2>Server Voice Config</h2>
+    <p style="color: var(--muted); margin: 0 0 12px;">
+      Loads the live STT provider config + voice-related settings so you can
+      see what the server thinks should be happening.
+    </p>
+    <button id="config-btn" class="secondary">Load config</button>
+    <pre id="config-output">— click "Load config" to fetch —</pre>
+  </div>
+
+  <!-- ─────────── Summary / next steps ─────────── -->
+  <div class="panel full">
+    <h2>Diagnostic Summary</h2>
+    <p style="color: var(--muted); margin: 0 0 12px;">
+      Auto-updates as you complete each step. Shows the most likely
+      cause + a specific fix to try.
+    </p>
+    <div id="summary"><i>Complete the steps above to populate.</i></div>
+  </div>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────
+// State + DOM helpers
+// ─────────────────────────────────────────────────────────────────
+const $ = (id) => document.getElementById(id);
+let _stream = null;
+let _audioCtx = null;
+let _analyser = null;
+let _animationFrame = null;
+let _capturedBlob = null;
+let _capturedBuffer = null; // Float32Array decoded
+let _capturedDuration = 0;
+let _capturedSampleRate = 0;
+let _capturedBytes = 0;
+let _capturedFilename = "";
+let _captureContentType = "";
+
+const STATE = {
+  mic: false,
+  recorded: false,
+  sttSent: false,
+  sttResult: null,
+  peakLevel: 0,
+  rmsLevel: 0,
+  config: null,
+};
+
+// ─────────────────────────────────────────────────────────────────
+// Environment introspection (browser + capabilities)
+// ─────────────────────────────────────────────────────────────────
+function detectEnvironment() {
+  const ua = navigator.userAgent;
+  let browser = "unknown";
+  if (ua.includes("Brave")) browser = "Brave";
+  else if (ua.includes("Edg/")) browser = "Edge";
+  else if (ua.includes("Chrome/")) browser = "Chrome";
+  else if (ua.includes("Firefox/")) browser = "Firefox";
+  else if (ua.includes("Safari/")) browser = "Safari";
+  // Brave specifically masks itself — check for the navigator.brave hint.
+  const isBraveAsync = (typeof navigator.brave !== "undefined")
+    ? navigator.brave.isBrave().then(b => b ? "Brave (confirmed)" : browser)
+    : Promise.resolve(browser);
+
+  const env = {
+    "User-Agent": ua,
+    "Browser (guess)": browser,
+    "Origin": location.origin,
+    "Protocol": location.protocol,
+    "Secure context": window.isSecureContext ? "yes" : "NO — getUserMedia may fail",
+    "MediaDevices": navigator.mediaDevices ? "available" : "MISSING",
+    "AudioWorklet": typeof AudioWorkletNode !== "undefined" ? "available" : "MISSING",
+    "MediaRecorder": typeof MediaRecorder !== "undefined" ? "available" : "MISSING",
+  };
+  renderKV("env-kv", env);
+  isBraveAsync.then(b => {
+    env["Browser (guess)"] = b;
+    renderKV("env-kv", env);
+  });
+}
+
+function renderKV(elId, obj) {
+  const el = $(elId);
+  el.innerHTML = "";
+  for (const [k, v] of Object.entries(obj)) {
+    const bEl = document.createElement("b"); bEl.textContent = k;
+    const vEl = document.createElement("span"); vEl.textContent = String(v);
+    el.appendChild(bEl); el.appendChild(vEl);
+  }
+}
+
+function verdict(elId, klass, msg) {
+  const el = $(elId);
+  el.innerHTML = "";
+  if (!msg) return;
+  const d = document.createElement("div");
+  d.className = `verdict ${klass}`;
+  d.innerHTML = msg;
+  el.appendChild(d);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Device enumeration
+// ─────────────────────────────────────────────────────────────────
+async function populateDevices() {
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const mics = devices.filter(d => d.kind === "audioinput");
+    const sel = $("device-select");
+    sel.innerHTML = "";
+    if (!mics.length) {
+      sel.innerHTML = '<option>No microphones found</option>';
+      return;
+    }
+    for (const d of mics) {
+      const opt = document.createElement("option");
+      opt.value = d.deviceId;
+      // Labels are empty until permission has been granted at least once.
+      opt.textContent = d.label || `Mic (${d.deviceId.slice(0, 8)}…)`;
+      sel.appendChild(opt);
+    }
+  } catch (exc) {
+    console.warn("enumerateDevices failed", exc);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Mic start / stop + live level + waveform
+// ─────────────────────────────────────────────────────────────────
+async function startMic() {
+  // Idempotency — if startMic is called while a stream is already live,
+  // tear the old one down first. Without this, double-clicks (or the
+  // user clicking Start again to "wake it up") leak the previous
+  // MediaStream + AudioContext AND append duplicate diagnostic rows.
+  if (_stream || _audioCtx) {
+    console.log("[mic-test] tearing down existing mic before restart");
+    stopMic();
+  }
+
+  const deviceId = $("device-select").value;
+  const rawMode = $("raw-mic").checked;
+  // Raw mode disables the browser's built-in audio processing so we
+  // capture what the mic actually produces. Default-on processing
+  // (noise suppression, AGC, echo cancellation) often strips quiet
+  // or unusual-tone speech on USB condenser mics.
+  const audioOpts = deviceId ? { deviceId: { exact: deviceId } } : {};
+  if (rawMode) {
+    audioOpts.noiseSuppression = false;
+    audioOpts.autoGainControl = false;
+    audioOpts.echoCancellation = false;
+  }
+  const constraints = { audio: Object.keys(audioOpts).length ? audioOpts : true };
+  console.log("[mic-test] requesting mic", constraints);
+  try {
+    _stream = await navigator.mediaDevices.getUserMedia(constraints);
+  } catch (exc) {
+    console.error("[mic-test] getUserMedia failed", exc);
+    verdict("env-verdict", "bad",
+      `<b>getUserMedia failed:</b> ${escapeHtml(exc.name)}: ${escapeHtml(exc.message)}<br>` +
+      "Likely permission denial or the device is in use by another tab. " +
+      "Check the address-bar lock icon → Microphone setting.");
+    return;
+  }
+
+  // After permission, re-populate so we see real device labels.
+  await populateDevices();
+  // Re-select the granted device so the label matches.
+  const tracks = _stream.getAudioTracks();
+  if (tracks.length) {
+    const settings = tracks[0].getSettings();
+    if (settings.deviceId) {
+      $("device-select").value = settings.deviceId;
+    }
+  }
+
+  try {
+    _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // Chrome/Brave often start the context suspended until a user
+    // gesture explicitly resumes it. The button-click counts as the
+    // gesture, so resume() should be allowed here. Without it, the
+    // analyser hands back all zeros and the level meter never moves.
+    if (_audioCtx.state === "suspended") {
+      console.log("[mic-test] AudioContext suspended → resuming");
+      await _audioCtx.resume();
+    }
+    console.log("[mic-test] AudioContext state:", _audioCtx.state, "sampleRate:", _audioCtx.sampleRate);
+    const src = _audioCtx.createMediaStreamSource(_stream);
+    _analyser = _audioCtx.createAnalyser();
+    _analyser.fftSize = 2048;
+    src.connect(_analyser);
+  } catch (exc) {
+    console.error("[mic-test] audio graph setup failed", exc);
+    verdict("env-verdict", "bad",
+      `<b>Audio graph setup failed:</b> ${escapeHtml(exc.message)}.<br>` +
+      "Browser console has the full trace.");
+    stopMic();
+    return;
+  }
+
+  // Surface the track settings as a sanity check
+  const trackSettings = _stream.getAudioTracks()[0]?.getSettings() || {};
+  const envExtras = {
+    "AudioContext state": _audioCtx.state,
+    "AudioContext sampleRate": _audioCtx.sampleRate + " Hz",
+    "Track sampleRate (granted)": (trackSettings.sampleRate || "—") + " Hz",
+    "Track channelCount": trackSettings.channelCount || "—",
+    "Track deviceId": (trackSettings.deviceId || "").slice(0, 12) + "…",
+    "Track echoCancellation": trackSettings.echoCancellation,
+    "Track noiseSuppression": trackSettings.noiseSuppression,
+    "Track autoGainControl": trackSettings.autoGainControl,
+  };
+  // Append to existing env panel
+  const envEl = $("env-kv");
+  for (const [k, v] of Object.entries(envExtras)) {
+    const bEl = document.createElement("b"); bEl.textContent = k;
+    const vEl = document.createElement("span"); vEl.textContent = String(v);
+    envEl.appendChild(bEl); envEl.appendChild(vEl);
+  }
+
+  STATE.mic = true;
+  $("start-mic").disabled = true;
+  $("stop-mic").disabled = false;
+  $("record-btn").disabled = false;
+  console.log("[mic-test] mic ready — record button enabled");
+
+  // Visual hint so user knows where to go next. The record button is
+  // in the next panel down; on small viewports it's below the fold.
+  verdict("env-verdict", "good",
+    "<b>Mic open.</b> Scroll down to the <i>Record &amp; Analyze</i> panel " +
+    "and click <b>Record 3s</b>. The level meters next to this panel should " +
+    "move as you speak — if they don't, the mic's outputting silence.");
+
+  updateSummary();
+
+  drawLoop();
+}
+
+function stopMic() {
+  if (_animationFrame) cancelAnimationFrame(_animationFrame);
+  _animationFrame = null;
+  if (_stream) {
+    for (const t of _stream.getTracks()) t.stop();
+    _stream = null;
+  }
+  if (_audioCtx) {
+    _audioCtx.close().catch(() => {});
+    _audioCtx = null;
+  }
+  STATE.mic = false;
+  $("start-mic").disabled = false;
+  $("stop-mic").disabled = true;
+  $("record-btn").disabled = true;
+}
+
+function drawLoop() {
+  if (!_analyser) return;
+  const canvas = $("waveform");
+  const ctx = canvas.getContext("2d");
+  const buf = new Float32Array(_analyser.fftSize);
+
+  function tick() {
+    _animationFrame = requestAnimationFrame(tick);
+    _analyser.getFloatTimeDomainData(buf);
+
+    // peak + RMS
+    let peak = 0, sumSq = 0;
+    for (let i = 0; i < buf.length; i++) {
+      const v = Math.abs(buf[i]);
+      if (v > peak) peak = v;
+      sumSq += buf[i] * buf[i];
+    }
+    const rms = Math.sqrt(sumSq / buf.length);
+
+    // Rolling smoothing (exponential, fast decay)
+    STATE.peakLevel = Math.max(peak, STATE.peakLevel * 0.85);
+    STATE.rmsLevel = rms * 0.4 + STATE.rmsLevel * 0.6;
+
+    $("peak-fill").style.width = `${Math.min(100, STATE.peakLevel * 100).toFixed(1)}%`;
+    $("rms-fill").style.width = `${Math.min(100, STATE.rmsLevel * 200).toFixed(1)}%`;
+    $("peak-num").textContent = `${(20 * Math.log10(STATE.peakLevel || 1e-6)).toFixed(1)} dB`;
+    $("rms-num").textContent = `${(20 * Math.log10(STATE.rmsLevel || 1e-6)).toFixed(1)} dB`;
+
+    // waveform
+    ctx.fillStyle = "#0f1115";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "#4f8cff"; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    const slice = canvas.width / buf.length;
+    let x = 0;
+    for (let i = 0; i < buf.length; i++) {
+      const y = (1 - buf[i]) * 0.5 * canvas.height;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      x += slice;
+    }
+    ctx.stroke();
+
+    // Live verdict
+    if (STATE.peakLevel < 0.005) {
+      verdict("live-verdict", "bad",
+        "<b>No signal.</b> Mic is open but capturing silence. " +
+        "Check: (1) device selector matches your active mic, " +
+        "(2) Brave's per-site mic device (lock icon → Site settings → Microphone), " +
+        "(3) is something else using the mic (Zoom, Discord)?");
+    } else if (STATE.peakLevel < 0.05) {
+      verdict("live-verdict", "warn",
+        "<b>Very low signal.</b> Mic captures but level is too quiet for VAD " +
+        "(default speech threshold ≈ 0.5 RMS). Try: speak louder, move mic closer, " +
+        "or raise OS-level input volume.");
+    } else {
+      verdict("live-verdict", "good",
+        "<b>Good signal.</b> Browser is receiving healthy audio levels — " +
+        "speak normally and watch the bars peak around 30–70%.");
+    }
+  }
+  tick();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Record 3s + analyze
+// ─────────────────────────────────────────────────────────────────
+async function recordThreeSeconds() {
+  if (!_stream) return;
+  $("record-status").textContent = "● recording…";
+  $("record-btn").disabled = true;
+
+  // Prefer audio/wav, fall back through formats the browser supports.
+  // The augmentum STT path accepts WebM (via ffmpeg transcode) or WAV.
+  let mimeType = "";
+  for (const candidate of [
+    "audio/webm;codecs=opus",
+    "audio/webm",
+    "audio/ogg;codecs=opus",
+    "audio/mp4",
+  ]) {
+    if (MediaRecorder.isTypeSupported(candidate)) {
+      mimeType = candidate;
+      break;
+    }
+  }
+  const recorder = new MediaRecorder(_stream, mimeType ? { mimeType } : {});
+  const chunks = [];
+  recorder.addEventListener("dataavailable", e => {
+    if (e.data && e.data.size > 0) chunks.push(e.data);
+  });
+  recorder.start();
+  await new Promise(r => setTimeout(r, 3000));
+  const done = new Promise(r => recorder.addEventListener("stop", r));
+  recorder.stop();
+  await done;
+
+  const blob = new Blob(chunks, { type: recorder.mimeType });
+  _capturedBlob = blob;
+  _captureContentType = blob.type;
+  _capturedBytes = blob.size;
+  _capturedFilename = blob.type.includes("webm") ? "mic-test.webm"
+                    : blob.type.includes("ogg")  ? "mic-test.ogg"
+                    : blob.type.includes("mp4")  ? "mic-test.mp4"
+                    : "mic-test.bin";
+
+  $("record-status").textContent = `● captured ${(blob.size / 1024).toFixed(1)} KB ${blob.type}`;
+  $("record-btn").disabled = false;
+  $("stt-btn").disabled = false;
+
+  // Set up playback + download
+  const url = URL.createObjectURL(blob);
+  $("playback").src = url;
+  $("download-link").href = url;
+  $("download-link").download = _capturedFilename;
+
+  // Decode to Float32 for analysis
+  try {
+    const arrayBuf = await blob.arrayBuffer();
+    const decodeCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const audioBuf = await decodeCtx.decodeAudioData(arrayBuf.slice(0));
+    decodeCtx.close().catch(() => {});
+    _capturedSampleRate = audioBuf.sampleRate;
+    _capturedDuration = audioBuf.duration;
+    const channel = audioBuf.getChannelData(0);
+    _capturedBuffer = channel;
+
+    // Stats
+    let peak = 0, sumSq = 0, silentFrames = 0;
+    for (let i = 0; i < channel.length; i++) {
+      const v = Math.abs(channel[i]);
+      if (v > peak) peak = v;
+      sumSq += channel[i] * channel[i];
+      if (v < 0.001) silentFrames++;
+    }
+    const rms = Math.sqrt(sumSq / channel.length);
+    const silentPct = (silentFrames / channel.length) * 100;
+
+    renderKV("record-kv", {
+      "Bytes captured": _capturedBytes,
+      "MIME type": blob.type,
+      "Duration": _capturedDuration.toFixed(3) + " s",
+      "Sample rate": _capturedSampleRate + " Hz",
+      "Peak level": (20 * Math.log10(peak || 1e-6)).toFixed(1) + " dB",
+      "RMS level": (20 * Math.log10(rms || 1e-6)).toFixed(1) + " dB",
+      "Silent frames": silentPct.toFixed(1) + "%",
+    });
+
+    if (peak < 0.005) {
+      verdict("record-verdict", "bad",
+        "<b>Recording is silent.</b> 0.5% above noise floor at peak. " +
+        "Server-side STT will return empty for this. " +
+        "Check mic selection / permissions / OS input volume.");
+    } else if (silentPct > 80) {
+      verdict("record-verdict", "warn",
+        `<b>Mostly silence.</b> ${silentPct.toFixed(0)}% of frames near zero. ` +
+        "Either you spoke briefly or the recording window missed your voice — " +
+        "try again and speak through the full 3 seconds.");
+    } else if (peak < 0.05) {
+      verdict("record-verdict", "warn",
+        "<b>Quiet recording.</b> STT may still work but VAD will likely reject. " +
+        "Raise OS input volume or move the mic closer.");
+    } else {
+      verdict("record-verdict", "good",
+        "<b>Healthy recording.</b> Click 'Send to STT' to round-trip through the server.");
+    }
+  } catch (exc) {
+    verdict("record-verdict", "warn",
+      `<b>Could not decode locally:</b> ${escapeHtml(exc.message)}. ` +
+      "The recording was made (you can still play it back + send to STT) but " +
+      "in-browser analysis is unavailable.");
+  }
+  STATE.recorded = true;
+  updateSummary();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// STT round-trip
+// ─────────────────────────────────────────────────────────────────
+async function sendToSTT() {
+  if (!_capturedBlob) return;
+  $("stt-btn").disabled = true;
+  $("stt-output").textContent = "Uploading + transcribing…";
+  verdict("stt-verdict", "", "");
+
+  // The Augmentum /v1/audio/transcriptions endpoint takes raw bytes
+  // as the POST body + filename/content_type as QUERY PARAMS (not
+  // multipart form). Discovered the hard way: a FormData POST returns
+  // 422 "audio_bytes Field required" because FastAPI's `audio_bytes:
+  // bytes` parameter maps to the raw request body, not a form field.
+  // This matches the signature of `transcribe_audio_bytes` in
+  // augmentum/proxy/audio_routes.py.
+  const qs = new URLSearchParams({
+    filename: _capturedFilename,
+    content_type: _captureContentType,
+  });
+  const url = `/v1/audio/transcriptions?${qs.toString()}`;
+  console.log("[mic-test] POST", url, "bytes=", _capturedBytes);
+
+  const t0 = performance.now();
+  let resp, body, jsonBody, transcript = null, errorText = "";
+  try {
+    resp = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": _captureContentType || "application/octet-stream" },
+      body: _capturedBlob,
+      credentials: "include",
+    });
+    body = await resp.text();
+    try { jsonBody = JSON.parse(body); } catch { jsonBody = null; }
+    // The endpoint's return shape: it's a FastAPI route returning a
+    // bare `str` from transcribe_audio_bytes — JSON-serialized as a
+    // string literal (with surrounding quotes). Multipart-form
+    // endpoints typically return {"text": "..."} but this raw-body
+    // one returns just the string.
+    if (typeof jsonBody === "string") {
+      transcript = jsonBody;
+    } else if (jsonBody && typeof jsonBody === "object") {
+      transcript = jsonBody.text || jsonBody.transcript || "";
+    } else if (typeof body === "string") {
+      transcript = body.replace(/^"|"$/g, "");
+    }
+  } catch (exc) {
+    errorText = exc.message;
+  }
+  const ms = (performance.now() - t0).toFixed(0);
+
+  const dump = {
+    request_url: url,
+    request_bytes: _capturedBytes,
+    request_filename: _capturedFilename,
+    request_content_type: _captureContentType,
+    response_status: resp ? resp.status : "—",
+    response_ok: resp ? resp.ok : false,
+    latency_ms: Number(ms),
+    error: errorText || null,
+    raw_response: body || null,
+    transcript: transcript,
+  };
+  $("stt-output").textContent = JSON.stringify(dump, null, 2);
+
+  STATE.sttSent = true;
+  STATE.sttResult = dump;
+
+  if (errorText) {
+    verdict("stt-verdict", "bad",
+      `<b>STT request failed:</b> ${escapeHtml(errorText)}`);
+  } else if (!resp.ok) {
+    verdict("stt-verdict", "bad",
+      `<b>STT returned HTTP ${resp.status}.</b> ${escapeHtml(body.slice(0, 200))}`);
+  } else if (!transcript || !transcript.trim()) {
+    verdict("stt-verdict", "bad",
+      "<b>STT returned empty transcript.</b> " +
+      "This is the exact symptom you're seeing. Possible causes: " +
+      "(a) audio level too low for the STT model's VAD; " +
+      "(b) speech enhancer / DTLN over-aggressive; " +
+      "(c) wrong STT provider configured. " +
+      "Check the config panel below.");
+  } else {
+    verdict("stt-verdict", "good",
+      `<b>STT works!</b> Got: <code>${escapeHtml(transcript.slice(0, 200))}</code>. ` +
+      "If your live voice path is still empty, the issue is downstream of STT — " +
+      "probably VAD threshold or denoiser in the WS path.");
+  }
+  $("stt-btn").disabled = false;
+  updateSummary();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Server config
+// ─────────────────────────────────────────────────────────────────
+async function loadConfig() {
+  $("config-output").textContent = "Loading…";
+  const out = {};
+
+  // Audio providers (STT)
+  try {
+    const r = await fetch("/api/audio/providers", { credentials: "include" });
+    const data = await r.json();
+    const providers = (data.providers || data || []);
+    const sttProviders = providers.filter
+      ? providers.filter(p => p.kind === "stt" || p.type === "stt"
+                              || (p.id || "").toLowerCase().includes("stt"))
+      : [];
+    out.stt_providers = sttProviders.length ? sttProviders : "(see all providers below)";
+    if (!sttProviders.length) out.all_providers = providers;
+  } catch (exc) {
+    out.audio_providers_error = exc.message;
+  }
+
+  // Voice + companion settings — many of these are the prime suspects
+  const settingKeys = [
+    "audio_stt_enabled",
+    "voice_enabled",
+    "voice_server_vad",
+    "voice_vad_speech_threshold",
+    "voice_vad_prefix_padding_ms",
+    "voice_sentence_min_chars",
+    "voice_speech_enhancer_enabled",
+    "voice_tts_chunking",
+    "companion_activation_mode",
+    "companion_always_listening_warmup_ms",
+    "companion_always_listening_vad_threshold",
+    "companion_always_listening_prefix_padding_ms",
+    "companion_address_threshold",
+    "companion_address_media_boost",
+    "companion_address_llm_enabled",
+    "companion_persona_mode",
+    "companion_runtime_enabled",
+  ];
+  try {
+    const r = await fetch("/api/config/load", { credentials: "include" });
+    if (r.ok) {
+      const data = await r.json();
+      const cfg = data.config || data;
+      const slim = {};
+      for (const k of settingKeys) {
+        if (cfg && k in cfg) slim[k] = cfg[k];
+      }
+      out.voice_settings = slim;
+    } else {
+      out.config_status = `HTTP ${r.status}`;
+    }
+  } catch (exc) {
+    out.config_error = exc.message;
+  }
+
+  STATE.config = out;
+  $("config-output").textContent = JSON.stringify(out, null, 2);
+  updateSummary();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Summary engine — synthesize the diagnostic
+// ─────────────────────────────────────────────────────────────────
+function updateSummary() {
+  const lines = [];
+  const sttResult = STATE.sttResult;
+  const cfg = STATE.config?.voice_settings || {};
+
+  // Browser-side
+  if (STATE.mic) {
+    lines.push(`<span class="pill good">mic open</span>`);
+    if (STATE.peakLevel < 0.005) {
+      lines.push(`<span class="pill bad">no signal</span>`);
+    } else if (STATE.peakLevel < 0.05) {
+      lines.push(`<span class="pill warn">low signal</span>`);
+    } else {
+      lines.push(`<span class="pill good">good signal</span>`);
+    }
+  } else {
+    lines.push(`<span class="pill warn">mic not started</span>`);
+  }
+
+  // Recording
+  if (STATE.recorded) {
+    lines.push(`<span class="pill good">recorded</span>`);
+  }
+
+  // STT
+  if (sttResult) {
+    if (sttResult.error || !sttResult.response_ok) {
+      lines.push(`<span class="pill bad">STT HTTP ${sttResult.response_status}</span>`);
+    } else if (!sttResult.transcript || !sttResult.transcript.trim()) {
+      lines.push(`<span class="pill bad">STT empty</span>`);
+    } else {
+      lines.push(`<span class="pill good">STT ok</span>`);
+    }
+  }
+
+  // Config hints
+  if (cfg.companion_activation_mode) {
+    lines.push(`<span class="pill">activation: ${escapeHtml(cfg.companion_activation_mode)}</span>`);
+  }
+  if (cfg.voice_speech_enhancer_enabled) {
+    lines.push(`<span class="pill warn">DTLN on</span>`);
+  }
+
+  // Build the diagnosis
+  let diagnosis = "<i>Run all four steps above (start mic, record, send to STT, load config) for a complete diagnosis.</i>";
+  if (STATE.mic && STATE.recorded && sttResult) {
+    if (!sttResult.response_ok) {
+      diagnosis = `<b>STT endpoint failed (${sttResult.response_status}).</b> ` +
+                  "Check audio_stt_enabled is true + that an STT provider is configured (Config panel).";
+    } else if (!sttResult.transcript || !sttResult.transcript.trim()) {
+      // Local audio was fine but STT returned empty
+      const fixes = [];
+      if (cfg.voice_speech_enhancer_enabled) {
+        fixes.push("Turn OFF <code>voice_speech_enhancer_enabled</code> — DTLN over-aggressive on new mics is the #1 cause of this exact symptom.");
+      }
+      fixes.push("Try a different STT provider via the Audio Providers panel.");
+      fixes.push("Check that the captured audio plays back correctly (above) — if playback sounds robotic / quiet, OS-level mic settings are the problem.");
+      diagnosis = `<b>Local audio is fine but the server STT call returned an empty transcript.</b><br><br>Try:<ul><li>${fixes.join("</li><li>")}</li></ul>`;
+    } else {
+      // STT works! Live path must be the issue
+      const liveIssues = [];
+      if (cfg.companion_activation_mode === "wake_word") {
+        liveIssues.push("Activation mode is <code>wake_word</code> — you have to say the wake word (e.g. \"Becca\") to trigger transcription. Switch to <code>always_listening</code> if you want every utterance transcribed.");
+      }
+      const vadThr = cfg.companion_always_listening_vad_threshold || cfg.voice_vad_speech_threshold;
+      if (vadThr && vadThr > 0.5) {
+        liveIssues.push(`VAD threshold is ${vadThr} — too high for your mic level. Lower to 0.3 and retry.`);
+      }
+      if (!liveIssues.length) {
+        liveIssues.push("Compare this tester's recording to what your live widget captures — if the widget never sees speech, VAD is rejecting before STT even fires.");
+      }
+      diagnosis = `<b>STT works correctly with your recording.</b> The empty-transcript issue is in the live voice WS path, not STT itself.<br><br>Likely:<ul><li>${liveIssues.join("</li><li>")}</li></ul>`;
+    }
+  }
+
+  $("summary").innerHTML = `<div class="row" style="margin-bottom: 12px;">${lines.join("")}</div><div>${diagnosis}</div>`;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[c]));
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Init
+// ─────────────────────────────────────────────────────────────────
+detectEnvironment();
+populateDevices();
+$("start-mic").addEventListener("click", startMic);
+$("stop-mic").addEventListener("click", stopMic);
+$("record-btn").addEventListener("click", recordThreeSeconds);
+$("stt-btn").addEventListener("click", sendToSTT);
+$("config-btn").addEventListener("click", loadConfig);
+// Refresh device list when devices change (plug/unplug)
+navigator.mediaDevices?.addEventListener?.("devicechange", populateDevices);
+updateSummary();
+</script>
+
+</body>
+</html>

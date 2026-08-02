@@ -1,0 +1,40 @@
+# Ruby v2 — dialogue-AWARE retrain. Keeps her custom voice while preserving the
+# base model's cross-speaker conditioning (so #2 reactivity survives). Built from
+# emotion-paired dialogues (her p089 clips + Tess p003 as the "other speaker"),
+# with a gentler recipe to forget less.
+
+voice_name: ruby-v2
+base_model: sesame/csm-1b
+speaker_id: 0
+
+# Dialogue assembly (prepare_dialogue.py) — uses already-prepared per-voice data.
+dialogue:
+  target_data: data/ruby        # speaker 0 = her (p089)
+  other_data: [data/tess]       # speaker 1 = context voice (p003), emotion-labeled
+  dialogue_fraction: 0.6        # of eligible (short) replies
+  max_context_s: 4              # context turn must be <=4s
+  max_reply_s: 8                # only replies <=8s get a context turn (>8s stay single)
+
+emotion:
+  enabled: true
+  tag_format: "({emotion}) "
+
+sample_rate: 24000
+out_dir: ./data/ruby-v2         # dialogue manifest lands here (references data/ruby + data/tess)
+
+train:
+  output_dir: ./out/ruby-v2-lora
+  lora_r: 16                    # gentler than v1's 32 — perturb the base less
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+  learning_rate: 2.0e-5
+  num_epochs: 3                 # fewer epochs — less catastrophic forgetting
+  per_device_batch_size: 1      # two-turn examples are longer; keep memory in check
+  grad_accum: 8
+  bf16: false                   # fp32 (CSM audio-embed dtype) — 3090 has the VRAM
+  gradient_checkpointing: false
+  warmup_ratio: 0.03
+  logging_steps: 10
+  save_steps: 200
+  seed: 3407

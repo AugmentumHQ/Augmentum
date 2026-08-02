@@ -1,0 +1,2526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avatar Test Bench</title>
+<script type="importmap">
+{
+  "imports": {
+    "three": "./lib/three/three.module.min.js"
+  }
+}
+</script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #111; color: #ddd; font-family: 'Segoe UI', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+
+/* --- Canvas area --- */
+#viewport { flex: 1; position: relative; background: #0a0a0a; }
+#viewport canvas { width: 100% !important; height: 100% !important; position: relative; z-index: 1; }
+#telemetry {
+  position: absolute; top: 8px; left: 8px;
+  background: rgba(0,0,0,0.75); padding: 8px 12px; border-radius: 6px;
+  font: 11px/1.5 'Cascadia Code', monospace; color: #8f8; pointer-events: none;
+  white-space: pre; min-width: 240px;
+}
+#drop-overlay {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.8); border: 3px dashed #4af; border-radius: 12px;
+  font-size: 18px; color: #4af; z-index: 10; display: none;
+}
+
+/* --- Control panel --- */
+#controls {
+  width: 360px; height: 100vh; overflow-y: auto; background: #1a1a1a;
+  border-left: 1px solid #333; padding: 12px; flex-shrink: 0;
+}
+#controls::-webkit-scrollbar { width: 6px; }
+#controls::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+
+.section { margin-bottom: 16px; border: 1px solid #333; border-radius: 8px; overflow: hidden; }
+.section-header {
+  background: #222; padding: 8px 12px; cursor: pointer; user-select: none;
+  font-weight: 600; font-size: 13px; display: flex; justify-content: space-between; align-items: center;
+}
+.section-header:hover { background: #2a2a2a; }
+.section-header .chevron { transition: transform 0.2s; }
+.section-header.collapsed .chevron { transform: rotate(-90deg); }
+.section-body { padding: 8px 12px; }
+.section-body.hidden { display: none; }
+
+.slider-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+.slider-row label { font-size: 11px; min-width: 100px; color: #aaa; }
+.slider-row input[type=range] { flex: 1; accent-color: #4af; height: 4px; }
+.slider-row .val-input {
+  font-size: 11px; width: 52px; text-align: right; color: #8cf; font-family: monospace;
+  background: #222; border: 1px solid #444; border-radius: 3px; padding: 2px 4px;
+}
+.slider-row .val-input:focus { border-color: #4af; outline: none; }
+
+.btn-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0; }
+.btn {
+  padding: 5px 10px; border: 1px solid #444; border-radius: 4px;
+  background: #222; color: #ddd; cursor: pointer; font-size: 11px;
+}
+.btn:hover { background: #333; border-color: #4af; }
+.btn.active { background: #2a4a6a; border-color: #4af; color: #fff; }
+
+.emotion-btn.active { background: #3a5a3a; border-color: #6c6; }
+
+/* Audio section */
+#audio-section { padding: 12px; }
+#audio-section audio { width: 100%; margin: 6px 0; }
+.file-input-wrap { margin: 6px 0; }
+.file-input-wrap input[type=file] { font-size: 11px; color: #aaa; }
+
+/* Viseme bars */
+.viseme-bars { display: flex; gap: 4px; align-items: flex-end; height: 50px; margin: 8px 0; }
+.viseme-bar-wrap { display: flex; flex-direction: column; align-items: center; flex: 1; }
+.viseme-bar { width: 100%; background: #4af; border-radius: 2px 2px 0 0; transition: height 0.05s; }
+.viseme-bar-label { font-size: 9px; color: #888; margin-top: 2px; }
+
+/* State indicator */
+#state-indicator {
+  position: absolute; top: 8px; right: 8px; padding: 6px 12px;
+  background: rgba(0,0,0,0.75); border-radius: 6px; font-size: 12px; color: #aaa;
+}
+#state-indicator .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; background: #666; }
+#state-indicator.speaking .dot { background: #4c4; }
+#state-indicator.listening .dot { background: #44f; }
+#state-indicator.processing .dot { background: #fa4; }
+#state-indicator.idle .dot { background: #666; }
+
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+#mocap-pip {
+  position: absolute; bottom: 8px; left: 8px; width: 200px; height: 150px;
+  border-radius: 8px; overflow: hidden; border: 2px solid #4af; z-index: 100;
+  display: block; background: #000;
+}
+#mocap-pip video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+/* iOS Safari auto-zooms when a focused input has font-size < 16px and
+ * never zooms back out cleanly. Bump form controls to 16px on coarse
+ * pointers so loading this testbench on an iPad stays usable. */
+@media (pointer: coarse) {
+  input, textarea, select { font-size: 16px !important; }
+}
+</style>
+</head>
+<body>
+
+<div id="viewport">
+  <div id="drop-overlay">Drop a .vrm file here</div>
+  <div id="telemetry"></div>
+  <div id="state-indicator" class="idle"><span class="dot"></span><span id="state-label">idle</span></div>
+  <div id="mocap-pip"></div>
+</div>
+<!-- Video element OUTSIDE viewport to avoid WebGL context conflict -->
+<video id="mocap-video" playsinline muted autoplay style="position:fixed;bottom:8px;left:8px;width:200px;height:150px;z-index:9999;border:2px solid red;"></video>
+
+<div id="controls">
+  <div style="text-align:center;margin-bottom:12px;">
+    <div style="font-size:16px;font-weight:700;">Avatar Test Bench</div>
+    <div style="font-size:11px;color:#888;">Drop a .vrm file on the viewport to begin</div>
+  </div>
+
+  <!-- Audio Source -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Audio Source <span class="chevron">v</span>
+    </div>
+    <div class="section-body" id="audio-section">
+      <div class="file-input-wrap">
+        <label style="font-size:11px;color:#aaa;">Load TTS clip:</label>
+        <input type="file" accept="audio/*" id="audio-file" style="font-size:11px;color:#aaa;">
+      </div>
+      <audio id="audio-player" controls></audio>
+      <div class="btn-row" style="margin-top:6px;">
+        <button class="btn" id="btn-mic">Use Microphone</button>
+        <button class="btn" id="btn-tone">Test Tone</button>
+      </div>
+      <div style="font-size:11px;color:#666;margin-top:6px;">Viseme output:</div>
+      <div class="viseme-bars" id="viseme-bars">
+        <div class="viseme-bar-wrap"><div class="viseme-bar" id="bar-aa" style="height:0"></div><div class="viseme-bar-label">aa</div></div>
+        <div class="viseme-bar-wrap"><div class="viseme-bar" id="bar-ih" style="height:0"></div><div class="viseme-bar-label">ih</div></div>
+        <div class="viseme-bar-wrap"><div class="viseme-bar" id="bar-ou" style="height:0"></div><div class="viseme-bar-label">ou</div></div>
+        <div class="viseme-bar-wrap"><div class="viseme-bar" id="bar-ee" style="height:0"></div><div class="viseme-bar-label">ee</div></div>
+        <div class="viseme-bar-wrap"><div class="viseme-bar" id="bar-oh" style="height:0"></div><div class="viseme-bar-label">oh</div></div>
+        <div class="viseme-bar-wrap"><div class="viseme-bar" id="bar-jaw" style="height:0;background:#fa4;"></div><div class="viseme-bar-label">jaw</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phoneme Lip-Sync (Phase 1) -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Phoneme Lip-Sync (Phase 1) <span class="chevron">v</span>
+    </div>
+    <div class="section-body" id="phoneme-section">
+      <div style="font-size:11px;color:#aaa;margin-bottom:6px;">Engine:</div>
+      <div class="btn-row" id="ls-engine-row">
+        <button class="btn ls-engine-btn active" data-engine="amplitude">Amplitude (inline)</button>
+        <button class="btn ls-engine-btn" data-engine="phoneme">Phoneme (schedule)</button>
+      </div>
+      <div style="font-size:10px;color:#666;margin:4px 0 8px;">
+        Amplitude = freq-band volume mapping. Phoneme = ARPAbet schedule from g2p_en, drives production AvatarLipSync.
+      </div>
+
+      <div style="font-size:11px;color:#aaa;margin-top:8px;">Generate via Kokoro:</div>
+      <textarea id="phoneme-text" rows="3" style="width:100%;background:#222;color:#ddd;border:1px solid #444;border-radius:4px;padding:4px 6px;font-size:11px;font-family:inherit;resize:vertical;" placeholder="Hello! How are you doing today?">Hello there. The quick brown fox jumps over the lazy dog.</textarea>
+      <div class="slider-row" style="margin:6px 0 4px;">
+        <label style="font-size:11px;min-width:40px;color:#aaa;">Voice</label>
+        <select id="phoneme-voice" class="val-input" style="flex:1;width:auto;">
+          <option value="af_heart" selected>af_heart (A)</option>
+          <option value="af_bella">af_bella (A-)</option>
+          <option value="af_sarah">af_sarah (C+)</option>
+          <option value="am_michael">am_michael (C+)</option>
+          <option value="am_fenrir">am_fenrir (C+)</option>
+          <option value="bf_emma">bf_emma (B-)</option>
+          <option value="bm_george">bm_george (C)</option>
+        </select>
+      </div>
+      <div class="btn-row" style="margin-top:6px;">
+        <button class="btn" id="btn-phoneme-gen" style="background:#2a4a6a;border-color:#4af;flex:1;">Generate &amp; Play</button>
+        <button class="btn" id="btn-phoneme-stop">Stop</button>
+      </div>
+      <div id="phoneme-status" style="font-size:10px;color:#888;margin-top:6px;font-family:monospace;white-space:pre;">idle</div>
+
+      <details style="margin-top:8px;">
+        <summary style="font-size:11px;color:#aaa;cursor:pointer;">Manual schedule (paste JSON)</summary>
+        <textarea id="phoneme-manual" rows="4" style="width:100%;background:#222;color:#ddd;border:1px solid #444;border-radius:4px;padding:4px 6px;font-size:10px;font-family:monospace;margin-top:4px;" placeholder='{"duration_ms":1000,"events":[{"t":0,"v":"sil","w":0},{"t":200,"v":"aa","w":0.85},...]}'></textarea>
+        <div class="btn-row" style="margin-top:4px;">
+          <button class="btn" id="btn-phoneme-apply-manual">Apply Schedule</button>
+          <button class="btn" id="btn-phoneme-clear">Clear Schedule</button>
+        </div>
+        <div style="font-size:10px;color:#666;margin-top:4px;">Drives mouth from the JSON without TTS — useful for tuning the lerp constants.</div>
+      </details>
+    </div>
+  </div>
+
+  <!-- Motion Capture -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Motion Capture <span class="chevron">v</span>
+    </div>
+    <div class="section-body" id="mocap-section">
+      <div id="mocap-idle">
+        <button class="btn" id="btn-start-cam" style="width:100%;padding:8px;background:#2a4a2a;border-color:#6c6;">Start Camera</button>
+        <div style="font-size:10px;color:#666;margin-top:6px;">Perform gestures in front of your webcam to record them as avatar animations.</div>
+        <button class="btn" id="btn-mocap-log" style="margin-top:4px;font-size:10px;" onclick="window._downloadMocapLog?.()">Download Debug Log</button>
+      </div>
+      <div id="mocap-live" style="display:none;">
+        <div class="btn-row">
+          <button class="btn" id="btn-stop-cam">Stop Camera</button>
+          <button class="btn" id="btn-record" style="background:#4a2a2a;border-color:#c66;">● Record</button>
+        </div>
+        <div id="mocap-status" style="font-size:11px;color:#888;margin:6px 0;">Tracking: loading...</div>
+        <details style="margin-top:4px;">
+          <summary style="font-size:11px;color:#888;cursor:pointer;">Advanced filters</summary>
+          <div id="mocap-filter-sliders" style="margin-top:4px;"></div>
+        </details>
+      </div>
+      <div id="mocap-recording" style="display:none;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span style="color:#f44;font-size:16px;animation:pulse 1s infinite;">●</span>
+          <span style="font-size:13px;">Recording... <span id="rec-duration">0.0</span>s</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="btn-rec-stop">■ Stop</button>
+          <button class="btn" id="btn-rec-discard">✕ Discard</button>
+        </div>
+      </div>
+      <div id="mocap-editing" style="display:none;">
+        <div style="margin-bottom:8px;">
+          <input type="range" id="mocap-scrubber" min="0" max="100" value="0" style="width:100%;accent-color:#4af;">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:#888;">
+            <span id="scrub-time">0.0s</span>
+            <span id="scrub-total">0.0s</span>
+          </div>
+        </div>
+        <div class="slider-row">
+          <label style="font-size:11px;min-width:60px;color:#aaa;">Trim start</label>
+          <input type="number" id="trim-start" class="val-input" value="0" min="0" step="0.1">
+        </div>
+        <div class="slider-row">
+          <label style="font-size:11px;min-width:60px;color:#aaa;">Trim end</label>
+          <input type="number" id="trim-end" class="val-input" value="0" min="0" step="0.1">
+        </div>
+        <div style="font-size:11px;color:#888;margin:6px 0;">
+          Keyframes: <span id="kf-before">0</span> → <span id="kf-after">0</span>
+        </div>
+        <details>
+          <summary style="font-size:11px;color:#888;cursor:pointer;">Reduction settings</summary>
+          <div class="slider-row" style="margin-top:4px;">
+            <label style="font-size:11px;min-width:60px;color:#aaa;">Epsilon (°)</label>
+            <input type="range" id="rdp-epsilon" min="0.5" max="10" step="0.5" value="2" style="flex:1;accent-color:#4af;">
+            <input type="number" id="rdp-epsilon-val" class="val-input" value="2.0" min="0.5" max="10" step="0.5">
+          </div>
+        </details>
+        <div class="slider-row" style="margin-top:8px;">
+          <label style="font-size:11px;min-width:60px;color:#aaa;">Name</label>
+          <input type="text" id="gesture-name" class="val-input" value="" placeholder="gesture_name" style="width:120px;">
+        </div>
+        <div class="btn-row" style="margin-top:6px;">
+          <button class="btn" id="btn-save-gesture" style="background:#2a4a2a;border-color:#6c6;">Save Gesture</button>
+          <button class="btn" id="btn-edit-discard">Discard</button>
+          <button class="btn" id="btn-rerecord">Re-record</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gesture Library -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Gesture Library <span class="chevron">v</span>
+    </div>
+    <div class="section-body">
+      <div id="gesture-lib-list" style="max-height:200px;overflow-y:auto;"></div>
+      <div id="gesture-lib-empty" style="font-size:11px;color:#666;">No gestures recorded yet.</div>
+      <button class="btn" id="btn-export-gestures" style="margin-top:6px;width:100%;">Export All JSON</button>
+    </div>
+  </div>
+
+  <!-- Animations (GLB) -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Animations (GLB) <span class="chevron">v</span>
+    </div>
+    <div class="section-body">
+      <div class="file-input-wrap">
+        <label style="font-size:11px;color:#aaa;">Load animation folder or files:</label>
+        <input type="file" accept=".glb,.gltf" id="anim-files" multiple style="font-size:11px;color:#aaa;">
+      </div>
+      <div style="font-size:11px;color:#888;margin:6px 0 4px;">Loaded animations:</div>
+      <div class="btn-row" id="anim-buttons"></div>
+      <div class="slider-row" style="margin-top:8px;">
+        <label style="font-size:11px;min-width:80px;color:#aaa;">Speed</label>
+        <input type="range" id="anim-speed" min="0.1" max="3" step="0.1" value="1" style="flex:1;accent-color:#4af;">
+        <input type="number" id="anim-speed-val" class="val-input" value="1.00" min="0.1" max="3" step="0.1">
+      </div>
+      <div class="slider-row">
+        <label style="font-size:11px;min-width:80px;color:#aaa;">Blend</label>
+        <input type="range" id="anim-blend" min="0" max="1" step="0.05" value="0.3" style="flex:1;accent-color:#4af;">
+        <input type="number" id="anim-blend-val" class="val-input" value="0.30" min="0" max="1" step="0.05">
+      </div>
+      <div class="btn-row" style="margin-top:6px;">
+        <button class="btn" id="btn-anim-stop">Stop</button>
+        <button class="btn" id="btn-anim-loop">Loop: On</button>
+        <button class="btn" id="btn-anim-once">Play Once</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pose Recorder -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Pose Recorder <span class="chevron">v</span>
+    </div>
+    <div class="section-body">
+      <div class="btn-row" style="margin-bottom:6px;">
+        <button class="btn" id="btn-pose-mode" style="background:#2a4a2a;border-color:#6c6;">Enter Pose Mode</button>
+        <button class="btn" id="btn-pose-reset">Reset Pose</button>
+      </div>
+      <div style="font-size:11px;color:#888;margin-bottom:4px;">Select bone:</div>
+      <div class="btn-row" id="pose-bone-buttons" style="margin-bottom:8px;"></div>
+      <div id="pose-bone-sliders" style="margin-bottom:8px;"></div>
+      <div style="border-top:1px solid #333;padding-top:8px;margin-top:4px;">
+        <div style="font-size:11px;color:#888;margin-bottom:4px;">Keyframes:</div>
+        <div class="btn-row" style="margin-bottom:6px;">
+          <button class="btn" id="btn-kf-add" style="background:#2a3a5a;border-color:#48f;">Add Keyframe</button>
+          <button class="btn" id="btn-kf-preview">Preview</button>
+          <button class="btn" id="btn-kf-clear">Clear All</button>
+        </div>
+        <div class="slider-row" style="margin-bottom:6px;">
+          <label style="font-size:11px;min-width:80px;color:#aaa;">Duration (s)</label>
+          <input type="number" id="pose-duration" class="val-input" value="1.0" min="0.3" max="5" step="0.1">
+        </div>
+        <div class="slider-row" style="margin-bottom:6px;">
+          <label style="font-size:11px;min-width:80px;color:#aaa;">Gesture name</label>
+          <input type="text" id="pose-gesture-name" class="val-input" value="custom" style="width:100px;">
+        </div>
+        <div id="kf-list" style="font-size:10px;color:#888;max-height:120px;overflow-y:auto;"></div>
+        <button class="btn" id="btn-kf-export" style="margin-top:6px;background:#2a4a2a;border-color:#6c6;width:100%;">Copy Gesture JSON</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Emotions -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Emotions & Gestures <span class="chevron">v</span>
+    </div>
+    <div class="section-body">
+      <div style="font-size:11px;color:#888;margin-bottom:4px;">Click to set emotion:</div>
+      <div class="btn-row" id="emotion-buttons"></div>
+      <div style="font-size:11px;color:#888;margin:8px 0 4px;">Trigger gesture (legacy):</div>
+      <div class="btn-row" id="gesture-buttons"></div>
+      <div style="font-size:11px;color:#888;margin:8px 0 4px;">Awareness impulse:</div>
+      <div class="btn-row" id="awareness-buttons"></div>
+    </div>
+  </div>
+
+  <!-- Idle Arm Pose -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Idle Arm Pose <span class="chevron">v</span>
+    </div>
+    <div class="section-body" id="arm-sliders"></div>
+  </div>
+
+  <!-- Breathing -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Breathing <span class="chevron">v</span>
+    </div>
+    <div class="section-body" id="breathing-sliders"></div>
+  </div>
+
+  <!-- Sway -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Sway <span class="chevron">v</span>
+    </div>
+    <div class="section-body" id="sway-sliders"></div>
+  </div>
+
+  <!-- Gaze -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Gaze & Blink <span class="chevron">v</span>
+    </div>
+    <div class="section-body" id="gaze-sliders"></div>
+  </div>
+
+  <!-- Expression Weights -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Expression Presets <span class="chevron">v</span>
+    </div>
+    <div class="section-body" id="expression-sliders"></div>
+  </div>
+
+  <!-- Lip Sync -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Lip Sync <span class="chevron">v</span>
+    </div>
+    <div class="section-body" id="lipsync-sliders"></div>
+  </div>
+
+  <!-- PD Physics -->
+  <div class="section">
+    <div class="section-header collapsed" onclick="toggleSection(this)">
+      PD Spring Physics <span class="chevron">v</span>
+    </div>
+    <div class="section-body hidden" id="pd-sliders"></div>
+  </div>
+
+  <!-- Posture -->
+  <div class="section">
+    <div class="section-header collapsed" onclick="toggleSection(this)">
+      Posture Lerp & Decay <span class="chevron">v</span>
+    </div>
+    <div class="section-body hidden" id="posture-sliders"></div>
+  </div>
+
+  <!-- Camera -->
+  <div class="section">
+    <div class="section-header collapsed" onclick="toggleSection(this)">
+      Camera <span class="chevron">v</span>
+    </div>
+    <div class="section-body hidden" id="camera-sliders"></div>
+  </div>
+
+  <!-- Export -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      Export / Import <span class="chevron">v</span>
+    </div>
+    <div class="section-body">
+      <div class="btn-row">
+        <button class="btn" id="btn-clipboard" style="background:#2a4a2a;border-color:#6c6;">Copy to Clipboard</button>
+        <button class="btn" id="btn-export">Export JSON</button>
+        <button class="btn" id="btn-import">Import JSON</button>
+        <button class="btn" id="btn-reset">Reset Defaults</button>
+      </div>
+      <input type="file" id="import-file" accept=".json" style="display:none">
+      <div style="font-size:10px;color:#666;margin-top:4px;">Copy to Clipboard gives you a compact summary to paste into chat.</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from './lib/three/three.module.min.js';
+import { GLTFLoader } from './lib/three/GLTFLoader.js';
+import { VRMLoaderPlugin, VRMUtils } from './lib/three-vrm/three-vrm.module.min.js';
+import { TransformControls } from './lib/three/TransformControls.js';
+import { OrbitControls } from './lib/three/OrbitControls.js';
+import { startCapture, stopCapture, setFilterParams, isCapturing } from './scripts/mocap/mocap-capture.js';
+import { reduceFrames } from './scripts/mocap/rdp-reduce.js';
+import { saveGesture as saveGestureDB, getAllGestures, deleteGesture as deleteGestureDB, exportAllGestures } from './scripts/mocap/gesture-store.js';
+
+// =========================================================================
+// Inline the animator + lipsync (we modify constants live via slider refs)
+// =========================================================================
+
+// --- Simplex noise (copied from avatar-animator.js) ---
+const _GRAD3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],[0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]];
+const _PERM = new Uint8Array(512);
+const _PERM12 = new Uint8Array(512);
+{
+  const p = new Uint8Array(256);
+  for (let i = 0; i < 256; i++) p[i] = i;
+  for (let i = 255; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [p[i],p[j]] = [p[j],p[i]]; }
+  for (let i = 0; i < 512; i++) { _PERM[i] = p[i&255]; _PERM12[i] = _PERM[i] % 12; }
+}
+function _dot2(g,x,y) { return g[0]*x + g[1]*y; }
+function simplex2D(xin,yin) {
+  const F2=0.5*(Math.sqrt(3)-1), G2=(3-Math.sqrt(3))/6;
+  const s=(xin+yin)*F2, i=Math.floor(xin+s), j=Math.floor(yin+s);
+  const t=(i+j)*G2, x0=xin-(i-t), y0=yin-(j-t);
+  const i1=x0>y0?1:0, j1=x0>y0?0:1;
+  const x1=x0-i1+G2,y1=y0-j1+G2,x2=x0-1+2*G2,y2=y0-1+2*G2;
+  const ii=i&255,jj=j&255;
+  const gi0=_PERM12[ii+_PERM[jj]],gi1=_PERM12[ii+i1+_PERM[jj+j1]],gi2=_PERM12[ii+1+_PERM[jj+1]];
+  let n0=0,n1=0,n2=0;
+  let t0=0.5-x0*x0-y0*y0; if(t0>=0){t0*=t0;n0=t0*t0*_dot2(_GRAD3[gi0],x0,y0);}
+  let t1=0.5-x1*x1-y1*y1; if(t1>=0){t1*=t1;n1=t1*t1*_dot2(_GRAD3[gi1],x1,y1);}
+  let t2=0.5-x2*x2-y2*y2; if(t2>=0){t2*=t2;n2=t2*t2*_dot2(_GRAD3[gi2],x2,y2);}
+  return 70*(n0+n1+n2);
+}
+
+const DEG = Math.PI/180;
+
+// =========================================================================
+// LIVE CONFIG — sliders modify these objects directly
+// =========================================================================
+const CFG = {
+  breathing: { rate: 0.18, depth: 4.0, chestRatio: 0.7, shoulderLift: 1.0, headNod: 0.4 },
+  sway: { amount: 2.0, speed: 0.12, hipWeight: 1.0, spineWeight: 0.7, headWeight: 0.4, counterSpine: -0.5, counterHead: -0.3 },
+  gaze: {
+    eyeMaxYaw: 8, eyeMaxPitch: 5, headMaxYaw: 12, headMaxPitch: 8,
+    headSpeed: 1.0, headFollowYaw: 0.3, headFollowPitch: 0.2, headFollowDelay: 0.15,
+    saccadeRate: 1.5, saccadeMag: 1.0, saccadeDecay: 0.95,
+    blinkBase: 0.12, blinkVariance: 0.05, blinkCloseRatio: 0.4,
+    blinkInterval: 3.5, blinkIntervalVariance: 2.5,
+  },
+  expressions: {
+    neutral: {}, happy: {happy:0.6,surprised:0.1}, sad: {sad:0.6,relaxed:0.1},
+    angry: {angry:0.6,surprised:0.05}, surprised: {surprised:0.7}, relaxed: {relaxed:0.5},
+    curious: {surprised:0.35,relaxed:0.1}, excited: {happy:0.8,surprised:0.25}, thinking: {relaxed:0.2},
+  },
+  expressionLerp: 0.08,
+  postureLerp: 0.03,
+  visemeDecay: 0.85,
+  pd: {
+    hips:{maxSpeed:2,damping:0.95,stiffness:8}, spine:{maxSpeed:2,damping:0.95,stiffness:8},
+    chest:{maxSpeed:2.5,damping:0.92,stiffness:10}, upperChest:{maxSpeed:2.5,damping:0.92,stiffness:10},
+    neck:{maxSpeed:3.5,damping:0.88,stiffness:12}, head:{maxSpeed:4,damping:0.85,stiffness:14,suppressRoll:true},
+    leftUpperArm:{maxSpeed:6,damping:0.75,stiffness:16}, rightUpperArm:{maxSpeed:6,damping:0.75,stiffness:16},
+    leftLowerArm:{maxSpeed:6,damping:0.78,stiffness:16}, rightLowerArm:{maxSpeed:6,damping:0.78,stiffness:16},
+    leftShoulder:{maxSpeed:4,damping:0.85,stiffness:12}, rightShoulder:{maxSpeed:4,damping:0.85,stiffness:12},
+  },
+  lipsync: {
+    sigmoidSlope: 45, sigmoidOffset: 5, smoothingAlpha: 0.7,
+    aaWeight: 0.7, ouWeight: 0.5, ohWeight: 0.3, eeWeight: 0.6, ihWeight: 0.5,
+    highDampFactor: 0.15, jawScale: 0.8, emotionDampen: 1.0,
+  },
+  camera: { fov: 46, posX: 0.40, posY: 1.25, posZ: 2.10, lookY: 0.90 },
+  emotionModifiers: {
+    neutral:{rate:1,depth:1}, happy:{rate:1.1,depth:1.2}, sad:{rate:0.85,depth:1.4},
+    excited:{rate:1.4,depth:0.8}, angry:{rate:1.3,depth:1.5}, relaxed:{rate:0.7,depth:1.3},
+    thinking:{rate:1,depth:1}, surprised:{rate:1.2,depth:1}, curious:{rate:1,depth:1},
+  },
+  idleArm: {
+    leftUpperArm:[15,0,64], rightUpperArm:[15,2,-64],
+    leftLowerArm:[-25,-15,-5], rightLowerArm:[-25,15,5],
+  },
+  emotionPostures: {
+    neutral:{spine:[2,0,0],chest:[2,0,0],head:[0,0,0],shoulders:[0,0]},
+    happy:{spine:[-3,0,0],chest:[-2,0,0],head:[-5,0,0],shoulders:[-3,-3]},
+    sad:{spine:[8,0,0],chest:[10,0,0],head:[15,0,0],shoulders:[5,5]},
+    excited:{spine:[-5,0,0],chest:[-5,0,0],head:[-8,0,0],shoulders:[-5,-5]},
+    thinking:{spine:[3,0,2],chest:[5,0,0],head:[8,10,5],shoulders:[2,0]},
+    angry:{spine:[-2,0,0],chest:[0,0,0],head:[5,0,0],shoulders:[8,8]},
+    relaxed:{spine:[5,0,-2],chest:[3,0,0],head:[3,-5,0],shoulders:[3,3]},
+    surprised:{spine:[-2,0,0],chest:[-3,0,0],head:[-5,0,0],shoulders:[-2,-2]},
+    curious:{spine:[2,0,1],chest:[3,0,0],head:[5,8,3],shoulders:[1,0]},
+  },
+};
+
+// Save defaults for reset
+const DEFAULTS = JSON.parse(JSON.stringify(CFG));
+
+// =========================================================================
+// Gestures
+// =========================================================================
+const GESTURES = {
+  nod: { duration: 0.6, keyframes: [{t:0,bones:{}},{t:0.25,bones:{head:[-25,0,0],neck:[-10,0,0]}},{t:0.55,bones:{head:[8,0,0],neck:[4,0,0]}},{t:1,bones:{}}] },
+  shake: { duration: 1.0, keyframes: [
+    {t:0,bones:{}},
+    {t:0.12,bones:{head:[0,35,0],neck:[0,15,0],spine:[0,3,0]}},
+    {t:0.3,bones:{head:[0,-35,0],neck:[0,-15,0],spine:[0,-3,0]}},
+    {t:0.45,bones:{head:[0,30,0],neck:[0,12,0],spine:[0,2,0]}},
+    {t:0.6,bones:{head:[0,-25,0],neck:[0,-10,0],spine:[0,-2,0]}},
+    {t:0.78,bones:{head:[0,12,0],neck:[0,5,0]}},
+    {t:1,bones:{}}
+  ] },
+  bow: { duration: 2.0, keyframes: [
+    {t:0,bones:{}},
+    {t:0.25,bones:{spine:[-35,0,0],chest:[-25,0,0],head:[-20,0,0],leftUpperArm:[30,0,20],rightUpperArm:[30,0,-20],leftLowerArm:[-15,0,0],rightLowerArm:[-15,0,0]}},
+    {t:0.65,bones:{spine:[-35,0,0],chest:[-25,0,0],head:[-20,0,0],leftUpperArm:[30,0,20],rightUpperArm:[30,0,-20],leftLowerArm:[-15,0,0],rightLowerArm:[-15,0,0]}},
+    {t:1,bones:{}}
+  ] },
+  shrug: { duration: 1.1, keyframes: [
+    {t:0,bones:{}},
+    {t:0.15,bones:{leftShoulder:[-40,0,0],rightShoulder:[-40,0,0],head:[3,0,8]}},
+    {t:0.45,bones:{leftShoulder:[-40,0,0],rightShoulder:[-40,0,0],head:[3,0,8]}},
+    {t:0.7,bones:{leftShoulder:[-18,0,0],rightShoulder:[-18,0,0],head:[1,0,4]}},
+    {t:1,bones:{}}
+  ] },
+  wave: { duration: 5.0, keyframes: [
+    {t:0, bones:{}},
+    {t:0.15, bones:{leftUpperArm:[0,0,0],leftLowerArm:[0,-90,-90]}},
+    {t:0.22, bones:{leftUpperArm:[0,0,0],leftLowerArm:[0,-90,-90]}},
+    {t:0.31, bones:{leftUpperArm:[0,0,0],leftLowerArm:[-98,-63,173]}},
+    {t:0.40, bones:{leftUpperArm:[0,0,0],leftLowerArm:[82,-49,-9]}},
+    {t:0.49, bones:{leftUpperArm:[0,0,0],leftLowerArm:[-98,-63,173]}},
+    {t:0.58, bones:{leftUpperArm:[0,0,0],leftLowerArm:[82,-49,-9]}},
+    {t:0.67, bones:{leftUpperArm:[0,0,0],leftLowerArm:[-98,-63,173]}},
+    {t:0.76, bones:{leftUpperArm:[0,0,0],leftLowerArm:[82,-49,-9]}},
+    {t:0.84, bones:{leftUpperArm:[0,0,0],leftLowerArm:[0,-90,-90]}},
+    {t:1, bones:{}}
+  ] },
+  laugh: { duration: 1.0, keyframes: [{t:0,bones:{}},{t:0.12,bones:{spine:[-6,0,2],head:[-10,0,4],chest:[-4,0,0]}},{t:0.25,bones:{spine:[4,0,-2],head:[6,0,-4],chest:[3,0,0]}},{t:0.38,bones:{spine:[-5,0,2],head:[-8,0,3],chest:[-3,0,0]}},{t:0.5,bones:{spine:[3,0,-1],head:[5,0,-3],chest:[2,0,0]}},{t:0.7,bones:{spine:[-2,0,0],head:[-4,0,1]}},{t:1,bones:{}}] },
+  think: { duration: 1.8, keyframes: [
+    {t:0,bones:{}},
+    {t:0.15,bones:{
+      leftUpperArm:[60,30,70],leftLowerArm:[-140,-30,0],
+      head:[5,8,3],neck:[2,4,2],spine:[3,0,1]
+    }},
+    {t:0.5,bones:{
+      leftUpperArm:[60,30,70],leftLowerArm:[-140,-30,0],
+      head:[7,5,5],neck:[3,2,3],spine:[3,0,1]
+    }},
+    {t:0.75,bones:{
+      leftUpperArm:[60,30,70],leftLowerArm:[-140,-30,0],
+      head:[5,8,3],neck:[2,4,2],spine:[3,0,1]
+    }},
+    {t:1,bones:{}}
+  ] },
+  surprise: { duration: 0.6, keyframes: [{t:0,bones:{}},{t:0.15,bones:{head:[-15,0,0],leftShoulder:[-12,0,0],rightShoulder:[-12,0,0],chest:[-8,0,0],spine:[-4,0,0]}},{t:0.4,bones:{head:[-12,0,0],leftShoulder:[-8,0,0],rightShoulder:[-8,0,0],chest:[-5,0,0]}},{t:1,bones:{}}] },
+};
+
+const AWARENESS_TYPES = ['silence_short','tool_call','user_typing','nod','headTilt','surprise','thinking','attention'];
+const EMOTIONS = ['neutral','happy','sad','excited','thinking','angry','relaxed','surprised','curious'];
+
+// =========================================================================
+// BonePD — Spring-damper controller (copy from avatar-animator.js)
+// =========================================================================
+class BonePD {
+  constructor(name) {
+    this.name = name;
+    this.target = [0,0,0];
+    this.current = [0,0,0];
+    this.velocity = [0,0,0];
+    this._quat = new THREE.Quaternion();
+    this._euler = new THREE.Euler();
+  }
+  resetTarget() { this.target[0]=this.target[1]=this.target[2]=0; }
+  addTarget(x,y,z) { this.target[0]+=x; this.target[1]+=y; this.target[2]+=z; }
+  step(dt, gestureBoost) {
+    const cfg = CFG.pd[this.name] || {maxSpeed:4,damping:0.9,stiffness:10};
+    // During gestures, boost stiffness and max speed so targets are actually reached
+    const stiffMul = gestureBoost ? 10.0 : 1.0;
+    const speedMul = gestureBoost ? 15.0 : 1.0;
+    for (let i=0;i<3;i++) {
+      if (cfg.suppressRoll && i===2) { this.current[2]*=0.95; this.velocity[2]*=0.9; continue; }
+      const force = cfg.stiffness * stiffMul * (this.target[i] - this.current[i]);
+      this.velocity[i] += force * dt;
+      this.velocity[i] *= cfg.damping;
+      const maxS = cfg.maxSpeed * speedMul;
+      if (this.velocity[i] > maxS) this.velocity[i] = maxS;
+      if (this.velocity[i] < -maxS) this.velocity[i] = -maxS;
+      this.current[i] += this.velocity[i] * dt;
+    }
+  }
+  applyToBone(bone, restQuat) {
+    if (!bone) return;
+    this._euler.set(this.current[0]*DEG, this.current[1]*DEG, this.current[2]*DEG, 'XYZ');
+    this._quat.setFromEuler(this._euler);
+    bone.quaternion.copy(restQuat).multiply(this._quat);
+  }
+}
+
+// =========================================================================
+// Three.js Scene
+// =========================================================================
+const viewport = document.getElementById('viewport');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(CFG.camera.fov, viewport.clientWidth/viewport.clientHeight, 0.1, 100);
+camera.position.set(CFG.camera.posX, CFG.camera.posY, CFG.camera.posZ);
+camera.lookAt(0, CFG.camera.lookY, 0);
+
+const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+viewport.insertBefore(renderer.domElement, viewport.firstChild);
+
+// 3-point lighting (matching avatar.js)
+const keyLight = new THREE.DirectionalLight(0xfff5e6, 1.0);
+keyLight.position.set(1, 1.5, 1);
+scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xe6f0ff, 0.4);
+fillLight.position.set(-1, 1, 0.5);
+scene.add(fillLight);
+const rimLight = new THREE.DirectionalLight(0xffeedd, 0.6);
+rimLight.position.set(0, 0.5, -1);
+scene.add(rimLight);
+scene.add(new THREE.AmbientLight(0xffffff, 0.15));
+const catchLight = new THREE.PointLight(0xffffff, 0.3, 3);
+camera.add(catchLight);
+scene.add(camera);
+
+// Orbit controls (for camera rotation in pose mode)
+const orbitControls = new OrbitControls(camera, renderer.domElement);
+orbitControls.target.set(0, CFG.camera.lookY, 0);
+orbitControls.enableDamping = true;
+orbitControls.dampingFactor = 0.1;
+orbitControls.enabled = false; // disabled by default, enabled in pose mode
+
+// Transform controls (for bone rotation gizmo)
+const transformControls = new TransformControls(camera, renderer.domElement);
+transformControls.setMode('rotate');
+transformControls.setSpace('local');
+transformControls.setSize(0.6);
+scene.add(transformControls);
+// Prevent orbit when using gizmo
+transformControls.addEventListener('dragging-changed', (e) => {
+  orbitControls.enabled = poseMode && !e.value;
+});
+// Capture bone rotation from gizmo into poseOverrides
+transformControls.addEventListener('objectChange', () => {
+  if (!selectedBone || !selectedBoneName || !restQuats[selectedBoneName]) return;
+  // Extract rotation relative to rest pose
+  const restInv = restQuats[selectedBoneName].clone().invert();
+  const deltaQ = restInv.multiply(selectedBone.quaternion.clone());
+  const euler = new THREE.Euler().setFromQuaternion(deltaQ, 'XYZ');
+  const deg = [euler.x / DEG, euler.y / DEG, euler.z / DEG];
+  poseOverrides[selectedBoneName] = [Math.round(deg[0]*10)/10, Math.round(deg[1]*10)/10, Math.round(deg[2]*10)/10];
+  // Update sliders if this bone is selected in the panel
+  if (selectedPoseBone === selectedBoneName) selectPoseBone(selectedBoneName);
+});
+
+// Resize
+window.addEventListener('resize', () => {
+  camera.aspect = viewport.clientWidth / viewport.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+});
+
+// =========================================================================
+// Audio System
+// =========================================================================
+let audioCtx = null;
+let analyserNode = null;
+let audioSource = null;
+let micStream = null;
+let toneOsc = null;
+
+function ensureAudio() {
+  if (audioCtx) return;
+  audioCtx = new AudioContext();
+  analyserNode = audioCtx.createAnalyser();
+  analyserNode.fftSize = 2048;
+  analyserNode.smoothingTimeConstant = 0.8;
+}
+
+document.getElementById('audio-file').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  ensureAudio();
+  const player = document.getElementById('audio-player');
+  player.src = URL.createObjectURL(file);
+  if (audioSource) audioSource.disconnect();
+  player.addEventListener('canplay', () => {
+    audioSource = audioCtx.createMediaElementSource(player);
+    audioSource.connect(analyserNode);
+    analyserNode.connect(audioCtx.destination);
+  }, {once:true});
+});
+
+document.getElementById('btn-mic').addEventListener('click', async () => {
+  ensureAudio();
+  if (micStream) { micStream.getTracks().forEach(t=>t.stop()); micStream=null; document.getElementById('btn-mic').classList.remove('active'); return; }
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({audio:true});
+    if (audioSource) audioSource.disconnect();
+    audioSource = audioCtx.createMediaStreamSource(micStream);
+    audioSource.connect(analyserNode);
+    document.getElementById('btn-mic').classList.add('active');
+  } catch(e) { console.error('Mic error',e); }
+});
+
+document.getElementById('btn-tone').addEventListener('click', () => {
+  ensureAudio();
+  if (toneOsc) { toneOsc.stop(); toneOsc=null; document.getElementById('btn-tone').classList.remove('active'); return; }
+  toneOsc = audioCtx.createOscillator();
+  toneOsc.frequency.value = 220;
+  toneOsc.connect(analyserNode);
+  analyserNode.connect(audioCtx.destination);
+  toneOsc.start();
+  document.getElementById('btn-tone').classList.add('active');
+  // Sweep frequency for varied visemes
+  let t = 0;
+  const sweep = setInterval(() => {
+    if (!toneOsc) { clearInterval(sweep); return; }
+    t += 0.02;
+    toneOsc.frequency.value = 150 + Math.sin(t) * 100 + Math.sin(t*3.7) * 800;
+  }, 50);
+});
+
+// =========================================================================
+// Lip Sync (inline from avatar-lipsync.js, uses CFG.lipsync)
+// =========================================================================
+const VISEME_NAMES = ['aa','ih','ou','ee','oh'];
+let lsFreqData = null;
+const lsVisemes = {aa:0,ih:0,ou:0,ee:0,oh:0,jaw:0};
+const lsSmoothed = {aa:0,ih:0,ou:0,ee:0,oh:0,jaw:0};
+let lsLastTime = 0;
+
+function lipsyncUpdate(analyser, now) {
+  if (!analyser) return lsSmoothed;
+  if (!lsFreqData || lsFreqData.length !== analyser.frequencyBinCount) {
+    lsFreqData = new Uint8Array(analyser.frequencyBinCount);
+  }
+  analyser.getByteFrequencyData(lsFreqData);
+  const delta = now - lsLastTime || 1/60;
+  lsLastTime = now;
+
+  const bandE = (s,e) => { let sum=0; const len=Math.min(e,lsFreqData.length); for(let i=s;i<len;i++) sum+=lsFreqData[i]/255; return sum/(e-s); };
+  const low = bandE(4,17), mid = bandE(17,85), high = bandE(85,341);
+
+  let sum=0; const end=Math.min(341,lsFreqData.length);
+  for(let i=4;i<end;i++){const v=lsFreqData[i]/255;sum+=v*v;}
+  const rms = Math.sqrt(sum/(end-4));
+  const LS = CFG.lipsync;
+  const volume = 1/(1+Math.exp(-LS.sigmoidSlope*rms+LS.sigmoidOffset));
+
+  lsVisemes.aa = low * LS.aaWeight * volume;
+  lsVisemes.ou = low * LS.ouWeight * volume;
+  lsVisemes.oh = low * LS.ohWeight * volume;
+  lsVisemes.ee = mid * LS.eeWeight * volume;
+  lsVisemes.ih = mid * LS.ihWeight * volume;
+
+  const highDamp = 1.0 - (high * LS.highDampFactor);
+  for (const k of VISEME_NAMES) lsVisemes[k] *= highDamp;
+
+  let maxV=0; for(const k of VISEME_NAMES) if(lsVisemes[k]>maxV) maxV=lsVisemes[k];
+  if(maxV>0){const s=volume/maxV; for(const k of VISEME_NAMES) lsVisemes[k]*=s;}
+
+  lsVisemes.jaw = volume * LS.jawScale;
+  for(const k of VISEME_NAMES) lsVisemes[k]*=LS.emotionDampen;
+  lsVisemes.jaw *= LS.emotionDampen;
+
+  const alpha = 1-Math.pow(1-LS.smoothingAlpha, delta*60);
+  for(const k of [...VISEME_NAMES,'jaw']) lsSmoothed[k]+=(lsVisemes[k]-lsSmoothed[k])*alpha;
+  return {...lsSmoothed};
+}
+
+// =========================================================================
+// Phoneme Lip-Sync (Phase 1) — production AvatarLipSync + schedule from server
+// =========================================================================
+let productionLipSync = null;
+let currentLipSyncEngine = 'amplitude';
+const phonemeStatusEl = document.getElementById('phoneme-status');
+
+async function initProductionLipSync() {
+  if (productionLipSync) return productionLipSync;
+  const mod = await import('./scripts/avatar-lipsync.js');
+  productionLipSync = new mod.AvatarLipSync();
+  return productionLipSync;
+}
+
+function setEngine(engine) {
+  currentLipSyncEngine = engine;
+  document.querySelectorAll('.ls-engine-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.engine === engine);
+  });
+  if (engine === 'phoneme') initProductionLipSync();
+  if (productionLipSync && engine === 'amplitude') productionLipSync.clearVisemeSchedule();
+  setPhonemeStatus(`engine: ${engine}`);
+}
+
+function setPhonemeStatus(msg) {
+  if (phonemeStatusEl) phonemeStatusEl.textContent = msg;
+}
+
+document.querySelectorAll('.ls-engine-btn').forEach(btn => {
+  btn.addEventListener('click', () => setEngine(btn.dataset.engine));
+});
+
+async function generatePhonemeAudio() {
+  const text = document.getElementById('phoneme-text').value.trim();
+  const voice = document.getElementById('phoneme-voice').value;
+  if (!text) { setPhonemeStatus('error: empty text'); return; }
+
+  await initProductionLipSync();
+  setEngine('phoneme');
+  setPhonemeStatus('generating...');
+
+  let resp;
+  try {
+    resp = await fetch('/api/voice/test/lipsync', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({text, voice, response_format: 'mp3'}),
+    });
+  } catch (e) {
+    setPhonemeStatus(`fetch failed: ${e.message}`);
+    return;
+  }
+  if (!resp.ok) {
+    const err = await resp.text().catch(() => `HTTP ${resp.status}`);
+    setPhonemeStatus(`error: ${err.slice(0, 200)}`);
+    return;
+  }
+  const data = await resp.json();
+  if (!data.schedule) {
+    setPhonemeStatus(`schedule missing (source=${data.schedule_source}, lang=${data.lang})`);
+    return;
+  }
+
+  // Decode base64 audio into a blob URL
+  const bin = atob(data.audio_b64);
+  const u8 = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  const blob = new Blob([u8], {type: data.mime || 'audio/mpeg'});
+  const url = URL.createObjectURL(blob);
+
+  ensureAudio();
+  const player = document.getElementById('audio-player');
+  player.src = url;
+
+  // MediaElementAudioSource can only be created once per audio element; bind
+  // lazily and reuse. Survives src changes, so audio loaded later still flows
+  // through the analyser.
+  if (!player._mesBound) {
+    try {
+      audioSource = audioCtx.createMediaElementSource(player);
+      audioSource.connect(analyserNode);
+      analyserNode.connect(audioCtx.destination);
+      player._mesBound = true;
+    } catch (e) {
+      // Already bound by audio-file flow — that's fine, stream still routes
+      player._mesBound = true;
+    }
+  }
+
+  player.addEventListener('canplay', () => {
+    productionLipSync.setVisemeSchedule(data.schedule, () => player.currentTime * 1000);
+    player.play().catch(e => setPhonemeStatus(`play failed: ${e.message}`));
+    setPhonemeStatus(`playing — ${data.duration_ms}ms, ${data.schedule.events.length} events, source=${data.schedule_source}`);
+  }, {once: true});
+}
+
+document.getElementById('btn-phoneme-gen').addEventListener('click', generatePhonemeAudio);
+
+document.getElementById('btn-phoneme-stop').addEventListener('click', () => {
+  const player = document.getElementById('audio-player');
+  player.pause();
+  player.currentTime = 0;
+  if (productionLipSync) productionLipSync.clearVisemeSchedule();
+  setPhonemeStatus('stopped');
+});
+
+document.getElementById('btn-phoneme-apply-manual').addEventListener('click', async () => {
+  await initProductionLipSync();
+  setEngine('phoneme');
+  const txt = document.getElementById('phoneme-manual').value.trim();
+  if (!txt) { setPhonemeStatus('manual: empty'); return; }
+  let sched;
+  try { sched = JSON.parse(txt); } catch (e) { setPhonemeStatus(`json error: ${e.message}`); return; }
+  if (!sched.events || !Array.isArray(sched.events)) { setPhonemeStatus('manual: missing events array'); return; }
+
+  // Drive from a manual clock — wall-clock since apply
+  const startedAt = performance.now();
+  productionLipSync.setVisemeSchedule(sched, () => performance.now() - startedAt);
+  setPhonemeStatus(`manual playing — ${sched.duration_ms}ms, ${sched.events.length} events`);
+});
+
+document.getElementById('btn-phoneme-clear').addEventListener('click', () => {
+  if (productionLipSync) productionLipSync.clearVisemeSchedule();
+  setPhonemeStatus('schedule cleared');
+});
+
+// =========================================================================
+// VRM Loading
+// =========================================================================
+let vrm = null;
+let bonePDs = {};
+let restQuats = {};
+let currentEmotion = 'neutral';
+let currentState = 'idle';
+let gestureActive = null; // {name, startTime, duration, keyframes}
+let awarenessActive = null; // {type, startTime}
+let elapsedTime = 0;
+
+// Gaze state
+let gazeYaw = 0, gazePitch = 0, headYaw = 0, headPitch = 0;
+let nextSaccade = 0, saccadeX = 0, saccadeY = 0;
+let nextBlink = 2, blinkPhase = -1, blinkTimer = 0;
+// Posture lerp state
+let currentPosture = {spine:[0,0,0],chest:[0,0,0],head:[0,0,0],shoulders:[0,0]};
+
+const BONE_NAMES = ['hips','spine','chest','upperChest','neck','head',
+  'leftUpperArm','rightUpperArm','leftLowerArm','rightLowerArm','leftShoulder','rightShoulder'];
+
+const loader = new GLTFLoader();
+loader.register(p => new VRMLoaderPlugin(p));
+
+async function loadVRM(url) {
+  const gltf = await loader.loadAsync(url);
+  const v = gltf.userData.vrm;
+  if (!v) throw new Error('No VRM data in file');
+  VRMUtils.removeUnnecessaryVertices(gltf.scene);
+  if (VRMUtils.combineSkeletons) VRMUtils.combineSkeletons(gltf.scene);
+  else if (VRMUtils.removeUnnecessaryJoints) VRMUtils.removeUnnecessaryJoints(gltf.scene);
+  // Auto-detect facing: check if head bone faces camera (+Z) or away (-Z)
+  v.scene.updateMatrixWorld(true);
+  const head = v.humanoid?.getNormalizedBoneNode('head');
+  if (head) {
+    const fwd = new THREE.Vector3(0, 0, 1).applyQuaternion(head.getWorldQuaternion(new THREE.Quaternion()));
+    // If head's forward Z > 0, model faces away from camera — rotate 180
+    if (fwd.z > 0) v.scene.rotation.y = Math.PI;
+  }
+  scene.add(v.scene);
+  return v;
+}
+
+// Bone collider system for click-to-select
+const boneColliders = []; // {mesh, boneName, bone}
+const COLLIDER_BONES = [
+  'head','neck','chest','spine','upperChest','hips',
+  'leftShoulder','rightShoulder',
+  'leftUpperArm','rightUpperArm','leftLowerArm','rightLowerArm',
+  'leftHand','rightHand',
+  'leftUpperLeg','rightUpperLeg','leftLowerLeg','rightLowerLeg',
+];
+const COLLIDER_SIZES = {
+  head: 0.12, neck: 0.05, chest: 0.1, spine: 0.08, upperChest: 0.09, hips: 0.1,
+  leftShoulder: 0.05, rightShoulder: 0.05,
+  leftUpperArm: 0.05, rightUpperArm: 0.05, leftLowerArm: 0.04, rightLowerArm: 0.04,
+  leftHand: 0.04, rightHand: 0.04,
+  leftUpperLeg: 0.06, rightUpperLeg: 0.06, leftLowerLeg: 0.05, rightLowerLeg: 0.05,
+};
+
+function clearBoneColliders() {
+  for (const c of boneColliders) { scene.remove(c.mesh); c.mesh.geometry.dispose(); c.mesh.material.dispose(); }
+  boneColliders.length = 0;
+}
+
+function createBoneColliders(v) {
+  clearBoneColliders();
+  const mat = new THREE.MeshBasicMaterial({ color: 0x44aaff, transparent: true, opacity: 0.0, depthTest: false });
+  for (const name of COLLIDER_BONES) {
+    const bone = v.humanoid?.getNormalizedBoneNode(name);
+    if (!bone) continue;
+    const size = COLLIDER_SIZES[name] || 0.05;
+    const geo = new THREE.SphereGeometry(size, 8, 8);
+    const mesh = new THREE.Mesh(geo, mat.clone());
+    mesh.renderOrder = 999;
+    bone.add(mesh); // parent to bone so it follows automatically
+    boneColliders.push({ mesh, boneName: name, bone });
+  }
+}
+
+let selectedBone = null;
+let selectedBoneName = null;
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+function onPoseClick(event) {
+  if (!poseMode || !vrm) return;
+  const rect = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  const meshes = boneColliders.map(c => c.mesh);
+  const hits = raycaster.intersectObjects(meshes, false);
+  if (hits.length > 0) {
+    const hit = boneColliders.find(c => c.mesh === hits[0].object);
+    if (hit) selectBoneForPosing(hit.boneName, hit.bone);
+  }
+}
+
+function selectBoneForPosing(name, bone) {
+  selectedBone = bone;
+  selectedBoneName = name;
+  transformControls.attach(bone);
+  // Highlight colliders
+  for (const c of boneColliders) {
+    c.mesh.material.opacity = c.boneName === name ? 0.5 : 0.0;
+    c.mesh.material.color.setHex(c.boneName === name ? 0x44ff44 : 0x44aaff);
+  }
+  // Update bone button highlights
+  const poseBoneBtns = document.getElementById('pose-bone-buttons');
+  if (poseBoneBtns) {
+    poseBoneBtns.querySelectorAll('.btn').forEach(b => b.classList.toggle('active', b.dataset.bone === name));
+  }
+  // Update slider values
+  if (poseOverrides[name]) {
+    selectPoseBone(name);
+  }
+}
+
+function deselectBone() {
+  selectedBone = null;
+  selectedBoneName = null;
+  transformControls.detach();
+  for (const c of boneColliders) { c.mesh.material.opacity = 0.0; }
+}
+
+renderer.domElement.addEventListener('pointerdown', onPoseClick);
+
+function setupBones(v) {
+  bonePDs = {};
+  restQuats = {};
+  for (const name of BONE_NAMES) {
+    const bone = v.humanoid?.getNormalizedBoneNode(name);
+    if (bone) {
+      bonePDs[name] = new BonePD(name);
+      restQuats[name] = bone.quaternion.clone();
+    }
+  }
+  // Apply idle arm pose
+  for (const [armName, angles] of Object.entries(CFG.idleArm)) {
+    const pd = bonePDs[armName];
+    if (pd) { pd.target = [...angles]; pd.current = [...angles]; }
+  }
+  // Create bone colliders for pose mode
+  createBoneColliders(v);
+}
+
+// =========================================================================
+// Animation Mixer System (GLB retargeting to VRM humanoid)
+// =========================================================================
+let mixer = null;
+let currentAction = null;
+let animClips = {}; // name → AnimationClip
+let animLoop = true;
+let animBlendTime = 0.3;
+let animIsPlaying = false;
+
+// Mixamo bone name → VRM humanoid bone name mapping
+const MIXAMO_TO_VRM = {
+  'mixamorigHips': 'hips', 'mixamorigSpine': 'spine', 'mixamorigSpine1': 'chest',
+  'mixamorigSpine2': 'upperChest', 'mixamorigNeck': 'neck', 'mixamorigHead': 'head',
+  'mixamorigLeftShoulder': 'leftShoulder', 'mixamorigRightShoulder': 'rightShoulder',
+  'mixamorigLeftArm': 'leftUpperArm', 'mixamorigRightArm': 'rightUpperArm',
+  'mixamorigLeftForeArm': 'leftLowerArm', 'mixamorigRightForeArm': 'rightLowerArm',
+  'mixamorigLeftHand': 'leftHand', 'mixamorigRightHand': 'rightHand',
+  'mixamorigLeftUpLeg': 'leftUpperLeg', 'mixamorigRightUpLeg': 'rightUpperLeg',
+  'mixamorigLeftLeg': 'leftLowerLeg', 'mixamorigRightLeg': 'rightLowerLeg',
+  'mixamorigLeftFoot': 'leftFoot', 'mixamorigRightFoot': 'rightFoot',
+  'mixamorigLeftToeBase': 'leftToes', 'mixamorigRightToeBase': 'rightToes',
+};
+
+// Proper Mixamo→VRM retargeting (based on official three-vrm example)
+// Extracts rotation deltas from Mixamo rest pose and applies to VRM normalized bones
+async function loadAndRetargetAnim(file, vrmModel) {
+  const url = URL.createObjectURL(file);
+  const plainLoader = new GLTFLoader();
+  const gltf = await plainLoader.loadAsync(url);
+  URL.revokeObjectURL(url);
+  const name = file.name.replace(/\.glb$/i, '');
+  if (gltf.animations.length === 0) { console.warn(`No animations in ${name}`); return null; }
+
+  const clip = gltf.animations[0];
+  const tracks = [];
+  const _quatA = new THREE.Quaternion();
+  const _vec3 = new THREE.Vector3();
+
+
+
+  // Log all track names for debugging bone name format
+  const trackBoneNames = new Set(clip.tracks.map(t => t.name.split('.')[0]));
+  console.log(`[${name}] Bones in animation:`, [...trackBoneNames]);
+
+  // Build dynamic bone mapping — try exact match first, then fuzzy
+  const dynamicMap = {};
+  for (const trackBone of trackBoneNames) {
+    // 1. Exact match in MIXAMO_TO_VRM
+    if (MIXAMO_TO_VRM[trackBone]) { dynamicMap[trackBone] = MIXAMO_TO_VRM[trackBone]; continue; }
+    // 2. Case-insensitive lookup
+    const lower = trackBone.toLowerCase();
+    for (const [mk, mv] of Object.entries(MIXAMO_TO_VRM)) {
+      if (mk.toLowerCase() === lower) { dynamicMap[trackBone] = mv; break; }
+    }
+    if (dynamicMap[trackBone]) continue;
+    // 3. Try without common prefixes/suffixes
+    const stripped = trackBone.replace(/^(mixamorig:|Armature\|)/, '');
+    if (MIXAMO_TO_VRM[stripped]) { dynamicMap[trackBone] = MIXAMO_TO_VRM[stripped]; continue; }
+    // 4. Keyword matching — map common bone naming conventions
+    const kw = lower.replace(/[^a-z]/g, '');
+    if (kw.includes('hips') || kw === 'hip') dynamicMap[trackBone] = 'hips';
+    else if (kw.includes('spine2') || kw.includes('spine1') && kw.includes('2')) dynamicMap[trackBone] = 'upperChest';
+    else if (kw.includes('spine1') || kw.includes('chest')) dynamicMap[trackBone] = 'chest';
+    else if (kw.includes('spine')) dynamicMap[trackBone] = 'spine';
+    else if (kw.includes('neck')) dynamicMap[trackBone] = 'neck';
+    else if (kw.includes('head')) dynamicMap[trackBone] = 'head';
+    else if (kw.match(/left.*(upper|up).*arm/) || kw.match(/left.*arm(?!.*(fore|lower|low))/)) dynamicMap[trackBone] = 'leftUpperArm';
+    else if (kw.match(/right.*(upper|up).*arm/) || kw.match(/right.*arm(?!.*(fore|lower|low))/)) dynamicMap[trackBone] = 'rightUpperArm';
+    else if (kw.match(/left.*(fore|lower|low).*arm/)) dynamicMap[trackBone] = 'leftLowerArm';
+    else if (kw.match(/right.*(fore|lower|low).*arm/)) dynamicMap[trackBone] = 'rightLowerArm';
+    else if (kw.match(/left.*shoulder/)) dynamicMap[trackBone] = 'leftShoulder';
+    else if (kw.match(/right.*shoulder/)) dynamicMap[trackBone] = 'rightShoulder';
+    else if (kw.match(/left.*hand/)) dynamicMap[trackBone] = 'leftHand';
+    else if (kw.match(/right.*hand/)) dynamicMap[trackBone] = 'rightHand';
+    else if (kw.match(/left.*(upper|up).*leg/) || kw.match(/left.*(thigh|upleg)/)) dynamicMap[trackBone] = 'leftUpperLeg';
+    else if (kw.match(/right.*(upper|up).*leg/) || kw.match(/right.*(thigh|upleg)/)) dynamicMap[trackBone] = 'rightUpperLeg';
+    else if (kw.match(/left.*(lower|low).*leg/) || kw.match(/left.*(shin|leg(?!.*(up|thigh)))/)) dynamicMap[trackBone] = 'leftLowerLeg';
+    else if (kw.match(/right.*(lower|low).*leg/) || kw.match(/right.*(shin|leg(?!.*(up|thigh)))/)) dynamicMap[trackBone] = 'rightLowerLeg';
+    else if (kw.match(/left.*foot/)) dynamicMap[trackBone] = 'leftFoot';
+    else if (kw.match(/right.*foot/)) dynamicMap[trackBone] = 'rightFoot';
+    else if (kw.match(/left.*toe/)) dynamicMap[trackBone] = 'leftToes';
+    else if (kw.match(/right.*toe/)) dynamicMap[trackBone] = 'rightToes';
+  }
+  console.log(`[${name}] Mapped bones:`, dynamicMap);
+
+  // Extract first-frame quaternion for each bone as rest reference
+  // Then compute delta = inv(restQ) * animQ for each frame
+  const restQuatMap = {}; // mixamoBoneName → Quaternion (first frame)
+  for (const track of clip.tracks) {
+    const lastDot = track.name.lastIndexOf('.');
+    const property = track.name.substring(lastDot + 1);
+    if (property !== 'quaternion') continue;
+    let boneName = track.name.substring(0, lastDot);
+    if (boneName.includes('/')) boneName = boneName.split('/').pop();
+    if (track.values.length >= 4) {
+      restQuatMap[boneName] = new THREE.Quaternion(
+        track.values[0], track.values[1], track.values[2], track.values[3]
+      );
+    }
+  }
+
+  for (const track of clip.tracks) {
+    const lastDot = track.name.lastIndexOf('.');
+    const property = track.name.substring(lastDot + 1);
+    let mixamoBoneName = track.name.substring(0, lastDot);
+    if (mixamoBoneName.includes('/')) mixamoBoneName = mixamoBoneName.split('/').pop();
+
+    const vrmBoneName = dynamicMap[mixamoBoneName];
+    if (!vrmBoneName) continue;
+
+    const vrmNode = vrmModel.humanoid?.getNormalizedBoneNode(vrmBoneName);
+    if (!vrmNode) continue;
+
+    if (property === 'quaternion') {
+      const values = track.values.slice();
+      const restQ = restQuatMap[mixamoBoneName];
+
+      if (restQ) {
+        // Compute delta from rest pose for each keyframe
+        const restInv = restQ.clone().invert();
+        for (let i = 0; i < values.length; i += 4) {
+          _quatA.set(values[i], values[i+1], values[i+2], values[i+3]);
+          // delta = inv(rest) * anim — isolates just the movement
+          _quatA.premultiply(restInv);
+          _quatA.toArray(values, i);
+        }
+      }
+
+      tracks.push(new THREE.QuaternionKeyframeTrack(
+        `${vrmNode.name}.quaternion`,
+        track.times,
+        values
+      ));
+    }
+    // Skip position tracks — Mixamo/VRM scale mismatch causes model to fly off screen
+  }
+
+  if (tracks.length === 0) { console.warn(`No retargetable tracks in ${name}`); return null; }
+  return { name, clip: new THREE.AnimationClip(name, clip.duration, tracks) };
+}
+
+// =========================================================================
+// IndexedDB Animation Cache — stores raw GLB bytes, re-retargets per VRM
+// =========================================================================
+const CACHE_DB_NAME = 'avatar-testbench';
+const CACHE_DB_VERSION = 3;
+const ANIM_STORE = 'glb_files';
+const VRM_STORE = 'vrm_file';
+
+function openCacheDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(CACHE_DB_NAME, CACHE_DB_VERSION);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(ANIM_STORE)) db.createObjectStore(ANIM_STORE, { keyPath: 'name' });
+      if (!db.objectStoreNames.contains(VRM_STORE)) db.createObjectStore(VRM_STORE, { keyPath: 'id' });
+      if (!db.objectStoreNames.contains('gestures')) db.createObjectStore('gestures', { keyPath: 'name' });
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function saveVRMToCache(name, arrayBuffer) {
+  const db = await openCacheDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(VRM_STORE, 'readwrite');
+    tx.objectStore(VRM_STORE).put({ id: 'current', name, data: arrayBuffer });
+    tx.oncomplete = () => { db.close(); resolve(); };
+    tx.onerror = () => { db.close(); reject(tx.error); };
+  });
+}
+
+async function getCachedVRM() {
+  const db = await openCacheDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(VRM_STORE, 'readonly');
+    const req = tx.objectStore(VRM_STORE).get('current');
+    req.onsuccess = () => { db.close(); resolve(req.result || null); };
+    req.onerror = () => { db.close(); reject(req.error); };
+  });
+}
+
+async function saveAnimToCache(name, arrayBuffer) {
+  const db = await openCacheDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(ANIM_STORE, 'readwrite');
+    tx.objectStore(ANIM_STORE).put({ name, data: arrayBuffer });
+    tx.oncomplete = () => { db.close(); resolve(); };
+    tx.onerror = () => { db.close(); reject(tx.error); };
+  });
+}
+
+async function getAllCachedAnims() {
+  const db = await openCacheDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(ANIM_STORE, 'readonly');
+    const req = tx.objectStore(ANIM_STORE).getAll();
+    req.onsuccess = () => { db.close(); resolve(req.result); };
+    req.onerror = () => { db.close(); reject(req.error); };
+  });
+}
+
+async function deleteCachedAnim(name) {
+  const db = await openCacheDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(ANIM_STORE, 'readwrite');
+    tx.objectStore(ANIM_STORE).delete(name);
+    tx.oncomplete = () => { db.close(); resolve(); };
+    tx.onerror = () => { db.close(); reject(tx.error); };
+  });
+}
+
+// Retarget from raw ArrayBuffer (used for both fresh uploads and cache restores)
+async function retargetFromBuffer(name, arrayBuffer, vrmModel) {
+  const blob = new Blob([arrayBuffer], { type: 'model/gltf-binary' });
+  const file = new File([blob], `${name}.glb`);
+  return await loadAndRetargetAnim(file, vrmModel);
+}
+
+function addAnimButton(name) {
+  const btnContainer = document.getElementById('anim-buttons');
+  // Don't add duplicate
+  if ([...btnContainer.children].some(b => b.dataset.animName === name)) return;
+  const wrap = document.createElement('span');
+  wrap.style.cssText = 'position:relative;display:inline-block;';
+  const btn = document.createElement('button');
+  btn.className = 'btn';
+  btn.textContent = name;
+  btn.dataset.animName = name;
+  btn.onclick = () => playAnim(name, false);
+  const del = document.createElement('span');
+  del.textContent = 'x';
+  del.title = 'Remove';
+  del.style.cssText = 'position:absolute;top:-4px;right:-4px;width:14px;height:14px;background:#a33;color:#fff;border-radius:50%;font-size:9px;line-height:14px;text-align:center;cursor:pointer;display:none;';
+  wrap.onmouseenter = () => { del.style.display = 'block'; };
+  wrap.onmouseleave = () => { del.style.display = 'none'; };
+  del.onclick = async (e) => {
+    e.stopPropagation();
+    delete animClips[name];
+    await deleteCachedAnim(name);
+    wrap.remove();
+  };
+  wrap.append(btn, del);
+  btnContainer.appendChild(wrap);
+}
+
+// Restore cached anims when VRM is loaded
+async function restoreCachedAnims(vrmModel) {
+  try {
+    const cached = await getAllCachedAnims();
+    if (cached.length === 0) return;
+    for (const { name, data } of cached) {
+      const result = await retargetFromBuffer(name, data, vrmModel);
+      if (!result) continue;
+      animClips[result.name] = result.clip;
+      addAnimButton(result.name);
+    }
+    console.log(`Restored ${cached.length} cached animations`);
+  } catch(e) { console.warn('Failed to restore cached anims', e); }
+}
+
+function playAnim(name, once) {
+  if (!mixer || !vrm || !animClips[name]) return;
+  const clip = animClips[name];
+  const newAction = mixer.clipAction(clip);
+  newAction.setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat);
+  newAction.clampWhenFinished = true;
+  newAction.timeScale = parseFloat(document.getElementById('anim-speed').value) || 1;
+
+  if (currentAction && currentAction !== newAction) {
+    currentAction.fadeOut(animBlendTime);
+  }
+  newAction.reset().fadeIn(animBlendTime).play();
+  currentAction = newAction;
+  animIsPlaying = true;
+
+  // Update button states
+  document.querySelectorAll('#anim-buttons .btn').forEach(b => {
+    b.classList.toggle('active', b.textContent === name);
+  });
+}
+
+function stopAnim() {
+  if (currentAction) {
+    currentAction.fadeOut(animBlendTime);
+    currentAction = null;
+  }
+  animIsPlaying = false;
+  document.querySelectorAll('#anim-buttons .btn').forEach(b => b.classList.remove('active'));
+}
+
+// Wire animation file input
+document.getElementById('anim-files').addEventListener('change', async (e) => {
+  if (!vrm) { console.warn('Load a VRM first'); return; }
+  for (const file of e.target.files) {
+    // Read raw bytes for caching
+    const arrayBuffer = await file.arrayBuffer();
+    const name = file.name.replace(/\.glb$/i, '');
+    // Cache to IndexedDB
+    await saveAnimToCache(name, arrayBuffer);
+    // Retarget and register
+    const result = await retargetFromBuffer(name, arrayBuffer, vrm);
+    if (!result) continue;
+    animClips[result.name] = result.clip;
+    addAnimButton(result.name);
+  }
+  if (!mixer) {
+    mixer = new THREE.AnimationMixer(vrm.scene);
+    mixer.addEventListener('finished', () => { animIsPlaying = false; });
+  }
+});
+
+// Wire controls
+document.getElementById('btn-anim-stop').onclick = stopAnim;
+document.getElementById('btn-anim-loop').onclick = () => {
+  animLoop = !animLoop;
+  document.getElementById('btn-anim-loop').textContent = `Loop: ${animLoop ? 'On' : 'Off'}`;
+};
+document.getElementById('btn-anim-once').onclick = () => {
+  const active = document.querySelector('#anim-buttons .btn.active');
+  if (active) playAnim(active.textContent, true);
+};
+document.getElementById('anim-speed').addEventListener('input', (e) => {
+  const v = parseFloat(e.target.value);
+  document.getElementById('anim-speed-val').value = v.toFixed(2);
+  if (currentAction) currentAction.timeScale = v;
+});
+document.getElementById('anim-speed-val').addEventListener('change', (e) => {
+  const v = parseFloat(e.target.value);
+  if (!isNaN(v)) { document.getElementById('anim-speed').value = v; if (currentAction) currentAction.timeScale = v; }
+});
+document.getElementById('anim-blend').addEventListener('input', (e) => {
+  animBlendTime = parseFloat(e.target.value);
+  document.getElementById('anim-blend-val').value = animBlendTime.toFixed(2);
+});
+document.getElementById('anim-blend-val').addEventListener('change', (e) => {
+  const v = parseFloat(e.target.value);
+  if (!isNaN(v)) { animBlendTime = v; document.getElementById('anim-blend').value = v; }
+});
+
+// Shared VRM load function — caches to IndexedDB
+async function loadVRMFromFile(file) {
+  if (vrm) { scene.remove(vrm.scene); vrm = null; }
+  mixer = null; animClips = {}; currentAction = null; animIsPlaying = false;
+  document.getElementById('anim-buttons').innerHTML = '';
+  const arrayBuffer = await file.arrayBuffer();
+  const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
+  try {
+    vrm = await loadVRM(url);
+    setupBones(vrm);
+    mixer = new THREE.AnimationMixer(vrm.scene);
+    mixer.addEventListener('finished', () => { animIsPlaying = false; });
+    document.querySelector('#controls > div:first-child > div:last-child').textContent = file.name;
+    // Cache VRM
+    await saveVRMToCache(file.name, arrayBuffer);
+    await restoreCachedAnims(vrm);
+  } catch(e) { console.error('VRM load error', e); }
+  URL.revokeObjectURL(url);
+}
+
+async function loadVRMFromBuffer(name, arrayBuffer) {
+  if (vrm) { scene.remove(vrm.scene); vrm = null; }
+  mixer = null; animClips = {}; currentAction = null; animIsPlaying = false;
+  document.getElementById('anim-buttons').innerHTML = '';
+  const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
+  try {
+    vrm = await loadVRM(url);
+    setupBones(vrm);
+    mixer = new THREE.AnimationMixer(vrm.scene);
+    mixer.addEventListener('finished', () => { animIsPlaying = false; });
+    document.querySelector('#controls > div:first-child > div:last-child').textContent = name;
+    await restoreCachedAnims(vrm);
+  } catch(e) { console.error('VRM load error', e); }
+  URL.revokeObjectURL(url);
+}
+
+// Prevent browser default file open on ALL drag/drop
+document.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); });
+document.addEventListener('drop', (e) => { e.preventDefault(); e.stopPropagation(); });
+
+// Drop handler on viewport
+const dropOverlay = document.getElementById('drop-overlay');
+viewport.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); dropOverlay.style.display = 'flex'; });
+viewport.addEventListener('dragleave', () => { dropOverlay.style.display = 'none'; });
+viewport.addEventListener('drop', async (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dropOverlay.style.display = 'none';
+  const file = e.dataTransfer.files[0];
+  if (!file || !file.name.toLowerCase().endsWith('.vrm')) return;
+  await loadVRMFromFile(file);
+});
+
+// Also support clicking viewport to load
+viewport.addEventListener('click', (e) => {
+  if (vrm || e.target.tagName === 'CANVAS') return;
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = '.vrm';
+  input.onchange = async () => {
+    const file = input.files[0]; if (!file) return;
+    await loadVRMFromFile(file);
+  };
+  input.click();
+});
+
+// Auto-restore cached VRM on page load
+(async () => {
+  try {
+    const cached = await getCachedVRM();
+    if (cached) {
+      console.log(`Restoring cached VRM: ${cached.name}`);
+      await loadVRMFromBuffer(cached.name, cached.data);
+    }
+  } catch(e) { console.warn('Failed to restore cached VRM', e); }
+})();
+
+// =========================================================================
+// Animation Loop
+// =========================================================================
+const clock = new THREE.Clock();
+const telEl = document.getElementById('telemetry');
+let frameCount = 0, fpsAccum = 0, displayFPS = 0;
+
+function animate() {
+  requestAnimationFrame(animate);
+  const delta = Math.min(clock.getDelta(), 0.05);
+  elapsedTime += delta;
+  frameCount++;
+  fpsAccum += delta;
+  if (fpsAccum >= 0.5) { displayFPS = Math.round(frameCount / fpsAccum); frameCount = 0; fpsAccum = 0; }
+
+  // Update camera from sliders
+  camera.fov = CFG.camera.fov;
+  camera.updateProjectionMatrix();
+  camera.position.set(CFG.camera.posX, CFG.camera.posY, CFG.camera.posZ);
+  camera.lookAt(0, CFG.camera.lookY, 0);
+
+  let blinkWeight = 0;
+  if (vrm) {
+    // If mocap is active, it drives the PD targets — skip idle animation layers
+    const mocapActive = isCapturing() && lastMocapBones && Object.keys(lastMocapBones).length > 0;
+
+    // Reset all PD targets
+    for (const pd of Object.values(bonePDs)) pd.resetTarget();
+
+    if (mocapActive) {
+      // Mocap solver outputs absolute rotations in radians (identity = T-pose)
+      // Apply directly to bones via slerp, bypassing PD system
+      const _mocapEuler = new THREE.Euler();
+      const _mocapQuat = new THREE.Quaternion();
+      for (const [boneName, angles] of Object.entries(lastMocapBones)) {
+        const bone = vrm.humanoid?.getNormalizedBoneNode(boneName);
+        if (!bone || !restQuats[boneName]) continue;
+        _mocapEuler.set(angles[0], angles[1], angles[2], 'XYZ');
+        _mocapQuat.setFromEuler(_mocapEuler);
+        // Slerp toward target for smooth motion (0.3 blend = ~10 frames to converge)
+        bone.quaternion.slerp(_mocapQuat, 0.3);
+      }
+      // Bones not controlled by mocap: keep idle arm pose via PD
+      for (const [armName, angles] of Object.entries(CFG.idleArm)) {
+        if (lastMocapBones[armName]) continue;
+        const pd = bonePDs[armName];
+        if (pd) pd.addTarget(angles[0], angles[1], angles[2]);
+      }
+    }
+
+    // Collect which bones the active gesture is controlling (absolute targets)
+    const gestureBones = new Set();
+    if (gestureActive) {
+      const t = (elapsedTime - gestureActive.startTime) / gestureActive.duration;
+      if (t < 1) {
+        // Gather all bone names this gesture ever touches
+        for (const kf of gestureActive.keyframes) {
+          for (const bn of Object.keys(kf.bones)) gestureBones.add(bn);
+        }
+      }
+    }
+
+    // Apply idle arm pose only to bones NOT controlled by an active gesture or mocap
+    if (!mocapActive) {
+      for (const [armName, angles] of Object.entries(CFG.idleArm)) {
+        if (gestureBones.has(armName)) continue;
+        const pd = bonePDs[armName];
+        if (pd) pd.addTarget(angles[0], angles[1], angles[2]);
+      }
+    }
+
+    // Skip procedural animation layers when mocap is driving
+    if (!mocapActive) {
+    // 1. Breathing
+    const eMod = CFG.emotionModifiers[currentEmotion] || {rate:1,depth:1};
+    const breathPhase = Math.sin(elapsedTime * 2 * Math.PI * CFG.breathing.rate * eMod.rate);
+    const breathAmt = breathPhase * CFG.breathing.depth * eMod.depth;
+    if (bonePDs.chest) bonePDs.chest.addTarget(breathAmt * CFG.breathing.chestRatio, 0, 0);
+    if (bonePDs.upperChest) bonePDs.upperChest.addTarget(breathAmt * (1-CFG.breathing.chestRatio), 0, 0);
+    if (bonePDs.leftShoulder) bonePDs.leftShoulder.addTarget(-breathAmt * CFG.breathing.shoulderLift / CFG.breathing.depth, 0, 0);
+    if (bonePDs.rightShoulder) bonePDs.rightShoulder.addTarget(-breathAmt * CFG.breathing.shoulderLift / CFG.breathing.depth, 0, 0);
+    if (bonePDs.head) bonePDs.head.addTarget(breathAmt * CFG.breathing.headNod / CFG.breathing.depth, 0, 0);
+
+    // 2. Sway
+    const swayX = simplex2D(elapsedTime * CFG.sway.speed, 0) * CFG.sway.amount;
+    const swayZ = simplex2D(0, elapsedTime * CFG.sway.speed * 0.7) * CFG.sway.amount * 0.5;
+    if (bonePDs.hips) bonePDs.hips.addTarget(0, 0, swayX * CFG.sway.hipWeight);
+    if (bonePDs.spine) bonePDs.spine.addTarget(0, 0, swayX * CFG.sway.counterSpine);
+    if (bonePDs.head) bonePDs.head.addTarget(0, 0, swayX * CFG.sway.counterHead);
+
+    // 3. Emotion posture
+    const targetPosture = CFG.emotionPostures[currentEmotion] || CFG.emotionPostures.neutral;
+    for (const key of ['spine','chest','head']) {
+      for (let i = 0; i < 3; i++) {
+        currentPosture[key][i] += (targetPosture[key][i] - currentPosture[key][i]) * CFG.postureLerp;
+      }
+      const pd = bonePDs[key];
+      if (pd) pd.addTarget(currentPosture[key][0], currentPosture[key][1], currentPosture[key][2]);
+    }
+    // Shoulders
+    const tShoulders = targetPosture.shoulders || [0,0];
+    currentPosture.shoulders[0] += (tShoulders[0] - currentPosture.shoulders[0]) * CFG.postureLerp;
+    currentPosture.shoulders[1] += (tShoulders[1] - currentPosture.shoulders[1]) * CFG.postureLerp;
+    if (bonePDs.leftShoulder) bonePDs.leftShoulder.addTarget(currentPosture.shoulders[0], 0, 0);
+    if (bonePDs.rightShoulder) bonePDs.rightShoulder.addTarget(currentPosture.shoulders[1], 0, 0);
+
+    // 4. Gaze — saccades + blinks
+    if (elapsedTime >= nextSaccade) {
+      gazeYaw = (Math.random()-0.5) * 2 * CFG.gaze.eyeMaxYaw;
+      gazePitch = (Math.random()-0.5) * 2 * CFG.gaze.eyeMaxPitch;
+      saccadeX = (Math.random()-0.5) * CFG.gaze.saccadeMag;
+      saccadeY = (Math.random()-0.5) * CFG.gaze.saccadeMag;
+      nextSaccade = elapsedTime + 1/CFG.gaze.saccadeRate + Math.random()*0.5;
+    }
+    saccadeX *= CFG.gaze.saccadeDecay;
+    saccadeY *= CFG.gaze.saccadeDecay;
+
+    // Head follow gaze
+    const targetHeadYaw = gazeYaw * CFG.gaze.headFollowYaw;
+    const targetHeadPitch = gazePitch * CFG.gaze.headFollowPitch;
+    headYaw += (targetHeadYaw - headYaw) * CFG.gaze.headSpeed * delta;
+    headPitch += (targetHeadPitch - headPitch) * CFG.gaze.headSpeed * delta;
+    if (bonePDs.head) bonePDs.head.addTarget(headPitch, headYaw, 0);
+    if (bonePDs.neck) bonePDs.neck.addTarget(headPitch*0.3, headYaw*0.3, 0);
+
+    // Eye bones (if available)
+    const leftEye = vrm.humanoid?.getNormalizedBoneNode('leftEye');
+    const rightEye = vrm.humanoid?.getNormalizedBoneNode('rightEye');
+    if (leftEye && rightEye) {
+      const eyeEuler = new THREE.Euler((gazePitch+saccadeY)*DEG, (gazeYaw+saccadeX)*DEG, 0, 'XYZ');
+      const eyeQ = new THREE.Quaternion().setFromEuler(eyeEuler);
+      leftEye.quaternion.copy(eyeQ);
+      rightEye.quaternion.copy(eyeQ);
+    }
+
+    // Blinks
+    if (blinkPhase < 0) {
+      if (elapsedTime >= nextBlink) {
+        blinkPhase = 0;
+        blinkTimer = 0;
+        const dur = CFG.gaze.blinkBase + (Math.random()-0.5)*2*CFG.gaze.blinkVariance;
+        nextBlink = elapsedTime + dur + CFG.gaze.blinkInterval + (Math.random()-0.5)*2*CFG.gaze.blinkIntervalVariance;
+      }
+    }
+    if (blinkPhase >= 0) {
+      const dur = CFG.gaze.blinkBase + CFG.gaze.blinkVariance;
+      blinkTimer += delta;
+      const p = blinkTimer / dur;
+      if (p < CFG.gaze.blinkCloseRatio) blinkWeight = p / CFG.gaze.blinkCloseRatio;
+      else if (p < 1) blinkWeight = 1 - (p-CFG.gaze.blinkCloseRatio)/(1-CFG.gaze.blinkCloseRatio);
+      else { blinkPhase = -1; blinkWeight = 0; }
+    }
+
+    // 5. Awareness
+    if (awarenessActive) {
+      const age = elapsedTime - awarenessActive.startTime;
+      if (age > 0.6) { awarenessActive = null; }
+      else {
+        const fade = 1 - age/0.6;
+        const impulses = {
+          silence_short: {head:[3,0,2],spine:[2,0,0]}, tool_call: {head:[-3,5,0]},
+          user_typing: {head:[2,-3,0]}, nod: {head:[-8,0,0],neck:[-3,0,0]},
+          headTilt: {head:[0,0,8],neck:[0,0,3]}, surprise: {head:[-5,0,0],chest:[-2,0,0]},
+          thinking: {head:[5,8,3],spine:[2,0,1]}, attention: {head:[-3,0,0],spine:[-2,0,0]},
+        };
+        const imp = impulses[awarenessActive.type] || {};
+        for (const [boneName, angles] of Object.entries(imp)) {
+          const pd = bonePDs[boneName];
+          if (pd) pd.addTarget(angles[0]*fade, angles[1]*fade, angles[2]*fade);
+        }
+      }
+    }
+
+    } // end if (!mocapActive) — procedural animation layers
+
+    // 6. Gesture — direct quaternion slerp (bypasses PD for gesture bones)
+    const gestureDrivenBones = new Set();
+    if (gestureActive) {
+      const t = (elapsedTime - gestureActive.startTime) / gestureActive.duration;
+      if (t >= 1) { gestureActive = null; }
+      else {
+        const kfs = gestureActive.keyframes;
+        let kfA = kfs[0], kfB = kfs[kfs.length-1];
+        for (let i = 0; i < kfs.length - 1; i++) {
+          if (t >= kfs[i].t && t <= kfs[i+1].t) { kfA = kfs[i]; kfB = kfs[i+1]; break; }
+        }
+        const localT = kfB.t > kfA.t ? (t - kfA.t) / (kfB.t - kfA.t) : 0;
+        // Smooth ease with cubic
+        const eased = localT * localT * (3 - 2 * localT);
+
+        const allBones = new Set([...Object.keys(kfA.bones), ...Object.keys(kfB.bones)]);
+        // Also mark all bones this gesture ever touches
+        for (const kf of kfs) for (const bn of Object.keys(kf.bones)) gestureDrivenBones.add(bn);
+
+        const _qA = new THREE.Quaternion();
+        const _qB = new THREE.Quaternion();
+        const _eA = new THREE.Euler();
+        const _eB = new THREE.Euler();
+
+        for (const boneName of allBones) {
+          const bone = vrm.humanoid?.getNormalizedBoneNode(boneName);
+          if (!bone || !restQuats[boneName]) continue;
+
+          const idleRest = CFG.idleArm[boneName] || [0,0,0];
+          const a = kfA.bones[boneName] || idleRest;
+          const b = kfB.bones[boneName] || idleRest;
+
+          // Convert euler angles to quaternions, then slerp
+          _eA.set(a[0]*DEG, a[1]*DEG, a[2]*DEG, 'XYZ');
+          _eB.set(b[0]*DEG, b[1]*DEG, b[2]*DEG, 'XYZ');
+          _qA.setFromEuler(_eA);
+          _qB.setFromEuler(_eB);
+          _qA.slerp(_qB, eased);
+
+          // Apply: restQuat * gestureQuat
+          bone.quaternion.copy(restQuats[boneName]).multiply(_qA);
+          gestureDrivenBones.add(boneName);
+        }
+      }
+    }
+
+    // PD physics step — skip gesture-driven bones (slerp owns them)
+    if (poseMode) {
+      for (const pd of Object.values(bonePDs)) {
+        if (pd.name === selectedBoneName && transformControls.dragging) continue;
+        const angles = poseOverrides[pd.name];
+        if (angles) {
+          pd.current = [...angles];
+          pd.target = [...angles];
+          pd.velocity = [0,0,0];
+        }
+        pd.step(delta, false);
+        const bone = vrm.humanoid?.getNormalizedBoneNode(pd.name);
+        if (bone && restQuats[pd.name]) pd.applyToBone(bone, restQuats[pd.name]);
+      }
+    } else if (!animIsPlaying) {
+      for (const pd of Object.values(bonePDs)) {
+        if (gestureDrivenBones.has(pd.name)) continue; // slerp owns this bone
+        pd.step(delta, false);
+        const bone = vrm.humanoid?.getNormalizedBoneNode(pd.name);
+        if (bone && restQuats[pd.name]) pd.applyToBone(bone, restQuats[pd.name]);
+      }
+    }
+
+    // Lip sync → visemes (engine selectable in the Phoneme Lip-Sync panel)
+    let visemes;
+    if (currentLipSyncEngine === 'phoneme' && productionLipSync) {
+      visemes = productionLipSync.update(analyserNode, elapsedTime);
+      // Mirror into lsSmoothed so the viseme bars + telemetry reflect schedule output
+      for (const k of [...VISEME_NAMES, 'jaw']) lsSmoothed[k] = visemes[k] || 0;
+    } else {
+      visemes = lipsyncUpdate(analyserNode, elapsedTime);
+    }
+    if (vrm.expressionManager) {
+      const em = vrm.expressionManager;
+      // Visemes with decay
+      for (const k of VISEME_NAMES) {
+        const cur = em.getValue(k) || 0;
+        const target = visemes[k] || 0;
+        em.setValue(k, Math.max(target, cur * CFG.visemeDecay));
+      }
+      // Blink
+      em.setValue('blink', blinkWeight);
+      // Emotion expressions
+      const preset = CFG.expressions[currentEmotion] || {};
+      for (const [expr, weight] of Object.entries(preset)) {
+        const cur = em.getValue(expr) || 0;
+        em.setValue(expr, cur + (weight - cur) * CFG.expressionLerp);
+      }
+      // Decay non-target expressions
+      for (const expr of ['happy','sad','angry','surprised','relaxed']) {
+        if (!preset[expr]) {
+          const cur = em.getValue(expr) || 0;
+          if (cur > 0.001) em.setValue(expr, cur * (1 - CFG.expressionLerp));
+        }
+      }
+    }
+
+    // Update animation mixer (GLB animations override PD for their bones)
+    if (mixer) mixer.update(delta);
+    vrm.update(delta);
+  }
+
+  if (orbitControls.enabled) orbitControls.update();
+  renderer.render(scene, camera);
+
+  // Telemetry
+  const vStr = analyserNode ? Object.entries(lsSmoothed).map(([k,v])=>`${k}: ${v.toFixed(2)}`).join('  ') : 'no audio';
+  const pdStr = bonePDs.head ? `head: [${bonePDs.head.current.map(v=>v.toFixed(1)).join(',')}]` : '';
+  telEl.textContent = [
+    `FPS: ${displayFPS}  emotion: ${currentEmotion}  state: ${currentState}`,
+    `visemes: ${vStr}`,
+    `gaze: yaw=${gazeYaw.toFixed(1)} pitch=${gazePitch.toFixed(1)}  blink=${blinkWeight.toFixed(2)}`,
+    pdStr,
+    gestureActive ? `gesture: ${gestureActive.name}` : '',
+    awarenessActive ? `awareness: ${awarenessActive.type}` : '',
+  ].filter(Boolean).join('\n');
+
+  // Viseme bars
+  if (analyserNode) {
+    for (const k of [...VISEME_NAMES, 'jaw']) {
+      const bar = document.getElementById(`bar-${k}`);
+      if (bar) bar.style.height = `${(lsSmoothed[k]||0)*50}px`;
+    }
+  }
+}
+animate();
+
+// =========================================================================
+// UI: Slider Builder
+// =========================================================================
+// Auto-save config to localStorage (debounced)
+let _saveTimer = null;
+function persistConfig() {
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => {
+    localStorage.setItem('avatar-testbench-config', JSON.stringify(CFG));
+  }, 300);
+}
+
+function makeSlider(container, label, min, max, step, getValue, setValue) {
+  const row = document.createElement('div');
+  row.className = 'slider-row';
+  const lbl = document.createElement('label');
+  lbl.textContent = label;
+  const input = document.createElement('input');
+  input.type = 'range'; input.min = min; input.max = max; input.step = step;
+  input.value = getValue();
+  const numInput = document.createElement('input');
+  numInput.type = 'number'; numInput.min = min; numInput.max = max; numInput.step = step;
+  numInput.className = 'val-input';
+  numInput.value = Number(getValue()).toFixed(step < 1 ? 2 : 0);
+  input.addEventListener('input', () => {
+    setValue(parseFloat(input.value));
+    numInput.value = parseFloat(input.value).toFixed(step < 1 ? 2 : 0);
+    persistConfig();
+  });
+  numInput.addEventListener('change', () => {
+    const v = parseFloat(numInput.value);
+    if (!isNaN(v)) { setValue(v); input.value = v; numInput.value = v.toFixed(step < 1 ? 2 : 0); persistConfig(); }
+  });
+  row.append(lbl, input, numInput);
+  container.appendChild(row);
+  return input;
+}
+
+// Breathing sliders
+const bCont = document.getElementById('breathing-sliders');
+makeSlider(bCont,'Rate (Hz)',0.05,0.5,0.01,()=>CFG.breathing.rate,v=>{CFG.breathing.rate=v;});
+makeSlider(bCont,'Depth (deg)',0,12,0.5,()=>CFG.breathing.depth,v=>{CFG.breathing.depth=v;});
+makeSlider(bCont,'Chest Ratio',0,1,0.05,()=>CFG.breathing.chestRatio,v=>{CFG.breathing.chestRatio=v;});
+makeSlider(bCont,'Shoulder Lift',0,4,0.1,()=>CFG.breathing.shoulderLift,v=>{CFG.breathing.shoulderLift=v;});
+makeSlider(bCont,'Head Nod',0,2,0.05,()=>CFG.breathing.headNod,v=>{CFG.breathing.headNod=v;});
+
+// Idle arm pose sliders
+const armCont = document.getElementById('arm-sliders');
+const armLabels = {leftUpperArm:'L Upper Arm', rightUpperArm:'R Upper Arm', leftLowerArm:'L Lower Arm', rightLowerArm:'R Lower Arm'};
+const axisLabels = ['X (pitch)','Y (yaw)','Z (roll)'];
+for (const [armName, label] of Object.entries(armLabels)) {
+  const div = document.createElement('div');
+  div.style.cssText = 'font-size:11px;color:#888;margin:6px 0 2px;font-weight:600;';
+  div.textContent = label;
+  armCont.appendChild(div);
+  for (let i = 0; i < 3; i++) {
+    makeSlider(armCont, axisLabels[i], -120, 120, 1, ()=>CFG.idleArm[armName][i], v=>{CFG.idleArm[armName][i]=v;});
+  }
+}
+
+// Sway sliders
+const sCont = document.getElementById('sway-sliders');
+makeSlider(sCont,'Amount (deg)',0,8,0.1,()=>CFG.sway.amount,v=>{CFG.sway.amount=v;});
+makeSlider(sCont,'Speed',0.01,0.5,0.01,()=>CFG.sway.speed,v=>{CFG.sway.speed=v;});
+makeSlider(sCont,'Hip Weight',0,2,0.05,()=>CFG.sway.hipWeight,v=>{CFG.sway.hipWeight=v;});
+makeSlider(sCont,'Spine Weight',0,2,0.05,()=>CFG.sway.spineWeight,v=>{CFG.sway.spineWeight=v;});
+makeSlider(sCont,'Head Weight',0,2,0.05,()=>CFG.sway.headWeight,v=>{CFG.sway.headWeight=v;});
+makeSlider(sCont,'Counter Spine',-1,0,0.05,()=>CFG.sway.counterSpine,v=>{CFG.sway.counterSpine=v;});
+makeSlider(sCont,'Counter Head',-1,0,0.05,()=>CFG.sway.counterHead,v=>{CFG.sway.counterHead=v;});
+
+// Gaze sliders
+const gCont = document.getElementById('gaze-sliders');
+makeSlider(gCont,'Eye Max Yaw',5,60,1,()=>CFG.gaze.eyeMaxYaw,v=>{CFG.gaze.eyeMaxYaw=v;});
+makeSlider(gCont,'Eye Max Pitch',5,40,1,()=>CFG.gaze.eyeMaxPitch,v=>{CFG.gaze.eyeMaxPitch=v;});
+makeSlider(gCont,'Head Max Yaw',10,80,1,()=>CFG.gaze.headMaxYaw,v=>{CFG.gaze.headMaxYaw=v;});
+makeSlider(gCont,'Head Max Pitch',5,50,1,()=>CFG.gaze.headMaxPitch,v=>{CFG.gaze.headMaxPitch=v;});
+makeSlider(gCont,'Head Speed',0.5,8,0.1,()=>CFG.gaze.headSpeed,v=>{CFG.gaze.headSpeed=v;});
+makeSlider(gCont,'Head Follow Yaw',0,1,0.05,()=>CFG.gaze.headFollowYaw,v=>{CFG.gaze.headFollowYaw=v;});
+makeSlider(gCont,'Head Follow Pitch',0,1,0.05,()=>CFG.gaze.headFollowPitch,v=>{CFG.gaze.headFollowPitch=v;});
+makeSlider(gCont,'Saccade Rate',0.5,10,0.5,()=>CFG.gaze.saccadeRate,v=>{CFG.gaze.saccadeRate=v;});
+makeSlider(gCont,'Saccade Mag',0,6,0.1,()=>CFG.gaze.saccadeMag,v=>{CFG.gaze.saccadeMag=v;});
+makeSlider(gCont,'Saccade Decay',0.5,0.99,0.01,()=>CFG.gaze.saccadeDecay,v=>{CFG.gaze.saccadeDecay=v;});
+makeSlider(gCont,'Blink Duration',0.05,0.3,0.01,()=>CFG.gaze.blinkBase,v=>{CFG.gaze.blinkBase=v;});
+makeSlider(gCont,'Blink Interval',1,8,0.5,()=>CFG.gaze.blinkInterval,v=>{CFG.gaze.blinkInterval=v;});
+makeSlider(gCont,'Blink Variance',0,4,0.5,()=>CFG.gaze.blinkIntervalVariance,v=>{CFG.gaze.blinkIntervalVariance=v;});
+
+// Expression preset sliders
+const exCont = document.getElementById('expression-sliders');
+for (const [emo, weights] of Object.entries(CFG.expressions)) {
+  if (Object.keys(weights).length === 0) continue;
+  const div = document.createElement('div');
+  div.style.cssText = 'font-size:11px;color:#888;margin:6px 0 2px;font-weight:600;';
+  div.textContent = emo;
+  exCont.appendChild(div);
+  for (const [expr, w] of Object.entries(weights)) {
+    makeSlider(exCont, expr, 0, 1, 0.05, ()=>CFG.expressions[emo][expr], v=>{CFG.expressions[emo][expr]=v;});
+  }
+}
+
+// Lip sync sliders
+const lsCont = document.getElementById('lipsync-sliders');
+makeSlider(lsCont,'Sigmoid Slope',10,80,1,()=>CFG.lipsync.sigmoidSlope,v=>{CFG.lipsync.sigmoidSlope=v;});
+makeSlider(lsCont,'Sigmoid Offset',1,10,0.5,()=>CFG.lipsync.sigmoidOffset,v=>{CFG.lipsync.sigmoidOffset=v;});
+makeSlider(lsCont,'Smoothing Alpha',0.1,0.95,0.05,()=>CFG.lipsync.smoothingAlpha,v=>{CFG.lipsync.smoothingAlpha=v;});
+makeSlider(lsCont,'aa Weight',0,1.5,0.05,()=>CFG.lipsync.aaWeight,v=>{CFG.lipsync.aaWeight=v;});
+makeSlider(lsCont,'ou Weight',0,1.5,0.05,()=>CFG.lipsync.ouWeight,v=>{CFG.lipsync.ouWeight=v;});
+makeSlider(lsCont,'oh Weight',0,1.5,0.05,()=>CFG.lipsync.ohWeight,v=>{CFG.lipsync.ohWeight=v;});
+makeSlider(lsCont,'ee Weight',0,1.5,0.05,()=>CFG.lipsync.eeWeight,v=>{CFG.lipsync.eeWeight=v;});
+makeSlider(lsCont,'ih Weight',0,1.5,0.05,()=>CFG.lipsync.ihWeight,v=>{CFG.lipsync.ihWeight=v;});
+makeSlider(lsCont,'High Damp',0,0.5,0.01,()=>CFG.lipsync.highDampFactor,v=>{CFG.lipsync.highDampFactor=v;});
+makeSlider(lsCont,'Jaw Scale',0,1.5,0.05,()=>CFG.lipsync.jawScale,v=>{CFG.lipsync.jawScale=v;});
+makeSlider(lsCont,'Emotion Dampen',0.3,1,0.05,()=>CFG.lipsync.emotionDampen,v=>{CFG.lipsync.emotionDampen=v;});
+makeSlider(lsCont,'Viseme Decay',0.5,0.99,0.01,()=>CFG.visemeDecay,v=>{CFG.visemeDecay=v;});
+
+// PD sliders
+const pdCont = document.getElementById('pd-sliders');
+for (const [boneName, cfg] of Object.entries(CFG.pd)) {
+  const div = document.createElement('div');
+  div.style.cssText = 'font-size:11px;color:#888;margin:6px 0 2px;font-weight:600;';
+  div.textContent = boneName;
+  pdCont.appendChild(div);
+  makeSlider(pdCont,'Stiffness',1,30,0.5,()=>cfg.stiffness,v=>{cfg.stiffness=v;});
+  makeSlider(pdCont,'Damping',0.5,0.99,0.01,()=>cfg.damping,v=>{cfg.damping=v;});
+  makeSlider(pdCont,'Max Speed',0.5,12,0.5,()=>cfg.maxSpeed,v=>{cfg.maxSpeed=v;});
+}
+
+// Posture sliders
+const poCont = document.getElementById('posture-sliders');
+makeSlider(poCont,'Posture Lerp',0.005,0.15,0.005,()=>CFG.postureLerp,v=>{CFG.postureLerp=v;});
+makeSlider(poCont,'Expression Lerp',0.01,0.3,0.01,()=>CFG.expressionLerp,v=>{CFG.expressionLerp=v;});
+
+// Camera sliders
+const cCont = document.getElementById('camera-sliders');
+makeSlider(cCont,'FOV',10,60,1,()=>CFG.camera.fov,v=>{CFG.camera.fov=v;});
+makeSlider(cCont,'Pos X',-2,2,0.05,()=>CFG.camera.posX,v=>{CFG.camera.posX=v;});
+makeSlider(cCont,'Pos Y',0,3,0.05,()=>CFG.camera.posY,v=>{CFG.camera.posY=v;});
+makeSlider(cCont,'Pos Z',0.5,5,0.05,()=>CFG.camera.posZ,v=>{CFG.camera.posZ=v;});
+makeSlider(cCont,'Look Y',0,2.5,0.05,()=>CFG.camera.lookY,v=>{CFG.camera.lookY=v;});
+
+// Emotion buttons
+const emoBtns = document.getElementById('emotion-buttons');
+for (const emo of EMOTIONS) {
+  const btn = document.createElement('button');
+  btn.className = 'btn emotion-btn' + (emo==='neutral'?' active':'');
+  btn.textContent = emo;
+  btn.onclick = () => {
+    currentEmotion = emo;
+    emoBtns.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  };
+  emoBtns.appendChild(btn);
+}
+
+// Gesture buttons
+const gestBtns = document.getElementById('gesture-buttons');
+for (const name of Object.keys(GESTURES)) {
+  const btn = document.createElement('button');
+  btn.className = 'btn';
+  btn.textContent = name;
+  btn.onclick = () => {
+    gestureActive = { name, startTime: elapsedTime, ...GESTURES[name] };
+  };
+  gestBtns.appendChild(btn);
+}
+
+// Awareness buttons
+const awBtns = document.getElementById('awareness-buttons');
+for (const type of AWARENESS_TYPES) {
+  const btn = document.createElement('button');
+  btn.className = 'btn';
+  btn.textContent = type;
+  btn.onclick = () => {
+    awarenessActive = { type, startTime: elapsedTime };
+  };
+  awBtns.appendChild(btn);
+}
+
+// State buttons
+const stateInd = document.getElementById('state-indicator');
+const stateLabel = document.getElementById('state-label');
+stateInd.style.cursor = 'pointer';
+const states = ['idle','listening','processing','speaking'];
+let stateIdx = 0;
+stateInd.onclick = () => {
+  stateIdx = (stateIdx+1) % states.length;
+  currentState = states[stateIdx];
+  stateInd.className = currentState;
+  stateLabel.textContent = currentState;
+};
+
+// Section collapse
+window.toggleSection = function(header) {
+  header.classList.toggle('collapsed');
+  header.nextElementSibling.classList.toggle('hidden');
+};
+
+// Export / Import / Reset
+document.getElementById('btn-clipboard').onclick = async () => {
+  const summary = JSON.stringify(CFG, null, 2);
+  await navigator.clipboard.writeText(summary);
+  const btn = document.getElementById('btn-clipboard');
+  btn.textContent = 'Copied!';
+  setTimeout(() => { btn.textContent = 'Copy to Clipboard'; }, 1500);
+};
+
+document.getElementById('btn-export').onclick = () => {
+  const blob = new Blob([JSON.stringify(CFG, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'avatar-config.json';
+  a.click();
+};
+
+document.getElementById('btn-import').onclick = () => {
+  document.getElementById('import-file').click();
+};
+
+document.getElementById('import-file').addEventListener('change', async (e) => {
+  const file = e.target.files[0]; if (!file) return;
+  try {
+    const text = await file.text();
+    const imported = JSON.parse(text);
+    Object.assign(CFG, imported);
+    // Refresh all sliders — reload page with config in sessionStorage
+    localStorage.setItem('avatar-testbench-config', text);
+    location.reload();
+  } catch(e) { console.error('Import error', e); }
+});
+
+// Restore from session storage
+const stored = localStorage.getItem('avatar-testbench-config');
+if (stored) {
+  try {
+    Object.assign(CFG, JSON.parse(stored));
+    localStorage.removeItem('avatar-testbench-config');
+  } catch(e) {}
+}
+
+document.getElementById('btn-reset').onclick = () => {
+  Object.assign(CFG, JSON.parse(JSON.stringify(DEFAULTS)));
+  localStorage.removeItem('avatar-testbench-config');
+  location.reload();
+};
+
+// =========================================================================
+// Pose Recorder
+// =========================================================================
+let poseMode = false;
+let selectedPoseBone = null;
+const poseOverrides = {}; // boneName → [x,y,z] degrees — direct bone control in pose mode
+const recordedKeyframes = []; // [{t, bones: {name: [x,y,z]}}]
+
+const POSE_BONES = [
+  'head','neck','chest','spine','upperChest',
+  'leftShoulder','rightShoulder',
+  'leftUpperArm','rightUpperArm','leftLowerArm','rightLowerArm',
+  'hips'
+];
+
+// Build bone selector buttons
+const poseBoneBtns = document.getElementById('pose-bone-buttons');
+for (const name of POSE_BONES) {
+  const btn = document.createElement('button');
+  btn.className = 'btn';
+  btn.textContent = name.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase()).trim();
+  btn.dataset.bone = name;
+  btn.onclick = () => {
+    selectPoseBone(name);
+    // Also attach gizmo if VRM is loaded
+    if (vrm) {
+      const bone = vrm.humanoid?.getNormalizedBoneNode(name);
+      if (bone) selectBoneForPosing(name, bone);
+    }
+  };
+  poseBoneBtns.appendChild(btn);
+}
+
+function selectPoseBone(name) {
+  selectedPoseBone = name;
+  poseBoneBtns.querySelectorAll('.btn').forEach(b => b.classList.toggle('active', b.dataset.bone === name));
+
+  // Create/update sliders for this bone
+  const container = document.getElementById('pose-bone-sliders');
+  container.innerHTML = '';
+  if (!poseOverrides[name]) {
+    // Start from idle arm pose if it exists, otherwise current PD position
+    const idle = CFG.idleArm[name];
+    const pd = bonePDs[name];
+    poseOverrides[name] = idle ? [...idle] : (pd ? [...pd.current] : [0,0,0]);
+  }
+  const axes = ['X (pitch)','Y (yaw)','Z (roll)'];
+  for (let i = 0; i < 3; i++) {
+    makeSlider(container, axes[i], -180, 180, 1,
+      () => poseOverrides[name][i],
+      (v) => { poseOverrides[name][i] = v; }
+    );
+  }
+}
+
+// Pose mode toggle
+document.getElementById('btn-pose-mode').onclick = () => {
+  poseMode = !poseMode;
+  const btn = document.getElementById('btn-pose-mode');
+  btn.textContent = poseMode ? 'Exit Pose Mode' : 'Enter Pose Mode';
+  btn.style.background = poseMode ? '#4a2a2a' : '#2a4a2a';
+  btn.style.borderColor = poseMode ? '#c66' : '#6c6';
+  orbitControls.enabled = poseMode;
+  if (poseMode) {
+    // Show colliders as faint spheres so user knows where to click
+    for (const c of boneColliders) { c.mesh.material.opacity = 0.15; }
+    orbitControls.target.set(0, CFG.camera.lookY, 0);
+  } else {
+    // Clear overrides, return to normal
+    for (const k of Object.keys(poseOverrides)) delete poseOverrides[k];
+    document.getElementById('pose-bone-sliders').innerHTML = '';
+    const poseBoneBtnsEl = document.getElementById('pose-bone-buttons');
+    poseBoneBtnsEl.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+    selectedPoseBone = null;
+    deselectBone();
+    for (const c of boneColliders) { c.mesh.material.opacity = 0.0; }
+  }
+};
+
+// Reset pose
+document.getElementById('btn-pose-reset').onclick = () => {
+  for (const k of Object.keys(poseOverrides)) delete poseOverrides[k];
+  if (selectedPoseBone) selectPoseBone(selectedPoseBone); // refresh sliders
+};
+
+// Add keyframe
+document.getElementById('btn-kf-add').onclick = () => {
+  const bones = {};
+  for (const [name, angles] of Object.entries(poseOverrides)) {
+    const idle = CFG.idleArm[name] || [0,0,0];
+    // Only include bones that differ from idle
+    if (Math.abs(angles[0]-idle[0]) > 0.5 || Math.abs(angles[1]-idle[1]) > 0.5 || Math.abs(angles[2]-idle[2]) > 0.5) {
+      bones[name] = [Math.round(angles[0]), Math.round(angles[1]), Math.round(angles[2])];
+    }
+  }
+  const count = recordedKeyframes.length;
+  const t = count === 0 ? 0 : parseFloat((count / (count + 1)).toFixed(2));
+  recordedKeyframes.push({ t, bones });
+  refreshKFList();
+};
+
+// Refresh keyframe list display
+function refreshKFList() {
+  const list = document.getElementById('kf-list');
+  list.innerHTML = '';
+  // Auto-distribute t values: first=0, last=1, even spacing
+  const n = recordedKeyframes.length;
+  for (let i = 0; i < n; i++) {
+    recordedKeyframes[i].t = n === 1 ? 0 : parseFloat((i / (n - 1)).toFixed(2));
+  }
+  for (let i = 0; i < n; i++) {
+    const kf = recordedKeyframes[i];
+    const boneNames = Object.keys(kf.bones);
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:2px 0;border-bottom:1px solid #2a2a2a;';
+    const info = document.createElement('span');
+    info.textContent = `KF ${i+1} (t=${kf.t}) — ${boneNames.length === 0 ? 'rest' : boneNames.join(', ')}`;
+    const btns = document.createElement('span');
+    const loadBtn = document.createElement('span');
+    loadBtn.textContent = '↩';
+    loadBtn.title = 'Load this pose';
+    loadBtn.style.cssText = 'cursor:pointer;margin-right:6px;color:#4af;';
+    loadBtn.onclick = () => {
+      // Load this keyframe's pose into the overrides
+      for (const k of Object.keys(poseOverrides)) delete poseOverrides[k];
+      for (const [name, angles] of Object.entries(kf.bones)) {
+        poseOverrides[name] = [...angles];
+      }
+      // Also restore idle for unmentioned bones
+      for (const name of POSE_BONES) {
+        if (!poseOverrides[name]) {
+          const idle = CFG.idleArm[name];
+          poseOverrides[name] = idle ? [...idle] : [0,0,0];
+        }
+      }
+      if (selectedPoseBone) selectPoseBone(selectedPoseBone);
+    };
+    const delBtn = document.createElement('span');
+    delBtn.textContent = '✕';
+    delBtn.title = 'Delete';
+    delBtn.style.cssText = 'cursor:pointer;color:#a55;';
+    delBtn.onclick = () => { recordedKeyframes.splice(i, 1); refreshKFList(); };
+    btns.append(loadBtn, delBtn);
+    div.append(info, btns);
+    list.appendChild(div);
+  }
+}
+
+// Preview
+document.getElementById('btn-kf-preview').onclick = () => {
+  if (recordedKeyframes.length === 0) return;
+  const duration = parseFloat(document.getElementById('pose-duration').value) || 1.0;
+  // Ensure first frame is rest (empty) and last frame returns to rest
+  const kfs = [];
+  if (recordedKeyframes[0].t > 0 || Object.keys(recordedKeyframes[0].bones).length > 0) {
+    kfs.push({t: 0, bones: {}});
+  }
+  kfs.push(...recordedKeyframes.map(kf => ({...kf})));
+  if (kfs[kfs.length-1].t < 1) {
+    kfs.push({t: 1, bones: {}});
+  }
+  // Re-normalize t values
+  const total = kfs.length;
+  for (let i = 0; i < total; i++) {
+    kfs[i].t = parseFloat((i / (total - 1)).toFixed(2));
+  }
+  // Exit pose mode temporarily and play as gesture
+  poseMode = false;
+  gestureActive = { name: 'preview', startTime: elapsedTime, duration, keyframes: kfs };
+};
+
+// Clear all keyframes
+document.getElementById('btn-kf-clear').onclick = () => {
+  recordedKeyframes.length = 0;
+  refreshKFList();
+};
+
+// Export gesture JSON
+document.getElementById('btn-kf-export').onclick = async () => {
+  const duration = parseFloat(document.getElementById('pose-duration').value) || 1.0;
+  const name = document.getElementById('pose-gesture-name').value || 'custom';
+  const kfs = [{t: 0, bones: {}}, ...recordedKeyframes.map(kf => ({...kf}))];
+  if (kfs[kfs.length-1].t < 1 || Object.keys(kfs[kfs.length-1].bones).length > 0) {
+    kfs.push({t: 1, bones: {}});
+  }
+  // Normalize t
+  const total = kfs.length;
+  for (let i = 0; i < total; i++) kfs[i].t = parseFloat((i / (total - 1)).toFixed(2));
+
+  const gesture = { duration, keyframes: kfs };
+  const json = `  ${name}: ${JSON.stringify(gesture)},`;
+  await navigator.clipboard.writeText(json);
+  const btn = document.getElementById('btn-kf-export');
+  btn.textContent = 'Copied!';
+  setTimeout(() => { btn.textContent = 'Copy Gesture JSON'; }, 1500);
+};
+
+// =========================================================================
+// Motion Capture Integration
+// =========================================================================
+
+let mocapState = 'idle';
+let recordingBuffer = [];
+let recordingStart = 0;
+let editingFrames = null;
+let editingReduced = null;
+
+function setMocapState(state) {
+  mocapState = state;
+  document.getElementById('mocap-idle').style.display = state === 'idle' ? '' : 'none';
+  document.getElementById('mocap-live').style.display = state === 'live' ? '' : 'none';
+  document.getElementById('mocap-recording').style.display = state === 'recording' ? '' : 'none';
+  document.getElementById('mocap-editing').style.display = state === 'editing' ? '' : 'none';
+  document.getElementById('mocap-pip').style.display = (state === 'live' || state === 'recording') ? '' : 'none';
+}
+
+document.getElementById('btn-start-cam').onclick = async () => {
+  const video = document.getElementById('mocap-video');
+  try {
+    await startCapture({
+      video,
+      onFrame: onMocapFrame,
+      onStatus: (s) => { document.getElementById('mocap-status').textContent = `Tracking: ${s}`; },
+    });
+    setMocapState('live');
+  } catch (e) {
+    console.error('Camera start failed:', e);
+    document.getElementById('mocap-status').textContent = `Error: ${e.message}`;
+  }
+};
+
+document.getElementById('btn-stop-cam').onclick = () => {
+  stopCapture();
+  setMocapState('idle');
+};
+
+let lastMocapBones = null;
+let _mocapFrameCount = 0;
+function onMocapFrame(frame) {
+  lastMocapBones = frame.bones;
+  _mocapFrameCount++;
+  if (_mocapFrameCount % 30 === 1) {
+    console.log(`[mocap] frame ${_mocapFrameCount}, bones:`, Object.keys(frame.bones), 'values:', frame.bones.head || 'no head');
+  }
+
+  // Live preview: apply solved bones to VRM via PD targets
+  if (vrm && !poseMode && !animIsPlaying && !gestureActive) {
+    for (const [boneName, angles] of Object.entries(frame.bones)) {
+      const pd = bonePDs[boneName];
+      if (pd) {
+        pd.target = [...angles];
+      }
+    }
+  }
+
+  // Recording: buffer frames
+  if (mocapState === 'recording') {
+    const elapsed = performance.now() - recordingStart;
+    recordingBuffer.push({
+      timestamp_ms: elapsed,
+      bones: { ...frame.bones },
+      blendShapes: frame.blendShapes ? { ...frame.blendShapes } : {},
+    });
+    document.getElementById('rec-duration').textContent = (elapsed / 1000).toFixed(1);
+  }
+
+  if (mocapState === 'live') {
+    const boneCount = Object.keys(frame.bones).length;
+    document.getElementById('mocap-status').textContent = `Tracking: ${boneCount} bones`;
+  }
+}
+
+document.getElementById('btn-record').onclick = () => {
+  recordingBuffer = [];
+  recordingStart = performance.now();
+  setMocapState('recording');
+};
+
+document.getElementById('btn-rec-stop').onclick = () => {
+  enterEditing(recordingBuffer);
+};
+
+document.getElementById('btn-rec-discard').onclick = () => {
+  recordingBuffer = [];
+  setMocapState('live');
+};
+
+function enterEditing(frames) {
+  editingFrames = frames;
+  const duration = frames.length > 0 ? frames[frames.length - 1].timestamp_ms / 1000 : 0;
+  document.getElementById('scrub-total').textContent = `${duration.toFixed(1)}s`;
+  document.getElementById('trim-start').value = '0';
+  document.getElementById('trim-end').value = duration.toFixed(1);
+  document.getElementById('trim-start').max = duration;
+  document.getElementById('trim-end').max = duration;
+  runReduction();
+  setMocapState('editing');
+}
+
+function getTrimmedFrames() {
+  const startMs = parseFloat(document.getElementById('trim-start').value) * 1000;
+  const endMs = parseFloat(document.getElementById('trim-end').value) * 1000;
+  return editingFrames.filter(f => f.timestamp_ms >= startMs && f.timestamp_ms <= endMs).map(f => ({
+    ...f,
+    timestamp_ms: f.timestamp_ms - startMs,
+  }));
+}
+
+function runReduction() {
+  const trimmed = getTrimmedFrames();
+  const epsilon = parseFloat(document.getElementById('rdp-epsilon').value) || 2;
+  editingReduced = reduceFrames(trimmed, epsilon);
+  document.getElementById('kf-before').textContent = trimmed.length;
+  document.getElementById('kf-after').textContent = editingReduced.length;
+}
+
+document.getElementById('rdp-epsilon').addEventListener('input', (e) => {
+  document.getElementById('rdp-epsilon-val').value = parseFloat(e.target.value).toFixed(1);
+  runReduction();
+});
+document.getElementById('rdp-epsilon-val').addEventListener('change', (e) => {
+  document.getElementById('rdp-epsilon').value = e.target.value;
+  runReduction();
+});
+document.getElementById('trim-start').addEventListener('change', runReduction);
+document.getElementById('trim-end').addEventListener('change', runReduction);
+
+document.getElementById('mocap-scrubber').addEventListener('input', (e) => {
+  if (!editingFrames || editingFrames.length === 0) return;
+  const t = parseFloat(e.target.value) / 100;
+  const trimmed = getTrimmedFrames();
+  const durationMs = trimmed.length > 0 ? trimmed[trimmed.length - 1].timestamp_ms : 0;
+  document.getElementById('scrub-time').textContent = `${(t * durationMs / 1000).toFixed(1)}s`;
+
+  const targetMs = t * durationMs;
+  let closest = trimmed[0];
+  for (const f of trimmed) {
+    if (Math.abs(f.timestamp_ms - targetMs) < Math.abs(closest.timestamp_ms - targetMs)) {
+      closest = f;
+    }
+  }
+  if (closest && vrm) {
+    for (const [boneName, angles] of Object.entries(closest.bones)) {
+      const pd = bonePDs[boneName];
+      if (pd) { pd.current = [...angles]; pd.target = [...angles]; pd.velocity = [0,0,0]; }
+    }
+  }
+});
+
+document.getElementById('btn-save-gesture').onclick = async () => {
+  if (!editingReduced || editingReduced.length === 0) return;
+  const name = document.getElementById('gesture-name').value.trim();
+  if (!name) { document.getElementById('gesture-name').style.borderColor = '#f44'; return; }
+
+  const trimmed = getTrimmedFrames();
+  const durationMs = trimmed.length > 0 ? trimmed[trimmed.length - 1].timestamp_ms : 1000;
+
+  const keyframes = [];
+  if (editingReduced[0].t > 0 || Object.keys(editingReduced[0].bones).length > 0) {
+    keyframes.push({ t: 0, bones: {} });
+  }
+  keyframes.push(...editingReduced);
+  if (keyframes[keyframes.length - 1].t < 1 || Object.keys(keyframes[keyframes.length - 1].bones).length > 0) {
+    keyframes.push({ t: 1, bones: {} });
+  }
+
+  const gesture = {
+    name,
+    duration: durationMs / 1000,
+    keyframes,
+    rawFrames: trimmed,
+    createdAt: new Date().toISOString(),
+  };
+
+  await saveGestureDB(gesture);
+  await refreshGestureLibrary();
+  setMocapState(isCapturing() ? 'live' : 'idle');
+};
+
+document.getElementById('btn-edit-discard').onclick = () => {
+  editingFrames = null;
+  editingReduced = null;
+  setMocapState(isCapturing() ? 'live' : 'idle');
+};
+
+document.getElementById('btn-rerecord').onclick = () => {
+  editingFrames = null;
+  editingReduced = null;
+  if (!isCapturing()) {
+    document.getElementById('btn-start-cam').click();
+  }
+  setMocapState('live');
+};
+
+async function refreshGestureLibrary() {
+  const gestures = await getAllGestures();
+  const list = document.getElementById('gesture-lib-list');
+  const empty = document.getElementById('gesture-lib-empty');
+  list.innerHTML = '';
+  empty.style.display = gestures.length === 0 ? '' : 'none';
+
+  for (const g of gestures) {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid #2a2a2a;';
+    const nameEl = document.createElement('span');
+    nameEl.style.cssText = 'font-size:12px;color:#ddd;';
+    nameEl.textContent = g.name;
+    const btns = document.createElement('span');
+    const playBtn = document.createElement('button');
+    playBtn.className = 'btn';
+    playBtn.textContent = '▶';
+    playBtn.style.cssText = 'padding:2px 8px;font-size:11px;';
+    playBtn.onclick = () => {
+      gestureActive = { name: g.name, startTime: elapsedTime, duration: g.duration, keyframes: g.keyframes };
+    };
+    const delBtn = document.createElement('button');
+    delBtn.className = 'btn';
+    delBtn.textContent = '✕';
+    delBtn.style.cssText = 'padding:2px 8px;font-size:11px;margin-left:4px;';
+    delBtn.onclick = async () => {
+      await deleteGestureDB(g.name);
+      await refreshGestureLibrary();
+    };
+    btns.append(playBtn, delBtn);
+    row.append(nameEl, btns);
+    list.appendChild(row);
+  }
+}
+
+document.getElementById('btn-export-gestures').onclick = async () => {
+  const data = await exportAllGestures();
+  const json = JSON.stringify(data, null, 2);
+  await navigator.clipboard.writeText(json);
+  const btn = document.getElementById('btn-export-gestures');
+  btn.textContent = 'Copied!';
+  setTimeout(() => { btn.textContent = 'Export All JSON'; }, 1500);
+};
+
+// Filter sliders
+const _filterContainer = document.getElementById('mocap-filter-sliders');
+makeSlider(_filterContainer, 'Body smoothing', 0.5, 5, 0.1, () => 1.5, v => setFilterParams('body', v, 0.5));
+makeSlider(_filterContainer, 'Body response', 0, 2, 0.1, () => 0.5, v => setFilterParams('body', 1.5, v));
+makeSlider(_filterContainer, 'Face smoothing', 0.5, 5, 0.1, () => 1.0, v => setFilterParams('face', v, 0.3));
+makeSlider(_filterContainer, 'Face response', 0, 2, 0.1, () => 0.3, v => setFilterParams('face', 1.0, v));
+
+refreshGestureLibrary();
+</script>
+</body>
+</html>

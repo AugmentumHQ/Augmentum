@@ -1,0 +1,217 @@
+/* Launch-mode chooser modal.
+ *
+ * Centered card with two big choice buttons. Visual language tries
+ * to match the existing emulator-stage chrome (dark neutral, single-
+ * color accents) without inheriting from anything specific.
+ */
+
+.launch-picker-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 12, 16, 0.72);
+    backdrop-filter: blur(6px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: launch-picker-fade-in 140ms ease-out;
+}
+
+@keyframes launch-picker-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.launch-picker-card {
+    background: rgba(22, 24, 32, 0.98);
+    color: #e7e9ee;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 28px 32px 24px;
+    width: min(560px, 92vw);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.launch-picker-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 6px;
+    letter-spacing: -0.005em;
+}
+
+.launch-picker-subtitle {
+    margin: 0 0 18px;
+    color: rgba(231, 233, 238, 0.72);
+}
+
+.launch-picker-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.launch-picker-choice {
+    background: rgba(255, 255, 255, 0.04);
+    color: inherit;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 18px 16px;
+    text-align: left;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 12px;
+    row-gap: 2px;
+    transition: border-color 120ms ease, background 120ms ease, transform 120ms ease;
+}
+
+.launch-picker-choice:hover,
+.launch-picker-choice:focus-visible {
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.launch-picker-choice.solo:hover,
+.launch-picker-choice.solo:focus-visible {
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.launch-picker-choice.partner {
+    background: rgba(74, 150, 208, 0.10);
+    border-color: rgba(74, 150, 208, 0.45);
+}
+
+.launch-picker-choice.partner:hover,
+.launch-picker-choice.partner:focus-visible {
+    background: rgba(74, 150, 208, 0.18);
+    border-color: rgba(74, 150, 208, 0.75);
+}
+
+.launch-picker-choice-icon {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    align-self: start;
+    font-size: 22px;
+    line-height: 1;
+    padding-top: 2px;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.launch-picker-choice.partner .launch-picker-choice-icon {
+    color: rgba(150, 200, 240, 1);
+}
+
+.launch-picker-choice-title {
+    grid-column: 2;
+    grid-row: 1;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.launch-picker-choice-blurb {
+    grid-column: 2;
+    grid-row: 2;
+    font-size: 12.5px;
+    color: rgba(231, 233, 238, 0.7);
+    line-height: 1.35;
+}
+
+.launch-picker-hint {
+    margin: 16px 0 0;
+    font-size: 11.5px;
+    color: rgba(231, 233, 238, 0.55);
+    text-align: center;
+}
+
+
+/* ── Step 2: companion picker ─────────────────────────────────────── */
+
+.launch-picker-back {
+    background: transparent;
+    color: rgba(231, 233, 238, 0.7);
+    border: none;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 0;
+    margin: 0 0 8px;
+}
+.launch-picker-back:hover {
+    color: #fff;
+}
+
+.launch-picker-companions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 360px;
+    overflow-y: auto;
+    margin-top: 4px;
+}
+
+.launch-picker-companion {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+    transition: background 120ms ease, border-color 120ms ease;
+}
+.launch-picker-companion:hover,
+.launch-picker-companion:focus-visible {
+    outline: none;
+    background: rgba(74, 150, 208, 0.12);
+    border-color: rgba(74, 150, 208, 0.55);
+}
+
+.launch-picker-companion-avatar {
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    background: rgba(74, 150, 208, 0.18);
+    color: rgba(150, 200, 240, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+    overflow: hidden;
+}
+.launch-picker-companion-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.launch-picker-companion-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.launch-picker-companion-name {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.launch-picker-companion-blurb {
+    font-size: 12px;
+    color: rgba(231, 233, 238, 0.65);
+    line-height: 1.35;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}

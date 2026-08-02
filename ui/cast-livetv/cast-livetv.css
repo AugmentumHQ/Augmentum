@@ -1,0 +1,177 @@
+/* cast-livetv.css — TV Live TV surface.
+ *
+ * Full-screen video with a HUD chip overlay (channel logo + name +
+ * live badge) that auto-hides after user input. Black backdrop so
+ * letterboxed broadcasts don't show theme bleed. */
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #000;
+  color: #fff;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  width: 100%;
+  /* dvh keeps the surface stable when iOS Safari hides/shows the URL
+   * bar mid-stream; vh stays as the pre-dvh fallback. */
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* Video fills the surface, letterboxed by the browser. */
+.cl-video {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: #000;
+  display: block;
+}
+
+/* ── HUD chip ───────────────────────────────────────────────── */
+
+.cl-hud {
+  position: absolute;
+  /* Padded for the iPhone notch + dynamic-island safe areas so the
+   * channel chip doesn't slide under them when this surface is
+   * rendered on a phone (e.g. paired-controller preview). */
+  top: calc(24px + env(safe-area-inset-top, 0px));
+  left: max(24px, env(safe-area-inset-left, 0px));
+  right: max(24px, env(safe-area-inset-right, 0px));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 280ms ease, transform 280ms ease;
+}
+.cl-hud.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cl-hud-channel {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px 10px 10px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  max-width: 70%;
+}
+
+.cl-hud-logo-frame {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.cl-hud-logo {
+  max-width: 80%;
+  max-height: 80%;
+  object-fit: contain;
+}
+
+.cl-hud-fallback {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.cl-hud-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cl-hud-number {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.7);
+  font-variant-numeric: tabular-nums;
+}
+
+.cl-hud-name {
+  font-size: 1.4rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cl-hud-now {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+/* ── LIVE badge ─────────────────────────────────────────────── */
+
+.cl-hud-live {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #fff;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.cl-hud-live-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff3737;
+  /* Slow pulse — readable peripherally without strobing. Matches
+   * the cadence of the rail-tile dot for visual consistency. */
+  animation: cl-pulse 2.4s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cl-hud-live-dot { animation: none; }
+}
+
+@keyframes cl-pulse {
+  0%   { box-shadow: 0 0 0 0   rgba(255, 55, 55, 0.6); }
+  70%  { box-shadow: 0 0 0 10px rgba(255, 55, 55, 0.0); }
+  100% { box-shadow: 0 0 0 0   rgba(255, 55, 55, 0.0); }
+}
+
+/* ── Status / error overlay ─────────────────────────────────── */
+
+.cl-status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(0,0,0,0.5), rgba(0,0,0,0.7));
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-align: center;
+  padding: 24px;
+}
+
+.cl-status.hidden {
+  display: none;
+}

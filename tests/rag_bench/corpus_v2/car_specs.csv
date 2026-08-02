@@ -1,0 +1,49 @@
+model,year,category,price_usd,engine,horsepower,mpg_city,mpg_highway,drivetrain,features
+Toyota Camry LE,2025,Sedan,27490,2.5L 4-cyl,203,28,39,FWD,Adaptive cruise control; lane departure warning; 8-in touchscreen; Apple CarPlay; Android Auto
+Toyota Camry XSE,2025,Sedan,32190,2.5L 4-cyl Hybrid,225,51,53,FWD,Sport-tuned suspension; JBL audio; wireless charging; leather seats; head-up display
+Honda Accord EX,2025,Sedan,32645,1.5L turbocharged 4-cyl,192,29,37,FWD,Honda Sensing suite; 12.3-in infotainment; dual-zone climate; remote start
+Honda Accord Sport Hybrid,2025,Sedan,37645,2.0L 4-cyl Hybrid,204,44,41,FWD,Paddle shifters; 19-in alloy wheels; sport exhaust; Bose premium audio
+Nissan Altima SR,2025,Sedan,31140,2.0L turbocharged VC-Turbo,248,25,34,AWD,Sport suspension; zero-gravity seats; Bose 9-speaker; intelligent cruise control
+Hyundai Sonata SEL,2025,Sedan,28350,2.5L 4-cyl,191,28,38,FWD,10.25-in touchscreen; wireless CarPlay; Hyundai SmartSense; LED headlights
+Mazda6 Carbon Edition,2025,Sedan,38300,2.5L turbocharged 4-cyl,250,23,31,FWD,Bose 12-speaker; i-Activ AWD option; head-up display; leather trim; sunroof
+Subaru Legacy Premium,2025,Sedan,29145,2.5L 4-cyl,182,27,35,AWD,EyeSight driver assist; 11.6-in tablet display; heated front seats; starlink safety
+BMW 3 Series 330i,2025,Sedan,45545,2.0L turbocharged 4-cyl,255,26,36,RWD,Curved 12.3-in display; live cockpit pro; adaptive suspension; 18-in wheels
+BMW 3 Series M340i,2025,Sedan,58545,3.0L turbocharged inline-6,382,22,30,AWD,M sport exhaust; adaptive M suspension; Harman Kardon; Laserlight headlights
+Tesla Model 3 Standard Range,2025,Sedan,42990,Electric single motor,283 hp equivalent,138 MPGe city,126 MPGe hwy,RWD,Autopilot; 15.4-in center display; over-the-air updates; 272mi range; Sentry Mode
+Tesla Model 3 Long Range AWD,2025,Sedan,50990,Electric dual motor,346 hp equivalent,127 MPGe city,120 MPGe hwy,AWD,Full Self-Driving capability hardware; 341mi range; glass roof; premium audio
+Tesla Model 3 Performance,2025,Sedan,53990,Electric dual motor high perf,510 hp equivalent,119 MPGe city,112 MPGe hwy,AWD,0-60 in 3.1s; Track Mode; upgraded Brembo brakes; 315mi range
+Honda CR-V EX,2025,SUV,33250,1.5L turbocharged 4-cyl,190,28,34,AWD,Honda Sensing; power liftgate; heated seats; 9-in touchscreen; sunroof
+Honda CR-V Hybrid Sport,2025,SUV,37750,2.0L 4-cyl Hybrid,204,40,34,AWD,Sport trim; Bose audio; 12.3-in display; hands-free liftgate; lane keep assist
+Toyota RAV4 XLE,2025,SUV,31025,2.5L 4-cyl,203,27,35,AWD,Toyota Safety Sense 2.5+; 10.5-in audio; multi-terrain select; JBL audio option
+Toyota RAV4 Prime SE,2025,SUV,43690,2.5L 4-cyl Plug-in Hybrid,302,94 MPGe combined,38 mpg HV,AWD,42mi EV range; heated seats; 10.5-in infotainment; bird's eye camera
+Subaru Forester Sport,2025,SUV,33995,2.5L 4-cyl,182,26,33,AWD,EyeSight 4.0; panoramic moonroof; X-MODE dual-function; 11.6-in touchscreen
+Mazda CX-5 Carbon Turbo,2025,SUV,40000,2.5L turbocharged 4-cyl,256,22,27,AWD,Bose 10-speaker; 10.25-in display; leather; ventilated seats; 360-view camera
+Kia Telluride SX,2025,SUV,47690,3.8L V6,291,18,24,AWD,3-row 8-seat; 12-in dual touchscreen; Bose 10-speaker; head-up display; tow 5000 lbs
+Hyundai Tucson PHEV,2025,SUV,36100,1.6L turbocharged 4-cyl Plug-in Hybrid,261,80 MPGe combined,35 mpg HV,AWD,33mi EV range; 10.25-in touchscreen; Bose audio; wireless charging; Blue Link
+Volkswagen Tiguan SE R-Line,2025,SUV,36290,2.0L turbocharged 4-cyl,184,22,29,AWD,3-row option; 10.25-in Discover Pro; digital cockpit; heated seats; LED matrix lights
+BMW X3 xDrive30i,2025,SUV,49200,2.0L turbocharged 4-cyl,248,21,29,AWD,Curved display 12.3-in; Harman Kardon; panoramic roof; park assist; driving assist pro
+BMW X5 xDrive40i,2025,SUV,69100,3.0L turbocharged inline-6,375,21,26,AWD,14.9-in curved display; Bowers & Wilkins audio; rear entertainment; air suspension
+Mercedes-Benz GLC 300,2025,SUV,55450,2.0L turbocharged 4-cyl,258,22,29,AWD,MBUX with voice; 12.3-in display; Burmester audio; 64-color ambient lighting
+Audi Q5 Premium Plus,2025,SUV,51900,2.0L turbocharged 4-cyl,261,22,28,AWD,MMI touch 10.1-in; virtual cockpit; Bang & Olufsen; driver assist package
+Ford Escape PHEV SE,2025,SUV,36000,2.5L 4-cyl Plug-in Hybrid,221,105 MPGe combined,40 mpg HV,FWD,37mi EV range; SYNC 4 12-in; Ford Co-Pilot360; wireless charging
+Chevrolet Equinox EV LT,2025,SUV,35000,Electric single motor,210 hp equivalent,121 MPGe city,94 MPGe hwy,FWD,315mi range; 17.7-in diagonal display; Super Cruise capable; Google built-in
+Tesla Model Y RWD,2025,SUV,43990,Electric single motor,283 hp equivalent,130 MPGe city,117 MPGe hwy,RWD,Autopilot; 15.4-in; 260mi range; glass roof; 7-seat option; over-the-air updates
+Tesla Model Y Long Range AWD,2025,SUV,48990,Electric dual motor,384 hp equivalent,126 MPGe city,112 MPGe hwy,AWD,330mi range; heated rear seats; premium audio; tow 3500 lbs; Sentry Mode
+Ford F-150 XLT,2025,Truck,42700,2.7L EcoBoost V6,325,20,26,4WD,Pro Power Onboard 2.0kW; SYNC 4 12-in; tailgate step; Apple CarPlay; tow 9000 lbs
+Ford F-150 Lariat,2025,Truck,52500,3.5L EcoBoost V6,400,17,24,4WD,B&O audio; power deployable running boards; pro power 7.2kW; heated/cooled seats; tow 13500 lbs
+Ford F-150 Lightning Pro,2025,Truck,57995,Electric dual motor,426 hp equivalent,78 MPGe city,63 MPGe hwy,AWD,300mi range; Pro Power Onboard 9.6kW; frunk 14.1 cu ft; SYNC 4A 15.5-in; tow 10000 lbs
+Chevrolet Silverado 1500 LTZ,2025,Truck,57500,5.3L V8,355,16,22,4WD,Bose audio; 13.4-in infotainment; multi-flex tailgate; enhanced trailering app; tow 11600 lbs
+Ram 1500 Big Horn,2025,Truck,43995,3.6L Pentastar V6,305,17,25,4WD,8.4-in Uconnect 5; ParkSense; RamBox cargo management optional; tow 7650 lbs
+Ram 1500 Laramie,2025,Truck,57990,5.7L HEMI V8,395,15,22,4WD,12-in touchscreen; Harman Kardon; panoramic sunroof; air suspension; tow 11700 lbs
+Toyota Tundra Limited,2025,Truck,52500,3.5L twin-turbocharged V6 Hybrid,437,20,24,4WD,14-in touchscreen; JBL 12-speaker; multi-terrain monitor; crawl control; tow 11450 lbs
+GMC Sierra 1500 AT4X,2025,Truck,71000,6.2L V8,420,14,18,4WD,ProGrade trailering; Bose 7-speaker; underbody skid plates; locking rear diff; tow 11200 lbs
+Ford Maverick XLT Hybrid,2025,Truck,27000,2.5L 4-cyl Hybrid,191,42,33,FWD,Compact pickup; SYNC 4 8-in; Ford Co-Pilot360; flexbed; tow 2000 lbs
+Honda Ridgeline RTL-E,2025,Truck,42300,3.5L V6,280,18,24,AWD,In-bed trunk; dual-action tailgate; 8-in touchscreen; Honda Sensing; tow 5000 lbs
+Rivian R1T Adventure,2025,Truck,75900,Electric quad motor,835 hp equivalent,74 MPGe city,66 MPGe hwy,AWD,314mi range; gear tunnel; camp kitchen optional; driver+ ADAS; tow 11000 lbs
+Jeep Wrangler Rubicon,2025,SUV,53000,2.0L turbocharged 4-cyl,270,19,22,4WD,Rock-Trac 4x4; disconnecting sway bar; 8.4-in Uconnect; removable doors/roof; tow 3500 lbs
+Land Rover Defender 110 X,2025,SUV,84900,3.0L inline-6 mild hybrid,395,18,22,AWD,Terrain response 2; air suspension; Meridian 700W audio; wade sensing; tow 8201 lbs
+Porsche Cayenne E-Hybrid,2025,SUV,84200,3.0L V6 Plug-in Hybrid,470,47 MPGe combined,21 mpg HV,AWD,25mi EV range; Sport Chrono; BOSE Surround; 12.6-in curved display; sport exhaust
+Cadillac LYRIQ Premium Luxury,2025,SUV,64990,Electric single motor,340 hp equivalent,108 MPGe city,93 MPGe hwy,RWD,307mi range; 33-in LED display; AKG 19-speaker; Super Cruise; OTA updates
+Volvo XC90 Recharge T8,2025,SUV,78090,2.0L 4-cyl Plug-in Hybrid,455,49 MPGe combined,27 mpg HV,AWD,35mi EV range; 3-row; Bowers & Wilkins; 14.5-in infotainment; pilot assist
+Genesis GV80 Prestige,2025,SUV,76950,3.5L twin-turbocharged V6,375,18,23,AWD,14.5-in curved display; Lexicon audio; ergo-motion seats; highway driving assist 2; tow 6000 lbs
+Lexus RX 500h F Sport Performance,2025,SUV,67650,2.4L 4-cyl Turbo Hybrid,366,26,28,AWD,14-in touchscreen; Mark Levinson 21-speaker; panoramic view monitor; direct4 torque control

@@ -1,0 +1,162 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "augmentum"
+version = "0.1.0"
+description = "Self-hosted personal AI platform — model serving, a multi-surface UI, an autonomous companion, and an OpenAI/Ollama/Anthropic-compatible API, all on your own hardware"
+readme = "README.md"
+license = "AGPL-3.0-or-later"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.12",
+    "uvicorn[standard]==0.34.2",
+    "httpx==0.27.2",
+    "pydantic==2.12.5",
+    "pydantic-settings==2.9.1",
+    "aiosqlite==0.20.0",
+    "structlog==24.4.0",
+    "pyyaml==6.0.2",
+    # TTS script routing dictionary tier (augmentum/voice/script_routing.py)
+    # — kanji→romaji and han→pinyin. Pure-python, small; the built-in
+    # table romanizers (kana/hangul/cyrillic/greek) work without them.
+    "pykakasi==2.3.0",
+    "pypinyin==0.53.0",
+    "trafilatura>=1.12.0",
+    "curl_cffi>=0.7.0",
+    "extruct>=0.18.0",
+    "torch>=2.0.0",
+    "huggingface-hub>=0.20.0",
+    # Rust-based parallel-range backend for huggingface_hub. Enables
+    # multi-stream Xet/LFS downloads when HF_HUB_ENABLE_HF_TRANSFER=1 is set
+    # (compose.yaml does this). Single-thread fallback paths break at ~3 KB/s
+    # on Xet repos (Z-Image / Z-Anime); with hf_transfer the same pulls
+    # saturate the link.
+    "hf_transfer>=0.1.6",
+    "Pillow>=10.0.0",
+    "numpy>=1.24.0",
+    "sqlite-vec>=0.1.6",
+    "fastembed>=0.7.4",
+    "libzim>=3.4.0",
+    "pychromecast>=14.0.0",
+    "mcp>=1.0.0",
+    "fpdf2>=2.8.0",
+    "markdown-it-py>=3.0.0",
+    "python-pptx>=1.0.0",
+    "python-docx>=1.1.0",
+    "openpyxl>=3.1.0",
+    "cryptography>=42.0.0",
+    "tzdata>=2024.1",
+    "youtube-transcript-api>=1.2.0",
+    "pdfplumber>=0.11.0",
+    "silero-vad>=6.0.0",
+    "websockets>=13.0",
+    "wespeakerruntime>=1.0.0",
+    "torchaudio<2.9",
+    "tiktoken>=0.7.0",
+    "webrtc-noise-gain>=1.2.0",
+    "onnxruntime>=1.17.0",
+    # Local streaming STT (English). Pinned at 0.0.51 in requirements.lock.
+    # GOTCHA: this release's moonshine_voice.__version__ wrongly reports
+    # "0.1.0" — trust `pip show` / importlib.metadata, NOT __version__.
+    # We deliberately stay on 0.0.51: releases 0.0.52–0.0.62 add TTS, intent
+    # recognition, and non-English G2P/bindings we don't consume, and touch
+    # NOTHING in the English streaming ASR core we actually use. Only bump for
+    # word-level timestamps (the one STT-relevant addition) + a rebuild/smoke.
+    "moonshine-voice>=0.0.44",
+    "transformers>=4.36.0",
+    "kokoro-onnx>=0.4.0",
+    "phonemizer-fork>=3.3.0",  # espeak-ng G2P; usually already pulled via kokoro-onnx/misaki
+    "espeakng-loader>=0.2.4",  # bundled espeak-ng lib+data — no system install needed
+    "qrcode>=7.4.0",  # SVG factory used by /api/cast/pair/qr/ — no extras (no PIL)
+    "g2p-en>=2.1.0",  # ARPAbet G2P for phoneme-driven lip sync (3 MB pure python)
+    "rembg>=2.0.50",
+    # resemblyzer + webrtcvad-wheels installed separately in Dockerfile
+    # (resemblyzer pulls webrtcvad which needs gcc; we use --no-deps)
+    "quickjs>=1.19.0",
+    "aiodocker>=0.23.0",
+    # Headless VT100 emulator for coder terminal sessions — renders PTY
+    # output into the screen grid the agent snapshots (terminal_sessions.py).
+    "pyte>=0.8.2",
+    "argon2-cffi>=23.1.0",
+    "wsgidav>=4.3.0",
+    "a2wsgi>=1.10.0",
+    # Currently installed transitively (via trafilatura, fastapi, etc.) but
+    # imported directly. Pinning so a transitive update can't break the
+    # imports — the audit will catch any new such hazard going forward.
+    "lxml>=5.0.0",
+    "psutil>=5.9.0",
+    "Pygments>=2.17.0",
+    "starlette>=0.40.0",
+    "pywebpush>=2.0.0",  # Web Push for Connect offline notifications
+    # LiveKit Server SDK (Apache 2.0). Used for JWT minting + Room
+    # Service API calls from the LiveKit media plane. The wire JWT
+    # generation is the load-bearing path; the Room API is only used
+    # for teardown on hangup. See augmentum/connect/livekit_tokens.py.
+    "livekit-api>=0.8.0",
+]
+
+[project.optional-dependencies]
+# Optional file-format support — each is gated behind try/except ImportError
+# at its call site. Installing this extra unlocks: comic / PDF preview
+# (PyMuPDF), PDF text extraction (pypdf), HEIC image thumbnails
+# (pillow-heif), chart artifacts (matplotlib).
+file-extras = [
+    "PyMuPDF>=1.24.0",
+    "pypdf>=4.0.0",
+    "pillow-heif>=0.16.0",
+    "matplotlib>=3.8.0",
+]
+# Image generation deps split by hardware tier. The CPU subset is everything
+# diffusers needs to run on a CPU-only host; the full ``image`` extra adds
+# the CUDA-only accelerators (xformers, bitsandbytes) on top.
+image-cpu = [
+    "diffusers>=0.37.0",
+    "accelerate>=0.25.0",
+    "safetensors>=0.4.0",
+    "sentencepiece>=0.2.0",
+    "protobuf>=4.25.0",
+    "gguf>=0.10.0",
+    "torchvision>=0.18.0",
+    "tomesd>=0.1.1",
+    "spandrel>=0.4.0",
+]
+image = [
+    "augmentum[image-cpu]",
+    "xformers>=0.0.28",
+    "bitsandbytes>=0.43.0",
+]
+dev = [
+    # CPU-friendly subset — keeps pip install -e .[dev] working on hosts
+    # without an NVIDIA GPU. Use augmentum[image] explicitly when you need
+    # the GPU accelerators (xformers, bitsandbytes).
+    "augmentum[image-cpu]",
+    "pytest==8.3.5",
+    "pytest-asyncio==0.24.0",
+    "pytest-httpx==0.34.0",
+    "respx>=0.22.0",
+    "ruff==0.8.6",
+    "coverage==7.6.12",
+]
+
+[project.scripts]
+augmentum = "augmentum.main:main"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
+markers = [
+    "live: requires running external services (deselect with '-m not live')",
+    "contract: external service contract validation",
+    "slow: tests taking >5s (benchmarks, stress)",
+]
+
+[tool.coverage.run]
+source = ["augmentum"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 80

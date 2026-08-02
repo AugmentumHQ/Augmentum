@@ -1,0 +1,24 @@
+{
+  "name": "augmentum_baseline",
+  "workspace_id": "45f1e36d-1b8f-42a0-bdcb-fde282363b30",
+  "workspace_name": "augmentum-self-test",
+  "notes": [
+    "Smoke-grade baseline against the augmentum-self-test workspace",
+    "(which contains real Augmentum source at /workspace/augmentum).",
+    "",
+    "expected_findings is empty — this fixture is used as a 'pipeline",
+    "completes end-to-end' smoke test, not a correctness regression.",
+    "Once we capture a baseline run, replace [] with the high-confidence",
+    "findings the model reliably reproduces (planner+detector seeded",
+    "from the same model + prompt should produce them deterministically).",
+    "",
+    "Suggested smoke command:",
+    "  python scripts/bug_finder_test_bench.py \\",
+    "    --workspace-id 45f1e36d-1b8f-42a0-bdcb-fde282363b30 \\",
+    "    --model deepseek-v4-pro \\",
+    "    --max-chunks 6 \\",
+    "    --focus-paths augmentum/auth,augmentum/proxy \\",
+    "    --fixture tests/bug_finder_bench_fixtures/augmentum_baseline.json"
+  ],
+  "expected_findings": []
+}

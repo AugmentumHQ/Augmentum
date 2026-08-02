@@ -1,0 +1,73 @@
+# Browser sidecar overlay — persistent agent-browser daemon + Chrome for
+# Testing, shared by coder browser tools (and, later, companion browse /
+# research / game probes). Opt-in via .augmentum.conf, never auto-enabled.
+#
+#   start.bat / start.sh pick this up when listed in .augmentum.conf:
+#     COMPOSE_FILES="compose.yaml compose.browser.yaml"
+#
+# Why a sidecar (not per-workspace, not augmentum-main): see
+# docs/superpowers/specs/2026-07-16-agent-browser-sidecar-design.md.
+# Augmentum drives it by exec'ing the agent-browser CLI inside this
+# container through docker-proxy (EXEC=1) — no ports are exposed; the
+# CLI↔daemon socket never leaves the container.
+services:
+  browser:
+    build:
+      context: .
+      dockerfile: Dockerfile.browser
+      args:
+        # start.sh/start.bat export this from the AGENT_BROWSER_VERSION
+        # pin file at repo root (llama-server discipline: verify the arg
+        # actually reaches the build — don't trust the Dockerfile default).
+        AGENT_BROWSER_VERSION: ${AGENT_BROWSER_VERSION:-0.32.1}
+    restart: unless-stopped
+    labels:
+      - autoheal=true
+      # Discovery label: augmentum finds this container via the Docker API
+      # by compose service name; the label makes that robust across
+      # project-name prefixes.
+      - augmentum.browser_sidecar=true
+    networks:
+      # default = reach augmentum-main services; workspace_net = reach
+      # coder workspace dev servers by container IP (the vantage rewrite
+      # in coder/browser_sidecar.py targets these IPs).
+      - default
+      - workspace_net
+    extra_hosts:
+      # host.docker.internal on plain-Linux engines (Docker Desktop injects
+      # it automatically) — the ATP browser tools rewrite harness-side
+      # localhost URLs to this name, and the CA acceptance nav uses it.
+      - "host.docker.internal:host-gateway"
+    volumes:
+      # Caddy's cert volume, read-only: the entrypoint imports the public
+      # root CA(s) into Chrome's NSS store so https://host.docker.internal
+      # :6443 verifies without ignoring cert errors. Private keys on the
+      # volume are 0600 root — unreadable to the sidecar's uid-1000 user.
+      # (caddy_data is declared in compose.yaml; this file is an overlay.)
+      - caddy_data:/caddy-ca:ro
+    security_opt:
+      - no-new-privileges:true
+    # Chromium needs a real /dev/shm or it OOMs rendering heavy pages.
+    shm_size: "1g"
+    environment:
+      # Browser + daemon exit after 5 min idle; container stays as a
+      # near-zero-cost exec target.
+      - AGENT_BROWSER_IDLE_TIMEOUT_MS=${AGENT_BROWSER_IDLE_TIMEOUT_MS:-300000}
+      - AGENT_BROWSER_DEFAULT_TIMEOUT=${AGENT_BROWSER_DEFAULT_TIMEOUT:-25000}
+      # Cert errors are NOT ignored by default anymore: the entrypoint
+      # (Dockerfile.browser) imports the Augmentum root CA from the
+      # ro-mounted caddy_data volume into Chrome's NSS store, so
+      # https://host.docker.internal:6443 verifies properly and external
+      # browsing keeps MITM protection. Flip to 1 only as a break-glass
+      # if the CA import ever regresses.
+      - AGENT_BROWSER_IGNORE_HTTPS_ERRORS=${AGENT_BROWSER_IGNORE_HTTPS_ERRORS:-0}
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+          pids: 512
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "2"

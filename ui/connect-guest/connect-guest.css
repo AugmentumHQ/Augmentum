@@ -1,0 +1,102 @@
+:root {
+  --cg-bg: #0d0f14;
+  --cg-surface: #161922;
+  --cg-surface-2: #1d212c;
+  --cg-line: #2a2f3c;
+  --cg-text: #e8ebf2;
+  --cg-dim: #9aa3b2;
+  --cg-accent: #6ea8fe;
+  --cg-mine: #2b5fb0;
+  --cg-err: #f87171;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--cg-bg);
+  color: var(--cg-text);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+.cg-wrap { height: 100%; display: flex; flex-direction: column; }
+
+[hidden] { display: none !important; }
+
+.cg-card {
+  margin: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 32px;
+}
+.cg-title { font-size: 19px; font-weight: 650; }
+.cg-sub { color: var(--cg-dim); font-size: 14px; max-width: 320px; }
+.cg-status-dot { width: 10px; height: 10px; border-radius: 50%; align-self: center; }
+.cg-err { background: var(--cg-err); }
+.cg-spinner {
+  width: 28px; height: 28px; align-self: center;
+  border: 3px solid var(--cg-line); border-top-color: var(--cg-accent);
+  border-radius: 50%; animation: cg-spin 0.8s linear infinite;
+}
+@keyframes cg-spin { to { transform: rotate(360deg); } }
+
+/* active surface */
+.cg-app { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.cg-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border-bottom: 1px solid var(--cg-line);
+  background: var(--cg-surface);
+}
+.cg-host { display: flex; align-items: center; gap: 10px; }
+.cg-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--cg-accent); color: #0b1020;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+}
+.cg-host-name { font-weight: 650; }
+.cg-host-sub { color: var(--cg-dim); font-size: 12px; }
+.cg-call {
+  background: var(--cg-accent); color: #0b1020;
+  border: none; border-radius: 20px; padding: 8px 18px;
+  font-weight: 650; cursor: pointer;
+}
+.cg-call:disabled { opacity: 0.6; }
+
+.cg-thread {
+  flex: 1; min-height: 0; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 16px;
+}
+.cg-msg {
+  max-width: 78%; padding: 8px 12px; border-radius: 14px;
+  font-size: 15px; word-wrap: break-word; white-space: pre-wrap;
+}
+.cg-mine { align-self: flex-end; background: var(--cg-mine); border-bottom-right-radius: 4px; }
+.cg-theirs { align-self: flex-start; background: var(--cg-surface-2); border-bottom-left-radius: 4px; }
+
+.cg-composer {
+  display: flex; gap: 8px; padding: 12px;
+  border-top: 1px solid var(--cg-line); background: var(--cg-surface);
+}
+.cg-composer textarea {
+  flex: 1; resize: none; max-height: 120px;
+  background: var(--cg-surface-2); border: 1px solid var(--cg-line);
+  border-radius: 18px; padding: 9px 14px; color: var(--cg-text);
+  font: inherit; outline: none;
+}
+.cg-composer textarea:focus { border-color: var(--cg-accent); }
+.cg-send {
+  background: var(--cg-accent); color: #0b1020; border: none;
+  border-radius: 18px; padding: 0 18px; font-weight: 650; cursor: pointer;
+}
+
+.cg-install {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px 14px; background: var(--cg-surface-2);
+  border-top: 1px solid var(--cg-line); font-size: 13px; color: var(--cg-dim);
+}
+.cg-install button {
+  background: transparent; border: 1px solid var(--cg-accent); color: var(--cg-accent);
+  border-radius: 8px; padding: 6px 14px; font-weight: 600; cursor: pointer;
+}

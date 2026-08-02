@@ -1,0 +1,88 @@
+# Browser sidecar — vercel-labs/agent-browser (pinned) + Chrome for Testing.
+#
+# Vendored-binary model, same discipline as llama-server: the pin lives in
+# AGENT_BROWSER_VERSION at repo root; start.sh/start.bat pass it as a build
+# arg. Bump the pin + rebuild + run the browser acceptance harness to
+# upgrade. See docs/superpowers/specs/2026-07-16-agent-browser-sidecar-design.md.
+#
+# Node is present ONLY as the npm delivery channel for the Rust binary —
+# the agent-browser daemon itself has no Node runtime dependency.
+FROM node:22-slim
+
+ARG AGENT_BROWSER_VERSION=0.32.1
+
+# Chromium's runtime libraries + fonts. `agent-browser install --with-deps`
+# can't be used here — it shells out to `sudo apt-get`, and node:22-slim has
+# no sudo (verified failing 2026-07-16). This is the exact package list
+# --with-deps tries to install, done explicitly: cacheable and auditable.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libxcb-shm0 libx11-xcb1 libx11-6 libxcb1 libxext6 libxrandr2 \
+        libxcomposite1 libxcursor1 libxdamage1 libxfixes3 libxi6 \
+        libgtk-3-0 libpangocairo-1.0-0 libpango-1.0-0 libatk1.0-0 \
+        libcairo-gobject2 libcairo2 libgdk-pixbuf-2.0-0 libxrender1 \
+        libasound2 libfreetype6 libfontconfig1 libdbus-1-3 libnss3 \
+        libnspr4 libatk-bridge2.0-0 libdrm2 libxkbcommon0 libatspi2.0-0 \
+        libcups2 libxshmfence1 libgbm1 \
+        fonts-noto-color-emoji fonts-freefont-ttf \
+        libnss3-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g agent-browser@${AGENT_BROWSER_VERSION} \
+    && agent-browser install \
+    && npm cache clean --force
+
+# Non-root: the browser executes arbitrary page JS; don't hand it root
+# inside the container on top of --no-sandbox. node:22-slim already owns
+# uid 1000 as `node` — reuse it (a `useradd -u 1000` here silently fails).
+# Chrome for Testing lands in /root/.agent-browser/browsers during the
+# build (verified 2026-07-16); relocate it to the runtime user's home —
+# agent-browser resolves it from ~/.agent-browser/browsers.
+RUN mkdir -p /home/node/.agent-browser /screenshots \
+    && cp -r /root/.agent-browser/browsers /home/node/.agent-browser/ \
+    && chown -R node:node /home/node /screenshots
+
+USER node
+ENV HOME=/home/node
+WORKDIR /home/node
+
+# The daemon auto-spawns on first CLI call and exits after idle timeout;
+# the container just needs to stay alive as an exec target. Sleep-loop
+# entrypoint keeps it at ~zero cost when unused.
+ENV AGENT_BROWSER_IDLE_TIMEOUT_MS=300000
+
+# Entrypoint: import Augmentum's local root CA(s) into Chrome's NSS store
+# (~/.pki/nssdb) so https://host.docker.internal:6443 (caddy front door)
+# verifies properly — replaces the old AGENT_BROWSER_IGNORE_HTTPS_ERRORS=1
+# blanket bypass. compose.browser.yaml ro-mounts the caddy_data volume at
+# /caddy-ca; /caddy-ca/ca.crt is the "Augmentum Local Root CA" that signs
+# the :6443 leaf (caddy's internal-PKI root is also tried in case the
+# custom PKI is ever removed — it's 0600 root today, so it's skipped by
+# the -r check). Private keys on that volume are 0600 root: unreadable to
+# this uid-1000 user, so the ro mount exposes public certs only.
+USER root
+RUN printf '%s\n' \
+        '#!/bin/sh' \
+        'if command -v certutil >/dev/null 2>&1; then' \
+        '  mkdir -p "$HOME/.pki/nssdb"' \
+        '  [ -f "$HOME/.pki/nssdb/cert9.db" ] || certutil -d sql:"$HOME/.pki/nssdb" -N --empty-password' \
+        '  for crt in /caddy-ca/ca.crt /caddy-ca/caddy/pki/authorities/local/root.crt; do' \
+        '    [ -r "$crt" ] || continue' \
+        '    name="augmentum-$(basename "$crt")"' \
+        '    certutil -d sql:"$HOME/.pki/nssdb" -D -n "$name" 2>/dev/null || true' \
+        '    if certutil -d sql:"$HOME/.pki/nssdb" -A -t "C,," -n "$name" -i "$crt"; then' \
+        '      echo "imported CA: $crt as $name"' \
+        '    else' \
+        '      echo "CA import FAILED: $crt" >&2' \
+        '    fi' \
+        '  done' \
+        'fi' \
+        'exec "$@"' \
+        > /usr/local/bin/browser-entrypoint.sh \
+    && chmod 755 /usr/local/bin/browser-entrypoint.sh
+USER node
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD agent-browser --version || exit 1
+
+ENTRYPOINT ["/usr/local/bin/browser-entrypoint.sh"]
+CMD ["sleep", "infinity"]

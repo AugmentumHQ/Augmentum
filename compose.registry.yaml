@@ -1,0 +1,35 @@
+# LAN image registry on the Home Main (class-1) so fabric NODES pull prebuilt
+# augmentum + llama-server images instead of compiling llama-server (~30-50min)
+# on a LLAMA_SERVER_VERSION / deps bump. MAIN-ONLY overlay — add it to the
+# main's .augmentum.conf. Nodes never run this service; they set
+# AUGMENTUM_REGISTRY=<main-host>:5000 in their .env and use compose.dev-bind.yaml.
+#
+# Publish images into it with scripts/publish-images.sh (run on the main) after
+# a build or an upgrade_llama_server.sh bump. LAN analog of build-images.yml.
+#
+# SECURITY: plain HTTP, exposed on the LAN by design (nodes must reach it) —
+# same trust posture as serve-git.sh, fine for a trusted home LAN. A rogue host
+# answering on this port would serve images every node runs as root, so on an
+# untrusted network front it with TLS (reuse Caddy's CA) or a management VLAN.
+# Each node must add "<main-host>:5000" to /etc/docker/daemon.json
+# insecure-registries (one-time) and restart dockerd.
+services:
+  registry:
+    image: registry:2
+    restart: unless-stopped
+    ports:
+      # 0.0.0.0 by design — nodes on the LAN must reach it. Override with
+      # AUGMENTUM_REGISTRY_BIND_HOST (e.g. a management-VLAN IP) to narrow it.
+      - "${AUGMENTUM_REGISTRY_BIND_HOST:-0.0.0.0}:5000:5000"
+    volumes:
+      - registry_data:/var/lib/registry
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "2"
+    # No mem_limit by default. This is third-party software whose appetite
+    # depends on how YOU use it (concurrent pulls across your fleet) — add one
+    # here only from a measurement of your own instance.
+
+volumes:
+  registry_data:

@@ -1,0 +1,316 @@
+{
+  "lang": "es",
+  "version": "1.0.0",
+  "name": "Spanish Grammar Drill",
+  "credits": "Hand-curated to complement the vocab path. Pedagogically sequenced from concrete (present indicative) to abstract (subjunctive). Verb patterns checked against RAE conjugation tables; common-error notes drawn from published L2-Spanish error corpora.",
+  "license": "CC BY 4.0",
+  "units": [
+    {
+      "id": "es-gram-01-present-ar",
+      "title": "Present tense — regular -ar verbs",
+      "level": "A1",
+      "goal": "Conjugate any regular -ar verb in the present indicative.",
+      "explanation": "Spanish regular -ar verbs follow a single pattern. Drop the -ar from the infinitive and add the personal ending. This pattern covers roughly half of all Spanish verbs.",
+      "pattern": {
+        "infinitive": "hablar",
+        "stem": "habl",
+        "endings": {"yo": "-o", "tú": "-as", "él/ella/usted": "-a", "nosotros": "-amos", "vosotros": "-áis", "ellos/ustedes": "-an"}
+      },
+      "examples": [
+        {"target": "Yo hablo español.", "en": "I speak Spanish."},
+        {"target": "¿Tú trabajas aquí?", "en": "Do you work here?"},
+        {"target": "Estudiamos por la noche.", "en": "We study at night."},
+        {"target": "Mis padres viajan a México.", "en": "My parents travel to Mexico."},
+        {"target": "Vosotros escucháis música.", "en": "You (pl.) listen to music."}
+      ],
+      "common_errors": [
+        "Forgetting the accent on the vosotros form (-áis, not -ais)",
+        "Adding a subject pronoun when none is needed — 'Hablo español' is complete; 'yo' is for emphasis",
+        "Using English-style auxiliary 'do/does' — 'Do you work?' is just '¿Trabajas?', not '¿Tú haces trabajar?'"
+      ],
+      "drill_words": ["hablar", "trabajar", "estudiar", "comprar", "escuchar", "preguntar", "esperar", "viajar", "enseñar", "necesitar"]
+    },
+    {
+      "id": "es-gram-02-present-er-ir",
+      "title": "Present tense — regular -er and -ir verbs",
+      "level": "A1",
+      "goal": "Conjugate any regular -er or -ir verb in the present indicative.",
+      "explanation": "Regular -er and -ir verbs share endings in four of six persons. They only differ in the nosotros and vosotros forms: -emos/-éis for -er, -imos/-ís for -ir. Once you learn one pattern, the other is a small mutation.",
+      "pattern": {
+        "infinitive": "comer / vivir",
+        "stem": "com / viv",
+        "endings": {"yo": "-o / -o", "tú": "-es / -es", "él/ella/usted": "-e / -e", "nosotros": "-emos / -imos", "vosotros": "-éis / -ís", "ellos/ustedes": "-en / -en"}
+      },
+      "examples": [
+        {"target": "Yo como pan todos los días.", "en": "I eat bread every day."},
+        {"target": "Vivimos en una casa pequeña.", "en": "We live in a small house."},
+        {"target": "¿Comprendes la pregunta?", "en": "Do you understand the question?"},
+        {"target": "Mis hijos escriben cartas a la abuela.", "en": "My children write letters to grandma."},
+        {"target": "Vosotros vivís muy cerca.", "en": "You (pl.) live very close."}
+      ],
+      "common_errors": [
+        "Using -ar endings on -er/-ir verbs ('yo como', not 'yo coma')",
+        "Mixing nosotros forms — 'comemos' (we eat) vs 'vivimos' (we live); never 'comimos' for present",
+        "Dropping the accent on -éis / -ís for vosotros"
+      ],
+      "drill_words": ["comer", "beber", "leer", "comprender", "aprender", "vivir", "escribir", "abrir", "recibir", "decidir"]
+    },
+    {
+      "id": "es-gram-03-ser-vs-estar",
+      "title": "Ser vs Estar — choosing the right 'to be'",
+      "level": "A1",
+      "goal": "Pick ser or estar correctly in the most common contexts.",
+      "explanation": "Spanish splits English 'to be' into two verbs. Ser describes identity, origin, defining traits and time. Estar describes location, mood, ongoing condition, and the result of a change. The mnemonic DOCTOR (Description, Occupation, Characteristic, Time, Origin, Relationship) covers ser; PLACE (Position, Location, Action in progress, Condition, Emotion) covers estar.",
+      "pattern": {
+        "infinitive": "ser / estar",
+        "stem": "(irregular)",
+        "endings": {"yo": "soy / estoy", "tú": "eres / estás", "él/ella/usted": "es / está", "nosotros": "somos / estamos", "vosotros": "sois / estáis", "ellos/ustedes": "son / están"}
+      },
+      "examples": [
+        {"target": "Soy profesor. (occupation → ser)", "en": "I am a teacher."},
+        {"target": "Estoy cansado. (temporary state → estar)", "en": "I'm tired."},
+        {"target": "El libro es interesante. (defining trait → ser)", "en": "The book is interesting."},
+        {"target": "La comida está fría. (condition → estar)", "en": "The food is cold."},
+        {"target": "Madrid está en España, pero es la capital. (location → estar; identity → ser)", "en": "Madrid is in Spain, but it's the capital."}
+      ],
+      "common_errors": [
+        "Using ser for location of objects/people — 'El libro está en la mesa', never 'es en la mesa'",
+        "Using estar for nationality or profession — 'Soy mexicano' (ser), not 'Estoy mexicano'",
+        "Same adjective changes meaning: 'Es aburrido' (he is boring) vs 'Está aburrido' (he is bored). Bueno, malo, listo, rico all behave this way."
+      ],
+      "drill_words": ["ser", "estar", "ser bueno", "estar bien", "ser listo", "estar listo", "ser rico", "estar rico", "ser aburrido", "estar aburrido"]
+    },
+    {
+      "id": "es-gram-04-gender-adjectives",
+      "title": "Gender of nouns & adjective agreement",
+      "level": "A1",
+      "goal": "Predict noun gender, choose the matching article, and agree adjectives in gender.",
+      "explanation": "Every Spanish noun is masculine or feminine, even inanimate ones. Nouns ending in -o are usually masculine; -a, -ción, -sión, -dad, -tad are usually feminine. Articles and adjectives must match the noun's gender. Common exceptions: el día, el mapa, el problema (masculine despite -a); la mano, la foto, la radio (feminine despite -o).",
+      "pattern": {
+        "infinitive": "el libro rojo / la casa roja",
+        "stem": "rojo / roja",
+        "endings": {"masculine singular": "-o", "feminine singular": "-a", "masculine plural": "-os", "feminine plural": "-as", "invariant (ends in -e/-consonant)": "no change for gender, +s/+es for plural"}
+      },
+      "examples": [
+        {"target": "El coche rojo es nuevo.", "en": "The red car is new."},
+        {"target": "La casa blanca es grande.", "en": "The white house is big."},
+        {"target": "El problema es difícil. (problema is masculine!)", "en": "The problem is difficult."},
+        {"target": "La mano izquierda. (mano is feminine!)", "en": "The left hand."},
+        {"target": "Mi madre es alta y rubia.", "en": "My mother is tall and blonde."}
+      ],
+      "common_errors": [
+        "Assuming -a always means feminine — 'el día', 'el mapa', 'el problema', 'el tema' break the rule",
+        "Forgetting to agree adjectives — 'la casa blanco' is wrong; must be 'la casa blanca'",
+        "Adjectives ending in -e (grande, inteligente, verde) don't change for gender, but do add -s for plural"
+      ],
+      "drill_words": ["el libro", "la casa", "el día", "la mano", "el problema", "la canción", "la ciudad", "el mapa", "la foto", "el agua"]
+    },
+    {
+      "id": "es-gram-05-plurals",
+      "title": "Plural nouns & adjectives",
+      "level": "A1",
+      "goal": "Form the plural of any noun and matching adjective.",
+      "explanation": "Add -s to nouns ending in a vowel: libro → libros. Add -es to nouns ending in a consonant: ciudad → ciudades. Words ending in -z change to -ces: luz → luces. Words ending in stressed vowels often add -es: rubí → rubíes. Adjectives follow the same rules and must match the noun's number.",
+      "pattern": {
+        "infinitive": "libro / libros, ciudad / ciudades",
+        "stem": "(noun + suffix)",
+        "endings": {"vowel ending": "+s", "consonant ending": "+es", "-z ending": "-z → -ces", "stressed vowel": "+es (some)", "ends in -s, unstressed": "no change (el lunes / los lunes)"}
+      },
+      "examples": [
+        {"target": "Tengo dos libros nuevos.", "en": "I have two new books."},
+        {"target": "Las ciudades son grandes.", "en": "The cities are big."},
+        {"target": "Las luces están encendidas. (luz → luces)", "en": "The lights are on."},
+        {"target": "Los lunes son difíciles. (lunes stays lunes)", "en": "Mondays are hard."},
+        {"target": "Mis hermanas son inteligentes.", "en": "My sisters are intelligent."}
+      ],
+      "common_errors": [
+        "Adding -s to consonant-ending nouns — 'ciudads' is wrong; correct is 'ciudades'",
+        "Forgetting the z→c shift — 'luzs' is wrong, 'luces' is correct",
+        "Not agreeing adjectives in number — 'los libros nuevo' should be 'los libros nuevos'",
+        "Pluralizing days ending in -s unnecessarily ('los lunes', not 'los luneses')"
+      ],
+      "drill_words": ["libro", "ciudad", "luz", "lunes", "rey", "hotel", "joven", "país", "café", "menú"]
+    },
+    {
+      "id": "es-gram-06-possessives",
+      "title": "Possessives — short & long forms",
+      "level": "A1",
+      "goal": "Use the short (mi, tu, su) and long (mío, tuyo, suyo) possessive forms correctly.",
+      "explanation": "Short possessives go BEFORE the noun and agree only in number (and gender for nuestro/vuestro). Long possessives go AFTER the noun or stand alone, and agree in both gender and number. 'Su' is ambiguous (his/her/your-formal/their); add 'de él/ella/usted/ellos' to disambiguate.",
+      "pattern": {
+        "infinitive": "mi libro / el libro mío",
+        "stem": "(possessive + noun, or noun + long possessive)",
+        "endings": {"yo (short)": "mi/mis", "tú (short)": "tu/tus", "él/ella/usted (short)": "su/sus", "nosotros (short)": "nuestro/-a/-os/-as", "vosotros (short)": "vuestro/-a/-os/-as", "ellos/ustedes (short)": "su/sus", "long forms": "mío, tuyo, suyo, nuestro, vuestro, suyo (with -a/-os/-as agreement)"}
+      },
+      "examples": [
+        {"target": "Mi casa es pequeña.", "en": "My house is small."},
+        {"target": "Nuestros amigos viven cerca.", "en": "Our friends live nearby."},
+        {"target": "Este libro es mío.", "en": "This book is mine."},
+        {"target": "Un amigo mío llegó ayer.", "en": "A friend of mine arrived yesterday."},
+        {"target": "Su coche es de ella. (clarifying su)", "en": "Her car (literally: her car is hers)."}
+      ],
+      "common_errors": [
+        "Using long form in pre-noun position — 'mío libro' is wrong; should be 'mi libro' or 'el libro mío'",
+        "Forgetting that 'mi' has no gender — 'mi' before any noun, but 'nuestro' agrees in gender",
+        "Assuming 'su' means only 'his' — it can mean his/her/your-formal/their; context or 'de + pronoun' disambiguates"
+      ],
+      "drill_words": ["mi", "tu", "su", "nuestro", "vuestro", "mío", "tuyo", "suyo", "nuestra", "vuestras"]
+    },
+    {
+      "id": "es-gram-07-object-pronouns",
+      "title": "Direct & indirect object pronouns",
+      "level": "A2",
+      "goal": "Replace direct and indirect objects with pronouns, in the correct order and position.",
+      "explanation": "Direct object pronouns (me, te, lo, la, nos, os, los, las) replace 'whom/what' the verb acts on. Indirect objects (me, te, le, nos, os, les) replace 'to whom / for whom'. Both go BEFORE a conjugated verb but can attach to an infinitive or gerund. When both appear together, indirect comes first, and 'le/les + lo/la/los/las' becomes 'se + lo/la/los/las'.",
+      "pattern": {
+        "infinitive": "(verb + object pronoun(s))",
+        "stem": "lo veo / se lo doy",
+        "endings": {"direct (me/you/him-it/her-it/us/you-pl/them-m/them-f)": "me, te, lo, la, nos, os, los, las", "indirect (to me/you/him-her-you/us/you-pl/them)": "me, te, le, nos, os, les", "order with conjugated verb": "indirect before direct, both before verb", "le + lo/la → se + lo/la": "Le doy el libro → Se lo doy"}
+      },
+      "examples": [
+        {"target": "Veo a María. → La veo.", "en": "I see María. → I see her."},
+        {"target": "Compro el libro. → Lo compro.", "en": "I buy the book. → I buy it."},
+        {"target": "Te doy un regalo.", "en": "I give you a gift."},
+        {"target": "Le doy el libro a Juan. → Se lo doy.", "en": "I give the book to Juan. → I give it to him."},
+        {"target": "Voy a comprarlo. (attached to infinitive)", "en": "I'm going to buy it."}
+      ],
+      "common_errors": [
+        "Using 'lo' for a feminine direct object — 'la veo' for 'I see her', not 'lo veo'",
+        "Forgetting le→se before lo/la — 'le lo doy' is ungrammatical; must be 'se lo doy'",
+        "Wrong order — 'lo me das' is wrong; should be 'me lo das' (indirect always first)",
+        "Le/lo confusion (leísmo): 'Lo veo' for masculine person is standard; 'Le veo' is dialectal Spain Spanish only"
+      ],
+      "drill_words": ["me", "te", "lo", "la", "le", "nos", "os", "los", "las", "les", "se lo", "se la"]
+    },
+    {
+      "id": "es-gram-08-reflexive-verbs",
+      "title": "Reflexive verbs — me, te, se",
+      "level": "A2",
+      "goal": "Recognise and conjugate reflexive verbs for daily routine and changes of state.",
+      "explanation": "Reflexive verbs describe actions done to oneself. The infinitive ends in -se: levantarse (to get oneself up), llamarse (to call oneself). Conjugate the verb normally, but place the matching reflexive pronoun (me, te, se, nos, os, se) before the conjugated form. Many become reflexive only to mean a change of state: dormir (to sleep) vs dormirse (to fall asleep).",
+      "pattern": {
+        "infinitive": "levantarse",
+        "stem": "(reflexive pronoun + conjugated verb)",
+        "endings": {"yo": "me levanto", "tú": "te levantas", "él/ella/usted": "se levanta", "nosotros": "nos levantamos", "vosotros": "os levantáis", "ellos/ustedes": "se levantan"}
+      },
+      "examples": [
+        {"target": "Me levanto a las siete.", "en": "I get up at seven."},
+        {"target": "¿Cómo te llamas? — Me llamo Ana.", "en": "What's your name? — My name is Ana."},
+        {"target": "Mi hijo se duerme rápido.", "en": "My son falls asleep quickly."},
+        {"target": "Nos vemos mañana.", "en": "We'll see each other tomorrow."},
+        {"target": "Voy a ducharme. / Me voy a duchar.", "en": "I'm going to shower."}
+      ],
+      "common_errors": [
+        "Forgetting the reflexive pronoun — 'levanto a las siete' is wrong; must be 'me levanto'",
+        "Wrong pronoun for the subject — 'me llamas' (you call me) vs 'te llamas' (your name is)",
+        "Mixing reflexive and non-reflexive meaning — 'duermo' (I sleep) vs 'me duermo' (I fall asleep)",
+        "Forgetting that body parts use the definite article, not a possessive: 'me lavo las manos' (I wash my hands), not 'lavo mis manos'"
+      ],
+      "drill_words": ["levantarse", "llamarse", "ducharse", "vestirse", "acostarse", "dormirse", "lavarse", "peinarse", "sentarse", "irse"]
+    },
+    {
+      "id": "es-gram-09-preterite",
+      "title": "Preterite tense — completed past actions",
+      "level": "A2",
+      "goal": "Conjugate regular verbs and the most common irregulars in the preterite.",
+      "explanation": "The preterite reports a completed action with a defined endpoint: 'I ate', 'we went', 'they finished'. Regular endings: -ar verbs take -é/-aste/-ó/-amos/-asteis/-aron; -er and -ir share -í/-iste/-ió/-imos/-isteis/-ieron. Ser and ir share the same preterite (fui, fuiste, fue…). Hacer is hice, hiciste, hizo (note the z) — the 'tener-style' irregular group (tener→tuve, estar→estuve, poner→puse, poder→pude, saber→supe) all share the same unstressed endings: -e, -iste, -o, -imos, -isteis, -ieron.",
+      "pattern": {
+        "infinitive": "hablar / comer / vivir / ir-ser / hacer",
+        "stem": "habl- / com- / viv- / fu- / hic-",
+        "endings": {"-ar": "-é, -aste, -ó, -amos, -asteis, -aron", "-er/-ir": "-í, -iste, -ió, -imos, -isteis, -ieron", "ser/ir (same forms)": "fui, fuiste, fue, fuimos, fuisteis, fueron", "hacer": "hice, hiciste, hizo, hicimos, hicisteis, hicieron", "tener-style (tuv-, estuv-, pus-, pud-, sup-)": "-e, -iste, -o, -imos, -isteis, -ieron"}
+      },
+      "examples": [
+        {"target": "Ayer hablé con mi madre.", "en": "Yesterday I spoke with my mother."},
+        {"target": "Comimos en un restaurante muy bueno.", "en": "We ate at a very good restaurant."},
+        {"target": "Fui al cine el sábado.", "en": "I went to the cinema on Saturday."},
+        {"target": "¿Qué hiciste anoche?", "en": "What did you do last night?"},
+        {"target": "Tuvimos una reunión larga.", "en": "We had a long meeting."}
+      ],
+      "common_errors": [
+        "Forgetting the accent on -é and -ó — 'hable' (subjunctive) vs 'hablé' (preterite I)",
+        "Same nosotros form for present and preterite in -ar/-ir verbs: 'hablamos' is both 'we speak' and 'we spoke' — context disambiguates",
+        "Confusing fui (ser/ir) and fue (he was / he went) — same form, no way to tell apart without context",
+        "Saying 'hizo' as 'hico' — the c→z spelling change keeps the soft sound before o"
+      ],
+      "drill_words": ["hablé", "comí", "viví", "fui", "fue", "hice", "tuve", "estuve", "puse", "pude"]
+    },
+    {
+      "id": "es-gram-10-imperfect",
+      "title": "Imperfect tense — past habits & descriptions",
+      "level": "A2",
+      "goal": "Conjugate regular and the three irregular imperfect verbs (ser, ir, ver).",
+      "explanation": "The imperfect describes past habits, repeated actions, ongoing background, and 'used to / was -ing' meaning. It has only three irregular verbs (ser, ir, ver); everything else is fully predictable. -ar verbs: -aba/-abas/-aba/-ábamos/-abais/-aban. -er and -ir share -ía/-ías/-ía/-íamos/-íais/-ían.",
+      "pattern": {
+        "infinitive": "hablar / comer / vivir / ser / ir / ver",
+        "stem": "habl- / com- / viv- / er- / ib- / ve-",
+        "endings": {"-ar": "-aba, -abas, -aba, -ábamos, -abais, -aban", "-er/-ir": "-ía, -ías, -ía, -íamos, -íais, -ían", "ser": "era, eras, era, éramos, erais, eran", "ir": "iba, ibas, iba, íbamos, ibais, iban", "ver": "veía, veías, veía, veíamos, veíais, veían"}
+      },
+      "examples": [
+        {"target": "De niño vivía en el campo.", "en": "As a child I lived in the countryside."},
+        {"target": "Mi abuela cocinaba todos los domingos.", "en": "My grandmother used to cook every Sunday."},
+        {"target": "Cuando era joven, iba a la playa.", "en": "When I was young, I would go to the beach."},
+        {"target": "Mientras estudiaba, escuchaba música.", "en": "While I was studying, I would listen to music."},
+        {"target": "Veía televisión cada noche.", "en": "I would watch TV every night."}
+      ],
+      "common_errors": [
+        "Confusing yo and él forms — they're identical (hablaba, comía); subject pronouns or context disambiguate",
+        "Forgetting the accent on -íamos / -íais — 'comiamos' is wrong; correct is 'comíamos'",
+        "Treating ver as fully irregular — only the stem keeps the e (veía, veías) but endings are regular -er/-ir",
+        "Using imperfect for a single completed event — 'I ate at 8' is 'comí a las 8' (preterite), not 'comía a las 8'"
+      ],
+      "drill_words": ["hablaba", "comía", "vivía", "era", "iba", "veía", "tenía", "estaba", "trabajaba", "estudiaba"]
+    },
+    {
+      "id": "es-gram-11-preterite-vs-imperfect",
+      "title": "Preterite vs Imperfect — when to use each",
+      "level": "A2",
+      "goal": "Decide between preterite and imperfect when narrating in the past.",
+      "explanation": "Preterite reports what HAPPENED: completed, bounded, single events (or repeated a stated number of times). Imperfect describes what WAS happening or USED to happen: background, habits, descriptions, age, weather, time, and ongoing emotional/physical states. A narrative usually combines them: imperfect sets the scene, preterite advances the plot. Time markers help: ayer/anoche/de repente/dos veces → preterite; siempre/cada día/mientras/cuando era → imperfect.",
+      "pattern": {
+        "infinitive": "(choice between two past tenses)",
+        "stem": "—",
+        "endings": {"preterite (what happened)": "completed action, defined endpoint, sequence of events", "imperfect (what was happening)": "habit, description, ongoing state, scene-setting, age/time/weather in the past"}
+      },
+      "examples": [
+        {"target": "Cuando era niño, vivía en México. (description, habit → imperfect)", "en": "When I was a child, I lived in Mexico."},
+        {"target": "Ayer fui al cine y vi una película. (completed events → preterite)", "en": "Yesterday I went to the cinema and watched a film."},
+        {"target": "Llovía cuando salí de casa. (background + event → imperfect + preterite)", "en": "It was raining when I left the house."},
+        {"target": "Tenía diez años cuando me mudé. (age + event → imperfect + preterite)", "en": "I was ten when I moved."},
+        {"target": "Mi madre cocinaba mientras yo estudiaba. (parallel ongoing → both imperfect)", "en": "My mother was cooking while I was studying."}
+      ],
+      "common_errors": [
+        "Using preterite for description/scene — 'It was sunny' is 'hacía sol', not 'hizo sol' (unless reporting a brief change)",
+        "Using imperfect for a single completed action — 'I ate breakfast at 8' is 'desayuné', not 'desayunaba'",
+        "Some verbs shift meaning: conocer-preterite = met for first time, conocer-imperfect = used to know; saber-preterite = found out, saber-imperfect = knew; poder-preterite = managed to, poder-imperfect = was able to",
+        "Forgetting that 'cuando + imperfect' usually pairs with preterite for the interrupting event"
+      ],
+      "drill_words": ["fui / iba", "comí / comía", "vi / veía", "tuve / tenía", "supe / sabía", "conocí / conocía", "pude / podía", "quise / quería", "estuve / estaba", "hablé / hablaba"]
+    },
+    {
+      "id": "es-gram-12-subjunctive-intro",
+      "title": "Subjunctive intro — querer que, esperar que (B1 bridge)",
+      "level": "B1",
+      "goal": "Recognise the present subjunctive and use it after triggers of desire and emotion.",
+      "explanation": "The subjunctive expresses subjectivity: wishes, doubt, emotion, judgments about a second subject. The most reliable A2-to-B1 trigger pattern is 'verb of wish/emotion + que + different subject + subjunctive'. To form regular present subjunctive: take the yo form of the present indicative, drop the -o, and add the 'opposite-vowel' endings (-ar verbs take -e endings; -er/-ir verbs take -a endings). Irregulars: ser → sea, ir → vaya, haber → haya, saber → sepa, dar → dé, estar → esté.",
+      "pattern": {
+        "infinitive": "hablar / comer / vivir",
+        "stem": "habl- / com- / viv-",
+        "endings": {"-ar (subjunctive)": "-e, -es, -e, -emos, -éis, -en", "-er/-ir (subjunctive)": "-a, -as, -a, -amos, -áis, -an", "triggers": "querer que, esperar que, desear que, ojalá, es importante que, me alegra que"}
+      },
+      "examples": [
+        {"target": "Quiero que hables más despacio.", "en": "I want you to speak more slowly."},
+        {"target": "Espero que comas bien.", "en": "I hope you eat well."},
+        {"target": "Ojalá llueva mañana.", "en": "I hope it rains tomorrow."},
+        {"target": "Es importante que estudies todos los días.", "en": "It's important that you study every day."},
+        {"target": "Me alegra que estés aquí.", "en": "I'm glad you're here."}
+      ],
+      "common_errors": [
+        "Using subjunctive when the subject doesn't change — 'Quiero hablar español' (same subject → infinitive), not 'Quiero que hable español'",
+        "Using indicative after 'que' with a wish — 'Quiero que hablas' is wrong; must be 'Quiero que hables'",
+        "Forgetting that 'ojalá' always triggers subjunctive, never indicative",
+        "Treating 'creo que' as a subjunctive trigger — in affirmative it takes indicative ('Creo que es bueno'); only negated ('No creo que sea bueno') triggers subjunctive"
+      ],
+      "drill_words": ["hable", "coma", "viva", "sea", "esté", "vaya", "tenga", "haga", "pueda", "sepa"]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Augmentum · Now Playing</title>
+  <link rel="stylesheet" href="cast-audio.css">
+</head>
+<body>
+  <!-- Album-art layer + scrim for legibility. Falls back to the
+       editorial gradient if no cover is available. -->
+  <div class="art-blur" data-ca-art-blur aria-hidden="true"></div>
+  <div class="art-scrim" aria-hidden="true"></div>
+
+  <main class="stage">
+    <figure class="cover">
+      <img class="cover-img" data-ca-cover alt="" />
+    </figure>
+
+    <div class="meta">
+      <div class="meta-overline" data-ca-source>—</div>
+      <h1 class="meta-title" data-ca-title>Loading…</h1>
+      <div class="meta-sub" data-ca-author>—</div>
+    </div>
+
+    <div class="transport">
+      <div class="transport-time">
+        <span data-ca-elapsed>0:00</span>
+        <span class="transport-time-sep">/</span>
+        <span data-ca-duration>—:—</span>
+      </div>
+      <div class="transport-bar" data-ca-bar>
+        <div class="transport-bar-fill" data-ca-bar-fill></div>
+      </div>
+    </div>
+
+    <div class="vu" data-ca-vu aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </main>
+
+  <!-- The actual audio element. Hidden — the surrounding UI is the
+       visual. autoplay + playsinline so it starts on cast without
+       a user gesture (which the TV can't provide anyway). -->
+  <audio data-ca-audio autoplay playsinline preload="auto"></audio>
+
+  <script type="module" src="cast-audio.js"></script>
+</body>
+</html>

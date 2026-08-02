@@ -1,0 +1,2477 @@
+/* ==========================================================================
+   Library — three-pane shell
+   ==========================================================================
+
+   Three-pane layout (sidebar / main / detail) themed by the user's chosen
+   palette (data-theme="dark|light|midnight|sepia"). Every color reads from
+   the global theme tokens defined in themes.css — --bg, --surface,
+   --surface-hover, --text-primary, --text-secondary, --text-muted,
+   --text-tertiary, --border, --border-light, --accent, --accent-hover,
+   --accent-subtle — so the surface tracks the rest of Augmentum on every
+   theme switch with no scoped overrides.
+
+   ────────────────────────────────────────────────────────────────────────
+   Overlay shell                   fixed below global header, --bg backdrop
+   Three-pane layout               sidebar / main / detail collapse points
+   Pane chrome                     sidebar / main / detail base styling
+   Detail actions + overflow menu  primary / icon-row / more popover
+   Bulk select                     row checkbox + footer delete bar
+   Command palette                 ⌘K / Ctrl+K launcher
+   Reduced motion                  honors prefers-reduced-motion
+   ========================================================================== */
+
+
+/* ── Overlay shell ───────────────────────────────────────────────── */
+/*
+ * No scoped token overrides — the library inherits the user's chosen
+ * theme (data-theme="dark|light|midnight|sepia" on <html>) via
+ * themes.css. Anything that used to read --atelier-* now reads the
+ * global tokens (--bg, --surface, --surface-hover, --text-primary,
+ * --text-secondary, --text-muted, --text-tertiary, --border,
+ * --border-light, --accent, --accent-hover, --accent-subtle).
+ */
+.lib-overlay {
+  position: fixed;
+  /* Sit BELOW the global header strip (--header-height = 48px) so the
+     library's own header — including the Close button — isn't hidden
+     behind the page-level nav. Keeps the global header (mode picker /
+     voice / settings) visible and usable while Library is open. */
+  inset: var(--header-height, 48px) 0 0 0;
+  z-index: var(--z-overlay, 30);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  overflow: hidden;
+}
+.lib-overlay.hidden { display: none; }
+
+
+/* ── Header strip ────────────────────────────────────────────────── */
+.lib-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-xl);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);   /* opaque so the paper grain doesn't show through */
+}
+.lib-title {
+  margin: 0;
+  font-family: var(--font-editorial);
+  font-size: var(--text-2xl);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  /* Subtle brass underglow on the title — the only place we let brass
+     touch a non-action element. Establishes the brand. */
+  text-shadow: 0 0 14px var(--accent-subtle);
+}
+.lib-header-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+.lib-close {
+  /* Visible by default — full --text-primary + a bordered chip so the
+     "how do I leave?" answer reads at a glance. Earlier iterations used
+     a soft text token with no border, which left the X effectively
+     invisible against the background until hover. */
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--text-sm);
+  transition: color var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out);
+}
+.lib-close:hover {
+  background: var(--surface-hover);
+  border-color: var(--text-primary);
+}
+.lib-close:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+
+/* ── Body / three-pane shell ─────────────────────────────────────── */
+.lib-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.lib-three-pane {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr) 380px;
+  height: 100%;
+  width: 100%;
+}
+
+.lib-pane {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: transparent;
+}
+
+/* Hairlines between panes — 1px at brass-shadow opacity so they're
+   present but never loud. */
+.lib-pane-main {
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+
+.lib-pane-sidebar { padding: var(--space-lg) var(--space-md); }
+.lib-pane-main { padding: var(--space-lg) var(--space-xl); }
+.lib-pane-detail { padding: var(--space-lg) var(--space-lg); }
+
+
+/* ── Sidebar ─────────────────────────────────────────────────────── */
+
+.lib-pane-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* Search input — paper rectangle with brass focus glow. */
+.lib-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+.lib-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  pointer-events: none;
+  display: flex;
+}
+.lib-search-icon svg {
+  width: 100%;
+  height: 100%;
+}
+.lib-search {
+  width: 100%;
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 8px 10px 8px 32px;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  outline: none;
+  transition: border-color var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
+}
+.lib-search::placeholder {
+  color: var(--text-muted);
+}
+.lib-search:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+.lib-search:focus + .lib-search-icon,
+.lib-search-wrap:focus-within .lib-search-icon {
+  color: var(--accent);
+}
+
+/* Sections */
+.lib-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.lib-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.lib-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 6px;
+  padding: 0 var(--space-sm);
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  /* Slightly faded by default — section labels guide, they don't shout. */
+  opacity: 0.85;
+}
+.lib-section-add {
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  padding: 2px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+.lib-section-add svg {
+  width: 14px;
+  height: 14px;
+}
+.lib-section-add:hover {
+  color: var(--accent-hover);
+}
+.lib-section-add:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* Nav rows — the workhorse element. List item with icon + label +
+   optional count, hover/selected states use the atelier rule + a
+   subtle brass left-edge for the selected row. */
+.lib-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  padding: 7px 10px 7px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--line-height-tight);
+  transition: background var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out);
+}
+.lib-nav-item:hover {
+  background: var(--surface);
+  color: var(--text-primary);
+}
+.lib-nav-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* Selected row — 2px brass left edge + warm cream text. The :before
+   pseudo paints the edge so the row itself doesn't need a border-left
+   that would shift its content. */
+.lib-nav-item.selected {
+  background: var(--surface);
+  color: var(--text-primary);
+}
+.lib-nav-item.selected::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 25%;
+  bottom: 25%;
+  width: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+}
+
+/* Per-row accent override (user-defined collections can carry their
+   own brass tint). Falls through to the default brass when unset. */
+.lib-nav-item[style*="--lib-row-accent"].selected::before {
+  background: var(--lib-row-accent, var(--accent));
+}
+
+/* Dynamic collections get a subtle italic to telegraph "this list
+   updates on its own" without needing a chip. */
+.lib-nav-item.dynamic .lib-nav-label {
+  font-style: italic;
+}
+
+.lib-nav-icon {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  opacity: 0.85;
+}
+.lib-nav-icon svg {
+  width: 100%;
+  height: 100%;
+}
+.lib-nav-item:hover .lib-nav-icon,
+.lib-nav-item.selected .lib-nav-icon {
+  opacity: 1;
+}
+
+.lib-nav-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lib-nav-count {
+  flex: 0 0 auto;
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  padding: 1px 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  min-width: 18px;
+  text-align: center;
+}
+.lib-nav-item:hover .lib-nav-count {
+  color: var(--text-secondary);
+  border-color: var(--border-light);
+}
+.lib-nav-item.selected .lib-nav-count {
+  color: var(--accent);
+  border-color: var(--accent-subtle);
+}
+
+
+/* ── Main pane ─────────────────────────────────────────────────────── */
+
+.lib-pane-main {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.lib-main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.lib-main-header {
+  flex: 0 0 auto;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-xl) var(--space-md);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.lib-main-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.lib-main-heading {
+  margin: 0;
+  font-family: var(--font-editorial);
+  font-size: var(--text-xl);
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lib-main-subtitle {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.lib-main-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+.lib-sort-select {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 5px 8px;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+.lib-sort-select:hover { border-color: var(--border-light); }
+.lib-sort-select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.lib-view-toggle {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.lib-view-btn {
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  padding: 5px 8px;
+  display: flex;
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out);
+}
+.lib-view-btn svg {
+  width: 14px;
+  height: 14px;
+}
+.lib-view-btn:hover { color: var(--text-primary); }
+.lib-view-btn.selected {
+  color: var(--accent);
+  background: var(--surface-hover);
+}
+.lib-view-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* ── Body / states ─────────────────────────────────────────────── */
+.lib-main-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: var(--space-lg) var(--space-xl) var(--space-2xl);
+  outline: none;
+}
+.lib-main-body:focus-visible {
+  /* When the body has focus (for keyboard nav), tint the inner border
+     so users see j/k will hit. */
+  box-shadow: inset 0 0 0 2px var(--accent-subtle);
+  border-radius: var(--radius-md);
+}
+
+.lib-main-state {
+  padding: var(--space-2xl) var(--space-xl);
+  text-align: center;
+  color: var(--text-muted);
+}
+.lib-empty-line {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+}
+.lib-empty-hint {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* ── Dashboard (nothing selected) ─────────────────────────────────── */
+.lib-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+.lib-dash-section { display: flex; flex-direction: column; gap: var(--space-sm); }
+.lib-dash-title {
+  margin: 0;
+  font-family: var(--font-editorial);
+  font-size: var(--text-sm);
+  font-style: italic;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.lib-dash-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--space-md);
+}
+
+/* ── Cover variants (cover.js) ───────────────────────────────────────
+ *
+ * Every cover variant fills its parent (.lib-row-cover, .lib-card-cover,
+ * .lib-tile-cover, .lib-detail-hero) so the wrapper owns the dimensions
+ * and the cover scales cleanly from 40px rows to 320px hero posters.
+ */
+
+/* Image covers (cover_url / preview-image / download / thumbnail_url
+   / libretro guess). object-fit: cover so wide screenshots crop to the
+   tile's aspect ratio without distortion. */
+.lib-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: var(--surface);
+}
+
+/* Procedural game SVG cover. preserveAspectRatio="xMidYMid slice" in
+   the markup; here we just guarantee it fills the wrapper. */
+.lib-cover-procedural {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: var(--surface);
+}
+
+/* Tier-4 tinted-icon fallback. Hue comes from the inline --cover-hue
+   custom prop so notes / sheets / slides / docs each get a recognizable
+   wash. Mix with surface so the tint stays subtle on light themes. */
+.lib-cover-tinted {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(
+      145deg,
+      hsl(var(--cover-hue, 220) 35% 26% / 0.30),
+      hsl(var(--cover-hue, 220) 30% 18% / 0.22)
+    ),
+    var(--surface);
+  color: hsl(var(--cover-hue, 220) 55% 78%);
+}
+[data-theme="light"] .lib-cover-tinted,
+[data-theme="sepia"] .lib-cover-tinted {
+  background:
+    linear-gradient(
+      145deg,
+      hsl(var(--cover-hue, 220) 55% 82% / 0.45),
+      hsl(var(--cover-hue, 220) 50% 72% / 0.32)
+    ),
+    var(--surface);
+  color: hsl(var(--cover-hue, 220) 45% 32%);
+}
+.lib-cover-icon {
+  display: flex;
+  width: 38%;
+  max-width: 56px;
+  aspect-ratio: 1 / 1;
+}
+.lib-cover-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Mini representations (paper card / slide thumb / sheet grid).
+   Shared wrapper styling, then variant overrides. */
+.lib-cover-mini {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--surface);
+  color: var(--text-primary);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.lib-cover-mini-badge {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+.lib-cover-mini-badge span {
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  padding: 2px 5px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+.lib-cover-mini-fmt {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Paper-card mini — pdf / docx / md / txt / rst / log / json / epub.
+   Faux ruled lines + a snippet of the description (or display_name) so
+   the cover communicates "text doc with content X" rather than just
+   "doc". */
+.lib-cover-paper {
+  padding: 10px 12px;
+  gap: 0;
+  background:
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--surface) 92%, var(--bg)),
+      var(--surface)
+    );
+}
+.lib-cover-paper-page {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+}
+.lib-cover-paper-rule {
+  height: 1px;
+  background: var(--border);
+  width: 92%;
+}
+.lib-cover-paper-rule:nth-of-type(2) { width: 78%; }
+.lib-cover-paper-rule:nth-of-type(3) { width: 88%; }
+.lib-cover-paper-rule:nth-of-type(4) { width: 72%; }
+.lib-cover-paper-text {
+  position: absolute;
+  inset: 0;
+  font-size: 10px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 8;
+  -webkit-box-orient: vertical;
+  pointer-events: none;
+  padding-right: 4px;
+}
+/* Per-format accent stripe down the left edge — quick visual diff
+   between PDFs (red), EPUBs (amber), markdown (teal), etc. */
+.lib-cover-paper::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--accent);
+  opacity: 0.55;
+}
+.lib-cover-paper[data-fmt="pdf"]::before  { background: #d34c4c; }
+.lib-cover-paper[data-fmt="epub"]::before { background: #d4a85f; }
+.lib-cover-paper[data-fmt="md"]::before,
+.lib-cover-paper[data-fmt="txt"]::before,
+.lib-cover-paper[data-fmt="rst"]::before,
+.lib-cover-paper[data-fmt="log"]::before  { background: #4ec1a8; }
+.lib-cover-paper[data-fmt="json"]::before { background: #c1ba4e; }
+.lib-cover-paper[data-fmt="docx"]::before { background: #5a86d4; }
+
+/* Slide mini — pptx. A faux first-slide layout (title + subtitle +
+   three bullets) reads as "deck" from any size. */
+.lib-cover-slide {
+  padding: 10px 12px;
+  background:
+    radial-gradient(ellipse at 30% 0%, var(--accent-subtle), transparent 60%),
+    var(--surface);
+}
+.lib-cover-slide-frame {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+  padding: 6px 4px;
+}
+.lib-cover-slide-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.lib-cover-slide-subtitle {
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.lib-cover-slide-bullets {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+}
+.lib-cover-slide-bullets span {
+  display: block;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+}
+.lib-cover-slide-bullets span:nth-child(1) { width: 82%; }
+.lib-cover-slide-bullets span:nth-child(2) { width: 68%; }
+.lib-cover-slide-bullets span:nth-child(3) { width: 74%; }
+
+/* Sheet mini — xlsx / csv. A 6×4 grid of cells with ~40% filled
+   (procedurally chosen in cover.js); reads as spreadsheet at every
+   size without needing real data. */
+.lib-cover-sheet {
+  padding: 10px;
+  background:
+    linear-gradient(
+      to bottom right,
+      color-mix(in srgb, var(--success-subtle, var(--accent-subtle)) 50%, transparent),
+      var(--surface)
+    );
+}
+.lib-cover-sheet-grid {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 2px;
+  padding: 4px 2px;
+}
+.lib-cover-sheet-grid span {
+  background: color-mix(in srgb, var(--border) 80%, transparent);
+  border-radius: 1px;
+  min-height: 6px;
+}
+.lib-cover-sheet-grid span.on {
+  background: color-mix(in srgb, var(--accent) 35%, var(--border));
+}
+
+/* Detail-hero variant — when no live iframe and no static image, the
+   hero wraps the same mini representations but with the bigger
+   padding/sizes that the poster afford. */
+.lib-detail-hero-cover {
+  background: transparent;
+}
+.lib-detail-hero-cover .lib-cover-mini {
+  border-radius: inherit;
+}
+.lib-detail-hero-cover .lib-cover-slide-title,
+.lib-detail-hero-cover .lib-cover-paper-text {
+  font-size: 14px;
+  line-height: 1.4;
+}
+.lib-detail-hero-cover .lib-cover-paper-text {
+  -webkit-line-clamp: 14;
+}
+.lib-detail-hero-cover .lib-cover-mini-badge {
+  font-size: 10px;
+  bottom: 8px;
+  right: 8px;
+}
+.lib-detail-hero-cover .lib-cover-icon {
+  width: 26%;
+  max-width: 96px;
+}
+
+/* ── List view (default) ─────────────────────────────────────────── */
+.lib-list-list {
+  display: flex;
+  flex-direction: column;
+}
+.lib-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  background: transparent;
+  border: 0;
+  padding: 10px 12px;
+  text-align: left;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  transition: background var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out);
+}
+.lib-row + .lib-row { border-top: 1px solid var(--border); }
+.lib-row:hover { background: var(--surface); color: var(--text-primary); }
+.lib-row.active {
+  background: var(--surface);
+  color: var(--text-primary);
+}
+.lib-row.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 15%;
+  bottom: 15%;
+  width: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+}
+
+.lib-row-cover {
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  display: flex;
+}
+.lib-row-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.lib-row-title {
+  color: var(--text-primary);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lib-row-sub {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+}
+.lib-row-pin {
+  color: var(--accent);
+  width: 14px;
+  height: 14px;
+  display: flex;
+}
+.lib-row-pin svg { width: 100%; height: 100%; }
+
+
+/* ── Grid view ────────────────────────────────────────────────────── */
+.lib-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-lg);
+}
+.lib-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--text-secondary);
+  text-align: left;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+.lib-card:hover { transform: translateY(-2px); color: var(--text-primary); }
+.lib-card.active { color: var(--text-primary); }
+.lib-card.active .lib-card-cover { box-shadow: 0 0 0 2px var(--accent); }
+.lib-card-cover {
+  display: block;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+.lib-card:hover .lib-card-cover { border-color: var(--accent-subtle); }
+.lib-card-title {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.lib-card-sub {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* ── Cover view (large covers, minimal text) ─────────────────────── */
+.lib-list-cover {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-xl);
+}
+.lib-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: center;
+  color: var(--text-secondary);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+.lib-tile:hover { transform: translateY(-3px); color: var(--text-primary); }
+.lib-tile.active .lib-tile-cover { box-shadow: 0 0 0 2px var(--accent); }
+.lib-tile-cover {
+  display: block;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.lib-tile-title {
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  font-family: var(--font-editorial);
+  font-weight: 500;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+
+/* ── Detail pane ───────────────────────────────────────────────────── */
+
+.lib-pane-detail {
+  display: flex;
+  flex-direction: column;
+}
+
+.lib-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.lib-detail-empty {
+  text-align: center;
+  padding: var(--space-2xl) var(--space-md);
+  color: var(--text-muted);
+}
+.lib-detail-empty-eyebrow {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  color: var(--accent);
+  font-size: var(--text-sm);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-sm);
+}
+.lib-detail-empty-hint {
+  font-size: var(--text-sm);
+}
+
+/* ── Hero ────────────────────────────────────────────────────────── */
+.lib-detail-hero {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  max-height: 360px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  position: relative;
+}
+.lib-detail-preview-iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+}
+.lib-detail-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: var(--bg);
+  display: block;
+}
+
+.lib-detail-head { display: flex; flex-direction: column; gap: 4px; }
+.lib-detail-title {
+  margin: 0;
+  font-family: var(--font-editorial);
+  font-size: var(--text-xl);
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+  line-height: var(--line-height-tight);
+}
+.lib-detail-meta {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Actions ─────────────────────────────────────────────────────── */
+.lib-detail-actions { display: flex; flex-direction: column; gap: var(--space-sm); }
+
+.lib-action-primary {
+  width: 100%;
+  background: var(--accent);
+  color: var(--bg);
+  border: 0;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2),
+              0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  transition: background var(--duration-fast) var(--ease-out),
+              transform var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
+}
+.lib-action-primary:hover {
+  background: var(--accent-hover);
+  /* Tiny lift; restraint reads as confidence. */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--accent-subtle),
+              0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+}
+.lib-action-primary:active { transform: translateY(0); }
+.lib-action-primary:focus-visible {
+  outline: 2px solid var(--accent-hover);
+  outline-offset: 3px;
+}
+
+.lib-action-secondary {
+  display: flex;
+  gap: var(--space-sm);
+}
+.lib-icon-btn {
+  flex: 1 1 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 7px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out);
+}
+.lib-icon-btn svg {
+  width: 16px;
+  height: 16px;
+}
+.lib-icon-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-light);
+}
+.lib-icon-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.lib-icon-btn.pinned {
+  color: var(--accent);
+  border-color: var(--accent-subtle);
+  background: var(--surface-hover);
+}
+.lib-icon-btn.destructive:hover {
+  color: #f6a8a8;
+  border-color: rgba(246, 168, 168, 0.25);
+}
+
+/* ── Overflow menu (More …) ─────────────────────────────────────── */
+.lib-overflow-wrap {
+  position: relative;
+  flex: 1 1 0;
+  display: flex;
+}
+.lib-overflow-wrap .lib-icon-btn { flex: 1 1 auto; }
+
+.lib-overflow-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-xs, 4px));
+  min-width: 200px;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  padding: var(--space-xs, 4px);
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.lib-overflow-menu.hidden { display: none; }
+
+.lib-overflow-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-primary);
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: var(--text-sm, 13px);
+  font-family: inherit;
+  text-align: left;
+  white-space: nowrap;
+}
+.lib-overflow-item svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+.lib-overflow-item:hover {
+  background: var(--surface-hover);
+  border-color: var(--border);
+}
+.lib-overflow-item:hover svg {
+  color: var(--accent);
+}
+.lib-overflow-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* ── Section titles inside detail ───────────────────────────────── */
+.lib-detail-section-title {
+  margin: 0 0 var(--space-sm);
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+/* ── Tags ────────────────────────────────────────────────────────── */
+.lib-tag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+.lib-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 2px 8px 2px 10px;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+.lib-tag-remove {
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  line-height: 1;
+  padding: 0 2px;
+}
+.lib-tag-remove:hover { color: var(--text-primary); }
+.lib-tag-add {
+  background: transparent;
+  border: 1px dashed var(--border-light);
+  color: var(--text-muted);
+  border-radius: var(--radius-full);
+  padding: 2px 10px;
+  font-size: var(--text-xs);
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out);
+}
+.lib-tag-add:hover {
+  color: var(--accent);
+  border-color: var(--accent-subtle);
+}
+.lib-tag-input {
+  background: var(--surface);
+  border: 1px solid var(--accent-subtle);
+  color: var(--text-primary);
+  border-radius: var(--radius-full);
+  padding: 2px 10px;
+  font-size: var(--text-xs);
+  font-family: var(--font-sans);
+  min-width: 100px;
+  outline: none;
+}
+.lib-tag-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-subtle);
+}
+
+/* ── Activity timeline ──────────────────────────────────────────── */
+.lib-activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.lib-activity-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px 0;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border);
+}
+.lib-activity-row:first-child { border-top: 0; }
+.lib-activity-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  opacity: 0.55;
+  flex: 0 0 6px;
+}
+.lib-activity-verb {
+  flex: 1 1 auto;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.lib-activity-when {
+  flex: 0 0 auto;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.lib-activity-empty {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 6px 0;
+}
+
+
+/* ── Command palette (⌘K) ────────────────────────────────────────── */
+
+.lib-cmdk {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-command-palette, 70);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+  animation: lib-cmdk-in var(--duration-fast) var(--ease-decelerate);
+}
+.lib-cmdk.hidden { display: none; }
+@keyframes lib-cmdk-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.lib-cmdk-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.lib-cmdk-panel {
+  position: relative;
+  width: min(640px, 92vw);
+  max-height: 60vh;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4),
+              0 0 0 1px var(--accent-subtle);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  /* The same paper grain as the surface, so it reads as part of the
+     same room rather than a generic modal. */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95 0 0 0 0 0.85 0 0 0 0 0.65 0 0 0 0.025 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 240px 240px;
+  animation: lib-cmdk-pop var(--duration-normal) var(--ease-decelerate);
+}
+@keyframes lib-cmdk-pop {
+  from { opacity: 0; transform: translateY(-6px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.lib-cmdk-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-md) var(--space-md) 42px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.lib-cmdk-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+}
+.lib-cmdk-icon svg { width: 100%; height: 100%; }
+.lib-cmdk-input {
+  flex: 1 1 auto;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+}
+.lib-cmdk-input::placeholder { color: var(--text-muted); }
+.lib-cmdk-hint {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+}
+
+.lib-cmdk-results {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+.lib-cmdk-section {
+  padding: 8px var(--space-md) 4px;
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: var(--text-2xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.8;
+}
+.lib-cmdk-empty {
+  padding: var(--space-lg);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-style: italic;
+}
+.lib-cmdk-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: 8px var(--space-md);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.lib-cmdk-row:hover,
+.lib-cmdk-row.active {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+.lib-cmdk-row.active {
+  border-left: 2px solid var(--accent);
+  padding-left: calc(var(--space-md) - 2px);
+}
+.lib-cmdk-row-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lib-cmdk-row-hint {
+  flex: 0 0 auto;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+
+/* ── Hover preview tilt ─────────────────────────────────────────── */
+.lib-card-cover {
+  transition: border-color var(--duration-fast) var(--ease-out),
+              transform var(--duration-normal) var(--ease-out),
+              box-shadow var(--duration-normal) var(--ease-out);
+}
+.lib-card:hover .lib-card-cover {
+  /* Subtle 1° tilt + 1.02x scale — depth, not a Plex-flashy lift. */
+  transform: rotate(-1deg) scale(1.02);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+.lib-tile-cover {
+  transition: border-color var(--duration-fast) var(--ease-out),
+              transform var(--duration-normal) var(--ease-out),
+              box-shadow var(--duration-normal) var(--ease-out);
+}
+.lib-tile:hover .lib-tile-cover {
+  transform: rotate(1deg) scale(1.025);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lib-card:hover .lib-card-cover,
+  .lib-tile:hover .lib-tile-cover {
+    transform: none;
+  }
+}
+
+
+/* ── Pin promotion pulse ────────────────────────────────────────── */
+.lib-icon-btn.pulse {
+  position: relative;
+}
+.lib-icon-btn.pulse::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--accent);
+  animation: lib-pin-pulse 600ms var(--ease-out);
+  pointer-events: none;
+}
+@keyframes lib-pin-pulse {
+  from {
+    transform: scale(0.85);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+
+/* ── Empty-state illustration polish ────────────────────────────── */
+.lib-detail-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.lib-detail-empty-art {
+  width: 140px;
+  height: 140px;
+  color: var(--text-secondary);
+  opacity: 0.65;
+  margin-bottom: var(--space-sm);
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
+}
+
+
+/* ── Games browse view ───────────────────────────────────────────── */
+
+.lib-games-browse {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.lib-games-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+.lib-games-pill {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+  transition: color var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out);
+}
+.lib-games-pill-label {
+  color: inherit;
+}
+.lib-games-pill-hint {
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+  font-family: var(--font-editorial);
+  font-style: italic;
+  letter-spacing: 0.03em;
+}
+.lib-games-pill:hover { border-color: var(--border-light); color: var(--text-primary); }
+.lib-games-pill.active {
+  /* Raw --accent as label text lands at 3.26:1 on --surface-hover, under
+     AA for text this size. Blending 30% of --text-primary in darkens it
+     on light themes and lightens it on dark ones, so it clears 4.9:1 in
+     all four themes while keeping the accent hue as the selected cue. */
+  color: color-mix(in srgb, var(--accent) 70%, var(--text-primary));
+  border-color: var(--accent);
+  background: var(--surface-hover);
+}
+.lib-games-pill:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.lib-games-subtitle {
+  font-style: italic;
+  font-family: var(--font-editorial);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.lib-games-filterbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+.lib-games-filterbar:empty { display: none; }
+
+.lib-games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-lg);
+}
+
+.lib-game-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+.lib-game-card-cover {
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lib-game-card-cover img,
+.lib-game-card-cover .library-img-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.lib-game-card-body { display: flex; flex-direction: column; gap: 4px; }
+.lib-game-card-title {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lib-game-card-sub {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-style: italic;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.lib-game-card-actions {
+  margin-top: var(--space-xs);
+}
+.lib-game-pin {
+  background: var(--accent);
+  /* --bg is the page backdrop, not an on-accent foreground; it happens
+     to be near-white on light themes but only reaches 4.05:1 here.
+     --accent-contrast is the token that means "text on an accent fill". */
+  color: var(--accent-contrast, #fff);
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 4px 14px;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+.lib-game-pin:hover { background: var(--accent-hover); }
+.lib-game-pin.done {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+.lib-game-pin:disabled { cursor: progress; opacity: 0.7; }
+
+.lib-games-loadmore-wrap {
+  display: flex;
+  /* Wrap so the scrape progress line can take a full row of its own
+     via flex-basis:100% instead of squeezing in beside the buttons. */
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  justify-content: center;
+  padding: var(--space-xl) 0;
+}
+.lib-games-loadmore,
+.lib-games-bios-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+/* Same shape as the BIOS Vault button — both are library-wide
+   maintenance actions and should read as peers, not a primary and a
+   secondary. */
+.lib-games-scrape-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+.lib-games-scrape-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.lib-games-loadmore:hover,
+.lib-games-scrape-btn:not(:disabled):hover,
+.lib-games-bios-btn:hover {
+  border-color: var(--accent);
+}
+/* Progress line. Sits on its own row so a long "Scraping 12/47 —
+   Metroid Fusion" doesn't shove the buttons around as titles change. */
+.lib-games-scrape-status {
+  flex-basis: 100%;
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--text-secondary, var(--text-primary));
+  padding-top: 4px;
+}
+
+
+/* ── Bulk select ────────────────────────────────────────────────── */
+
+.lib-select-toggle {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  transition: color var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out);
+}
+.lib-select-toggle:hover { color: var(--text-primary); }
+.lib-select-toggle.active {
+  color: var(--accent);
+  background: var(--surface-hover);
+}
+.lib-select-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* Per-item check indicator. Hidden until select-mode; reveals as an
+   empty paper-chip, fills brass when selected. */
+.lib-check {
+  display: none;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  flex-shrink: 0;
+  transition: background var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out);
+}
+.lib-main.select-mode .lib-check { display: inline-flex; }
+.lib-main.select-mode .lib-card-cover .lib-check,
+.lib-main.select-mode .lib-tile-cover .lib-check {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+.lib-main.select-mode .lib-card-cover,
+.lib-main.select-mode .lib-tile-cover {
+  position: relative;
+}
+
+.lib-row.selected .lib-check,
+.lib-card.selected .lib-check,
+.lib-tile.selected .lib-check {
+  background: var(--accent);
+  border-color: var(--accent-hover);
+  color: var(--bg);
+}
+
+.lib-row.selected,
+.lib-card.selected,
+.lib-tile.selected {
+  /* Subtle brass tint to confirm selection without shouting. */
+  background: var(--surface-hover);
+}
+.lib-card.selected .lib-card-cover,
+.lib-tile.selected .lib-tile-cover {
+  box-shadow: 0 0 0 2px var(--accent);
+  border-color: var(--accent);
+}
+
+/* In select mode, the "active" outline becomes confusing — suppress it
+   so only the selection ring reads. */
+.lib-main.select-mode .lib-row.active::before { display: none; }
+
+/* Sticky bulk action bar. Sits at the bottom of the main pane. */
+.lib-select-footer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-xl);
+  /* Bottom safe-area so the destructive Delete/Cancel row clears the
+     Android gesture bar / iOS home indicator and stays fully tappable. */
+  padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom, 0px));
+  background: var(--surface);
+  border-top: 1px solid var(--border-light);
+  animation: lib-footer-up var(--duration-fast) var(--ease-decelerate);
+}
+.lib-select-footer.hidden { display: none; }
+@keyframes lib-footer-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+.lib-select-count {
+  font-size: var(--text-sm);
+  font-family: var(--font-editorial);
+  font-style: italic;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+.lib-select-actions { display: flex; gap: var(--space-sm); }
+.lib-select-cancel,
+.lib-select-delete {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out);
+}
+.lib-select-delete {
+  background: rgba(180, 60, 60, 0.85);
+  color: #fff;
+  border-color: rgba(180, 60, 60, 0.9);
+}
+.lib-select-delete:hover { background: rgba(200, 70, 70, 0.95); }
+.lib-select-delete:disabled {
+  background: var(--bg);
+  color: var(--text-muted);
+  border-color: var(--border);
+  cursor: not-allowed;
+}
+.lib-select-cancel:hover { border-color: var(--border-light); }
+
+
+/* ── Back buttons (mobile only) ──────────────────────────────────── */
+
+.lib-back-btn {
+  display: none;             /* shown on phone via @media below */
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  margin-right: var(--space-sm);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+.lib-back-btn:hover { color: var(--text-primary); }
+.lib-back-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* On the detail pane the back button sits in its own slot — different
+   spacing than the main header version. */
+.lib-back-to-main {
+  align-self: flex-start;
+  margin: 0 0 var(--space-sm);
+}
+
+
+/* ── Mobile sheet behaviour ──────────────────────────────────────── */
+
+@media (max-width: 720px) {
+  .lib-back-btn { display: inline-flex; align-items: center; }
+
+  /* Detail pane on mobile slides up from the bottom — feels like a
+     proper sheet rather than a column swap. */
+  .lib-three-pane[data-visible-pane="detail"] .lib-pane-detail {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    background: var(--bg);
+    /* Reuse the same paper texture so the sheet feels continuous. */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95 0 0 0 0 0.85 0 0 0 0 0.65 0 0 0 0.03 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    background-size: 240px;
+    padding: var(--space-md);
+    overflow-y: auto;
+    animation: lib-sheet-up var(--duration-normal) var(--ease-decelerate);
+  }
+  @keyframes lib-sheet-up {
+    from { transform: translateY(8%); opacity: 0; }
+    to   { transform: translateY(0);  opacity: 1; }
+  }
+
+  /* Single-column header looks better with the back button inline. */
+  .lib-main-header { padding: var(--space-md); }
+  .lib-main-controls { gap: var(--space-sm); }
+
+  /* Sort + view toggle stack rather than crowding. */
+  .lib-main-header { flex-wrap: wrap; }
+}
+
+
+/* ── TV / 10-foot UI focus polish ────────────────────────────────── */
+
+/* When the body data attribute marks TV mode, focus rings get thicker
+   and slightly louder so a couch viewer can see what's active. The
+   markup hook is intentionally cheap — anyone wiring a remote can flip
+   `document.body.dataset.lib2Tv = '1'` (or set it permanently for the
+   cast-receiver shell). */
+:root[data-lib-tv="1"] .lib-nav-item:focus-visible,
+:root[data-lib-tv="1"] .lib-row:focus-visible,
+:root[data-lib-tv="1"] .lib-card:focus-visible,
+:root[data-lib-tv="1"] .lib-tile:focus-visible,
+:root[data-lib-tv="1"] .lib-action-primary:focus-visible,
+:root[data-lib-tv="1"] .lib-icon-btn:focus-visible {
+  outline-width: 4px;
+  outline-offset: 4px;
+  box-shadow: 0 0 24px var(--accent-subtle);
+}
+:root[data-lib-tv="1"] {
+  /* Bump body type a notch so 10-foot reads. */
+  --text-base: 1.1rem;
+  --text-sm: 1rem;
+}
+
+
+/* ── Mobile / narrow viewport ────────────────────────────────────── */
+
+/* Tablet: collapse sidebar to a narrower rail, keep detail. */
+@media (max-width: 1100px) {
+  .lib-three-pane {
+    grid-template-columns: 220px minmax(0, 1fr) 320px;
+  }
+}
+
+/* Phone: single-pane stack. The substrate tracks data-visible-pane via
+   showSidebar / showMain / showDetail, which toggles which column is
+   actually rendered. We avoid a full slide-stack transition for v1 —
+   plain swap reads as fast and crisp. */
+@media (max-width: 720px) {
+  .lib-three-pane {
+    grid-template-columns: 1fr;
+  }
+  .lib-pane { display: none; }
+  .lib-pane-main { border: 0; }
+
+  .lib-three-pane[data-visible-pane="sidebar"] .lib-pane-sidebar { display: block; }
+  .lib-three-pane[data-visible-pane="main"]    .lib-pane-main    { display: block; }
+  .lib-three-pane[data-visible-pane="detail"]  .lib-pane-detail  { display: block; }
+
+  /* Phone: ease the side panes' padding so they don't crowd the edges. */
+  .lib-pane-sidebar,
+  .lib-pane-detail {
+    padding: var(--space-md);
+  }
+  .lib-pane-main {
+    padding: var(--space-md) var(--space-md) var(--space-xl);
+  }
+  .lib-header {
+    padding: var(--space-md);
+  }
+}
+
+
+/* ── Legacy browse-card chassis (.library-card-*) ───────────────────
+ *
+ * Streamed-game + emulator browse renderers in library-game-sources.js
+ * still emit .library-card markup with type-specific affordances
+ * (Launch / Worlds buttons, BIOS badges, system chips). Those legacy
+ * class names couldn't be folded into the shared .lib-game-card
+ * renderer without forking the registry, so this block reskins them
+ * onto the user's theme tokens for parity with the new shell.
+ *
+ * Trimmed to the subset library-game-sources.js actually generates —
+ * the larger atelier-flavored ruleset lived in the deleted library.css
+ * and was tied to the legacy tab/grid surface that no longer exists.
+ */
+.lib-games-grid .library-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 8px);
+  overflow: hidden;
+  text-align: left;
+  position: relative;
+  transition: border-color var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out),
+              transform var(--duration-fast) var(--ease-out);
+}
+.lib-games-grid .library-card:hover {
+  border-color: var(--border-light);
+  background: var(--surface-hover);
+  transform: translateY(-1px);
+}
+
+.lib-games-grid .library-card-preview {
+  aspect-ratio: 16 / 9;
+  background: var(--bg-elevated, var(--bg));
+  overflow: hidden;
+  position: relative;
+}
+/* ROM cards get a SQUARE slot, unlike the landscape screenshot sources.
+   libretro's Named_Boxarts are square canvases with the (usually
+   portrait) cover letterboxed inside them — a survey of the loaded
+   covers on a real library came back 512x512 x16, 256x256 x5, ~497x496
+   x3, and nothing landscape at all. In a 16:9 slot `contain` therefore
+   rendered the art at 126x126 inside 224px of width, leaving 56% of the
+   slot as dead background. Matching the slot to the asset reclaims it.
+   Scoped to .is-emulator so streamed/js13k, whose previews really are
+   16:9 screenshots, keep the wide slot. */
+.lib-games-grid .library-card.is-emulator .library-card-preview {
+  aspect-ratio: 1 / 1;
+}
+.lib-games-grid .library-card-preview img,
+.lib-games-grid .library-card-preview canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* `cover` in a 16:9 slot guillotines 3:4 box art — you got a band of
+     the middle of the cover with the logo and the title cropped off.
+     Real console box art is portrait; `contain` shows the whole thing
+     against the elevated slot background. Screenshots (streamed/js13k,
+     already landscape) letterbox by at most a few pixels. The
+     procedural cover is exempt: it's authored to be sliced. */
+  object-fit: contain;
+}
+.lib-games-grid .library-card-preview .library-procedural-cover {
+  object-fit: cover;
+}
+
+.lib-games-grid .library-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px 8px;
+}
+.lib-games-grid .library-card-title {
+  font-size: var(--text-sm, 13px);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  /* Two-line clamp — taglines on these sources frequently push past one. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* The title is a <button> now (rename affordance) but must still look
+   exactly like the text it replaced — strip the UA button chrome and
+   restore left alignment, which button resets to center. */
+.lib-games-grid .library-card-title-rename {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  text-align: left;
+  width: 100%;
+  cursor: text;
+  color: var(--text-primary);
+}
+.lib-games-grid .library-card-title-rename:hover {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+}
+.title-rename-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  padding: 8px 10px;
+  margin: var(--space-sm) 0;
+}
+.title-rename-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.lib-games-grid .library-card-tagline {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.lib-games-grid .library-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+.lib-games-grid .library-card-tag {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--surface-hover);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.lib-games-grid .library-card-actions {
+  display: flex;
+  gap: 6px;
+  padding: 6px 12px 12px;
+  margin-top: auto;
+}
+/* Solid accent primary button. NOTE the token: on an accent FILL the
+   foreground is --accent-contrast ("text drawn on top of accent").
+   --accent-text is the opposite thing — accent-COLOURED text for a
+   normal background (themes.css sets it to #4c5cae, a near-sibling of
+   --accent #6070c2). Pairing it with an accent fill gave ~1.3:1
+   contrast: a blue button with invisible text, readable only on hover
+   because game-surface.css's :hover swapped the fill back to a light
+   tint. The `, #fff` fallback never fired — the var IS defined. */
+.lib-games-grid .library-discover-action {
+  flex: 1 1 0;
+  background: var(--accent);
+  color: var(--accent-contrast, #fff);
+  border: 1px solid var(--accent);
+  font-size: 11px;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm, 4px);
+  cursor: pointer;
+  font-family: inherit;
+}
+.lib-games-grid .library-discover-action + .library-discover-action {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+/* Must restate the fill: game-surface.css loads AFTER this file and its
+   `.library-discover-action:hover` rewrites the background to a light
+   tint. Declaring only `filter` here let that through, so the button
+   changed identity on hover instead of just brightening. */
+.lib-games-grid .library-discover-action:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  filter: brightness(1.06);
+}
+.lib-games-grid .library-discover-action + .library-discover-action:hover {
+  background: transparent;
+  border-color: var(--border);
+}
+
+/* Emulator-specific bits — system badge + stats row. */
+.lib-games-grid .library-card-system-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-light);
+  z-index: 1;
+}
+.lib-games-grid .library-card-stats {
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 0 12px 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+.lib-games-grid .library-card-stat-sep {
+  opacity: 0.5;
+}
+
+/* The "Add ROMs" upload tile — a dashed-border drop target. */
+.lib-games-grid .library-card.is-upload {
+  border-style: dashed;
+  border-color: var(--border-light);
+  background: transparent;
+}
+.lib-games-grid .library-card.is-upload:hover,
+.lib-games-grid .library-card.is-upload.is-drag-over {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+/* Dragging a folder over the card should read as "let go here" — the
+   hover cue alone never fires during a drag. */
+.lib-games-grid .library-card.is-upload.is-drag-over {
+  border-style: solid;
+}
+
+
+/* ── Build an app: live building cards + kickoff modal ───────────── */
+
+/* Strip of in-flight builds pinned at the top of the main body. */
+.lib-builds-strip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.lib-build-card {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-md, 8px);
+  background: var(--surface, var(--bg));
+  padding: var(--space-sm) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+.lib-build-card.is-done      { border-left-color: var(--success, #3fae6b); }
+.lib-build-card.is-error     { border-left-color: var(--danger, #d9534f); }
+.lib-build-card.is-unverified { border-left-color: var(--warning, #e0a23b); }
+.lib-build-card.is-cancelled { border-left-color: var(--text-tertiary); }
+
+.lib-build-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.lib-build-icon {
+  display: inline-flex;
+  color: var(--accent);
+  flex: 0 0 auto;
+}
+.lib-build-card.is-done  .lib-build-icon { color: var(--success, #3fae6b); }
+.lib-build-card.is-unverified .lib-build-icon { color: var(--warning, #e0a23b); }
+.lib-build-card.is-error .lib-build-icon,
+.lib-build-card.is-cancelled .lib-build-icon { color: var(--danger, #d9534f); }
+
+.lib-build-name {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lib-build-model-tag {
+  font-size: var(--text-xs, 11px);
+  color: var(--text-tertiary);
+  background: var(--surface-hover);
+  border-radius: var(--radius-sm);
+  padding: 1px 6px;
+  flex: 0 0 auto;
+}
+.lib-build-x {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+}
+.lib-build-x:hover { background: var(--surface-hover); color: var(--text-primary); }
+
+.lib-build-status {
+  font-size: var(--text-xs, 12px);
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lib-build-card.is-error .lib-build-status { color: var(--danger, #d9534f); }
+.lib-build-card.is-unverified .lib-build-status { color: var(--warning, #e0a23b); }
+
+/* Failed-build recovery: doors back to the work the build saved. */
+.lib-build-recover {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-top: 2px;
+}
+.lib-build-recover-btn {
+  font-size: var(--text-xs, 12px);
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-hover);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.lib-build-recover-btn:hover { background: var(--surface); color: var(--text-primary); }
+.lib-build-recover-btn.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-contrast, #fff);
+}
+.lib-build-recover-btn.primary:hover { filter: brightness(1.05); color: var(--accent-contrast, #fff); }
+.lib-build-recover-btn.ghost { background: transparent; }
+.lib-build-error-detail {
+  margin: 6px 0 0;
+  padding: var(--space-xs) var(--space-sm);
+  max-height: 160px;
+  overflow: auto;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-secondary);
+  background: var(--bg, var(--surface));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.lib-build-error-detail.hidden { display: none; }
+
+/* Spec-derived acceptance checklist (outcome-based verification). */
+.lib-build-behaviors {
+  margin: 6px 0 0;
+  font-size: 12px;
+}
+.lib-build-behaviors > summary {
+  cursor: pointer;
+  color: var(--text-secondary);
+  list-style-position: inside;
+  user-select: none;
+}
+.lib-build-behavior-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.lib-build-behavior {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+  line-height: 1.4;
+}
+.lib-build-behavior-mark {
+  flex: 0 0 auto;
+  width: 1em;
+  font-weight: 700;
+  text-align: center;
+}
+.lib-build-behavior.is-pass .lib-build-behavior-mark { color: var(--success, #3fae6b); }
+.lib-build-behavior.is-fail .lib-build-behavior-mark { color: var(--danger, #d9534f); }
+.lib-build-behavior.is-untested .lib-build-behavior-mark { color: var(--text-tertiary); }
+.lib-build-behavior.is-fail .lib-build-behavior-text { color: var(--text-primary); }
+.lib-build-behavior-text { color: var(--text-secondary); }
+
+/* Indeterminate progress sweep while running. */
+.lib-build-bar {
+  position: relative;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border-light, var(--border));
+  overflow: hidden;
+}
+.lib-build-bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 40%;
+  border-radius: 2px;
+  background: var(--accent);
+  animation: lib-build-sweep 1.3s var(--ease-in-out, ease-in-out) infinite;
+}
+@keyframes lib-build-sweep {
+  0%   { left: -40%; }
+  100% { left: 100%; }
+}
+
+.lib-build-spin { animation: lib-build-rot 0.9s linear infinite; transform-origin: center; }
+@keyframes lib-build-rot { to { transform: rotate(360deg); } }
+
+.lib-build-trail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.lib-build-chip {
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-tertiary);
+  background: var(--surface-hover);
+  border-radius: var(--radius-sm);
+  padding: 1px 5px;
+}
+
+/* Kickoff modal (appended to <body>, above the library overlay). */
+.lib-build-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+}
+.lib-build-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+.lib-build-modal-panel {
+  position: relative;
+  width: min(520px, 100%);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+.lib-build-modal-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: 0;
+  font-family: var(--font-editorial, var(--font-sans));
+  font-size: var(--text-xl);
+  color: var(--text-primary);
+}
+.lib-build-modal-title svg { color: var(--accent); }
+.lib-build-modal-hint {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+.lib-build-input,
+.lib-build-model-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--surface, var(--bg));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  padding: var(--space-sm) var(--space-md);
+  resize: vertical;
+}
+.lib-build-input:focus,
+.lib-build-model-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.lib-build-input-error { border-color: var(--danger, #d9534f); }
+.lib-build-model {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+.lib-build-model-opt { color: var(--text-tertiary); font-weight: 400; }
+.lib-build-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+.lib-build-btn-cancel,
+.lib-build-btn-go {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-lg);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+}
+.lib-build-btn-cancel { background: transparent; color: var(--text-secondary); }
+.lib-build-btn-cancel:hover { background: var(--surface-hover); color: var(--text-primary); }
+.lib-build-btn-go {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg, #fff);
+}
+.lib-build-btn-go:hover { background: var(--accent-hover, var(--accent)); }
+
+
+/* ── Reduced motion ──────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .lib-overlay,
+  .lib-overlay * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

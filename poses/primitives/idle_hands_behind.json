@@ -1,0 +1,35 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "idle_hands_behind",
+  "tags": ["idle", "formal", "attentive", "at-ease"],
+  "description": "Both hands behind back (parade rest / at-ease). Formal listening posture.",
+  "family": "formal_behind",
+  "transitionVia": ["idle_natural"],
+
+  "anchors": {
+    "leftHand": {
+      "type": "region-contact",
+      "region": "lower_back",
+      "tolerance": 0.05,
+      "fingerStyle": "behind_back_L"
+    },
+    "rightHand": {
+      "type": "region-contact",
+      "region": "lower_back",
+      "tolerance": 0.05,
+      "fingerStyle": "behind_back_R"
+    }
+  },
+
+  "body": {
+    "head":  { "pitch": 0 },
+    "spine": { "forwardLean": -2 }
+  },
+
+  "provenance": {
+    "source": "manual",
+    "curatedBy": "maintainer",
+    "createdAt": "2026-05-14",
+    "notes": "behind_back_R has 100% region consensus (→ hip_R). Slight backward spine to read as 'standing tall'."
+  }
+}

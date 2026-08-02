@@ -1,0 +1,271 @@
+/* ============================================================
+   comic-mini-player.css — Floating "paused comic" bubble.
+
+   A draggable circular sticker the user can place anywhere in the
+   viewport. Replaces the previous bottom-docked horizontal strip,
+   which conflicted with the orb nav bar on mobile portrait
+   (invisible behind it) and felt visually heavy on every form
+   factor. Mirrors the Grove orb's float-anywhere pattern so the
+   visual language stays consistent.
+
+   Anatomy (single bubble):
+     - Outer ring: progress fill via conic-gradient
+     - Cover image masked to a circle, inset 2px from the ring
+     - Always-visible X badge top-right, secondary action only
+     - First-appearance label slides out beside the bubble for
+       2.5s on initial mount, then collapses
+
+   Z-index: above var(--z-header) so it clears the orb nav bar.
+   Modal-open: hidden via :has() rules at the bottom — bubble must
+   not float over a fullscreen modal (looks broken).
+   ============================================================ */
+
+/* Host fills the viewport but is pointer-events:none so the bubble
+   is the only interactive surface. Bubble itself is absolutely
+   positioned within via inline left/top set by JS. */
+#comic-mini-player-host {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-header, 30) + 2);
+  pointer-events: none;
+}
+
+/* --- Bubble ------------------------------------------------------- */
+
+.comic-mini-bubble {
+  position: absolute;
+  /* Default position is set by JS based on viewport + chrome. The
+     left/top fallbacks here just keep the bubble visible if JS
+     fails to position it before first paint. */
+  left: auto;
+  top: 40%;
+  right: 16px;
+  width: 64px;
+  height: 64px;
+  pointer-events: auto;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-drag: none;
+  /* No transition on left/top — those are written every frame
+     during drag and must follow the pointer without lag. Transform
+     and shadow get tweened for press / hover feedback. */
+  transition:
+    transform 0.18s cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 0.18s cubic-bezier(0.2, 0, 0, 1),
+    opacity 0.22s ease;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.32))
+          drop-shadow(0 2px 6px rgba(0, 0, 0, 0.24));
+}
+
+.comic-mini-bubble.hidden {
+  opacity: 0;
+  transform: scale(0.7);
+  pointer-events: none;
+}
+
+/* While the user is actively dragging — slight grow + cursor change
+   for tactile feedback. iOS PiP-style. */
+.comic-mini-bubble.is-dragging {
+  cursor: grabbing;
+  transform: scale(1.06);
+  filter: drop-shadow(0 18px 36px rgba(0, 0, 0, 0.42))
+          drop-shadow(0 4px 10px rgba(0, 0, 0, 0.28));
+  /* Suspend transform tween during drag so movement feels direct. */
+  transition: filter 0.18s ease, opacity 0.22s ease;
+}
+
+/* Press feedback for non-drag taps — small inset feel before
+   resume fires. Mirror feedback gives the "tap registered" cue
+   even if the reader is slow to mount. */
+.comic-mini-bubble.is-pressing:not(.is-dragging) {
+  transform: scale(0.96);
+}
+
+/* --- Progress ring (outer layer) --------------------------------- */
+
+/* Conic-gradient drawn at the bubble level. The cover image sits on
+   top, inset 2px, leaving a 2px ring of progress visible. Empty
+   portion of the ring uses a low-contrast token so unread vs read
+   reads at a glance. The CSS variable --progress (0–100) is set by
+   JS on every page change. */
+.comic-mini-bubble {
+  --progress: 0;
+  background: conic-gradient(
+    from 0deg,
+    var(--accent, #4caf50) 0%,
+    var(--accent, #4caf50) calc(var(--progress) * 1%),
+    color-mix(in srgb, var(--text-muted, #888) 30%, transparent) calc(var(--progress) * 1%),
+    color-mix(in srgb, var(--text-muted, #888) 30%, transparent) 100%
+  );
+  border-radius: 50%;
+}
+
+/* --- Cover image (inner layer) ----------------------------------- */
+
+.comic-mini-cover-wrap {
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--accent, #4caf50) 10%, var(--surface, #1c1c20));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Subtle inner shadow so the ring doesn't blend into the cover on
+     dark backgrounds. Reads as "this is a separate ring". */
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+.comic-mini-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+.comic-mini-cover-img:not([src]),
+.comic-mini-cover-img[src=""] {
+  display: none;
+}
+.comic-mini-cover-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: color-mix(in srgb, var(--accent, #4caf50) 70%, var(--text-muted, #888));
+  pointer-events: none;
+}
+.comic-mini-cover-img[src]:not([src=""]) ~ .comic-mini-cover-fallback {
+  display: none;
+}
+
+/* --- Always-visible X dismiss badge ------------------------------ */
+
+/* Sits in the top-right outer corner of the ring. Backdrop-blur so
+   it stays legible against any cover image. Always visible — no
+   long-press to reveal — because chrome that disappears makes
+   intent harder, not easier (per direct user feedback on Grove). */
+.comic-mini-x {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, #000 78%, transparent);
+  color: color-mix(in srgb, #fff 90%, transparent);
+  border: 1px solid color-mix(in srgb, #fff 22%, transparent);
+  border-radius: 50%;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1;
+  pointer-events: auto;
+  transition:
+    transform 0.16s cubic-bezier(0.2, 0, 0, 1),
+    background 0.16s ease,
+    border-color 0.16s ease;
+}
+.comic-mini-x:hover,
+.comic-mini-x:focus-visible {
+  background: color-mix(in srgb, #000 88%, transparent);
+  border-color: color-mix(in srgb, #fff 40%, transparent);
+  transform: scale(1.1);
+  outline: none;
+}
+.comic-mini-x:active {
+  transform: scale(0.94);
+}
+
+/* --- First-appearance label -------------------------------------- */
+
+/* Slides out from beside the bubble on initial show, gives identity
+   confirmation ("Continue: Berserk Ch. 24"), then auto-collapses.
+   Position depends on which edge the bubble is near — JS toggles
+   .label-left vs .label-right. Default is to the LEFT of the bubble
+   since the default position is right-edge-anchored. */
+.comic-mini-label {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 8px);
+  transform: translateY(-50%);
+  white-space: nowrap;
+  max-width: min(220px, 50vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary, #f0f0f0);
+  background: color-mix(in srgb, var(--bg-elevated, var(--bg-primary, #1a1a1f)) 92%, transparent);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  border-radius: 9999px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  pointer-events: none;
+  opacity: 0;
+  /* Pre-show: nudged toward the bubble; reveal slides it outward. */
+  transform: translate(8px, -50%);
+  transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.comic-mini-bubble.label-right .comic-mini-label {
+  right: auto;
+  left: calc(100% + 8px);
+  transform: translate(-8px, -50%);
+}
+.comic-mini-bubble.label-visible .comic-mini-label {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+/* --- Mobile sizing ------------------------------------------------ */
+
+@media (max-width: 700px) {
+  .comic-mini-bubble {
+    width: 56px;
+    height: 56px;
+  }
+  .comic-mini-x {
+    width: 20px;
+    height: 20px;
+    top: -3px;
+    right: -3px;
+  }
+  .comic-mini-label {
+    font-size: 11px;
+    padding: 5px 10px;
+    max-width: min(180px, 45vw);
+  }
+}
+
+/* --- Reduced motion ---------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .comic-mini-bubble,
+  .comic-mini-x,
+  .comic-mini-label {
+    transition: none !important;
+  }
+  .comic-mini-bubble.is-dragging {
+    transform: none;
+  }
+}
+
+/* --- Modal-open suppression -------------------------------------- */
+
+/* Bubble must vanish while a fullscreen modal is open — floating it
+   over a modal looks broken and steals taps from the modal's own
+   chrome. CSS :has() avoids a JS subscription. Add new modal
+   selectors here as they're introduced; failing to do so just means
+   the bubble stays visible (degraded but not broken). */
+body:has(.code-preview-modal.visible) #comic-mini-player-host,
+body:has(.image-modal.open) #comic-mini-player-host,
+body:has(.illustrate-modal.visible) #comic-mini-player-host,
+body:has(dialog[open]) #comic-mini-player-host {
+  display: none;
+}

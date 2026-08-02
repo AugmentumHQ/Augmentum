@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Augmentum — Adaptive Logo</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 30% 20%, #1a1a2e 0%, #0a0a14 60%);
+    color: #c4c4d4;
+    font: 14px/1.5 -apple-system, 'Segoe UI', system-ui, sans-serif;
+    padding: 3rem 2rem;
+  }
+  .stage {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  /* ============ LOGO CONTAINER + ADAPTIVE VARIABLES ============ */
+  .logo-wrap {
+    width: 400px;
+    height: 400px;
+    --accent: #6c8aff;
+    --accent-bright: #c0d0ff;
+    --accent-deep: #3d4f85;
+    --accent-rgb: 108, 138, 255;
+    transition: filter 0.5s ease;
+    position: relative;
+  }
+  .logo-wrap svg { width: 100%; height: 100%; display: block; }
+
+  /* --- mode → palette --- */
+  .logo-wrap[data-mode="analytical"] {
+    --accent: #5ec2d9; --accent-bright: #b4e4ef; --accent-deep: #2a5f6b; --accent-rgb: 94, 194, 217;
+  }
+  .logo-wrap[data-mode="narrative"] {
+    --accent: #a878ff; --accent-bright: #d4bfff; --accent-deep: #553685; --accent-rgb: 168, 120, 255;
+  }
+  .logo-wrap[data-mode="agentic"] {
+    --accent: #ffa85e; --accent-bright: #ffd1a8; --accent-deep: #855d2a; --accent-rgb: 255, 168, 94;
+  }
+
+  /* --- surface → leaf emphasis (one leaf gets extra glow) --- */
+  .logo-wrap .leaf { transition: filter 0.45s ease; }
+  .logo-wrap[data-surface="browse"] .leaf[data-pos="outer-right-far"] {
+    filter: url(#bloom) drop-shadow(0 0 7px var(--accent)) brightness(1.6);
+  }
+  .logo-wrap[data-surface="coder"] .leaf[data-pos="outer-left-far"] {
+    filter: url(#bloom) drop-shadow(0 0 7px var(--accent)) brightness(1.6);
+  }
+  .logo-wrap[data-surface="notes"] .leaf[data-pos="mid-right"] {
+    filter: url(#bloom) drop-shadow(0 0 6px var(--accent)) brightness(1.5);
+  }
+  .logo-wrap[data-surface="image"] .leaf[data-pos="outer-left-near"] {
+    filter: url(#bloom) drop-shadow(0 0 7px var(--accent)) brightness(1.6);
+  }
+  .logo-wrap[data-surface="grove"] .leaf[data-pos="outer-right-near"] {
+    filter: url(#bloom) drop-shadow(0 0 6px var(--accent)) brightness(1.5);
+  }
+
+  /* --- dream mode → slow rotation --- */
+  .logo-wrap .tree-group { transform-box: fill-box; transform-origin: center; transition: transform 1s ease; }
+  .logo-wrap[data-dream="true"] .tree-group {
+    animation: dreamTurn 20s linear infinite;
+    transform-origin: 100px 100px;
+  }
+  @keyframes dreamTurn {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* --- voice indicators via opacity on overlay elements --- */
+  .voice-overlay { opacity: 0; transition: opacity 0.3s ease; }
+  .logo-wrap[data-voice="listening"] .voice-overlay.listening { opacity: 1; }
+  .logo-wrap[data-voice="speaking"] .voice-overlay.speaking { opacity: 1; }
+
+  /* ============ CONTROLS ============ */
+  .controls { display: flex; flex-direction: column; gap: 1.5rem; max-width: 560px; }
+  .controls header h1 { font-size: 1.6rem; font-weight: 400; color: #ececf1; letter-spacing: -0.02em; }
+  .controls header p { color: #8b8b9e; margin-top: 0.4rem; max-width: 48ch; }
+
+  .group {
+    background: rgba(255,255,255,0.015);
+    border: 1px solid #23232e;
+    border-radius: 10px;
+    padding: 0.95rem 1.1rem;
+  }
+  .group h3 {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #6b6b80;
+    margin-bottom: 0.7rem;
+  }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  button {
+    background: #1b1b24;
+    color: #a1a1b5;
+    border: 1px solid #2a2a36;
+    padding: 0.48rem 0.9rem;
+    border-radius: 6px;
+    font: 500 0.78rem system-ui, sans-serif;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  button:hover { background: #23232f; color: #ececf1; border-color: #363648; }
+  button.active {
+    background: var(--accent, #6c8aff);
+    color: #0a0a14;
+    border-color: var(--accent, #6c8aff);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb, 108, 138, 255), 0.22);
+  }
+
+  .state {
+    margin-top: 0.5rem;
+    padding: 0.7rem 0.95rem;
+    background: rgba(0,0,0,0.35);
+    border-left: 2px solid var(--accent);
+    border-radius: 4px;
+    font: 500 0.72rem ui-monospace, 'SF Mono', Consolas, monospace;
+    color: #8b8b9e;
+    line-height: 1.6;
+    transition: border-color 0.3s ease;
+  }
+  .state strong { color: #c4c4d4; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <!-- =================== LOGO =================== -->
+  <div class="logo-wrap" id="logo"
+       data-mode="passthrough"
+       data-surface="chat"
+       data-activity="idle"
+       data-voice="off"
+       data-dream="false">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+      <defs>
+        <radialGradient id="atmosphere" cx="50%" cy="58%" r="60%">
+          <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.22"/>
+          <stop offset="45%" stop-color="var(--accent)" stop-opacity="0.07"/>
+          <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="stem" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" stop-color="var(--accent-deep)"/>
+          <stop offset="40%" stop-color="var(--accent)"/>
+          <stop offset="100%" stop-color="var(--accent-bright)"/>
+        </linearGradient>
+        <filter id="bloom" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="2.2" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <path id="riseLeft"     d="M100 172 L100 124 L68 100 L44 68 L36 44" fill="none"/>
+        <path id="riseRight"    d="M100 172 L100 124 L132 100 L156 68 L164 44" fill="none"/>
+        <path id="riseMidLeft"  d="M100 172 L100 124 L68 100 L80 68" fill="none"/>
+        <path id="riseMidRight" d="M100 172 L100 124 L132 100 L120 68" fill="none"/>
+      </defs>
+
+      <rect width="200" height="200" fill="url(#atmosphere)"/>
+
+      <g class="tree-group">
+        <!-- branches -->
+        <g stroke="url(#stem)" fill="none" stroke-linecap="round" stroke-linejoin="round" pathLength="100">
+          <path d="M100 172 L100 124" stroke-width="5" stroke-dasharray="100" stroke-dashoffset="100">
+            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="0.6s" begin="0.3s" fill="freeze"/>
+          </path>
+          <path d="M100 124 L68 100" stroke-width="3.6" stroke-dasharray="100" stroke-dashoffset="100">
+            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="0.4s" begin="0.9s" fill="freeze"/>
+          </path>
+          <path d="M100 124 L132 100" stroke-width="3.6" stroke-dasharray="100" stroke-dashoffset="100">
+            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="0.4s" begin="0.9s" fill="freeze"/>
+          </path>
+          <path d="M68 100 L80 68" stroke-width="2.3" stroke-dasharray="100" stroke-dashoffset="100">
+            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="0.4s" begin="1.3s" fill="freeze"/>
+          </path>
+          <path d="M132 100 L120 68" stroke-width="2.3" stroke-dasharray="100" stroke-dashoffset="100">
+            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="0.4s" begin="1.3s" fill="freeze"/>
+          </path>
+          <path d="M68 100 L44 68" stroke-width="2.6" stroke-dasharray="100" stroke-dashoffset="100">
+            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="0.4s" begin="1.3s" fill="freeze"/>
+          </path>
+          <path d="M132 100 L156 68" stroke-width="2.6" stroke-dasharray="100" stroke-dashoffset="100">
+            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="0.4s" begin="1.3s" fill="freeze"/>
+          </path>
+          <path d="M44 68 L36 44" stroke-width="1.7" stroke-dasharray="100" stroke-dashoffset="100">
+            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="0.35s" begin="1.7s" fill="freeze"/>
+          </path>
+          <path d="M44 68 L52 44" stroke-width="1.7" stroke-dasharray="100" stroke-dashoffset="100">
+            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="0.35s" begin="1.7s" fill="freeze"/>
+          </path>
+          <path d="M156 68 L148 44" stroke-width="1.7" stroke-dasharray="100" stroke-dashoffset="100">
+            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="0.35s" begin="1.7s" fill="freeze"/>
+          </path>
+          <path d="M156 68 L164 44" stroke-width="1.7" stroke-dasharray="100" stroke-dashoffset="100">
+            <animate attributeName="stroke-dashoffset" from="100" to="0" dur="0.35s" begin="1.7s" fill="freeze"/>
+          </path>
+        </g>
+
+        <!-- leaves -->
+        <g fill="var(--accent-bright)">
+          <circle class="leaf" data-pos="outer-left-far"  cx="36"  cy="44" r="2.4" opacity="0" filter="url(#bloom)">
+            <animate attributeName="opacity" from="0" to="0.95" dur="0.5s" begin="2.05s" fill="freeze"/>
+            <animate class="pulse" attributeName="r" values="2.4;3.2;2.4" dur="4s" begin="2.8s" repeatCount="indefinite"/>
+          </circle>
+          <circle class="leaf" data-pos="outer-left-near" cx="52"  cy="44" r="2.4" opacity="0" filter="url(#bloom)">
+            <animate attributeName="opacity" from="0" to="0.95" dur="0.5s" begin="2.05s" fill="freeze"/>
+            <animate class="pulse" attributeName="r" values="2.4;3.2;2.4" dur="4s" begin="3.3s" repeatCount="indefinite"/>
+          </circle>
+          <circle class="leaf" data-pos="outer-right-near" cx="148" cy="44" r="2.4" opacity="0" filter="url(#bloom)">
+            <animate attributeName="opacity" from="0" to="0.95" dur="0.5s" begin="2.05s" fill="freeze"/>
+            <animate class="pulse" attributeName="r" values="2.4;3.2;2.4" dur="4s" begin="2.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle class="leaf" data-pos="outer-right-far"  cx="164" cy="44" r="2.4" opacity="0" filter="url(#bloom)">
+            <animate attributeName="opacity" from="0" to="0.95" dur="0.5s" begin="2.05s" fill="freeze"/>
+            <animate class="pulse" attributeName="r" values="2.4;3.2;2.4" dur="4s" begin="3.6s" repeatCount="indefinite"/>
+          </circle>
+          <circle class="leaf" data-pos="mid-left"  cx="80"  cy="68" r="2.1" opacity="0" filter="url(#bloom)">
+            <animate attributeName="opacity" from="0" to="0.95" dur="0.5s" begin="1.7s" fill="freeze"/>
+            <animate class="pulse" attributeName="r" values="2.1;2.8;2.1" dur="4s" begin="3.0s" repeatCount="indefinite"/>
+          </circle>
+          <circle class="leaf" data-pos="mid-right" cx="120" cy="68" r="2.1" opacity="0" filter="url(#bloom)">
+            <animate attributeName="opacity" from="0" to="0.95" dur="0.5s" begin="1.7s" fill="freeze"/>
+            <animate class="pulse" attributeName="r" values="2.1;2.8;2.1" dur="4s" begin="3.8s" repeatCount="indefinite"/>
+          </circle>
+        </g>
+
+        <!-- seed -->
+        <circle class="seed" cx="100" cy="172" r="4" fill="var(--accent)" filter="url(#bloom)">
+          <animate attributeName="r" values="4;4.9;4" dur="3s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.85;1;0.85" dur="3s" repeatCount="indefinite"/>
+        </circle>
+
+        <!-- heartbeat ring -->
+        <circle class="heartbeat" cx="100" cy="172" r="4" fill="none" stroke="var(--accent)" stroke-width="1.2" opacity="0">
+          <animate attributeName="r" values="4;22" dur="3s" begin="2.5s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.5;0" dur="3s" begin="2.5s" repeatCount="indefinite"/>
+          <animate attributeName="stroke-width" values="1.2;0.2" dur="3s" begin="2.5s" repeatCount="indefinite"/>
+        </circle>
+
+        <!-- voice overlay: listening — ring at seed (fast) -->
+        <circle class="voice-overlay listening" cx="100" cy="172" r="4" fill="none" stroke="var(--accent-bright)" stroke-width="1.5">
+          <animate attributeName="r" values="4;16" dur="1.3s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.9;0" dur="1.3s" repeatCount="indefinite"/>
+        </circle>
+        <!-- voice overlay: speaking — ring at canopy -->
+        <circle class="voice-overlay speaking" cx="100" cy="44" r="8" fill="none" stroke="var(--accent-bright)" stroke-width="1.5">
+          <animate attributeName="r" values="8;36" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.7;0" dur="2s" repeatCount="indefinite"/>
+        </circle>
+
+        <!-- particles -->
+        <circle class="particle" r="1.3" fill="var(--accent-bright)" opacity="0" filter="url(#bloom)">
+          <animate class="fade" attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="5s" begin="3s" repeatCount="indefinite"/>
+          <animateMotion class="motion" dur="5s" begin="3s" repeatCount="indefinite"><mpath href="#riseLeft"/></animateMotion>
+        </circle>
+        <circle class="particle" r="1.3" fill="var(--accent-bright)" opacity="0" filter="url(#bloom)">
+          <animate class="fade" attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="5s" begin="5.5s" repeatCount="indefinite"/>
+          <animateMotion class="motion" dur="5s" begin="5.5s" repeatCount="indefinite"><mpath href="#riseRight"/></animateMotion>
+        </circle>
+        <circle class="particle" r="1.1" fill="var(--accent-bright)" opacity="0" filter="url(#bloom)">
+          <animate class="fade" attributeName="opacity" values="0;0.9;0.9;0" keyTimes="0;0.15;0.85;1" dur="6s" begin="7.5s" repeatCount="indefinite"/>
+          <animateMotion class="motion" dur="6s" begin="7.5s" repeatCount="indefinite"><mpath href="#riseMidRight"/></animateMotion>
+        </circle>
+        <circle class="particle" r="1.1" fill="var(--accent-bright)" opacity="0" filter="url(#bloom)">
+          <animate class="fade" attributeName="opacity" values="0;0.9;0.9;0" keyTimes="0;0.15;0.85;1" dur="6s" begin="9s" repeatCount="indefinite"/>
+          <animateMotion class="motion" dur="6s" begin="9s" repeatCount="indefinite"><mpath href="#riseMidLeft"/></animateMotion>
+        </circle>
+      </g>
+    </svg>
+  </div>
+
+  <!-- =================== CONTROLS =================== -->
+  <div class="controls">
+    <header>
+      <h1>Adaptive logo</h1>
+      <p>The mark reflects what Augmentum is doing. Switch state below and the logo responds.</p>
+    </header>
+
+    <div class="group">
+      <h3>Mode</h3>
+      <div class="btn-row" data-group="mode">
+        <button data-val="passthrough" class="active">Passthrough</button>
+        <button data-val="analytical">Analytical</button>
+        <button data-val="narrative">Narrative</button>
+        <button data-val="agentic">Agentic</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Surface</h3>
+      <div class="btn-row" data-group="surface">
+        <button data-val="chat" class="active">Chat</button>
+        <button data-val="browse">Browse</button>
+        <button data-val="coder">Coder</button>
+        <button data-val="notes">Notes</button>
+        <button data-val="image">Image</button>
+        <button data-val="grove">Grove</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Activity</h3>
+      <div class="btn-row" data-group="activity">
+        <button data-val="idle" class="active">Idle</button>
+        <button data-val="thinking">Thinking</button>
+        <button data-val="streaming">Streaming</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Voice</h3>
+      <div class="btn-row" data-group="voice">
+        <button data-val="off" class="active">Off</button>
+        <button data-val="listening">Listening</button>
+        <button data-val="speaking">Speaking</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Dream</h3>
+      <div class="btn-row" data-group="dream">
+        <button data-val="false" class="active">Awake</button>
+        <button data-val="true">Dreaming</button>
+      </div>
+    </div>
+
+    <div class="state" id="state">
+      <strong>state:</strong> mode=passthrough · surface=chat · activity=idle · voice=off · dream=false
+    </div>
+  </div>
+</div>
+
+<script>
+  const logo = document.getElementById('logo');
+  const stateEl = document.getElementById('state');
+
+  function updateState() {
+    const a = ['mode','surface','activity','voice','dream'];
+    stateEl.innerHTML = `<strong>state:</strong> ` + a.map(k => `${k}=${logo.dataset[k]}`).join(' · ');
+  }
+
+  function applyActivity(activity) {
+    const particleDur = { idle: 7, thinking: 3, streaming: 1.6 }[activity] ?? 5;
+    const leafDur     = { idle: 4, thinking: 3, streaming: 2   }[activity] ?? 4;
+    logo.querySelectorAll('.particle .motion, .particle .fade').forEach(el => {
+      el.setAttribute('dur', particleDur + 's');
+      // nudge SMIL to re-evaluate by reassigning begin (keep same cadence, don't desync)
+    });
+    logo.querySelectorAll('.leaf .pulse').forEach(el => {
+      el.setAttribute('dur', leafDur + 's');
+    });
+    // restart SMIL timeline so new durs take effect cleanly
+    logo.querySelector('svg').pauseAnimations?.();
+    logo.querySelector('svg').unpauseAnimations?.();
+  }
+
+  function applyVoice(voice) {
+    // heartbeat keeps baseline; listening/speaking show dedicated overlay rings (CSS-toggled)
+  }
+
+  document.querySelectorAll('.btn-row').forEach(row => {
+    const group = row.dataset.group;
+    row.addEventListener('click', e => {
+      if (e.target.tagName !== 'BUTTON') return;
+      row.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+      const val = e.target.dataset.val;
+      logo.dataset[group] = val;
+      if (group === 'activity') applyActivity(val);
+      if (group === 'voice') applyVoice(val);
+      updateState();
+    });
+  });
+
+  applyActivity('idle');
+  updateState();
+</script>
+</body>
+</html>

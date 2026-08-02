@@ -1,0 +1,207 @@
+/* ============================================================
+   sticky-note.css — Floating sticky-note overlay.
+
+   Anchored top-right by default (below the header); grab the
+   header row to drag. Multiple stickies coexist, stacked vertically
+   along the right edge until the user moves them.
+   ============================================================ */
+
+#sticky-notes-host {
+  position: fixed;
+  /* Below the app header -- top: 0 tucked new stickies halfway under
+   * the header bar ("appearing half hidden", 2026-06-11). */
+  top: var(--header-height, 56px);
+  right: 0;
+  z-index: var(--z-overlay, 40);
+  pointer-events: none;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.sticky-note {
+  pointer-events: auto;
+  width: 300px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent, #ffd86b) 18%, var(--bg-elevated, #1c1c1f)) 0%,
+    var(--bg-elevated, #1c1c1f) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--accent, #ffd86b) 25%, transparent);
+  border-radius: 12px;
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.sticky-note.sticky-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.sticky-note.sticky-dragging {
+  cursor: grabbing !important;
+  transition: none;
+  opacity: 0.94;
+}
+
+.sticky-note.sticky-moved {
+  position: fixed;
+}
+
+/* Header row — title + chrome buttons. */
+.sticky-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px 6px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border, #2a2a30) 70%, transparent);
+  /* The header row is the drag handle. */
+  cursor: grab;
+  touch-action: none;
+}
+
+.sticky-note.sticky-dragging .sticky-header {
+  cursor: grabbing;
+}
+
+.sticky-title {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, #f0f0f5);
+  padding: 2px 0;
+  cursor: text;
+}
+
+.sticky-title::placeholder {
+  color: color-mix(in srgb, var(--text-muted, #8a8a92) 80%, transparent);
+  font-weight: 500;
+}
+
+.sticky-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  background: transparent;
+  border-radius: 999px;
+  color: var(--text-secondary, #b0b0b8);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast, 0.15s) ease,
+    color var(--duration-fast, 0.15s) ease;
+}
+
+.sticky-btn:hover {
+  background: color-mix(in srgb, var(--text-primary, #f0f0f5) 8%, transparent);
+  color: var(--text-primary, #f0f0f5);
+}
+
+.sticky-btn:focus-visible {
+  outline: 2px solid var(--accent, #ffd86b);
+  outline-offset: 1px;
+}
+
+/* Body textarea — looks like notebook paper, autosizes within bounds. */
+.sticky-body {
+  width: 100%;
+  min-height: 140px;
+  max-height: 360px;
+  resize: vertical;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-primary, #f0f0f5);
+  padding: 10px 12px 12px;
+  cursor: text;
+}
+
+.sticky-body::placeholder {
+  color: var(--text-muted, #8a8a92);
+}
+
+/* Capture-mode indicator — pulsing dot + label, hidden by default. */
+.sticky-capture-indicator {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--accent, #ffd86b) 80%, var(--text-secondary, #b0b0b8));
+  font-weight: 600;
+}
+
+.sticky-note[data-capturing="true"] .sticky-capture-indicator {
+  display: flex;
+}
+
+.sticky-note[data-capturing="true"] {
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.4),
+    0 0 0 2px color-mix(in srgb, var(--accent, #ffd86b) 35%, transparent);
+}
+
+.sticky-cap-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent, #ffd86b);
+  animation: sticky-cap-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes sticky-cap-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(0.85); }
+  50%      { opacity: 1;    transform: scale(1.1); }
+}
+
+@media (max-width: 600px) {
+  #sticky-notes-host { padding: 10px; }
+  .sticky-note { width: min(280px, calc(100vw - 24px)); }
+  .sticky-body { max-height: 240px; }
+}
+
+/* Attachment strip -- thumbnails rendered from markdown image lines
+ * in the note content. Click opens the full image. */
+.sticky-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 10px 10px;
+}
+
+.sticky-attach-thumb {
+  height: 64px;
+  max-width: 120px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--border, #2a2a30) 70%, transparent);
+  cursor: zoom-in;
+  transition: transform 0.12s ease;
+}
+
+.sticky-attach-thumb:hover {
+  transform: scale(1.04);
+}

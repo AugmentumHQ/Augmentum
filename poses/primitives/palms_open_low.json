@@ -1,0 +1,34 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "palms_open_low",
+  "tags": ["open", "inviting", "honest", "explanatory"],
+  "description": "Both hands held low in front, palms partially open. Reads as 'here it is' / open + non-threatening.",
+  "family": "thinking",
+
+  "anchors": {
+    "leftHand": {
+      "type": "region-contact",
+      "region": "belly",
+      "tolerance": 0.035,
+      "fingerStyle": "forward_low_L"
+    },
+    "rightHand": {
+      "type": "region-contact",
+      "region": "belly",
+      "tolerance": 0.035,
+      "fingerStyle": "forward_low_R"
+    }
+  },
+
+  "body": {
+    "head":  { "pitch": 2 },
+    "spine": { "forwardLean": 3 }
+  },
+
+  "provenance": {
+    "source": "manual",
+    "curatedBy": "maintainer",
+    "createdAt": "2026-05-14",
+    "notes": "Both forward_low affordances → belly (100% consensus). Forward lean reinforces openness."
+  }
+}

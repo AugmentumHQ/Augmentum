@@ -1,0 +1,869 @@
+/* ============================================================
+   media-player.css — Persistent bottom-docked mini-player.
+
+   The mini-player lives at the viewport bottom and survives every
+   panel transition. It materialises when the media-player singleton
+   has an active file and disappears when .close() is called.
+   ============================================================ */
+
+#media-mini-player-host {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-overlay, 40);
+  pointer-events: none;
+}
+
+.mini-player {
+  pointer-events: auto;
+  /* Position context for the absolute-positioned grip pill below. The
+     .mp-moved variant overrides to fixed (also a positioning context),
+     so the grip stays anchored in both states. */
+  position: relative;
+  display: grid;
+  /* 6 columns: cover · meta · controls · scrubber · minimize · close.
+     Previously had 5 columns and 6 visible items; the close button
+     auto-flowed to row 2 col 1 on desktop and row 3 on mobile (after
+     the scrubber claims its full-width row 2), where it was clipped
+     past the player's bottom edge on portrait phones. Each chrome
+     button now gets its own explicit cell via the grid-row/column
+     rules below — never auto-flows. */
+  grid-template-columns: 48px minmax(0, 1fr) auto minmax(140px, 360px) auto auto;
+  align-items: center;
+  gap: 12px;
+  /* Extra top padding makes room for the grip pill that sits at the
+     top edge — visible drag affordance for touch where the cursor
+     hint isn't legible. */
+  padding: 14px 14px 8px;
+  margin: 0 auto 12px;
+  max-width: min(960px, calc(100vw - 24px));
+  background: color-mix(in srgb, var(--bg-elevated, var(--bg-primary)) 95%, transparent);
+  border: 1px solid var(--border, var(--border));
+  border-radius: 14px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transform: translateY(0);
+  opacity: 1;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+/* Explicit grid placement so chrome buttons NEVER auto-flow to a
+   second row regardless of viewport width. The mobile rule below
+   only changes the column template; these row/column assignments
+   apply identically across breakpoints. */
+.mini-player-cover     { grid-column: 1; grid-row: 1; }
+.mini-player-meta      { grid-column: 2; grid-row: 1; }
+.mini-player-controls  { grid-column: 3; grid-row: 1; }
+.mini-player-scrubber  { grid-column: 4; grid-row: 1; }
+.mini-player-minimize  { grid-column: 5; grid-row: 1; }
+.mini-player-close     { grid-column: 6; grid-row: 1; }
+
+/* Drag-handle pill at the top edge — touch-friendly drag affordance.
+   Sits outside the grid via absolute positioning so it doesn't disturb
+   the desktop or mobile column layouts. Instant drag (no press-hold)
+   is wired in media-mini-player.js. */
+.mini-player-grip {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 38px;
+  height: 5px;
+  border: 0;
+  padding: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-secondary, #aaa) 38%, transparent);
+  cursor: grab;
+  /* Prevent the browser from claiming the touch as a scroll — without
+     this, dragging on a phone often only slides the page underneath. */
+  touch-action: none;
+  opacity: 0.75;
+  z-index: 2;
+  transition: opacity 0.18s ease, background 0.18s ease, width 0.18s ease;
+}
+.mini-player-grip:hover,
+.mini-player-grip:focus-visible {
+  opacity: 1;
+  width: 48px;
+  background: color-mix(in srgb, var(--text-secondary, #aaa) 60%, transparent);
+  outline: none;
+}
+.mini-player.mp-dragging .mini-player-grip {
+  cursor: grabbing;
+  opacity: 1;
+}
+.mini-player.hidden {
+  opacity: 0;
+  transform: translateY(14px);
+  pointer-events: none;
+}
+
+/* Press-and-hold drag — the cover & title areas act as grab handles so
+ * the bar can be moved out of the way of the chat send button. Buttons
+ * inside the controls/scrubber/close stay tappable; only these two
+ * regions get the grab cursor. */
+.mini-player-cover,
+.mini-player-meta {
+  cursor: grab;
+}
+.mini-player.mp-dragging .mini-player-cover,
+.mini-player.mp-dragging .mini-player-meta,
+.mini-player.mp-dragging {
+  cursor: grabbing !important;
+}
+
+/* Once the user has moved the bar, drop the centering margin and the
+ * bottom translate-on-hide transform — explicit top/left pixels are
+ * authoritative now (JS owns positioning). */
+.mini-player.mp-moved {
+  position: fixed;
+  margin: 0;
+  transform: none;
+  transition: opacity 0.22s ease, box-shadow 0.22s ease;
+}
+.mini-player.mp-moved.hidden {
+  transform: none;   /* don't snap back to original location while hiding */
+}
+
+/* While dragging, kill text selection across the page and bump the
+ * player above any overlays it would otherwise hide under. */
+body.mp-drag-active {
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grabbing;
+}
+.mp-dragging {
+  z-index: calc(var(--z-overlay, 40) + 5);
+  transition: none !important;
+  opacity: 0.92;
+}
+
+/* --- Cover ---------------------------------------------------------- */
+
+.mini-player-cover {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid var(--border, var(--border));
+  border-radius: 8px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  color: color-mix(in srgb, var(--accent) 60%, var(--text-muted));
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.mini-player-cover:hover {
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+}
+.mini-player-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.mini-player-cover-img:not([src]),
+.mini-player-cover-img[src=""] {
+  display: none;
+}
+.mini-player-cover-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mini-player-cover-img[src]:not([src=""]) + .mini-player-cover-fallback {
+  display: none;
+}
+
+/* --- Metadata block ------------------------------------------------- */
+
+.mini-player-meta {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  cursor: pointer;
+  padding: 2px 0;
+  border-radius: 6px;
+}
+.mini-player-meta:hover .mini-player-title {
+  color: color-mix(in srgb, var(--accent) 90%, var(--text-primary));
+}
+.mini-player-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.18s;
+}
+.mini-player-subtitle {
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- Transport controls -------------------------------------------- */
+
+.mini-player-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.mp-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.mp-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+.mp-btn-label {
+  position: absolute;
+  font-size: 8.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: -0.02em;
+  /* Tucked near the icon so "15"/"30" reads as a badge on the arrow */
+  bottom: 7px;
+  right: 7px;
+  pointer-events: none;
+}
+.mp-btn:hover .mp-btn-label { color: var(--text-primary); }
+
+.mp-play {
+  width: 40px;
+  height: 40px;
+  background: var(--accent);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.mp-play:hover {
+  background: color-mix(in srgb, var(--accent) 88%, black);
+  color: white;
+}
+.mp-icon-play { display: block; }
+.mp-icon-pause { display: none; }
+.is-playing .mp-icon-play  { display: none; }
+.is-playing .mp-icon-pause { display: block; }
+
+.is-loading .mp-play {
+  animation: mp-pulse 1.4s ease-in-out infinite;
+}
+@keyframes mp-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.6; }
+}
+
+/* --- Scrubber ------------------------------------------------------- */
+
+.mini-player-scrubber {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.mini-player-time {
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.mini-player-range {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  min-width: 80px;
+  height: 3px;
+  background: color-mix(in srgb, var(--text-muted) 30%, transparent);
+  border-radius: 9999px;
+  cursor: pointer;
+  outline: none;
+}
+.mini-player-range::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 9999px;
+}
+.mini-player-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 50%;
+  border: 2px solid var(--bg-primary);
+  margin-top: -4.5px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  transition: transform 0.12s ease;
+}
+.mini-player-range::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 50%;
+  border: 2px solid var(--bg-primary);
+}
+.mini-player-range:focus-visible::-webkit-slider-thumb,
+.mini-player-range:hover::-webkit-slider-thumb {
+  transform: scale(1.2);
+}
+
+/* --- Chips (speed + sleep timer) ----------------------------------- */
+
+.mp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  border-radius: var(--radius-full, 9999px);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.mp-chip:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+.mp-chip.is-active {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  color: color-mix(in srgb, var(--accent) 90%, var(--text-primary));
+}
+.mp-chip-value:empty { display: none; }
+.mp-chip-sleep svg { opacity: 0.8; }
+.mp-chip-sleep.is-active svg { opacity: 1; }
+
+/* --- Popovers ------------------------------------------------------- */
+
+.mp-popover {
+  position: absolute;
+  right: 16px;
+  bottom: calc(100% + 12px);
+  min-width: 240px;
+  padding: 12px 14px 14px;
+  background: var(--bg-elevated, var(--bg-primary));
+  border: 1px solid var(--border, var(--border));
+  border-radius: 12px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+  z-index: 10;
+}
+.mp-popover[hidden] { display: none; }
+.mp-popover-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.mp-popover-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.mp-popover-item {
+  display: flex;
+  width: 100%;
+  padding: 7px 10px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.12s, color 0.12s;
+}
+.mp-popover-item:hover       { background: var(--surface-hover); }
+.mp-popover-item.is-active   { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); font-weight: 600; }
+.mp-popover-foot {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  min-height: 14px;
+}
+
+/* Speed popover: preset chips + fine slider */
+.mp-popover-speed-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.mp-speed-preset {
+  padding: 6px 8px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.mp-speed-preset:hover {
+  color: var(--text-primary);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+.mp-speed-preset.is-active {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  color: color-mix(in srgb, var(--accent) 95%, var(--text-primary));
+  font-weight: 700;
+}
+.mp-popover-speed-range {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  height: 3px;
+  background: color-mix(in srgb, var(--text-muted) 30%, transparent);
+  border-radius: 9999px;
+  outline: none;
+  margin-bottom: 6px;
+}
+.mp-popover-speed-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--accent);
+  border: 2px solid var(--bg-primary);
+  border-radius: 50%;
+  margin-top: -5.5px;
+}
+.mp-popover-speed-value {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+/* --- Close --------------------------------------------------------- */
+
+.mini-player-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.mini-player-close:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+/* --- Minimize button ---------------------------------------------- */
+
+.mini-player-minimize {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 50%;
+  margin-right: 2px;
+  transition: background 0.15s, color 0.15s;
+}
+.mini-player-minimize:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+/* --- Orb (minimized state) ----------------------------------------
+   Grove/voice-pipeline aesthetic: a calm glass sphere with a circular
+   cover inside, a glow ring that tints with the accent colour, and a
+   four-bar equalizer that only animates while audio is actually
+   playing. Click = restore the full player. Session-sticky so it
+   doesn't surprise on navigation but does reset on a true reload.
+   ----------------------------------------------------------------- */
+
+.mini-player-orb {
+  pointer-events: auto;
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  /* Tap = restore full player; press-and-hold (350ms) = drag. The grab
+   * cursor on hover signals movability without screaming for attention. */
+  cursor: grab;
+  /* Critical on mobile: without this, Chrome on Android decides the
+   * touch is a scroll candidate, treats subsequent pointermove events
+   * as passive, and stops routing them to our handler — the orb drag
+   * goes laggy and dies mid-gesture. The bar's grip uses the same fix
+   * for the same reason (see .mini-player-grip above). */
+  touch-action: none;
+  background: color-mix(in srgb, var(--bg-elevated, var(--bg-primary)) 90%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.35),
+    inset 0 0 24px color-mix(in srgb, var(--accent) 12%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  transform: scale(1);
+  opacity: 1;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.22s ease,
+              box-shadow 0.28s ease;
+  outline: none;
+}
+.mini-player-orb.hidden {
+  transform: scale(0.72);
+  opacity: 0;
+  pointer-events: none;
+}
+.mini-player-orb.mp-dragging {
+  cursor: grabbing;
+  transition: none !important;
+  z-index: calc(var(--z-overlay, 40) + 5);
+}
+.mini-player-orb.mp-moved {
+  right: auto;
+  bottom: auto;
+  /* JS-set top/left wins; this just clears the defaults so nothing
+   * fights the inline style. */
+}
+.mini-player-orb:hover {
+  transform: scale(1.04);
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.42),
+    inset 0 0 30px color-mix(in srgb, var(--accent) 18%, transparent),
+    0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.mini-player-orb:focus-visible {
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.35),
+    inset 0 0 24px color-mix(in srgb, var(--accent) 12%, transparent),
+    0 0 0 3px color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+/* Inner circular cover — takes 78% of the orb so the ring stays visible */
+.mp-orb-cover {
+  width: 78%;
+  height: 78%;
+  border-radius: 50%;
+  background-color: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  transition: filter 0.3s ease;
+}
+.mini-player-orb.is-playing .mp-orb-cover {
+  filter: saturate(1.05) brightness(1.02);
+}
+
+/* Animated glow ring — stronger while playing, calm while paused */
+.mp-orb-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 210deg,
+    color-mix(in srgb, var(--accent) 0%,  transparent),
+    color-mix(in srgb, var(--accent) 70%, transparent),
+    color-mix(in srgb, var(--accent) 0%,  transparent)
+  );
+  opacity: 0;
+  filter: blur(6px);
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  animation: mp-orb-rotate 12s linear infinite;
+  animation-play-state: paused;
+}
+.mini-player-orb.is-playing .mp-orb-ring {
+  opacity: 0.7;
+  animation-play-state: running;
+}
+@keyframes mp-orb-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Equalizer — 4 bars docked at the bottom of the orb. Pulses only
+ * while audio is actively playing; goes flat on pause so the user
+ * can see playback state at a glance. */
+.mp-orb-eq {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+  pointer-events: none;
+}
+.mp-orb-eq > span {
+  display: block;
+  width: 3px;
+  height: 3px;
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--accent) 90%, white);
+  box-shadow: 0 0 4px color-mix(in srgb, var(--accent) 70%, transparent);
+  transition: height 0.3s ease;
+}
+.mini-player-orb.is-playing .mp-orb-eq > span:nth-child(1) { animation: mp-eq-bar 0.9s  ease-in-out infinite alternate; }
+.mini-player-orb.is-playing .mp-orb-eq > span:nth-child(2) { animation: mp-eq-bar 0.75s ease-in-out infinite alternate 0.1s; }
+.mini-player-orb.is-playing .mp-orb-eq > span:nth-child(3) { animation: mp-eq-bar 1.05s ease-in-out infinite alternate 0.2s; }
+.mini-player-orb.is-playing .mp-orb-eq > span:nth-child(4) { animation: mp-eq-bar 0.85s ease-in-out infinite alternate 0.3s; }
+@keyframes mp-eq-bar {
+  from { height: 2px; }
+  to   { height: 12px; }
+}
+
+.mini-player-orb.is-loading .mp-orb-ring {
+  opacity: 1;
+  animation-duration: 4s;  /* snappier spin while buffering */
+}
+
+/* --- Mobile --------------------------------------------------------- */
+
+@media (max-width: 700px) {
+  .mini-player {
+    /* Mobile: scrubber moves to its own row 2, chrome buttons stay
+       on row 1 next to the controls. 5 cells on row 1 (cover, meta,
+       controls, minimize, close); scrubber spans the whole row 2. */
+    grid-template-columns: 44px minmax(0, 1fr) auto auto auto;
+    grid-template-rows: auto auto;
+    gap: 8px;
+    padding: 8px 10px;
+  }
+  .mini-player-scrubber {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  /* Chrome buttons in row 1 cols 4-5 on mobile (the desktop's
+     col 5/6 don't exist here because the scrubber moved off row 1). */
+  .mini-player-minimize { grid-column: 4; grid-row: 1; }
+  .mini-player-close    { grid-column: 5; grid-row: 1; }
+  .mp-btn-label { display: none; }
+}
+
+/* Portrait / phone widths: orb-nav.css mounts a fixed bottom rail at
+   --z-header (45) on max-width: 767px. Without an offset, the media
+   miniplayer (z: 30) sits BEHIND it and the bottom edge of the
+   viewport becomes unreachable. Lift every bottom-docked player above
+   the rail so both surfaces are visible and tappable at the same
+   time. Mirror the same offset on .mini-player-orb (the minimized
+   corner state) so it doesn't park itself under the rail either. */
+@media (max-width: 767px) {
+  #media-mini-player-host {
+    bottom: calc(var(--orb-bar-height) + env(safe-area-inset-bottom, 0px));
+  }
+  #tts-mini-player-host {
+    /* Keep its ~72px gap above the media bar so both can stack. */
+    bottom: calc(var(--orb-bar-height) + env(safe-area-inset-bottom, 0px) + 72px);
+  }
+  .mini-player-orb:not(.mp-moved) {
+    bottom: calc(20px + var(--orb-bar-height) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* ============================================================
+   tts-mini-player — Bottom-docked read-aloud control. Sits
+   above the media-mini-player so both can be visible at once
+   (audiobook + article TTS = unusual but legal combo).
+   ============================================================ */
+#tts-mini-player-host {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 72px;
+  z-index: var(--z-overlay, 40);
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+}
+
+.tts-mini {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px 6px 14px;
+  max-width: min(560px, calc(100vw - 24px));
+  background: color-mix(in srgb, var(--bg-elevated, var(--bg-primary)) 95%, transparent);
+  border: 1px solid var(--border, var(--border));
+  border-radius: 999px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transform: translateY(0);
+  opacity: 1;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.tts-mini.hidden {
+  opacity: 0;
+  transform: translateY(14px);
+  pointer-events: none;
+}
+
+/* Press-and-hold drag — the icon + meta region acts as the grab
+   handle so action buttons stay tappable. The pill leaves its
+   bottom-centered dock the first time the user repositions it
+   and switches to absolute top/left positioning. */
+.tts-mini-icon,
+.tts-mini-meta {
+  cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.tts-mini.tts-dragging,
+.tts-mini.tts-dragging .tts-mini-icon,
+.tts-mini.tts-dragging .tts-mini-meta {
+  cursor: grabbing !important;
+}
+.tts-mini.tts-dragging {
+  transition: none;
+  opacity: 0.92;
+}
+
+/* Once moved, switch to fixed positioning so the JS-managed top/left
+   pixels become authoritative. The host's flex layout no longer
+   affects a fixed-positioned child. */
+.tts-mini.tts-moved {
+  position: fixed;
+  transform: none;
+  transition: opacity 0.22s ease, box-shadow 0.22s ease;
+}
+.tts-mini.tts-moved.hidden {
+  transform: none;
+}
+
+/* While any docked widget is being dragged, suppress text selection
+   so the cursor stays as 'grabbing' across the page. */
+body.tts-drag-active {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.tts-mini-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  color: var(--accent, var(--text-primary));
+}
+
+.tts-mini[data-paused="false"] .tts-mini-icon {
+  animation: tts-mini-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes tts-mini-pulse {
+  0%, 100% { opacity: 0.7; }
+  50%      { opacity: 1; }
+}
+
+.tts-mini-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.15;
+}
+
+.tts-mini-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* Drop the "Reading" eyebrow when there's no source title — the title
+   line itself becomes the generic "Reading aloud" label. */
+.tts-mini[data-has-title="false"] .tts-mini-label { display: none; }
+
+.tts-mini-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  max-width: 320px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tts-mini-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 4px;
+}
+
+.tts-mini-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  background: transparent;
+  border-radius: 999px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--duration-fast, 0.15s) var(--ease-standard, ease),
+              color var(--duration-fast, 0.15s) var(--ease-standard, ease);
+}
+
+.tts-mini-btn:hover {
+  background: var(--bg-hover, rgba(255, 255, 255, 0.06));
+  color: var(--text-primary);
+}
+
+.tts-mini-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.tts-mini-toggle .tts-icon-play  { display: none; }
+.tts-mini-toggle .tts-icon-pause { display: block; }
+.tts-mini[data-paused="true"] .tts-mini-toggle .tts-icon-play  { display: block; }
+.tts-mini[data-paused="true"] .tts-mini-toggle .tts-icon-pause { display: none; }
+
+@media (max-width: 600px) {
+  .tts-mini-title { max-width: 160px; }
+  #tts-mini-player-host { bottom: 80px; }
+}
+

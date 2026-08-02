@@ -1,0 +1,35 @@
+-- 097_file_index_fts_repair.sql: Version marker for the file_index_fts
+-- phantom-repair work. The actual repair runs in Python at connect
+-- time alongside the memories_fts repair (see
+-- ``SQLiteBackend._repair_phantom_fts_if_needed`` in
+-- ``augmentum/state/backends/sqlite.py``), BEFORE migrations execute.
+--
+-- Why not pure SQL? Same two interacting sqlite quirks that migration
+-- 096 documents for memories_fts:
+--
+-- 1) ``CREATE VIRTUAL TABLE IF NOT EXISTS`` reads from the connection's
+--    cached parsed schema. If a phantom sqlite_master row was just
+--    DELETEd via writable_schema, the cache still shows the table as
+--    existing and the CREATE short-circuits silently. The subsequent
+--    rebuild INSERT then fails with "no such table: file_index_fts".
+--
+-- 2) The migration runner (``_run_migrations``) swallows errors
+--    containing "already exists" for ALTER TABLE idempotency. A
+--    cached-schema CREATE raises exactly that shape, so the migration
+--    can't even observe that it failed.
+--
+-- The Python path sidesteps both issues: it uses
+-- ``PRAGMA writable_schema = RESET`` to invalidate the schema cache
+-- between the DELETE and the CREATE, and it handles errors directly
+-- rather than going through the migration runner.
+--
+-- Triggering incident: on 2026-04-20 the audiobookshelf catalog sync
+-- tried to index 453 items into ``file_index``; every INSERT fired the
+-- ``file_index_fts_insert`` trigger, which failed with
+-- ``no such table: main.file_index_fts`` because the shadow tables
+-- (``_config``, ``_data``, ``_docsize``, ``_idx``) survived a prior
+-- DB corruption while the virtual-table row itself was lost. All 453
+-- inserts silently failed and the catalog appeared empty.
+
+INSERT OR IGNORE INTO schema_version (version, description)
+VALUES (97, 'file_index_fts phantom repair (handled in Python: _repair_phantom_fts_if_needed)');

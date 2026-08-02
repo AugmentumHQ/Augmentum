@@ -1,0 +1,13 @@
+# Test lines for generate.py — emotions use EARS's actual label set (see the
+# per-emotion counts prepare_data prints). Companion-flavoured so you judge the
+# voice in the register you'll use it.
+prompts:
+  - {emotion: neutral,     text: "Hey, I'm here. What are we working on today?"}
+  - {emotion: contentment, text: "This is nice. I'm glad we get to just sit with it for a minute."}
+  - {emotion: amusement,   text: "Okay, that's actually really funny — I did not see that coming."}
+  - {emotion: serenity,    text: "Take a breath. We'll go through it one step at a time."}
+  - {emotion: sadness,     text: "I know. It's okay to feel low about it for a while."}
+  - {emotion: anger,       text: "That is not okay, and you have every right to be upset."}
+  - {emotion: fear,        text: "Wait — something's wrong. We need to stop and check this."}
+  - {emotion: amazement,   text: "It compiled on the first try? That's incredible, look at that."}
+  - {emotion: whisper,     text: "Don't worry — it'll still be here in the morning."}

@@ -1,0 +1,200 @@
+#!/usr/bin/env bash
+# ============================================================================
+# augmentum — the one management command (service-OS design, phase 3).
+#
+# The install one-liner drops this on PATH as `augmentum`; in-repo it runs
+# as ./augmentum-cli. Every verb is a thin wrapper over the machinery that
+# already exists (start.sh + .augmentum.conf + docker compose) — one
+# mechanism, three surfaces (spec T1): this CLI, the marketplace, and
+# setup profiles all drive the same units.
+#
+#   augmentum                 status + what-next hints
+#   augmentum up [-d]         start the stack
+#   augmentum down            stop the stack
+#   augmentum restart         restart the app container (fast, keeps deps)
+#   augmentum status          per-service health
+#   augmentum logs [-f]       app logs
+#   augmentum update          pull latest code + restart (migrations run
+#                             automatically at boot)
+#   augmentum add <feature>   enable a feature overlay   (images, browser,
+#   augmentum remove <feature>  disable one               ocr, games,
+#                                                          classifier, dev)
+#   augmentum doctor          quick health diagnosis
+# ============================================================================
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+CONF_FILE="$SCRIPT_DIR/.augmentum.conf"
+cd "$SCRIPT_DIR"
+
+# Feature name -> overlay file. The vocabulary users see in `augmentum add
+# images` and in the app's "this feature needs..." hints. Keep the two in
+# sync when adding overlays.
+feature_file() {
+  case "$1" in
+    images)     echo "compose.gpu.yaml" ;;
+    browser)    echo "compose.browser.yaml" ;;
+    ocr)        echo "compose.ocr.yaml" ;;
+    games)      echo "compose.game-stream.yaml" ;;
+    classifier) echo "compose.classifier.yaml" ;;
+    dev)        echo "compose.dev.yaml" ;;
+    *)          echo "" ;;
+  esac
+}
+
+FEATURES="images browser ocr games classifier dev"
+
+usage_hint() {
+  echo ""
+  echo "  Features you can add/remove: $FEATURES"
+  echo "  Example: ./augmentum-cli add browser"
+}
+
+require_conf() {
+  if [ ! -f "$CONF_FILE" ]; then
+    echo "No configuration found — run ./setup.sh first."
+    exit 1
+  fi
+}
+
+app_container() {
+  docker ps --format '{{.Names}}' 2>/dev/null | grep -m1 'augmentum-augmentum' || true
+}
+
+cmd_status() {
+  require_conf
+  local up
+  up=$(docker ps --filter name=augmentum- --format '  {{.Names}}\t{{.Status}}' 2>/dev/null || true)
+  if [ -z "$up" ]; then
+    echo "Augmentum is not running.  Start it with: ./augmentum-cli up -d"
+    return 0
+  fi
+  echo "Augmentum services:"
+  echo "$up"
+  echo ""
+  echo "  Web UI: http://localhost:6100"
+}
+
+cmd_add_remove() {
+  local action="$1" feature="${2:-}"
+  require_conf
+  if [ -z "$feature" ]; then
+    echo "Which feature? Usage: ./augmentum-cli $action <feature>"
+    usage_hint
+    exit 1
+  fi
+  local file
+  file=$(feature_file "$feature")
+  if [ -z "$file" ]; then
+    echo "Unknown feature '$feature'."
+    usage_hint
+    exit 1
+  fi
+  local conf
+  conf=$(cat "$CONF_FILE")
+  case "$action" in
+    add)
+      if echo "$conf" | grep -qw "$file"; then
+        echo "'$feature' is already enabled."
+        exit 0
+      fi
+      printf '%s %s\n' "$(echo "$conf" | tr -d '\n')" "$file" > "$CONF_FILE"
+      echo "Enabled '$feature' ($file). Applying..."
+      ./start.sh -d
+      ;;
+    remove)
+      if ! echo "$conf" | grep -qw "$file"; then
+        echo "'$feature' is not enabled."
+        exit 0
+      fi
+      # shellcheck disable=SC2086
+      printf '%s\n' "$(echo $conf | tr ' ' '\n' | grep -vw "$file" | tr '\n' ' ' | sed 's/ $//')" > "$CONF_FILE"
+      echo "Disabled '$feature'. Applying..."
+      ./start.sh -d --remove-orphans 2>/dev/null || ./start.sh -d
+      ;;
+  esac
+}
+
+cmd_update() {
+  require_conf
+  echo "Updating Augmentum..."
+  if [ -d .git ]; then
+    git pull --ff-only || {
+      echo "Couldn't fast-forward — you have local changes. Update skipped."
+      exit 1
+    }
+  else
+    echo "Not a git checkout — download a release and re-run setup."
+    exit 1
+  fi
+  echo "Restarting with the new code (migrations run automatically)..."
+  ./start.sh -d
+  echo "Done."
+}
+
+cmd_doctor() {
+  require_conf
+  local c ok=0 bad=0
+  echo "Augmentum doctor:"
+  if ! docker info >/dev/null 2>&1; then
+    echo "  [FAIL] Docker is not running or not reachable."
+    exit 1
+  fi
+  echo "  [ ok ] Docker reachable"
+  while IFS= read -r line; do
+    local name state
+    name=$(echo "$line" | cut -f1)
+    state=$(echo "$line" | cut -f2)
+    case "$name" in
+      augmentum-ws-*)
+        # Coder workspaces stop when idle — normal lifecycle, not a fault.
+        continue ;;
+    esac
+    if echo "$state" | grep -qi "unhealthy\|restarting"; then
+      echo "  [FAIL] $name — $state"; bad=$((bad+1))
+    elif echo "$state" | grep -qi "exited"; then
+      # Stopped optional service — informational, not a failure.
+      echo "  [off ] $name — $state"
+    else
+      echo "  [ ok ] $name — $state"; ok=$((ok+1))
+    fi
+  done < <(docker ps -a --filter name=augmentum- --format '{{.Names}}\t{{.Status}}' 2>/dev/null)
+  if curl -fsS -o /dev/null --max-time 5 http://localhost:6100/api/version 2>/dev/null; then
+    echo "  [ ok ] API answering on :6100"
+  else
+    echo "  [FAIL] API not answering on :6100"
+    bad=$((bad+1))
+  fi
+  echo ""
+  if [ "$bad" -eq 0 ]; then
+    echo "Everything looks healthy."
+  else
+    echo "$bad problem(s) found. Logs: ./augmentum-cli logs"
+  fi
+}
+
+case "${1:-}" in
+  "" )
+    cmd_status
+    usage_hint
+    ;;
+  up)       shift; require_conf; ./start.sh "${@:--d}" ;;
+  down)     require_conf; ./start.sh down ;;
+  restart)
+    c=$(app_container)
+    if [ -n "$c" ]; then docker restart "$c"; else require_conf; ./start.sh restart; fi
+    ;;
+  status|ps) cmd_status ;;
+  logs)     shift; c=$(app_container); [ -n "$c" ] && docker logs "${@---tail=200}" "$c" || echo "Not running." ;;
+  update)   cmd_update ;;
+  add)      shift; cmd_add_remove add "${1:-}" ;;
+  remove)   shift; cmd_add_remove remove "${1:-}" ;;
+  doctor)   cmd_doctor ;;
+  help|-h|--help)
+    sed -n '3,23p' "$0" | sed 's/^# \{0,1\}//'
+    ;;
+  *)
+    echo "Unknown command '${1}'. Try: ./augmentum-cli help"
+    exit 1
+    ;;
+esac

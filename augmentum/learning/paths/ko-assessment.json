@@ -1,0 +1,295 @@
+{
+  "lang": "ko",
+  "version": "1.0.0",
+  "name": "Korean Skill Assessment",
+  "credits": "Can-do statements paraphrased from TOPIK I (Levels 1 & 2) official specifications published by NIIED (National Institute for International Education) — the body that administers TOPIK — cross-referenced with the Korea Foundation's Korean Studies e-School standard-curriculum descriptors and the King Sejong Institute Korean for Beginners 1A/1B/2A/2B level objectives. Language-specific signal definitions (particle, formality, honorific, vowel-harmony) hand-curated against published Korean L2 acquisition research: errors tracked here are the ones a TOPIK I rater actually marks down, not generic CEFR-isms grafted onto Korean.",
+  "license": "CC BY 4.0",
+  "level_system": "topik",
+  "skills": ["reading", "writing", "listening", "speaking"],
+  "vocab_thresholds": {
+    "TOPIK1": {"settled_minimum": 500, "rationale": "Approximately the canonical NIIED TOPIK I Level 1 vocabulary footprint (~800 headwords); 500 settled covers ~60% which is the bar below which a learner cannot complete the TOPIK1 can-do tasks without lookup, making any skill-task success unstable."},
+    "TOPIK2": {"settled_minimum": 1500, "rationale": "Approximately 60% of the combined TOPIK I (Level 1 + Level 2) vocabulary target of ~2500 headwords. Aligns with the NIIED TOPIK I Level 2 topic inventory (everyday life, personal experience, social greetings, basic public-life encounters)."},
+    "TOPIK3": {"settled_minimum": 3000, "rationale": "Approximate entry threshold for TOPIK II Level 3 (out of scope for this file but referenced by the promotion rule). Real TOPIK II Level 3 requires ~3000-4000 settled words."}
+  },
+  "levels": [
+    {
+      "code": "TOPIK1",
+      "name": "TOPIK I Level 1 (Beginner)",
+      "global_descriptor": "Can carry out basic conversations related to daily survival skills (greeting, self-introduction, purchasing, ordering, etc.) and can understand the contents related to personal and familiar topics such as oneself, family, hobbies, and weather. Can produce simple sentences using approximately 800 basic vocabulary items and basic grammar. Can read and understand simple, fixed-form everyday texts written in hangul. (Paraphrased from the official TOPIK I Level 1 specification, NIIED.)",
+      "can_do": {
+        "reading": [
+          {
+            "id": "ko-topik1-r-01",
+            "statement": "Can read hangul fluently — recognise every syllable block in the basic 19-consonant / 21-vowel inventory, including final consonants (받침), without sounding out letter-by-letter.",
+            "evidence": "Bubble Pop or Echo Chamber session: resolves at least 20 distinct TOPIK1 hangul words on first display with no stall longer than 1.5 seconds per word. Cross-checked against the hangul_skills block below."
+          },
+          {
+            "id": "ko-topik1-r-02",
+            "statement": "Can read very short, simple texts on familiar personal-life topics (self-introduction, family, food, place names, days of the week, time, weather) written entirely in hangul.",
+            "evidence": "Story Weaver / Browse: completed at least 2 short TOPIK1-band texts (≤10 sentences) with correct gloss-on-hover usage on fewer than 30% of content words."
+          },
+          {
+            "id": "ko-topik1-r-03",
+            "statement": "Can pick out specific predictable information (price, time, telephone number, address) from simple everyday materials such as signs, shop labels, schedules.",
+            "evidence": "Bubble Pop: at least 3 sessions of ≥75% accuracy on the numbers / time / money word families (Sino-Korean numerals 일이삼사오, native Korean numerals 하나둘셋넷다섯, units 시 분 원 개 명)."
+          },
+          {
+            "id": "ko-topik1-r-04",
+            "statement": "Can recognise the most common particles (은/는, 이/가, 을/를, 에, 에서, 도, 의) and understand the grammatical relationship they mark in a sentence.",
+            "evidence": "Companion comprehension probe: learner correctly identified the role of the marked noun (topic / subject / object / location / etc.) in at least 8 of 10 short sentences. Particles must be observed across at least 5 distinct sentences, not all from the same construction."
+          }
+        ],
+        "writing": [
+          {
+            "id": "ko-topik1-w-01",
+            "statement": "Can introduce themselves in writing — name, nationality, occupation, where they live — using simple sentences in the polite -아요/-어요 (해요체) form.",
+            "evidence": "Companion 'introduce yourself' task: produced ≥4 grammatical Korean sentences each ending in -아요/-어요 or -이에요/-예요, graded TOPIK1-passing by the writing_topik1 LLM rubric."
+          },
+          {
+            "id": "ko-topik1-w-02",
+            "statement": "Can write simple sentences using the core particles 은/는, 이/가, 을/를, 에, 에서 without systematic confusion (occasional swaps are expected at TOPIK1; never-correct swaps fail the can-do).",
+            "evidence": "Across at least 2 Companion writing turns, particle-error rate is below 30% on these five particles, verified by writing_topik1's language_specific_signals[particle_correctness] check."
+          },
+          {
+            "id": "ko-topik1-w-03",
+            "statement": "Can construct hangul blocks correctly — every block has at least an initial consonant + a vowel, final consonants attach to the same block, no orphan jamo, no roman fallback for Korean content words.",
+            "evidence": "Every Companion writing sample is rendered through the hangul_correctness signal of writing_topik1; learner has at least 3 samples with zero orphan-jamo or block-malformation flags."
+          },
+          {
+            "id": "ko-topik1-w-04",
+            "statement": "Can use the past-tense suffixes -았어요 / -었어요 with correct vowel-harmony choice (-았 after stems whose last vowel is ㅏ or ㅗ; -었 elsewhere) for the most common TOPIK1 verbs.",
+            "evidence": "At least 5 distinct past-tense verbs produced correctly across recent writing turns; writing_topik1's language_specific_signals[vowel_harmony_correct] reports ≥70% on the observed verbs."
+          }
+        ],
+        "listening": [
+          {
+            "id": "ko-topik1-l-01",
+            "statement": "Can understand familiar words and very basic phrases about themselves, family, and immediate surroundings when spoken slowly and clearly in polite (해요) form.",
+            "evidence": "Companion voice mode at default (slow) TTS rate: at least 3 separate sessions scoring ≥6/10 on TOPIK1 sentence band. Mode evidence is preferred over Echo Chamber given the Korean TTS caveat (see notes)."
+          },
+          {
+            "id": "ko-topik1-l-02",
+            "statement": "Can recognise Sino-Korean numbers, native Korean numbers, time-of-day expressions, days of the week, and basic counters (개, 명, 시, 분, 원) when spoken slowly.",
+            "evidence": "Numbers-and-time drill: ≥15 correct out of 20 prompts mixing Sino-Korean (일이삼…) and native Korean (하나둘셋…) numerals. Mis-mapping native↔Sino for the wrong counter (e.g. saying 일 시 instead of 한 시 for 'one o'clock') is a logged error."
+          },
+          {
+            "id": "ko-topik1-l-03",
+            "statement": "Can follow simple yes/no and wh-questions delivered in polite form (-아요/-어요? / -이에요?) and respond appropriately.",
+            "evidence": "Companion voice mode: at least 2 sessions where the learner answered ≥5 question prompts (with question words 누구, 어디, 언제, 뭐, 얼마, 몇) with on-topic Korean responses, not silence or English."
+          }
+        ],
+        "speaking": [
+          {
+            "id": "ko-topik1-s-01",
+            "statement": "Can introduce themselves using basic greetings (안녕하세요, 반갑습니다 / 반가워요) and self-introduction patterns (저는 …이에요/예요, 저는 …에서 왔어요).",
+            "evidence": "Companion voice mode opening turns: at least 2 sessions begin with a contextually-appropriate greeting plus a self-introduction containing the 저는 … topic pattern, verified by speaking_topik1's language_specific_signals[formality_consistency] check (the greeting and self-intro stay in the same formality register, not greeting in 합니다 + intro in 해)."
+          },
+          {
+            "id": "ko-topik1-s-02",
+            "statement": "Can ask and answer simple questions in areas of immediate need (name, nationality, age, where they live, what they do, what they like).",
+            "evidence": "Companion voice mode: completed a 5-turn conversation in which the learner spoke a question and a paired answer on a familiar topic (이름이 뭐예요? / 어디에서 왔어요? / 뭐 좋아해요?), graded TOPIK1-passing by speaking_topik1."
+          },
+          {
+            "id": "ko-topik1-s-03",
+            "statement": "Can maintain polite (-아요/-어요) form consistently across the turn — does not drop to intimate (반말) form mid-conversation with a stranger, does not over-shoot to deferential (-습니다/ㅂ니다) for ordinary peer-to-peer talk.",
+            "evidence": "speaking_topik1 grader returns formality_used='polite' and formality_appropriate=true on at least 3 of the last 5 sessions where the context dictates polite form. Single-sentence slips are acceptable at TOPIK1; sustained mixing is a fail."
+          },
+          {
+            "id": "ko-topik1-s-04",
+            "statement": "Can produce simple isolated phrases describing daily routines, preferences, and immediate plans using TOPIK1 vocabulary and the polite present-tense form.",
+            "evidence": "Companion voice mode: at least 4 distinct turns produced a grammatical short phrase (subject + verb / subject + 은/는 + complement + 이에요), no critical-breakdown flags from speaking_topik1."
+          },
+          {
+            "id": "ko-topik1-s-05",
+            "statement": "Can count out loud using the correct numeral series for the counter — Sino-Korean for 분, 원, 월, 일; native Korean for 시, 살, 개, 명 — at least on the highest-frequency TOPIK1 counter set.",
+            "evidence": "Speaking probe: learner produced at least 4 distinct correct numeral+counter pairings across recent sessions (e.g. 세 시, 한 명, 두 개, 삼월 오일). Wrong series on a known counter (e.g. 삼 시 instead of 세 시) is a logged error."
+          }
+        ]
+      },
+      "hangul_skills": {
+        "recognition_target": "All 19 basic consonants + 21 basic vowels + the ~7 most common double consonants (ㄲ ㄸ ㅃ ㅆ ㅉ) and complex vowels (ㅐ ㅔ ㅒ ㅖ ㅘ ㅙ ㅚ ㅝ ㅞ ㅟ ㅢ) — every hangul block in the basic TOPIK1 vocabulary inventory.",
+        "production_target": "Can type or write any TOPIK1 surface form without orphan jamo, with final consonants (받침) attached to the correct block.",
+        "evidence": "Recognition: Bubble Pop / Echo Chamber sessions consistently resolve TOPIK1 hangul words with no >1.5-second stall (rolling average over the last 50 prompts). Production: writing_topik1's `hangul_quality` field returns 'fluent' on at least 3 of the last 5 writing samples; samples with 'errors_present' represent <20% of recent submissions.",
+        "notes": "Reading hangul fluently is the FIRST foundation for Korean. The script itself is phonetic and learnable in hours, but block construction (initial+vowel+optional final) trips beginners. This rubric tracks recognition speed AND production correctness separately."
+      },
+      "formality_skills": {
+        "expected_at_topik1": "polite (해요체, -아요/-어요)",
+        "tracked_forms": [
+          "intimate / plain (해체, 반말) — used with close friends, younger people; INAPPROPRIATE in most TOPIK1 contexts which assume a stranger or social-superior interlocutor",
+          "polite (해요체, -아요/-어요) — the default register a TOPIK1 learner must master and sustain",
+          "deferential / formal (합쇼체, -습니다/-ㅂ니다) — recognised at TOPIK1, used appropriately at TOPIK2"
+        ],
+        "evidence": "speaking_topik1's `formality_used` field records the dominant register per session and `formality_appropriate` flags whether that register matched the context (polite expected on stranger-talk, formal expected when addressing the examiner in TOPIK-style probe). A learner who can read polite form but speaks intimate form to a stranger is NOT TOPIK1 — register consistency is a discrete skill.",
+        "notes": "Every Korean sentence chooses a formality level — there is no neutral form. This is unlike English (where register is signalled by word choice and modal verbs, optionally) and unlike Spanish (where tú/usted is one choice). Korean encodes formality in every verb ending, every noun particle in some cases, and pronoun choice. Tracking it is essential."
+      },
+      "promotion_to_next_level": "All TOPIK1 can-do statements have ≥1 piece of evidence logged AND vocab_settled (counts.mature + counts.reviewing) ≥ 500 AND at least one speaking_topik1 grader run returned level_assessment='TOPIK2-ready' AND the most recent speaking_topik1 session reported formality_used='polite' with formality_appropriate=true AND hangul_quality='fluent' on the most recent writing sample. Recognised-word count alone is NEVER sufficient — Korean register and particle correctness require live observation."
+    },
+    {
+      "code": "TOPIK2",
+      "name": "TOPIK I Level 2 (Elementary)",
+      "global_descriptor": "Can carry out conversations related to daily-life topics (making phone calls, asking favours, using public transportation, going to the post office or bank) and can use approximately 1500-2000 vocabulary items. Can produce and understand simple compound and complex sentences using basic connective endings (-고, -지만, -아서/-어서, -으면) and the most common honorific subject marker -시-. Can read and understand short paragraphs on familiar topics. (Paraphrased from the official TOPIK I Level 2 specification, NIIED.)",
+      "can_do": {
+        "reading": [
+          {
+            "id": "ko-topik2-r-01",
+            "statement": "Can read short paragraphs (4-8 sentences) on familiar topics — diary entries, simple notices, short letters, café/restaurant menus, transport schedules — written in TOPIK2-level grammar.",
+            "evidence": "Story Weaver / Browse: completed at least 2 short TOPIK2-band paragraph texts with gloss-on-hover usage <20% of content words AND answered ≥4 of 5 comprehension questions correctly."
+          },
+          {
+            "id": "ko-topik2-r-02",
+            "statement": "Can recognise the connective endings -고, -지만, -아서/-어서, -으면 in reading and understand the logical relation (sequence / contrast / cause / condition) they mark.",
+            "evidence": "Reading drill: ≥80% correct on a 15-item form-identification quiz (presented sentence → identify the connective ending and choose the correct logical paraphrase)."
+          },
+          {
+            "id": "ko-topik2-r-03",
+            "statement": "Can read text containing the subject honorific -시- and the honorific particles 께서 / 께 and correctly infer that the subject is being elevated (typically an elder or socially-respected person).",
+            "evidence": "Comprehension probe with 5 short sentences mixing plain and honorific subjects: learner correctly identified who is being elevated on at least 4 of 5."
+          }
+        ],
+        "writing": [
+          {
+            "id": "ko-topik2-w-01",
+            "statement": "Can write short, simple personal letters, messages or diary entries describing past experiences and events, using -았/-었 correctly across at least 5 distinct verbs.",
+            "evidence": "Companion journal turn produced ≥5 sentences in the past tense, graded ≥70% accurate on vowel-harmony (-았 vs -었) by writing_topik2 against the language_specific_signals[vowel_harmony] check."
+          },
+          {
+            "id": "ko-topik2-w-02",
+            "statement": "Can connect clauses using the TOPIK2 connective endings -고 (and / sequential), -지만 (but), -아서/-어서 (because / and-then), -으면 (if).",
+            "evidence": "At least 4 of these 4 connectives produced at least once each across recent writing samples, all in grammatically valid clause-final position, verified by writing_topik2."
+          },
+          {
+            "id": "ko-topik2-w-03",
+            "statement": "Can switch between polite (해요체) and deferential (합쇼체) form appropriately for the writing context — diary in 해요체, formal notice or job application in 합쇼체 — and not mix them within a single paragraph.",
+            "evidence": "Last 5 writing samples: writing_topik2 grader reports formality_consistency='consistent' (single register sustained) on ≥4 of 5. 'mixed' within a single addressee context is a fail."
+          },
+          {
+            "id": "ko-topik2-w-04",
+            "statement": "Can use the subject honorific -시- (and 께서, 께) when writing about an elder or respected third party — for example, 할머니께서 책을 읽으세요.",
+            "evidence": "At least 2 writing samples on a family or workplace topic contain at least one correctly-formed honorific subject construction. writing_topik2's language_specific_signals[honorific_usage] field reports 'appropriate'."
+          },
+          {
+            "id": "ko-topik2-w-05",
+            "statement": "Can describe their family, daily routine, hometown, and present occupation in a connected paragraph of 6+ sentences linked by at least 2 distinct connective endings.",
+            "evidence": "Companion 'describe yourself in 6+ sentences' task: produced 6+ sentences across ≥2 sub-topics, paragraph_cohesion='connected' (not 'choppy/list-like') per writing_topik2."
+          }
+        ],
+        "listening": [
+          {
+            "id": "ko-topik2-l-01",
+            "statement": "Can follow short conversations (1-2 min) on daily-life topics — shopping, asking directions, ordering food, making phone calls — spoken at near-natural pace in polite form.",
+            "evidence": "Companion voice mode at speech_rate ≥ 1.0: ≥8 of 10 comprehension-check questions answered correctly across recent sessions on TOPIK2 topics."
+          },
+          {
+            "id": "ko-topik2-l-02",
+            "statement": "Can catch the difference between polite (-아요/-어요) and deferential (-습니다/-ㅂ니다) form in speech and infer the speaker's register choice (peer-to-peer vs formal/presentation).",
+            "evidence": "Audio-only register-discrimination drill: ≥80% correct on a 10-item task where the learner labels each utterance as 해요체 or 합쇼체."
+          },
+          {
+            "id": "ko-topik2-l-03",
+            "statement": "Can recognise honorific verb forms in speech (드세요 / 주무세요 / 계세요 / 말씀하시다) and understand who is being deferred to.",
+            "evidence": "Companion voice mode: at least 2 sessions where the learner correctly answered who-is-being-honored questions on short utterances containing 께서 / -시- forms."
+          }
+        ],
+        "speaking": [
+          {
+            "id": "ko-topik2-s-01",
+            "statement": "Can complete a routine transactional exchange (ordering at a café, buying a ticket, asking for directions, making a phone reservation) in polite form without falling back to English.",
+            "evidence": "Companion voice mode roleplay: at least 2 transactional scenarios completed end-to-end, graded TOPIK2-passing by speaking_topik2 with no more than 1 critical-error flag."
+          },
+          {
+            "id": "ko-topik2-s-02",
+            "statement": "Can describe past experiences and events orally using -았/-었 forms across multiple verbs, with correct vowel-harmony on the most common stems.",
+            "evidence": "Companion voice mode: at least 2 turns containing ≥3 distinct correctly-conjugated past-tense verbs, verified by speaking_topik2's language_specific_signals[vowel_harmony] check at ≥75%."
+          },
+          {
+            "id": "ko-topik2-s-03",
+            "statement": "Can link spoken clauses with TOPIK2 connectives (-고, -지만, -아서/-어서, -으면) to produce multi-clause utterances, not just isolated sentences.",
+            "evidence": "Companion voice mode: at least 3 multi-clause utterances per session in recent sessions, with the grader recognising the connective and its logical role."
+          },
+          {
+            "id": "ko-topik2-s-04",
+            "statement": "Can switch into deferential (합쇼체) form when the context demands it — addressing an examiner, giving a brief formal self-introduction, leaving a voicemail — and sustain it across the turn.",
+            "evidence": "Companion voice mode 'formal context' probe: ≥2 sessions where the learner sustained 합쇼체 throughout, speaking_topik2 reports formality_used='formal' and formality_appropriate=true."
+          },
+          {
+            "id": "ko-topik2-s-05",
+            "statement": "Can use the honorific subject marker -시- and the honorific particles 께서 / 께 when speaking about an elder or socially-respected third party.",
+            "evidence": "At least 2 speaking sessions on a family or workplace topic contain at least one correctly-formed honorific construction. speaking_topik2's honorific_appropriate field returns true."
+          },
+          {
+            "id": "ko-topik2-s-06",
+            "statement": "Can give a short opinion using -것 같다, -고 싶다, -아/어 보다 or other TOPIK2 modal patterns.",
+            "evidence": "≥3 opinion-or-experience prompts answered with a grammatically valid TOPIK2 modal construction across recent turns."
+          }
+        ]
+      },
+      "hangul_skills": {
+        "recognition_target": "All TOPIK1 inventory plus full mastery of complex finals (받침) including double finals (ㄳ ㄵ ㄶ ㄺ ㄻ ㄼ ㄽ ㄾ ㄿ ㅀ ㅄ) — the learner reads any TOPIK2 surface form without stall.",
+        "production_target": "Can produce any TOPIK2 surface form including complex final consonants. Liaison (받침 followed by ㅇ-initial syllable) is read correctly even when spelled out non-phonetically (e.g. 책이 read as [채기]).",
+        "evidence": "Recognition: rolling Bubble Pop / Echo Chamber stall rate under 1 second on TOPIK2 surfaces. Production: writing_topik2 reports hangul_quality='fluent' on ≥4 of the last 5 samples, complex-final errors are absent.",
+        "notes": "Hangul recognition speed should be effectively automatic at TOPIK2 — sub-second per syllable block. If the learner is still stalling on basic 받침 at TOPIK2 they are not actually at TOPIK2, regardless of vocabulary recognition counts."
+      },
+      "formality_skills": {
+        "expected_at_topik2": "polite (해요체) as default; deferential (합쇼체) on demand for formal contexts; can recognise but does not need to consistently produce intimate (반말) yet",
+        "tracked_forms": [
+          "intimate / plain (해체, 반말)",
+          "polite (해요체, -아요/-어요) — TOPIK2 default and must be solid",
+          "deferential / formal (합쇼체, -습니다/-ㅂ니다) — must be produced on demand for formal scenarios"
+        ],
+        "evidence": "speaking_topik2's `formality_used` and `formality_appropriate` fields combined must show: (a) polite as the dominant register across most sessions, (b) at least one session where formal was produced and sustained correctly, (c) zero sessions where intimate was produced toward a stranger or examiner.",
+        "notes": "TOPIK2 is the level at which the learner becomes responsible for ACTIVE register choice. TOPIK1 only required sustaining polite. TOPIK2 requires choosing polite vs formal based on context and not mixing them within one addressee turn."
+      },
+      "promotion_to_next_level": "All TOPIK2 can-do statements have ≥1 piece of evidence logged AND vocab_settled ≥ 1500 AND at least one speaking_topik2 grader run returned level_assessment='TOPIK3-ready' AND at least one writing_topik2 grader run reported past_tense_competent=true AND the most recent two speaking sessions show formality_consistency='consistent' (no mid-turn register mixing) AND at least one speaking session demonstrated honorific_appropriate=true on an elder-topic prompt. TOPIK II (Levels 3-6) is out of scope for this assessment file; promotion past TOPIK2 hands off to a separate rubric."
+    }
+  ],
+  "companion_grader_prompts": {
+    "speaking_topik1": "You are a TOPIK Level 1 examiner having a 5-turn conversation with the learner in Korean. Topic: ${topic}. Speak in polite (해요체, -아요/-어요) form throughout — do NOT use 합쇼체 (which would not match the friendly examiner register) and do NOT use 반말 (which would model the wrong register). Stay within TOPIK1 vocabulary and grammar (present and simple past, basic particles, no honorific -시-, no complex connectives). Do NOT correct mistakes mid-conversation. After turn 5, output STRICTLY valid JSON with no surrounding prose:\n\n{\n  \"can_do\": [\"ko-topik1-s-XX\", ...],\n  \"gaps\": [\"ko-topik1-s-XX\", ...],\n  \"particle_errors\": [{\"used\": \"<particle the learner produced>\", \"expected\": \"<the correct particle>\", \"context\": \"<short Korean phrase showing the error>\", \"rule\": \"<one-line rule, e.g. 은/는 marks topic, 이/가 marks new-information subject>\"}],\n  \"formality_used\": \"intimate\" | \"polite\" | \"formal\" | \"mixed\",\n  \"formality_appropriate\": true | false,\n  \"honorific_appropriate\": true | false | \"not_observed\",\n  \"hangul_quality\": \"fluent\" | \"shaky\" | \"errors_present\",\n  \"vowel_harmony_correct_pct\": <0-100 integer, on observed past-tense verbs; null if no past tense observed>,\n  \"counter_errors\": [{\"used\": \"<numeral series + counter the learner produced>\", \"expected\": \"<correct numeral series + counter>\", \"rule\": \"<e.g. 시 takes native Korean numerals: 한 시, NOT 일 시>\"}],\n  \"critical_errors\": [\"<short description>\", ...],\n  \"level_assessment\": \"pre-TOPIK1\" | \"TOPIK1\" | \"TOPIK2-ready\",\n  \"feedback\": \"<one short paragraph in English, max 4 sentences, honest critique — call out the single biggest gap, don't list every error>\"\n}\n\nGrading rules — be honest, not lenient. TOPIK1 requires consistent polite form AND correct basic particles. Counter the vocab-recognition bias:\n- 'pre-TOPIK1' if the learner needed English fallbacks more than twice, could not produce a subject+verb clause unaided, used only single memorised words, or wrote/spoke roman fallback for Korean content words.\n- 'TOPIK1' is the default outcome when descriptors are met. This is NOT a consolation prize — it's the honest result for a learner doing TOPIK1 work.\n- 'TOPIK2-ready' ONLY if ALL of: (a) formality_used='polite' AND formality_appropriate=true with no mid-conversation register slip, (b) the learner spontaneously produced at least one past-tense verb with correct vowel-harmony, (c) at least one particle pair (은/는 vs 이/가 OR 에 vs 에서) was used correctly in contrast across two utterances, (d) hangul_quality is 'fluent' (no orphan jamo, no roman fallback). Recognising TOPIK2 vocabulary is not enough; production of polite-form + past-tense + correct particle contrast is required. Never give 'TOPIK2-ready' as encouragement.",
+    "writing_topik1": "You are a TOPIK Level 1 writing grader. The learner wrote the following text on the prompt: ${prompt}. Text: ${text}. Grade ONLY against TOPIK1 expectations — do not penalise for missing TOPIK2+ grammar (no required honorific -시-, no required complex connectives). Output STRICTLY valid JSON:\n\n{\n  \"sentence_count\": <int>,\n  \"can_do\": [\"ko-topik1-w-XX\", ...],\n  \"gaps\": [\"ko-topik1-w-XX\", ...],\n  \"particle_errors\": [{\"used\": \"...\", \"expected\": \"...\", \"context\": \"...\", \"rule\": \"...\"}],\n  \"formality_used\": \"intimate\" | \"polite\" | \"formal\" | \"mixed\",\n  \"formality_appropriate\": true | false,\n  \"hangul_quality\": \"fluent\" | \"shaky\" | \"errors_present\",\n  \"hangul_errors\": [\"<short description of orphan-jamo or malformed-block instances>\"],\n  \"vowel_harmony_correct_pct\": <0-100 integer on observed past-tense verbs; null if none>,\n  \"conjugation_errors\": [{\"said\": \"...\", \"should_be\": \"...\"}],\n  \"romaja_fallback\": true | false,\n  \"critical_errors\": [\"<max 5 items>\"],\n  \"level_assessment\": \"pre-TOPIK1\" | \"TOPIK1\" | \"TOPIK2-ready\",\n  \"feedback\": \"<one short paragraph in English, max 4 sentences, with one concrete suggestion>\"\n}\n\nGrading rules — be honest:\n- A TOPIK1 text is short (3-8 sentences), uses present tense and basic past, has occasional particle slips. That is FINE — grade it 'TOPIK1'.\n- 'pre-TOPIK1' if the text is mostly English, mostly single words, mostly romaja, has no recognisable subject+verb clauses, or contains orphan hangul jamo on more than 10% of blocks.\n- Treat 은/는 vs 이/가 swap as a particle_error every time — they're not interchangeable at TOPIK1.\n- Treat 을/를 dropped when the verb is transitive as a particle_error (Korean does NOT generally allow object-marker drop in writing at this level, unlike Japanese を).\n- 'TOPIK2-ready' ONLY if all of: (a) formality is consistent (single register across the text, no mixing of 해요체 with 합니다 or 해), (b) particle-error rate below 20% on the basic five (은/는, 이/가, 을/를, 에, 에서), (c) at least one past-tense verb correctly conjugated with correct vowel-harmony, (d) hangul_quality is 'fluent', (e) ≥5 sentences. Do not give 'TOPIK2-ready' for length or vocab range alone.",
+    "speaking_topik2": "You are a TOPIK Level 2 examiner having a 6-turn conversation with the learner in Korean. Topic: ${topic}. The expected register for this topic is ${expected_register} (one of 'polite' for friendly daily-life topics or 'formal' for examiner/formal-context topics). Speak Korean throughout in the expected register; the learner should match it. Use TOPIK2-level vocabulary, present and past tense, the TOPIK2 connectives (-고, -지만, -아서/-어서, -으면), and the subject honorific -시- where context warrants (e.g. when asking the learner about their grandparents). Probe at least once for a past-tense narration ('어제 뭐 했어요?' or 'How was your weekend?'). Do not correct mid-conversation. After turn 6, output STRICTLY valid JSON:\n\n{\n  \"can_do\": [\"ko-topik2-s-XX\", ...],\n  \"gaps\": [\"ko-topik2-s-XX\", ...],\n  \"particle_errors\": [{\"used\": \"...\", \"expected\": \"...\", \"context\": \"...\", \"rule\": \"...\"}],\n  \"formality_used\": \"intimate\" | \"polite\" | \"formal\" | \"mixed\",\n  \"formality_appropriate\": true | false,\n  \"formality_consistency\": \"consistent\" | \"mixed\",\n  \"honorific_appropriate\": true | false | \"not_observed\",\n  \"honorific_errors\": [{\"said\": \"...\", \"should_be\": \"...\", \"rule\": \"e.g. 께서 must replace 이/가 when subject is elevated\"}],\n  \"vowel_harmony_correct_pct\": <0-100 integer on observed past-tense verbs>,\n  \"connectives_used\": [\"-고\", \"-지만\", \"-아서\", \"-어서\", \"-으면\", ...],\n  \"counter_errors\": [{\"used\": \"...\", \"expected\": \"...\", \"rule\": \"...\"}],\n  \"hangul_quality\": \"fluent\" | \"shaky\" | \"errors_present\",\n  \"past_tense_competent\": true | false,\n  \"critical_errors\": [\"<short description>\", ...],\n  \"level_assessment\": \"TOPIK1-retained\" | \"TOPIK2\" | \"TOPIK3-ready\",\n  \"feedback\": \"<one short paragraph in English, max 5 sentences, honest critique>\"\n}\n\nGrading rules — be honest, not lenient:\n- 'TOPIK1-retained' if the learner could not sustain past-tense narration, defaulted to present for past events, could not initiate a topic turn, or could not switch to formal form when the context required it (expected_register='formal' but formality_used='polite' through all turns).\n- 'TOPIK2' is the default outcome when descriptors are met.\n- 'TOPIK3-ready' ONLY if ALL of: (a) past_tense_competent=true with vowel_harmony ≥80% on observed verbs, (b) the learner produced at least 2 distinct connectives correctly, (c) formality_consistency='consistent' AND formality_appropriate=true throughout — including the switch into formal form if expected_register='formal', (d) at least one correctly-formed honorific construction on an elder-topic prompt (honorific_appropriate=true), (e) the learner initiated a topic turn at least once (not only responded). If any of these is missing, return 'TOPIK2'. Never promote on vocabulary alone.",
+    "writing_topik2": "You are a TOPIK Level 2 writing grader. Prompt: ${prompt}. Text: ${text}. Expected register: ${expected_register}. The prompt should naturally elicit some past-tense content (e.g. 'tell me about your weekend' / '주말에 뭐 했어요?', 'describe a trip you took' / '여행에 대해 써 주세요', 'write about your family' / '가족 소개를 써 주세요'). Output STRICTLY valid JSON:\n\n{\n  \"sentence_count\": <int>,\n  \"can_do\": [\"ko-topik2-w-XX\", ...],\n  \"gaps\": [\"ko-topik2-w-XX\", ...],\n  \"particle_errors\": [{\"used\": \"...\", \"expected\": \"...\", \"context\": \"...\", \"rule\": \"...\"}],\n  \"formality_used\": \"intimate\" | \"polite\" | \"formal\" | \"mixed\",\n  \"formality_appropriate\": true | false,\n  \"formality_consistency\": \"consistent\" | \"mixed\",\n  \"honorific_appropriate\": true | false | \"not_observed\",\n  \"honorific_errors\": [{\"said\": \"...\", \"should_be\": \"...\", \"rule\": \"...\"}],\n  \"vowel_harmony_correct_pct\": <0-100 integer on observed past-tense verbs>,\n  \"past_tense_competent\": true | false,\n  \"connectives_used\": [\"-고\", \"-지만\", \"-아서\", \"-어서\", \"-으면\", ...],\n  \"conjugation_errors\": [{\"said\": \"...\", \"should_be\": \"...\"}],\n  \"hangul_quality\": \"fluent\" | \"shaky\" | \"errors_present\",\n  \"paragraph_cohesion\": \"connected\" | \"choppy/list-like\",\n  \"romaja_fallback\": true | false,\n  \"critical_errors\": [\"<max 5 items>\"],\n  \"level_assessment\": \"TOPIK1-retained\" | \"TOPIK2\" | \"TOPIK3-ready\",\n  \"feedback\": \"<one short paragraph in English, max 5 sentences, honest critique with one concrete suggestion>\"\n}\n\nGrading rules — be honest:\n- past_tense_competent=true ONLY if at least two past-tense verbs appear, are correctly conjugated, AND vowel-harmony (-았 vs -었) is correct on both. One memorised 했어요 does not qualify.\n- formality_consistency='mixed' if the text contains both -아요/-어요 endings AND -습니다/-ㅂ니다 endings without contextual reason (e.g. quoted speech). A diary in 해요체 followed by a 합쇼체 sign-off without a stylistic justification is mixed.\n- honorific_errors: a TOPIK2 learner using -시- on their own actions (저는 학교에 가십니다) is a critical-error category — self-elevation is never appropriate in Korean. Log every instance.\n- 'TOPIK1-retained' if the learner avoided past tense, wrote only present-tense lists, made systematic particle errors, or could not produce any TOPIK2 connectives.\n- 'TOPIK2' is the default when descriptors are met.\n- 'TOPIK3-ready' ONLY if past_tense_competent=true AND paragraph_cohesion='connected' AND ≥3 distinct connectives appear AND formality_consistency='consistent' AND at least one correctly-formed honorific subject construction is present (or, if the topic does not call for honorifics, the topic was explicitly an elder/respected-person topic in the prompt). Without all of these, return 'TOPIK2'."
+  },
+  "language_specific_signals": {
+    "particle_correctness": {
+      "checked_in": ["ko-topik1-w-02", "ko-topik1-s-02", "ko-topik2-w-01", "ko-topik2-w-04", "ko-topik2-s-05"],
+      "common_errors": [
+        "은/는 vs 이/가 confusion — 은/는 marks the TOPIC (already-known referent, contrast), 이/가 marks the SUBJECT (especially new information or focus). 'I am a student' = 저는 학생이에요 (topic-introduction). '(Look,) a cat!' = 고양이가 있어요 (new-information subject).",
+        "을/를 attachment errors — Korean transitive verbs require the object particle. Dropping 을/를 in writing is a particle_error at TOPIK1; in speech it's tolerated as colloquial but still flagged.",
+        "에 vs 에서 confusion — 에 marks a STATIC location (existence, destination) — 학교에 있어요 / 학교에 가요. 에서 marks the LOCATION OF AN ACTION (where the action takes place) and also SOURCE — 학교에서 공부해요 / 한국에서 왔어요. Swap is a frequent TOPIK1 error.",
+        "은/는 vs 이/가 swap when contrasting/adding — '저는 학생이에요. 동생은 학생이에요' (parallel topics, both marked with 은/는). Swap to 이/가 changes meaning to a focus reading.",
+        "께서 missed when subject is honorific — using 이/가 instead of 께서 on an elevated subject is a flagged honorific error at TOPIK2.",
+        "의 possessive dropped or wrong — 저의 책 / 제 책 / 내 책 are the polite, contracted-polite, and intimate forms. Mixing them within a single utterance is a register error not a particle error.",
+        "도 (also) vs 만 (only) confusion — completely different meaning; flagged when context makes it clear."
+      ],
+      "rule": "The TOPIK1/2 particle set is finite but every wrong choice changes meaning, not just style. Korean has overt grammatical particles for topic, subject, object, location, source, possession, etc. — they are not optional. Every particle error is logged, not soft-pardoned. The 은/는 vs 이/가 distinction in particular is the single most-frequently-failed TOPIK1 grammar item."
+    },
+    "formality_consistency": {
+      "checked_in": ["ko-topik1-s-01", "ko-topik1-s-03", "ko-topik2-w-03", "ko-topik2-s-04"],
+      "tracked_forms": ["intimate (해체, 반말)", "polite (해요체, -아요/-어요)", "deferential (합쇼체, -습니다/-ㅂ니다)"],
+      "rule": "Every Korean verb-ending and many noun-endings choose a formality level. Mixing 해 / 해요 / 합니다 within a single utterance toward a single addressee is a tell — the learner is reaching for memorised chunks rather than producing connected speech. The grader's formality_consistency field flags this as 'mixed' regardless of vocabulary correctness. The grader's formality_appropriate field separately checks whether the dominant register matches the social context (polite to stranger / formal to examiner / intimate ONLY to peer). A TOPIK1 learner is expected to sustain polite; a TOPIK2 learner is expected to sustain polite by default AND produce formal on demand."
+    },
+    "honorific_usage": {
+      "checked_in": ["ko-topik2-r-03", "ko-topik2-w-04", "ko-topik2-s-05"],
+      "rule": "The Korean honorific system at TOPIK2 has three pieces: (a) the subject-honorific suffix -시- inserted between verb stem and ending (드시다, 주무시다, 계시다), (b) the honorific subject particle 께서 replacing 이/가, (c) the honorific dative particle 께 replacing 에게. They are used when the SUBJECT of the verb is socially elevated (elder, teacher, customer, professional). Crucially, Korean speakers NEVER self-elevate — using -시- on their own actions is a strict register error. Korean honorifics also do NOT extend to the speaker's in-group when speaking to outsiders in the same way English politeness does, but the in-group-deflation rule (which is required in Japanese) is softer in Korean — speakers may say 우리 아버지께서 instead of just 아버지가 when speaking to outsiders. The grader flags only the unambiguous errors: -시- on self-actions, missing -시- on a clearly-elevated third party (e.g. 할아버지 + plain verb), 께서 missing on an elevated subject."
+    },
+    "hangul_correctness": {
+      "checked_in": ["ko-topik1-r-01", "ko-topik1-w-03", "ko-topik2-w-01"],
+      "rule": "Hangul block construction has strict rules: every block has an initial consonant (ㅇ acts as the silent placeholder when the block begins with a vowel sound), exactly one vowel (or vowel cluster), and zero or one final consonant (받침, which can be a single or doubled consonant). The grader flags: orphan jamo (a consonant or vowel typed alone instead of in a block), wrong placement (final consonant in initial position), missing initial ㅇ on vowel-initial blocks (e.g. typing ㅏ instead of 아). Romaja fallback (typing 'annyeong' instead of 안녕) is tracked separately as romaja_fallback=true — it's not a hangul error per se, but it's a TOPIK1 fail signal."
+    },
+    "vowel_harmony_past_tense": {
+      "checked_in": ["ko-topik1-w-04", "ko-topik2-w-01", "ko-topik2-s-02"],
+      "rule": "The Korean past-tense suffix has two allomorphs: -았 (with -았어요 / -았습니다 endings) attaches to verb stems whose LAST vowel is ㅏ or ㅗ (the 'yang' / bright vowels); -었 (with -었어요 / -었습니다) attaches to all other stems (the 'eum' / dark vowels). 가다 → 갔어요 (last vowel ㅏ → -았 contracts with stem-final ㅏ). 보다 → 봤어요. 먹다 → 먹었어요 (last vowel ㅓ → -었). 하다 is irregular → 했어요. The grader's vowel_harmony_correct_pct field tracks this on every observed past-tense verb. At TOPIK1 we accept ≥70%; at TOPIK2 we expect ≥80%. Systematic wrong-vowel-harmony (e.g. always producing -았 regardless of stem) is a TOPIK1 fail signal — the learner memorised the form, didn't internalise the rule."
+    }
+  },
+  "evidence_storage_contract": {
+    "summary": "Recommended storage shape for the can-do evidence log so the assessment view can render a 4-skill TOPIK grid and the promotion gate above can be evaluated cheaply.",
+    "table_hint": "assessment_evidence (user_id, lang, can_do_id, source_game, source_session_id, score, grader_payload_json, created_at)",
+    "user_scoped": true,
+    "indices": ["(user_id, lang, can_do_id)", "(user_id, lang, created_at)"],
+    "promotion_query_sketch": "SELECT can_do_id FROM assessment_evidence WHERE user_id = ? AND lang = 'ko' AND can_do_id LIKE 'ko-topik1-%' GROUP BY can_do_id — compare result set against the full TOPIK1 can_do list; if equal AND vocab settled >= 500 AND latest speaking_topik1 grader_payload_json has level_assessment='TOPIK2-ready' AND formality_appropriate=true AND hangul_quality='fluent', promote."
+  },
+  "notes": {
+    "tts_caveat": "Korean audio uses the browser's Web Speech API (macOS Yuna, Windows Heami, etc.) since no in-process Korean voice ships in Augmentum yet. Audio quality depends on the user's OS. Speaking/listening assessments should weight Companion-mode evidence over Echo Chamber where browser TTS is the source. When deriving level_assessment from listening evidence, prefer can-do IDs whose evidence rule explicitly says 'Companion voice mode' over Echo Chamber-only evidence — the latter is sensitive to the user's machine and is not a fair signal of the learner's actual listening ability.",
+    "level_naming": "TOPIK uses a two-test structure: TOPIK I covers Levels 1 and 2 (Beginner / Elementary); TOPIK II covers Levels 3-6 (Intermediate / Advanced). This file covers TOPIK I only, using TOPIK1 and TOPIK2 as the level codes (matching the level numbers, not the test names). A future ko-assessment-ii.json may extend to TOPIK3+.",
+    "hangul_first": "Unlike the Spanish or Japanese rubrics, the Korean rubric foregrounds hangul recognition as a discrete first foundation. Hangul is phonetic and learnable in hours but the block-construction step (initial+vowel+optional final) trips beginners, and a learner who is still sounding out syllables block-by-block at TOPIK1 cannot complete the reading can-dos regardless of vocabulary recognition. Track hangul recognition speed AND production correctness — they are separate skills and they degrade differently."
+  }
+}

@@ -1,0 +1,101 @@
+name: extract_helper
+tier: composed
+description: |
+  Multi-file refactor. Two modules duplicate the same date-parsing
+  logic. Extract it into a shared helper, update both call sites,
+  leave behavior unchanged. Full plan + hybrid loop.
+
+workspace:
+  files:
+    invoice.py: |
+      from datetime import datetime
+
+
+      def render_invoice(raw_date: str) -> str:
+          # Parse YYYY-MM-DD with a fallback to MM/DD/YYYY
+          try:
+              dt = datetime.strptime(raw_date, "%Y-%m-%d")
+          except ValueError:
+              dt = datetime.strptime(raw_date, "%m/%d/%Y")
+          return f"INVOICE {dt:%Y-%m-%d}"
+    receipt.py: |
+      from datetime import datetime
+
+
+      def render_receipt(raw_date: str) -> str:
+          # Parse YYYY-MM-DD with a fallback to MM/DD/YYYY
+          try:
+              dt = datetime.strptime(raw_date, "%Y-%m-%d")
+          except ValueError:
+              dt = datetime.strptime(raw_date, "%m/%d/%Y")
+          return f"RECEIPT {dt:%Y-%m-%d}"
+    test_render.py: |
+      from invoice import render_invoice
+      from receipt import render_receipt
+
+
+      def test_invoice_iso(): assert render_invoice("2026-01-15") == "INVOICE 2026-01-15"
+      def test_invoice_us():  assert render_invoice("01/15/2026") == "INVOICE 2026-01-15"
+      def test_receipt_iso(): assert render_receipt("2026-01-15") == "RECEIPT 2026-01-15"
+      def test_receipt_us():  assert render_receipt("01/15/2026") == "RECEIPT 2026-01-15"
+
+user_message: |
+  invoice.py and receipt.py duplicate the same date-parsing block.
+  Extract it into a shared helper in dateutil.py and update both
+  files to use it. Tests must still pass.
+
+backend: scripted
+responses:
+  - tool_calls:
+      - name: code_read
+        input: {file_path: invoice.py}
+      - name: code_read
+        input: {file_path: receipt.py}
+  - tool_calls:
+      - name: file_write
+        input:
+          file_path: dateutil.py
+          content: |
+            from datetime import datetime
+
+
+            def parse_flexible_date(raw: str) -> datetime:
+                """Parse YYYY-MM-DD with a fallback to MM/DD/YYYY."""
+                try:
+                    return datetime.strptime(raw, "%Y-%m-%d")
+                except ValueError:
+                    return datetime.strptime(raw, "%m/%d/%Y")
+  - tool_calls:
+      - name: code_edit
+        input:
+          file_path: invoice.py
+          search: "from datetime import datetime\n\n\ndef render_invoice(raw_date: str) -> str:\n    # Parse YYYY-MM-DD with a fallback to MM/DD/YYYY\n    try:\n        dt = datetime.strptime(raw_date, \"%Y-%m-%d\")\n    except ValueError:\n        dt = datetime.strptime(raw_date, \"%m/%d/%Y\")\n    return f\"INVOICE {dt:%Y-%m-%d}\""
+          replace: "from dateutil import parse_flexible_date\n\n\ndef render_invoice(raw_date: str) -> str:\n    dt = parse_flexible_date(raw_date)\n    return f\"INVOICE {dt:%Y-%m-%d}\""
+      - name: code_edit
+        input:
+          file_path: receipt.py
+          search: "from datetime import datetime\n\n\ndef render_receipt(raw_date: str) -> str:\n    # Parse YYYY-MM-DD with a fallback to MM/DD/YYYY\n    try:\n        dt = datetime.strptime(raw_date, \"%Y-%m-%d\")\n    except ValueError:\n        dt = datetime.strptime(raw_date, \"%m/%d/%Y\")\n    return f\"RECEIPT {dt:%Y-%m-%d}\""
+          replace: "from dateutil import parse_flexible_date\n\n\ndef render_receipt(raw_date: str) -> str:\n    dt = parse_flexible_date(raw_date)\n    return f\"RECEIPT {dt:%Y-%m-%d}\""
+  - content: "Extracted parse_flexible_date into dateutil.py and updated both modules."
+
+assertions:
+  - property: file_contains
+    path: dateutil.py
+    text: "def parse_flexible_date"
+  - property: file_contains
+    path: invoice.py
+    text: "from dateutil import parse_flexible_date"
+  - property: file_contains
+    path: receipt.py
+    text: "from dateutil import parse_flexible_date"
+  - property: file_unchanged
+    path: test_render.py
+  - property: tools_used_includes
+    names: [file_write, code_edit]
+  - property: max_iterations
+    n: 25
+  - property: max_tokens
+    n: 15000
+  - property: tier_classified_as
+    expected: composed
+  - property: verification_gate_passed

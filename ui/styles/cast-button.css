@@ -1,0 +1,130 @@
+/* cast-button.css — shared visual identity for "Cast to TV" buttons.
+ *
+ * Used by every content surface (browse video, comic reader, image
+ * viewer, chat attachments, library rows, etc.) so the cast affordance
+ * looks like the same affordance everywhere.
+ *
+ * Three sizes:
+ *   .cast-btn-sm  — 14px icon, dense (chat image overlays, per-row icons)
+ *   .cast-btn-md  — 16px icon, default (toolbars beside transport)
+ *   .cast-btn-lg  — 20px icon, primary (reader chrome, viewer toolbars)
+ */
+
+.cast-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.cast-btn:hover,
+.cast-btn:focus-visible {
+  color: var(--accent-primary, #6366f1);
+  background: color-mix(in srgb, var(--accent-primary, #6366f1) 12%, transparent);
+  border-color: color-mix(in srgb, var(--accent-primary, #6366f1) 30%, transparent);
+  outline: none;
+}
+
+.cast-btn:active {
+  transform: scale(0.96);
+}
+
+.cast-btn[disabled],
+.cast-btn[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.cast-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* SVG sizing is driven by the parent's font-size so size variants
+ * cascade cleanly. */
+.cast-btn-icon svg {
+  width: 1em;
+  height: 1em;
+  display: block;
+}
+
+.cast-btn-label {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+
+/* --- Size variants -------------------------------------------- */
+
+.cast-btn-sm {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  font-size: 14px;
+}
+.cast-btn-sm.cast-btn-with-label {
+  width: auto;
+  padding: 4px 8px;
+}
+
+.cast-btn-md {
+  height: 30px;
+  padding: 0 10px;
+  font-size: 16px;
+}
+.cast-btn-md.cast-btn-icon-only {
+  width: 30px;
+  padding: 0;
+}
+
+.cast-btn-lg {
+  height: 36px;
+  padding: 0 14px;
+  font-size: 20px;
+}
+.cast-btn-lg.cast-btn-icon-only {
+  width: 36px;
+  padding: 0;
+}
+
+/* --- Hover-reveal mode (for image overlays etc.) -------------
+ * Caller adds .cast-btn-hover-reveal on the button + .cast-btn-host
+ * on the parent that should trigger reveal. */
+
+.cast-btn-host .cast-btn-hover-reveal {
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.cast-btn-host:hover .cast-btn-hover-reveal,
+.cast-btn-host:focus-within .cast-btn-hover-reveal,
+.cast-btn-hover-reveal:focus-visible {
+  opacity: 1;
+}
+
+/* --- On-image floating variant -------------------------------
+ * A small dark backdrop so the button reads clearly over arbitrary
+ * imagery without needing a parent overlay layer. */
+
+.cast-btn-on-image {
+  background: rgba(0, 0, 0, 0.55);
+  color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-color: transparent;
+}
+.cast-btn-on-image:hover,
+.cast-btn-on-image:focus-visible {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.2);
+}

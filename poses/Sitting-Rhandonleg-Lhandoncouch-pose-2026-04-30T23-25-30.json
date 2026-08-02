@@ -1,0 +1,237 @@
+{
+  "head": [
+    0.05,
+    0,
+    0
+  ],
+  "neck": [
+    0.03,
+    0,
+    0
+  ],
+  "spine": [
+    0.08,
+    0,
+    0
+  ],
+  "chest": [
+    0.04,
+    0,
+    0
+  ],
+  "leftShoulder": [
+    0.241,
+    -0.257,
+    -0.169
+  ],
+  "rightShoulder": [
+    -0.078,
+    0.132,
+    0.169
+  ],
+  "leftUpperArm": [
+    0.018,
+    -0.042,
+    -0.969
+  ],
+  "rightUpperArm": [
+    0.608,
+    0.474,
+    0.96
+  ],
+  "leftLowerArm": [
+    0,
+    -0.218,
+    0
+  ],
+  "rightLowerArm": [
+    0,
+    0.594,
+    0
+  ],
+  "leftHand": [
+    -0.13,
+    0.172,
+    0.749
+  ],
+  "rightHand": [
+    -0.161,
+    -0.616,
+    -0.422
+  ],
+  "hips": [
+    -0.05,
+    0,
+    0
+  ],
+  "leftUpperLeg": [
+    -1.428,
+    0.016,
+    0.027
+  ],
+  "rightUpperLeg": [
+    -1.437,
+    0.116,
+    0.147
+  ],
+  "leftLowerLeg": [
+    1.569,
+    0,
+    0
+  ],
+  "rightLowerLeg": [
+    1.504,
+    0,
+    0
+  ],
+  "leftFoot": [
+    -0.088,
+    0,
+    0
+  ],
+  "rightFoot": [
+    0.03,
+    0,
+    0
+  ],
+  "leftThumbProximal": [
+    -0.21,
+    -0.346,
+    -0.275
+  ],
+  "leftThumbDistal": [
+    0,
+    0,
+    -0.2
+  ],
+  "leftIndexProximal": [
+    0.048,
+    -0.247,
+    0.306
+  ],
+  "leftIndexIntermediate": [
+    0,
+    0,
+    -0.4
+  ],
+  "leftIndexDistal": [
+    0,
+    0,
+    -0.3
+  ],
+  "leftMiddleProximal": [
+    0.106,
+    -0.137,
+    0.312
+  ],
+  "leftMiddleIntermediate": [
+    0,
+    0,
+    -0.45
+  ],
+  "leftMiddleDistal": [
+    0,
+    0,
+    -0.35
+  ],
+  "leftRingProximal": [
+    0,
+    0,
+    0.303
+  ],
+  "leftRingIntermediate": [
+    0,
+    0,
+    -0.5
+  ],
+  "leftRingDistal": [
+    0,
+    0,
+    -0.4
+  ],
+  "leftLittleProximal": [
+    -0.017,
+    0,
+    0.204
+  ],
+  "leftLittleIntermediate": [
+    0,
+    0,
+    -0.55
+  ],
+  "leftLittleDistal": [
+    0,
+    0,
+    -0.45
+  ],
+  "rightThumbProximal": [
+    0.884,
+    0.245,
+    -0.17
+  ],
+  "rightThumbDistal": [
+    0,
+    0,
+    0.2
+  ],
+  "rightIndexProximal": [
+    0,
+    0,
+    0.3
+  ],
+  "rightIndexIntermediate": [
+    0,
+    0,
+    0.4
+  ],
+  "rightIndexDistal": [
+    0,
+    0,
+    0.3
+  ],
+  "rightMiddleProximal": [
+    0,
+    0,
+    0.35
+  ],
+  "rightMiddleIntermediate": [
+    0,
+    0,
+    0.45
+  ],
+  "rightMiddleDistal": [
+    0,
+    0,
+    0.35
+  ],
+  "rightRingProximal": [
+    0,
+    0,
+    0.4
+  ],
+  "rightRingIntermediate": [
+    0,
+    0,
+    0.5
+  ],
+  "rightRingDistal": [
+    0,
+    0,
+    0.4
+  ],
+  "rightLittleProximal": [
+    0,
+    0,
+    0.45
+  ],
+  "rightLittleIntermediate": [
+    0,
+    0,
+    0.55
+  ],
+  "rightLittleDistal": [
+    0,
+    0,
+    0.45
+  ]
+}

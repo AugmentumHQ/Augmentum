@@ -1,0 +1,46 @@
+# Qwen3-TTS optimized backend configuration
+# Tuned for a 24 GB consumer GPU
+#
+# Performance notes:
+#   - use_compile: 'inductor' is safest mode (max-autotune OOMs, reduce-overhead crashes in Docker)
+#   - use_cuda_graphs: pre-records kernel launches, eliminates CPU dispatch overhead
+#   - decode_window_frames: larger = higher throughput, smaller = lower TTFB
+#   - emit_every_frames: 6 is good balance for real-time streaming
+
+default_model: 0.6B-CustomVoice
+
+models:
+  0.6B-CustomVoice:
+    hf_id: Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice
+    type: customvoice
+
+optimization:
+  attention: flash_attention_2
+  compile_mode: inductor
+  use_compile: true
+  use_cuda_graphs: true
+  use_fast_codebook: true
+  compile_codebook_predictor: true
+  streaming:
+    decode_window_frames: 120
+    emit_every_frames: 8
+
+voices:
+  - name: Vivian
+    language: Chinese
+  - name: Serena
+    language: Chinese
+  - name: Uncle_Fu
+    language: Chinese
+  - name: Dylan
+    language: Chinese
+  - name: Eric
+    language: Chinese
+  - name: Ryan
+    language: English
+  - name: Aiden
+    language: English
+  - name: Ono_Anna
+    language: Japanese
+  - name: Sohee
+    language: Korean

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stages — Augmentum</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1;1,9..144,100..900,0..100,0..1&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=JetBrains+Mono:wght@300..600&display=swap" rel="stylesheet">
+
+  <!-- Inline favicon: the orb glyph in miniature. Suppresses the
+       browser's auto-probe for /favicon.ico variants (each of which
+       Augmentum's auth middleware 401s as an unknown path). -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='30%25' cy='30%25'%3E%3Cstop offset='0%25' stop-color='%23ffe7a8'/%3E%3Cstop offset='55%25' stop-color='%23d9a14e'/%3E%3Cstop offset='100%25' stop-color='%23b67c2e'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='64' height='64' fill='%2315110c'/%3E%3Ccircle cx='32' cy='32' r='14' fill='url(%23g)'/%3E%3C/svg%3E">
+
+  <link rel="stylesheet" href="cast-stage.css">
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <div class="masthead-left">
+      <p class="overline">augmentum · receivers</p>
+      <h1 class="title">Stages<span class="title-mark">.</span></h1>
+      <p class="subtitle">
+        The screens in your home the system can reach.
+        <br>Name them, sever them, read what passed through them.
+      </p>
+    </div>
+    <div class="masthead-right">
+      <dl class="stats" data-cs-stats>
+        <div class="stat">
+          <dt>live now</dt>
+          <dd data-cs-stat-live>—</dd>
+        </div>
+        <div class="stat">
+          <dt>paired</dt>
+          <dd data-cs-stat-paired>—</dd>
+        </div>
+        <div class="stat">
+          <dt>last cast</dt>
+          <dd data-cs-stat-last>—</dd>
+        </div>
+      </dl>
+    </div>
+  </header>
+
+  <main>
+    <section class="movement" data-cs-movement="active">
+      <header class="movement-head">
+        <span class="movement-numeral">I.</span>
+        <span class="movement-title">Now playing</span>
+        <span class="movement-rule" aria-hidden="true"></span>
+      </header>
+      <div class="movement-body" data-cs-active>
+        <p class="empty empty-placeholder">Listening for stages&hellip;</p>
+      </div>
+    </section>
+
+    <section class="movement" data-cs-movement="quiet" hidden>
+      <header class="movement-head">
+        <span class="movement-numeral">II.</span>
+        <span class="movement-title">Standing by</span>
+        <span class="movement-rule" aria-hidden="true"></span>
+      </header>
+      <div class="movement-body" data-cs-quiet></div>
+    </section>
+
+    <section class="movement" data-cs-movement="chronicle">
+      <header class="movement-head">
+        <span class="movement-numeral">III.</span>
+        <span class="movement-title">The chronicle</span>
+        <span class="movement-rule" aria-hidden="true"></span>
+      </header>
+      <div class="movement-body chronicle" data-cs-chronicle>
+        <p class="empty empty-placeholder">Loading the record&hellip;</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="colophon">
+    <nav class="colophon-nav">
+      <a href="/ui/cast-receiver/" target="_blank" rel="noopener">Pair another stage</a>
+      <a href="/ui/">Return to Augmentum</a>
+    </nav>
+    <p class="colophon-note">
+      Activity stays on your device.<br>Revocation closes any live connection immediately.
+    </p>
+  </footer>
+
+  <!-- Rename card (slides up from bottom) -->
+  <aside class="rename-card hidden" data-cs-rename role="dialog" aria-labelledby="rename-title" aria-hidden="true">
+    <div class="rename-card-inner">
+      <p class="rename-overline">rename stage</p>
+      <h3 id="rename-title" class="rename-title" data-cs-rename-prev>—</h3>
+      <p class="rename-help">A name worth saying aloud.</p>
+      <form data-cs-rename-form>
+        <input
+          type="text"
+          name="label"
+          data-cs-rename-input
+          autocomplete="off"
+          spellcheck="false"
+          maxlength="60"
+          required
+        >
+        <div class="rename-card-actions">
+          <button type="button" class="link-button" data-cs-rename-cancel>cancel</button>
+          <button type="submit" class="link-button link-button-emphasis">confirm</button>
+        </div>
+      </form>
+    </div>
+  </aside>
+
+  <!-- Toast strip -->
+  <div class="toast hidden" data-cs-toast role="status" aria-live="polite"></div>
+
+  <script src="cast-stage.js" defer></script>
+</body>
+</html>

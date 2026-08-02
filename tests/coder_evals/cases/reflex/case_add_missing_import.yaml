@@ -1,0 +1,40 @@
+name: add_missing_import
+tier: reflex
+description: |
+  Single-line one-shot edit. The agent should classify as reflex,
+  emit one code_edit, and finish without entering plan or act loops.
+
+workspace:
+  files:
+    main.py: |
+      def main():
+          print(json.dumps({"hello": "world"}))
+
+
+      if __name__ == "__main__":
+          main()
+
+user_message: "Add the missing json import to main.py"
+
+backend: scripted
+responses:
+  - tool_calls:
+      - name: code_edit
+        input:
+          file_path: main.py
+          search: "def main():"
+          replace: "import json\n\n\ndef main():"
+  - content: "Added the missing json import."
+
+assertions:
+  - property: file_contains
+    path: main.py
+    text: "import json"
+  - property: tools_used_includes
+    names: [code_edit]
+  - property: max_iterations
+    n: 3
+  - property: max_tokens
+    n: 2000
+  - property: tier_classified_as
+    expected: reflex

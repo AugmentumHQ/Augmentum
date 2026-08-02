@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Manage Guests — Augmentum</title>
+  <link rel="stylesheet" href="cast-guests.css">
+</head>
+<body>
+  <header class="cg-header">
+    <div class="cg-title">Couch co-op guests</div>
+    <div class="cg-sub">
+      People who've joined your cast sessions as players.
+      Delete a guest to remove their profile entirely
+      (their saved games detach to your library).
+    </div>
+  </header>
+
+  <main class="cg-main">
+    <div class="cg-empty" data-empty hidden>
+      <div class="cg-empty-title">No guests yet</div>
+      <div class="cg-empty-sub">
+        Cast a multiplayer game and tap "+ Players" to invite friends.
+        After their first join you'll see them here.
+      </div>
+    </div>
+
+    <ul class="cg-list" data-list></ul>
+  </main>
+
+  <!-- Per-guest detail drawer (slides up on tap) -->
+  <aside class="cg-drawer" data-drawer hidden>
+    <button class="cg-drawer-close" data-drawer-close aria-label="Close">×</button>
+    <div class="cg-drawer-header">
+      <div class="cg-drawer-color" data-drawer-color></div>
+      <input class="cg-drawer-name" data-drawer-name maxlength="32">
+    </div>
+    <div class="cg-drawer-meta">
+      <span data-drawer-played></span>
+      <span data-drawer-last></span>
+    </div>
+
+    <section class="cg-section">
+      <div class="cg-section-title">Color</div>
+      <div class="cg-color-row" data-color-row></div>
+    </section>
+
+    <section class="cg-section">
+      <div class="cg-section-title">Devices</div>
+      <ul class="cg-devices" data-devices></ul>
+      <div class="cg-empty-line" data-devices-empty hidden>
+        No devices linked. The guest will be asked for their name on next join.
+      </div>
+    </section>
+
+    <section class="cg-section cg-danger">
+      <button class="cg-delete" data-delete>Delete this guest</button>
+      <div class="cg-danger-note">
+        Their saved games will be detached to your library; their device
+        links and play history are removed.
+      </div>
+    </section>
+  </aside>
+
+  <script type="module" src="cast-guests.js"></script>
+</body>
+</html>

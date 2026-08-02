@@ -1,0 +1,292 @@
+{
+  "lang": "es",
+  "version": "1.0.0",
+  "name": "Spanish Skill Assessment",
+  "credits": "Can-do statements adapted from the CEFR Companion Volume (2020, Council of Europe) global-scale and self-assessment grids, cross-referenced with DELE A1/A2 exam content (Instituto Cervantes) and the Cervantes Plan Curricular A1/A2 inventory. LLM-grader prompts hand-tuned against the gaps surfaced by Augmentum's 2026-05 vocab-only CEFR audit: production fluency, listening at natural rate, and grammar (gender / conjugation / ser-estar / preterite-imperfect) cannot be inferred from recognised-word counts and must be observed in a live skill task.",
+  "license": "CC BY 4.0",
+  "level_system": "cefr",
+  "skills": ["reading", "writing", "listening", "speaking"],
+  "vocab_thresholds": {
+    "A1": {"settled_minimum": 450, "rationale": "~60% of the curated A1 lexicon. Below this the learner cannot complete the can-do tasks without dictionary lookups, so any skill-task success is unstable."},
+    "A2": {"settled_minimum": 900, "rationale": "~60% of the combined A1+A2 lexicon target (~1500). Aligns with the lower bound of Davies frequency dictionary band that covers A2 DELE topic inventories."},
+    "B1": {"settled_minimum": 1800, "rationale": "Roughly the threshold the Companion Volume associates with handling 'most situations likely to arise while travelling'."}
+  },
+  "levels": [
+    {
+      "code": "A1",
+      "name": "Breakthrough",
+      "global_descriptor": "Can understand and use familiar everyday expressions and very basic phrases aimed at the satisfaction of needs of a concrete type. Can introduce themselves and others and can ask and answer questions about personal details such as where they live, people they know and things they have. Can interact in a simple way provided the other person talks slowly and clearly and is prepared to help. (CEFR Companion Volume 2020, global scale.)",
+      "can_do": {
+        "reading": [
+          {
+            "id": "es-a1-r-01",
+            "statement": "Can recognise familiar names, words and very simple phrases on signs, notices and short messages.",
+            "evidence": "In Mirror (L2 to L1 direction) the learner has correctly assembled the English meaning for at least 6 distinct A1-vocab Tatoeba sentences (≤8 words each) across separate sessions, without using the gloss tooltip."
+          },
+          {
+            "id": "es-a1-r-02",
+            "statement": "Can read short, simple texts containing the highest-frequency vocabulary, including everyday or job-related vocabulary.",
+            "evidence": "Story Weaver: completed at least 2 full 5-chapter stories at A1 vocab band with ≥70% correct branch selections on first try."
+          },
+          {
+            "id": "es-a1-r-03",
+            "statement": "Can pick out specific predictable information (price, time, place) from simple everyday material.",
+            "evidence": "Bubble Pop: at least 3 sessions of ≥75% accuracy on the numbers/time/price word families (units es-a1-03-numbers, es-a1-08-time, plus money lexicon when present)."
+          }
+        ],
+        "writing": [
+          {
+            "id": "es-a1-w-01",
+            "statement": "Can write a short, simple postcard or message — for example, sending holiday greetings or introducing themselves.",
+            "evidence": "Companion journal turn (or Companion 'compose' affordance) produced ≥3 grammatical Spanish sentences (subject + verb + complement) on a personal-info topic, graded A1-passing by the writing_a1 LLM rubric."
+          },
+          {
+            "id": "es-a1-w-02",
+            "statement": "Can fill in personal-detail forms — name, nationality, address, age — and write short notes about themselves.",
+            "evidence": "Companion guided form-fill task: learner produced ≥5 personal-detail sentences. Grammatical gender on adjective of nationality and verb 'ser' agreement marked correct by the LLM grader."
+          },
+          {
+            "id": "es-a1-w-03",
+            "statement": "Can link words or groups of words with very basic linear connectors ('y', 'pero', 'entonces').",
+            "evidence": "At least 3 of the learner's Companion writing turns contain a connector ('y' / 'pero' / 'porque' / 'también') used correctly between two clauses."
+          }
+        ],
+        "listening": [
+          {
+            "id": "es-a1-l-01",
+            "statement": "Can understand familiar words and very basic phrases about themselves, family, and immediate concrete surroundings, when people speak slowly and clearly.",
+            "evidence": "Echo Chamber: at least 3 separate sessions scoring ≥6/10 at the default (slow) TTS rate on A1 sentence band."
+          },
+          {
+            "id": "es-a1-l-02",
+            "statement": "Can follow speech that is very slow and carefully articulated, with long pauses for them to assimilate meaning.",
+            "evidence": "Echo Chamber: at least one session of ≥8/10 with no replay-at-slower-speed used (i.e. picked the right gloss on first hearing)."
+          },
+          {
+            "id": "es-a1-l-03",
+            "statement": "Can recognise numbers, prices and times spoken aloud.",
+            "evidence": "Bubble Pop voice band on numbers / time / money: ≥75% recognition over 2 sessions."
+          }
+        ],
+        "speaking": [
+          {
+            "id": "es-a1-s-01",
+            "statement": "Can interact in a simple way provided the other person is prepared to repeat or rephrase at a slower rate and help formulate what they are trying to say.",
+            "evidence": "Companion voice mode: completed a 5-turn conversation in which the learner spoke (not typed) on a familiar topic (greetings / family / food), graded A1-passing by speaking_a1."
+          },
+          {
+            "id": "es-a1-s-02",
+            "statement": "Can ask and answer simple questions in areas of immediate need or on very familiar topics (name, nationality, age, where they live).",
+            "evidence": "Whisper Race: at least 2 sessions of ≥70% similarity-pass rate on personal-info vocab. AND Companion voice turn where the learner answered a 'cómo te llamas / de dónde eres / cuántos años tienes' style prompt with a correctly-conjugated 'ser'/'tener' clause."
+          },
+          {
+            "id": "es-a1-s-03",
+            "statement": "Can introduce themselves and use basic greeting and leave-taking expressions.",
+            "evidence": "Companion voice mode: opening 2 turns include a greeting (hola / buenos días / buenas tardes) and a self-introduction with correct gender on 'encantado'/'encantada'. Verified by speaking_a1 rubric on the language_specific_signals[gender_agreement] check."
+          },
+          {
+            "id": "es-a1-s-04",
+            "statement": "Can produce simple mainly isolated phrases about people and places.",
+            "evidence": "Companion voice mode: at least 4 distinct turns produced ≥1 grammatical short phrase (subject + verb + object/complement), no critical breakdowns flagged by the grader."
+          }
+        ]
+      },
+      "promotion_to_next_level": "All 13 A1 can-do statements have ≥1 piece of evidence logged AND vocab_settled (counts.mature + counts.reviewing) ≥ 450 AND at least one speaking_a1 grader run returned level_assessment of 'A2-ready'. Recognised-word count alone is NEVER sufficient to promote — that's the bug this rubric exists to fix."
+    },
+    {
+      "code": "A2",
+      "name": "Waystage",
+      "global_descriptor": "Can understand sentences and frequently used expressions related to areas of most immediate relevance (very basic personal and family information, shopping, local geography, employment). Can communicate in simple and routine tasks requiring a simple and direct exchange of information on familiar and routine matters. Can describe in simple terms aspects of their background, immediate environment and matters in areas of immediate need. (CEFR Companion Volume 2020.)",
+      "can_do": {
+        "reading": [
+          {
+            "id": "es-a2-r-01",
+            "statement": "Can understand short, simple texts on familiar matters of a concrete type which consist of high-frequency everyday or job-related language.",
+            "evidence": "Story Weaver: completed at least 2 full 5-chapter stories at A2 vocab band with ≥70% correct branches AND ≥1 stretch (A2) word picked correctly via context, not gloss."
+          },
+          {
+            "id": "es-a2-r-02",
+            "statement": "Can understand short, simple personal letters, emails, posts and messages.",
+            "evidence": "Companion 'read this short letter and reply' task: learner answered ≥3 reading-comprehension questions correctly about an A2-band ~80-120 word text (e.g. an invitation, a cancellation, a description of someone's weekend)."
+          },
+          {
+            "id": "es-a2-r-03",
+            "statement": "Can identify specific information in simpler written material such as menus, schedules, brochures and short news items.",
+            "evidence": "Constellation or Companion's scan-this-text task: ≥80% accuracy extracting 5 specific facts (time / price / location / name / quantity) from an A2-band realia text."
+          }
+        ],
+        "writing": [
+          {
+            "id": "es-a2-w-01",
+            "statement": "Can write a series of simple phrases and sentences linked with simple connectors like 'y', 'pero' and 'porque'.",
+            "evidence": "Companion journal turn produced ≥5 sentences using at least 2 different connectors, with conjugated present-tense verbs marked correct by writing_a2."
+          },
+          {
+            "id": "es-a2-w-02",
+            "statement": "Can write short, simple notes, messages and personal letters describing past experiences and events.",
+            "evidence": "Companion journal turn produced ≥4 sentences in the past tense (preterite or perfect), graded ≥70% accurate on tense choice by writing_a2 against the language_specific_signals[preterite_vs_imperfect_required] check."
+          },
+          {
+            "id": "es-a2-w-03",
+            "statement": "Can describe their family, living conditions, educational background, present or recent job.",
+            "evidence": "Companion 'describe yourself in 5 sentences' task: produced 5+ sentences spanning ≥2 of {family, home, work/study, daily routine}, no critical-error flags from writing_a2."
+          },
+          {
+            "id": "es-a2-w-04",
+            "statement": "Can write very simple descriptions using 'ser' vs 'estar' correctly for permanent vs temporary states.",
+            "evidence": "Across at least 2 Companion writing turns, the learner used both 'ser' and 'estar' in semantically appropriate contexts (e.g. 'soy alta' vs 'estoy cansada'), verified by writing_a2's language_specific_signals[ser_vs_estar] check at ≥80% correct."
+          }
+        ],
+        "listening": [
+          {
+            "id": "es-a2-l-01",
+            "statement": "Can understand phrases and expressions related to areas of most immediate priority (personal and family information, shopping, local area, employment) provided speech is clearly and slowly articulated.",
+            "evidence": "Echo Chamber: at least 3 sessions scoring ≥7/10 on the A2 sentence band at the default speech rate."
+          },
+          {
+            "id": "es-a2-l-02",
+            "statement": "Can catch the main point in short, clear, simple messages and announcements.",
+            "evidence": "Echo Chamber 'announcement' mini-band (sentences with imperative or informational register): ≥7/10 on at least one session, OR Companion voice mode where the learner correctly summarised a 3-sentence spoken passage delivered by the partner."
+          },
+          {
+            "id": "es-a2-l-03",
+            "statement": "Can follow speech delivered at near-natural rate on familiar topics, even when they do not catch every word.",
+            "evidence": "Echo Chamber: ≥7/10 on at least one session at 1.0× (default) rate without using any 'replay slow' affordance. This evidence does NOT count if the learner only ever passes at the slower-replay rate."
+          }
+        ],
+        "speaking": [
+          {
+            "id": "es-a2-s-01",
+            "statement": "Can communicate in simple and routine tasks requiring a simple and direct exchange of information on familiar topics and activities.",
+            "evidence": "Companion voice mode: 8-turn conversation on a routine topic (café order, asking directions, making plans) graded A2-passing by speaking_a2 with no more than 1 critical-error flag."
+          },
+          {
+            "id": "es-a2-s-02",
+            "statement": "Can handle very short social exchanges, even though they cannot usually understand enough to keep conversation going themselves.",
+            "evidence": "Companion voice mode: at least 2 separate sessions where the learner initiated a topic (not just responded) and the partner accepted the turn without a clarification request."
+          },
+          {
+            "id": "es-a2-s-03",
+            "statement": "Can use a series of phrases and sentences to describe in simple terms their family and other people, living conditions, educational background, present or recent job.",
+            "evidence": "Companion voice mode: produced a ≥45-second monologue (3+ linked sentences) on one of {family, work, home, daily routine}, graded A2-passing by speaking_a2."
+          },
+          {
+            "id": "es-a2-s-04",
+            "statement": "Can describe past activities and personal experiences using preterite forms of common verbs.",
+            "evidence": "Companion voice mode: at least 2 turns containing a correctly-conjugated preterite verb form (fui / comí / hablé / vi / dije etc.), verified by speaking_a2's language_specific_signals[preterite_vs_imperfect_required] check."
+          },
+          {
+            "id": "es-a2-s-05",
+            "statement": "Can ask for and follow detailed directions or instructions.",
+            "evidence": "Companion voice mode 'directions' scenario: learner correctly asked at least one clarifying question ('¿a la derecha o a la izquierda?', '¿cuántas calles?') and followed a 3-step instruction, verified by speaking_a2."
+          }
+        ]
+      },
+      "promotion_to_next_level": "All 15 A2 can-do statements have ≥1 piece of evidence logged AND vocab_settled ≥ 900 AND at least one speaking_a2 grader run returned level_assessment of 'B1-ready' AND at least one writing_a2 grader run flagged the learner as past_tense_competent. Vocab-only promotion is forbidden: a learner with 900 settled words but no speaking_a2 'B1-ready' run remains classified A2."
+    },
+    {
+      "code": "B1",
+      "name": "Threshold",
+      "global_descriptor": "Can understand the main points of clear standard input on familiar matters regularly encountered in work, school, leisure, etc. Can deal with most situations likely to arise while travelling in an area where the language is spoken. Can produce simple connected text on topics that are familiar or of personal interest. Can describe experiences and events, dreams, hopes and ambitions and briefly give reasons and explanations for opinions and plans. (CEFR Companion Volume 2020.)",
+      "can_do": {
+        "reading": [
+          {
+            "id": "es-b1-r-01",
+            "statement": "Can read straightforward factual texts on subjects related to their field and interest with a satisfactory level of comprehension.",
+            "evidence": "Companion reader-comprehension task on a 200-400 word B1-band text: ≥75% accuracy answering 5+ inference questions, not just literal recall."
+          },
+          {
+            "id": "es-b1-r-02",
+            "statement": "Can understand the description of events, feelings and wishes in personal letters well enough to correspond regularly with a pen friend.",
+            "evidence": "Companion correspondence-thread task: learner answered a B1 narrative letter with a topically coherent ≥6-sentence reply graded B1-passing."
+          }
+        ],
+        "writing": [
+          {
+            "id": "es-b1-w-01",
+            "statement": "Can write simple connected text on topics which are familiar or of personal interest.",
+            "evidence": "Companion journal entry of ≥10 sentences on a personal-interest topic, with paragraph-level cohesion (not just listed sentences), graded B1-passing."
+          },
+          {
+            "id": "es-b1-w-02",
+            "statement": "Can write personal letters describing experiences and impressions.",
+            "evidence": "Companion letter task: ≥10 sentence reply mixing narration (preterite/imperfect contrast) and reflection (present), graded B1-passing on tense-mix accuracy."
+          }
+        ],
+        "listening": [
+          {
+            "id": "es-b1-l-01",
+            "statement": "Can understand the main points of clear standard speech on familiar matters regularly encountered.",
+            "evidence": "Echo Chamber B1 sentence band: ≥7/10 on at least 2 sessions at 1.0× rate."
+          },
+          {
+            "id": "es-b1-l-02",
+            "statement": "Can understand the main point of many radio or TV programmes on current affairs or topics of personal interest when the delivery is relatively slow and clear.",
+            "evidence": "Companion 'listen and summarise' task on a 30-60 second clip: learner produced a 3-sentence summary that the grader marked as capturing the main point."
+          }
+        ],
+        "speaking": [
+          {
+            "id": "es-b1-s-01",
+            "statement": "Can deal with most situations likely to arise whilst travelling in an area where the language is spoken.",
+            "evidence": "Companion voice mode roleplay (booking accommodation, returning a defective item, reporting a lost object) completed end-to-end without the learner switching to English, graded B1-passing."
+          },
+          {
+            "id": "es-b1-s-02",
+            "statement": "Can enter unprepared into conversation on topics that are familiar, of personal interest or pertinent to everyday life.",
+            "evidence": "Companion voice mode: ≥10-turn unprepared conversation on a learner-chosen topic, graded B1-passing with ≥1 instance of the learner repairing their own utterance after a partner clarification."
+          }
+        ]
+      },
+      "promotion_to_next_level": "Out of scope for this assessment file — B1→B2 requires expanded rubrics (extended discourse, abstract topics, argumentation) that are tracked in a separate spec."
+    }
+  ],
+  "companion_grader_prompts": {
+    "speaking_a1": "You are a Spanish A1 examiner working from the CEFR Companion Volume A1 descriptors and DELE A1 oral expression criteria. You will have a 5-turn voice conversation with a learner on the topic: \"${topic}\". Speak only in Spanish, slowly and clearly, using ONLY A1 vocabulary and present-tense forms of ser, estar, tener, llamarse, vivir, hablar. Do NOT correct mistakes mid-conversation — record them mentally. After turn 5 ends, output STRICTLY valid JSON with no prose around it, in exactly this shape:\n\n{\n  \"can_do_demonstrated\": [\"es-a1-s-XX\", ...],\n  \"can_do_gaps\": [\"es-a1-s-XX\", ...],\n  \"language_specific_signals\": {\n    \"gender_agreement_observed\": true|false,\n    \"gender_agreement_correct\": true|false|\"not_observed\",\n    \"ser_estar_observed\": true|false,\n    \"ser_estar_correct\": true|false|\"not_observed\",\n    \"verb_conjugation_correct_pct\": <0-100 integer>\n  },\n  \"critical_errors\": [\"<short description>\", ...],\n  \"level_assessment\": \"pre-A1\" | \"A1\" | \"A2-ready\",\n  \"feedback\": \"<one short paragraph in English, max 4 sentences, what they did well and the single most useful thing to practice next>\"\n}\n\nGrading rules — be honest, not lenient. Augmentum's audit found this app overstates levels because it leans on recognised-word counts. Counter that bias:\n- 'pre-A1' if the learner needed English fallbacks, could not produce a subject+verb clause unaided, or used only memorised single words.\n- 'A1' is the default outcome when the learner met A1 descriptors. This is NOT a consolation prize — it's the honest result for a learner doing A1 work.\n- 'A2-ready' ONLY if the learner spontaneously produced a connector ('y'/'pero'/'porque') AND showed correct gender agreement on at least one adjective AND used at least one verb beyond the ser/estar/tener triad. Recognising A2 vocabulary is not enough; production is required.\nNever give 'A2-ready' as encouragement.",
+    "speaking_a2": "You are a Spanish A2 examiner working from the CEFR Companion Volume A2 descriptors and DELE A2 oral expression criteria. You will have an 8-turn voice conversation with a learner on the topic: \"${topic}\". Speak only in Spanish at near-natural rate using A2-band vocabulary. Use the present, preterite (pretérito indefinido), and perfect (pretérito perfecto) freely; do NOT use subjunctive, conditional, or future-of-probability — those are B1+. Do not correct mid-conversation. Probe at least once for a past-tense narration ('cuéntame qué hiciste ayer' or similar). After turn 8, output STRICTLY valid JSON:\n\n{\n  \"can_do_demonstrated\": [\"es-a2-s-XX\", ...],\n  \"can_do_gaps\": [\"es-a2-s-XX\", ...],\n  \"language_specific_signals\": {\n    \"preterite_observed\": true|false,\n    \"preterite_conjugation_correct_pct\": <0-100>,\n    \"imperfect_vs_preterite_choice_correct\": true|false|\"not_observed\",\n    \"ser_estar_correct_pct\": <0-100>,\n    \"connectors_used\": [\"y\", \"pero\", \"porque\", \"entonces\", ...],\n    \"gender_agreement_correct_pct\": <0-100>\n  },\n  \"critical_errors\": [\"<short description>\", ...],\n  \"level_assessment\": \"A1-retained\" | \"A2\" | \"B1-ready\",\n  \"feedback\": \"<one paragraph in English, max 5 sentences>\"\n}\n\nGrading rules — be honest, not lenient:\n- 'A1-retained' if the learner could not sustain past-tense narration, defaulted to present for past events, or could not initiate a topic turn.\n- 'A2' is the default outcome when descriptors are met.\n- 'B1-ready' ONLY if all of: (a) at least one correct preterite/imperfect contrast in spontaneous speech, (b) at least one repair of own utterance after partner clarification, (c) ≥75% verb conjugation correct across all observed verbs, (d) topic was initiated (not just responded to) at least twice. If any of these is missing, return 'A2'.",
+    "writing_a1": "You are a Spanish A1 writing examiner working from the CEFR Companion Volume A1 written-production descriptors and DELE A1 written expression criteria. The learner will submit a short text on the topic: \"${topic}\". Read it once. Output STRICTLY valid JSON:\n\n{\n  \"sentence_count\": <integer>,\n  \"can_do_demonstrated\": [\"es-a1-w-XX\", ...],\n  \"can_do_gaps\": [\"es-a1-w-XX\", ...],\n  \"language_specific_signals\": {\n    \"gender_agreement_correct_pct\": <0-100>,\n    \"ser_estar_correct\": true|false|\"not_observed\",\n    \"verb_conjugation_correct_pct\": <0-100>,\n    \"connectors_used\": [\"y\", \"pero\", \"porque\", ...]\n  },\n  \"critical_errors\": [\"<short description, max 5 items>\"],\n  \"level_assessment\": \"pre-A1\" | \"A1\" | \"A2-ready\",\n  \"feedback\": \"<one paragraph in English, max 4 sentences, with one concrete suggestion>\"\n}\n\nGrading rules — be honest:\n- An A1 text is short (3-8 sentences), uses present tense, has frequent agreement slips. That is FINE — it should still be graded 'A1'.\n- 'pre-A1' if the text is mostly English, mostly single words, or has no recognisable subject+verb clauses.\n- 'A2-ready' ONLY if the text uses ≥2 distinct connectors, contains zero gender-agreement errors, uses at least one verb beyond ser/estar/tener correctly conjugated, and has ≥5 sentences. Do not give 'A2-ready' for length alone or vocab range alone.",
+    "writing_a2": "You are a Spanish A2 writing examiner working from the CEFR Companion Volume A2 written-production descriptors and DELE A2 written expression criteria. The learner will submit a text on the topic: \"${topic}\", which the prompt should naturally elicit some past-tense content (e.g. 'tell me about your weekend', 'describe a trip you took', 'write a thank-you note for a gift you received'). Output STRICTLY valid JSON:\n\n{\n  \"sentence_count\": <integer>,\n  \"can_do_demonstrated\": [\"es-a2-w-XX\", ...],\n  \"can_do_gaps\": [\"es-a2-w-XX\", ...],\n  \"language_specific_signals\": {\n    \"preterite_observed\": true|false,\n    \"preterite_conjugation_correct_pct\": <0-100>,\n    \"imperfect_observed\": true|false,\n    \"imperfect_vs_preterite_choice_correct\": true|false|\"not_observed\",\n    \"ser_estar_correct_pct\": <0-100>,\n    \"gender_agreement_correct_pct\": <0-100>,\n    \"connectors_used\": [\"y\", \"pero\", \"porque\", \"entonces\", \"también\", ...],\n    \"past_tense_competent\": true|false\n  },\n  \"critical_errors\": [\"<short description, max 5 items>\"],\n  \"level_assessment\": \"A1-retained\" | \"A2\" | \"B1-ready\",\n  \"feedback\": \"<one paragraph in English, max 5 sentences, with one concrete suggestion>\"\n}\n\nGrading rules — be honest, not lenient. The Augmentum audit specifically called out overstatement of writing skill from vocabulary recognition. Counter it:\n- past_tense_competent is true ONLY if at least two preterite verb forms appear, are correctly conjugated, and the imperfect/preterite contrast is correct where elicited (e.g. background description in imperfect, foregrounded events in preterite). One memorised 'fui' does not qualify.\n- 'A1-retained' if the learner avoided past tense, wrote only present-tense lists of facts, or made systematic agreement errors.\n- 'A2' is the default when A2 descriptors are met.\n- 'B1-ready' ONLY if past_tense_competent is true AND the text has paragraph-level cohesion (not just connector-joined sentences) AND uses ≥3 distinct connectors AND ser/estar correct ≥85%. Without all four, return 'A2'."
+  },
+  "language_specific_signals": {
+    "gender_agreement_required": [
+      "es-a1-w-02",
+      "es-a1-s-03",
+      "es-a2-w-03",
+      "es-a2-w-04",
+      "es-a2-s-03"
+    ],
+    "verb_conjugation_required": [
+      "es-a1-w-01",
+      "es-a1-w-02",
+      "es-a1-s-02",
+      "es-a1-s-04",
+      "es-a2-w-01",
+      "es-a2-w-02",
+      "es-a2-s-01",
+      "es-a2-s-03",
+      "es-a2-s-04"
+    ],
+    "ser_vs_estar_required": [
+      "es-a2-w-04",
+      "es-a2-s-03"
+    ],
+    "preterite_vs_imperfect_required": [
+      "es-a2-w-02",
+      "es-a2-s-04",
+      "es-b1-w-02"
+    ],
+    "connectors_required": [
+      "es-a1-w-03",
+      "es-a2-w-01",
+      "es-b1-w-01"
+    ],
+    "notes": "These are language-specific grammar features that LLM graders MUST inspect when assigning evidence to the listed can-do IDs. They exist because the vocab-only CEFR estimate cannot see any of them — a learner can have 100% mature recognition on 'estar' as a vocabulary item while still systematically saying 'soy cansada'. The grader prompts above query these signals explicitly so the assessment surface can refuse to credit a can-do whose grammar prerequisite was not observed even when the topical content was on-target."
+  },
+  "evidence_storage_contract": {
+    "summary": "Recommended storage shape for the can-do evidence log so the assessment view can render a 4-axis CEFR grid and the promotion gate above can be evaluated cheaply.",
+    "table_hint": "assessment_evidence (user_id, lang, can_do_id, source_game, source_session_id, score, grader_payload_json, created_at)",
+    "user_scoped": true,
+    "indices": ["(user_id, lang, can_do_id)", "(user_id, lang, created_at)"],
+    "promotion_query_sketch": "SELECT can_do_id FROM assessment_evidence WHERE user_id = ? AND lang = 'es' AND can_do_id LIKE 'es-a1-%' GROUP BY can_do_id — compare result set against the full A1 can_do list; if equal AND vocab settled >= 450 AND latest speaking_a1 grader payload has level_assessment = 'A2-ready', promote."
+  }
+}

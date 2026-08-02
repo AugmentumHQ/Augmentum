@@ -1,0 +1,73 @@
+/* ==========================================================================
+   iOS Home-Screen Web App Adjustments
+   ========================================================================== */
+
+/* In iOS standalone launches, the status bar overlays the page because the
+   app opts into viewport-fit=cover and black-translucent status-bar styling.
+   Grow the shell header by the top safe area, while keeping the actual toolbar
+   controls at the normal 48px height below the sensor/status region. */
+html.ios-standalone {
+  --app-safe-area-top: env(safe-area-inset-top, 0px);
+  --header-height: calc(var(--app-toolbar-height, 48px) + var(--app-safe-area-top));
+}
+
+html.ios-standalone .app {
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* Safari zooms the whole page when an editable field below 16px receives
+   focus, then often leaves the installed web app zoomed after the keyboard
+   closes. This file is loaded after feature CSS so the floor cannot be
+   accidentally undone by compact surface styles. */
+html.ios input:not([type]),
+html.ios input[type="date"],
+html.ios input[type="datetime-local"],
+html.ios input[type="email"],
+html.ios input[type="month"],
+html.ios input[type="number"],
+html.ios input[type="password"],
+html.ios input[type="search"],
+html.ios input[type="tel"],
+html.ios input[type="text"],
+html.ios input[type="time"],
+html.ios input[type="url"],
+html.ios input[type="week"],
+html.ios select,
+html.ios textarea,
+html.ios [contenteditable="true"],
+html.ios [contenteditable="plaintext-only"],
+html.ios .ProseMirror,
+html.ios .cm-content,
+html.ios .CodeMirror,
+html.ios .EasyMDEContainer textarea {
+  font-size: 16px !important;
+  font-size: max(16px, 1em) !important;
+}
+
+/* Keep the installed bottom rail visually intentional over the home-indicator
+   inset instead of letting the OS-reserved area read as a dead Safari strip. */
+@media (max-width: 767px) {
+  html.ios-standalone .orb-nav-bar {
+    bottom: 0;
+    height: calc(var(--orb-bar-height) + env(safe-area-inset-bottom, 0px));
+    padding-bottom: 0;
+    box-sizing: border-box;
+    background:
+      linear-gradient(180deg,
+        color-mix(in srgb, var(--accent) 3%, transparent),
+        transparent 60%),
+      color-mix(in srgb, var(--bg-elevated) 97%, var(--bg));
+  }
+
+  html.ios-standalone .orb-nav-bar::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: calc(env(safe-area-inset-bottom, 0px) + 2px);
+    background: color-mix(in srgb, var(--bg-elevated) 97%, var(--bg));
+    pointer-events: none;
+  }
+}

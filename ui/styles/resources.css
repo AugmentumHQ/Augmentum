@@ -1,0 +1,818 @@
+/* ==========================================================================
+   Resource Monitor — VRAM/RAM usage widget in header
+   ========================================================================== */
+
+/* --- Trigger Button (header) --- */
+
+.resource-trigger {
+  --resource-pct: 0%;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+  position: relative;
+  white-space: nowrap;
+  height: 26px;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* Proportional fill — pseudo-element fills the pill from left */
+.resource-trigger::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  width: var(--resource-pct);
+  transition: width 0.6s var(--ease-standard), background-color 0.4s var(--ease-standard);
+  background: transparent;
+}
+
+/* Live data — fill the pill proportionally with usage color */
+.resource-trigger[data-live="ok"] {
+  color: var(--text-secondary);
+  border-color: color-mix(in srgb, var(--success) 50%, var(--border));
+}
+.resource-trigger[data-live="ok"]::before {
+  background: color-mix(in srgb, var(--success) 15%, transparent);
+}
+
+.resource-trigger[data-live="warn"] {
+  color: var(--text-secondary);
+  border-color: color-mix(in srgb, var(--warning) 50%, var(--border));
+}
+.resource-trigger[data-live="warn"]::before {
+  background: color-mix(in srgb, var(--warning) 18%, transparent);
+}
+
+.resource-trigger[data-live="crit"] {
+  color: var(--text-primary);
+  border-color: color-mix(in srgb, var(--error) 60%, var(--border));
+}
+.resource-trigger[data-live="crit"]::before {
+  background: color-mix(in srgb, var(--error) 20%, transparent);
+}
+
+.resource-trigger:hover {
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.resource-trigger[data-state="open"] {
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+.resource-trigger[data-state="open"]::before {
+  background: var(--accent-subtle);
+  width: 100%;
+}
+
+.resource-trigger-label {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Pulse dot for active models */
+.resource-trigger-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--success);
+  flex-shrink: 0;
+  animation: resource-pulse 2.5s ease-in-out infinite;
+}
+
+.resource-trigger-dot[data-count="0"] {
+  background: var(--text-muted);
+  animation: none;
+  opacity: 0.4;
+}
+
+@keyframes resource-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* --- Popover Panel --- */
+
+.resource-popover-wrap {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.resource-popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 320px;
+  max-height: 480px;
+  overflow-y: auto;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: calc(var(--z-header) + 5);
+  padding: 0;
+  opacity: 0;
+  transform: translateY(-4px) scale(0.98);
+  pointer-events: none;
+  transition: opacity var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard);
+}
+
+.resource-popover[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+/* --- Header inside popover --- */
+
+.resource-pop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.resource-pop-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.resource-pop-refresh {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--duration-fast) var(--ease-standard);
+}
+
+.resource-pop-refresh:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+}
+
+.resource-pop-refresh.spinning svg {
+  animation: resource-spin 0.6s ease-in-out;
+}
+
+@keyframes resource-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* --- Usage Bars Section --- */
+
+.resource-bars {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.resource-bar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.resource-bar-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.resource-bar-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.resource-bar-label-sub {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.resource-bar-track {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--surface-active);
+  overflow: hidden;
+  position: relative;
+}
+
+.resource-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.8s var(--ease-standard), background-color 0.4s var(--ease-standard);
+  position: relative;
+}
+
+.resource-bar-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+}
+
+/* Bar colors by data-level */
+.resource-bar-fill[data-level="ok"] {
+  background: var(--success);
+}
+
+.resource-bar-fill[data-level="warn"] {
+  background: var(--warning);
+}
+
+.resource-bar-fill[data-level="crit"] {
+  background: var(--error);
+}
+
+.resource-bar-unavailable {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 2px 0;
+}
+
+.resource-scope-note {
+  font-size: 10px;
+  line-height: 1.35;
+  color: var(--text-muted);
+  padding-top: 2px;
+}
+
+/* --- Models Section --- */
+
+.resource-models-section {
+  border-top: 1px solid var(--border-light);
+  padding: 10px 14px 12px;
+}
+
+.resource-models-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.resource-models-title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.resource-models-count {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--surface);
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+}
+
+.resource-model-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.resource-model-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.resource-model-card:hover {
+  border-color: var(--border);
+}
+
+/* Device icon/indicator */
+.resource-model-device {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+.resource-model-device[data-device="gpu"] {
+  background: color-mix(in srgb, var(--success) 15%, transparent);
+  color: var(--success);
+}
+
+.resource-model-device[data-device="cpu"] {
+  background: color-mix(in srgb, var(--mode-analytical) 15%, transparent);
+  color: var(--mode-analytical);
+}
+
+.resource-model-device[data-device="gpu+cpu"] {
+  background: color-mix(in srgb, var(--warning) 15%, transparent);
+  color: var(--warning);
+}
+
+.resource-model-device[data-device="remote"] {
+  background: color-mix(in srgb, var(--mode-agentic) 15%, transparent);
+  color: var(--mode-agentic);
+}
+
+.resource-model-device[data-device="unknown"] {
+  background: var(--surface-hover);
+  color: var(--text-muted);
+}
+
+.resource-model-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.resource-model-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resource-model-meta {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.resource-model-meta-tag {
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.resource-model-vram {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Unload button */
+.resource-model-unload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: all var(--duration-fast) var(--ease-standard);
+}
+
+.resource-model-card:hover .resource-model-unload {
+  opacity: 1;
+}
+
+.resource-model-unload:hover {
+  color: var(--error);
+  border-color: color-mix(in srgb, var(--error) 40%, transparent);
+  background: color-mix(in srgb, var(--error) 10%, transparent);
+}
+
+.resource-model-unload.unloading {
+  opacity: 1;
+  color: var(--text-muted);
+  cursor: wait;
+  animation: resource-spin 0.8s linear infinite;
+}
+
+.resource-model-unload.failed {
+  opacity: 1;
+  color: var(--error);
+  border-color: var(--error);
+}
+
+@media (hover: none) {
+  .resource-model-unload {
+    opacity: 0.7;
+  }
+}
+
+/* Pause / reload controls for sidecar containers (TTS/STT/classifier/vision) */
+.resource-model-pause,
+.resource-model-reload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: all var(--duration-fast) var(--ease-standard);
+}
+.resource-model-card:hover .resource-model-pause,
+.resource-model-card:hover .resource-model-reload,
+.resource-model-card.is-paused .resource-model-reload {
+  opacity: 1;
+}
+.resource-model-pause:hover {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--text) 25%, transparent);
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+}
+.resource-model-reload:hover {
+  color: var(--accent, #6aa9ff);
+  border-color: color-mix(in srgb, var(--accent, #6aa9ff) 40%, transparent);
+  background: color-mix(in srgb, var(--accent, #6aa9ff) 12%, transparent);
+}
+.resource-model-pause.working,
+.resource-model-reload.working {
+  opacity: 1;
+  cursor: wait;
+  animation: resource-spin 0.8s linear infinite;
+}
+.resource-model-pause.failed,
+.resource-model-reload.failed {
+  opacity: 1;
+  color: var(--error);
+  border-color: var(--error);
+}
+/* Paused sidecars read as dimmed/at-rest. */
+.resource-model-card.is-paused {
+  opacity: 0.6;
+}
+.resource-model-card.is-paused .resource-model-vram {
+  font-style: italic;
+}
+@media (hover: none) {
+  .resource-model-pause,
+  .resource-model-reload {
+    opacity: 0.7;
+  }
+}
+
+/* Empty state */
+.resource-models-empty {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 12px 0;
+  font-style: italic;
+}
+
+/* Error state */
+.resource-error {
+  padding: 14px;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.resource-error-icon {
+  font-size: 18px;
+  margin-bottom: 4px;
+  opacity: 0.4;
+}
+
+/* --- Responsive --- */
+
+/* Tablet / small desktop */
+@media (max-width: 600px) {
+  .resource-trigger-label {
+    display: none;
+  }
+  }
+
+/* Phone */
+@media (max-width: 767px) {
+  .resource-trigger {
+    min-width: 44px;
+    min-height: 36px;
+    justify-content: center;
+  }
+
+  /* backdrop-filter on .header breaks position:fixed for descendants,
+     so stay absolute — drop down from trigger, right-aligned to avoid
+     overflowing off the right edge of the screen */
+  .resource-popover {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    left: auto;
+    width: calc(100vw - var(--space-md) * 2);
+    max-width: 340px;
+    max-height: calc(100dvh - var(--header-height) - var(--orb-bar-height) - 32px);
+    min-height: 120px;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), var(--shadow-lg);
+    z-index: 9999;
+  }
+
+  .resource-bar-label-row {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .resource-model-card {
+    padding: 8px;
+  }
+
+  .resource-model-name {
+    font-size: 12px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 480px) {
+  .resource-trigger {
+    width: 28px;
+    min-width: 28px;
+    height: 28px;
+    min-height: 28px;
+    padding: 0;
+    gap: 0;
+  }
+}
+
+/* --- GPU Process Breakdown --- */
+
+.resource-proc-breakdown {
+  border-top: 1px solid var(--border-light, rgba(255,255,255,0.06));
+  padding: var(--space-xs, 4px) var(--space-sm, 8px);
+  margin-top: var(--space-xs, 4px);
+}
+
+.resource-proc-title {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted, #888);
+  margin-bottom: 4px;
+}
+
+.resource-proc-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+  font-size: 10px;
+}
+
+.resource-proc-name {
+  min-width: 70px;
+  max-width: 90px;
+  font-weight: 500;
+  color: var(--text-primary, #ccc);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resource-proc-bar-wrap {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface-active, rgba(255,255,255,0.06));
+  overflow: hidden;
+}
+
+.resource-proc-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--accent, #4f6df5);
+  transition: width 0.4s ease-out;
+}
+
+.resource-proc-bar-fill.unattr {
+  background: var(--text-muted, #666);
+  opacity: 0.5;
+}
+
+.resource-proc-val {
+  min-width: 45px;
+  text-align: right;
+  font-family: var(--font-mono, monospace);
+  font-size: 9px;
+  color: var(--text-secondary, #aaa);
+}
+
+.resource-proc-unattr .resource-proc-name {
+  color: var(--text-muted, #888);
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* --- Compact bar variant (CPU) --- */
+.resource-bar-compact {
+  padding-top: 0;
+}
+
+.resource-bar-compact .resource-bar-track {
+  height: 4px;
+}
+
+/* --- Model expiry countdown badge --- */
+.resource-model-expiry {
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  padding: 1px 5px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* --- Critical VRAM visual emphasis --- */
+.resource-trigger[data-live="crit"] {
+  animation: resource-crit-pulse 2s ease-in-out infinite;
+}
+
+@keyframes resource-crit-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50% { box-shadow: 0 0 8px color-mix(in srgb, var(--error) 25%, transparent); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resource-trigger[data-live="crit"] { animation: none; }
+}
+
+/* ==========================================================================
+   Manual reclaim (spec §7.1) — preview, then execute.
+   ========================================================================== */
+
+.resource-reclaim-section {
+  border-top: 1px solid var(--border-light);
+  padding: 8px 10px 10px;
+}
+
+.resource-reclaim-btn {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-standard);
+}
+
+.resource-reclaim-btn:hover:not(:disabled) {
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.resource-reclaim-btn:disabled { opacity: 0.5; cursor: wait; }
+
+.resource-reclaim-panel { margin-top: 8px; }
+
+.resource-reclaim-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 2px;
+  font-size: 11px;
+}
+
+/* The blocked list has no checkbox, so it starts one column later. */
+.resource-reclaim-row.muted {
+  grid-template-columns: 1fr auto;
+  color: var(--text-muted);
+}
+
+.resource-reclaim-label {
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resource-reclaim-row.muted .resource-reclaim-label { color: var(--text-muted); }
+
+.resource-reclaim-size {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* Restore cost and refusal reason wrap to their own full-width line — they
+   are explanations, not columns, and truncating them defeats the point. */
+.resource-reclaim-cost,
+.resource-reclaim-why {
+  grid-column: 1 / -1;
+  font-size: 10px;
+  color: var(--text-muted);
+  padding-left: 2px;
+}
+
+.resource-reclaim-blocked {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--border-light);
+}
+
+.resource-reclaim-blocked-title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.resource-reclaim-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.resource-reclaim-total {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.resource-reclaim-go {
+  padding: 5px 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-standard);
+}
+
+.resource-reclaim-go:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.resource-reclaim-go:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.resource-reclaim-note {
+  font-size: 11px;
+  color: var(--text-secondary);
+  padding: 4px 2px;
+  line-height: 1.45;
+}
+
+.resource-reclaim-note.failed { color: var(--error); }

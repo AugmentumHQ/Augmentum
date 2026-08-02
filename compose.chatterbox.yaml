@@ -1,0 +1,74 @@
+# Chatterbox TTS — High-quality TTS with voice cloning
+# Best quality, 22+ languages, voice cloning from seconds of audio.
+# GPU recommended for reasonable speed; CPU works but slower.
+# API: http://localhost:6400   WebUI: http://localhost:6401
+# Docs: https://github.com/travisvn/chatterbox-tts-api
+
+services:
+  chatterbox:
+    image: travisvn/chatterbox-tts-api:latest
+    ports:
+      - "6400:4123"
+    volumes:
+      - chatterbox_models:/cache
+      - ./data/voices:/voices
+    environment:
+      PORT: "4123"
+      HOST: "0.0.0.0"
+      DEVICE: "${AUGMENTUM_CHATTERBOX_DEVICE:-auto}"
+      USE_MULTILINGUAL_MODEL: "true"
+      CORS_ORIGINS: "*"
+      VOICE_LIBRARY_DIR: "/voices"
+      MODEL_CACHE_DIR: "/cache"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://0.0.0.0:4123/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 300s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    logging:
+      options:
+        max-size: "50m"
+        max-file: "3"
+    # Host-RAM backstop. DEVICE defaults to "auto", so on a GPU-less host this
+    # runs the 22-language multilingual model entirely in host RAM (weights +
+    # activations), which is the sizing case — not the CUDA one. Unverified
+    # estimate; deliberately generous because an OOM-kill mid-synthesis reads
+    # as a crash. Raise it if you clone many voices concurrently.
+    mem_limit: ${AUGMENTUM_CHATTERBOX_MEM_LIMIT:-12g}
+
+  # React voice-cloning UI for the chatterbox API. Auto-starts alongside
+  # the API so the "Chatterbox Voice Studio" link surfaced by Augmentum
+  # actually resolves; previously this was gated behind a `chatterbox-ui`
+  # profile that setup.bat never activated, so clicking the Studio link
+  # gave a connection refused. If you want to skip the UI container
+  # (saves ~150MB RAM, no GPU), remove this whole service block — the
+  # Studio link will auto-fall-back to the API's /docs explorer.
+  chatterbox-ui:
+    image: travisvn/chatterbox-tts-api:latest
+    ports:
+      - "6401:4321"
+    environment:
+      FRONTEND_PORT: "4321"
+    command: ["python", "start.py", "frontend"]
+    depends_on:
+      chatterbox:
+        condition: service_healthy
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "2"
+    # Host-RAM backstop. Frontend-only process (same image, `start.py frontend`)
+    # — no model ever loads here; the ~150MB noted above is the whole cost.
+    # Unverified estimate, ~7x that. Nothing should require raising it.
+    mem_limit: ${AUGMENTUM_CHATTERBOX_UI_MEM_LIMIT:-1g}
+
+volumes:
+  chatterbox_models:

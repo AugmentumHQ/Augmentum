@@ -1,0 +1,58 @@
+# OCR sidecar (docling-serve) — built-in document/comic OCR resource.
+# Opt-in: add this line to .augmentum.conf to enable, then set
+# AUGMENTUM_OCR_ENABLED=true in .env (or flip ocr_enabled). The augmentum
+# service auto-points at it via AUGMENTUM_OCR_BASE_URL.
+#
+# What it is: a docling-serve instance whose only job is image → boxed text
+# regions (DocTags carry per-span bounding boxes). Augmentum's augmentum/ocr/
+# layer POSTs page images to /v1/convert/file and parses the DoclingDocument
+# JSON. Validated 2026-06-17 against real Golden-Age comic pages: a full page
+# → ~24 boxed regions in ~4.5s on CPU.
+#
+# CONSUMERS: comic narration (the voiced motion-comic — slice 1) and, later,
+# PDF / document / knowledge-pack ingestion. The rough OCR lettering is
+# cleaned by the LLM script-assembly pass (augmentum/ocr/assembly.py) using a
+# model Augmentum already runs — so comic-quality lettering is fine.
+#
+# CPU by default (portable, no GPU contention with chat + TTS models). For
+# heavy batch workloads, also add compose.ocr-gpu.yaml to switch to the CUDA
+# image and reserve a GPU.
+#
+# The image bundles the layout + OCR models (NOT the Granite-Docling VLM), so
+# the default OCR pipeline runs offline after the image is pulled.
+
+services:
+  augmentum:
+    environment:
+      - AUGMENTUM_OCR_ENABLED=${AUGMENTUM_OCR_ENABLED:-true}
+      - AUGMENTUM_OCR_BASE_URL=http://ocr:5001
+    depends_on:
+      ocr:
+        # service_started, NOT service_healthy: docling-serve has a 120s
+        # start_period and warms OCR models before it reports healthy. Gating
+        # augmentum's START on it stranded the app (and caddy) in "Created"; the
+        # app reaches OCR over HTTP with fallback and does not need it healthy to
+        # boot. Same fix as caddy's augmentum dep and the classifier dep above.
+        condition: service_started
+        required: false
+
+  ocr:
+    image: ghcr.io/docling-project/docling-serve-cpu:latest
+    environment:
+      - DOCLING_SERVE_ENABLE_UI=0
+      - UVICORN_WORKERS=${AUGMENTUM_OCR_WORKERS:-1}
+    ports:
+      # Exposed on the host for diagnostics; augmentum reaches it in-network.
+      - "${AUGMENTUM_OCR_HOST_PORT:-5001}:5001"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:5001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      # First start pulls a ~7GB image + warms the OCR models.
+      start_period: 120s
+    restart: unless-stopped
+    # Host-RAM backstop. docling-serve holds the layout + OCR models resident
+    # and grows with page size and UVICORN_WORKERS; raise this if you increase
+    # AUGMENTUM_OCR_WORKERS, since each worker carries its own model copy.
+    mem_limit: ${AUGMENTUM_OCR_MEM_LIMIT:-6g}

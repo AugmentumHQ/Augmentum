@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Augmentum Receiver</string>
+    <string name="config_title">Connect to Augmentum</string>
+    <string name="config_instructions">Enter the URL where Augmentum is running on your network.</string>
+    <string name="config_url_hint">https://192.168.x.x:6443</string>
+    <string name="config_save">Save and connect</string>
+    <string name="config_url_required">Enter the Augmentum URL to continue.</string>
+    <string name="config_url_invalid">URL doesn\'t look right — try https://host:port</string>
+    <string name="config_scanning">Searching your network for Augmentum…</string>
+    <string name="config_scan_found">Found Augmentum at %1$s — edit if wrong.</string>
+    <string name="config_scan_none">Couldn\'t find Augmentum on this network. Enter the URL manually.</string>
+</resources>

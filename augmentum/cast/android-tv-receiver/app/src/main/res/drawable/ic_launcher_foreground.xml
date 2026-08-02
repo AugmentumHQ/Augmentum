@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Simple Augmentum-mark placeholder for the launcher icon. Real
+  product art would replace this with a polished vector.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="108dp"
+        android:height="108dp"
+        android:viewportWidth="108"
+        android:viewportHeight="108">
+    <path
+        android:fillColor="#7a86ff"
+        android:pathData="M54,30 L74,78 L67,78 L62,66 L46,66 L41,78 L34,78 Z M54,46 L49,60 L59,60 Z" />
+</vector>

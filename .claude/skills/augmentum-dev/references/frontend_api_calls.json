@@ -1,0 +1,7889 @@
+{
+  "calls": [
+    {
+      "url": "/api/agentic/tasks/{param}",
+      "method": "GET",
+      "file": "ui/scripts/agentic.js",
+      "line": 1278
+    },
+    {
+      "url": "/api/animations/list",
+      "method": "GET",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 4787
+    },
+    {
+      "url": "/api/animations/overrides",
+      "method": "GET",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 4788
+    },
+    {
+      "url": "/api/animations/overrides/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 2064
+    },
+    {
+      "url": "/api/animations/overrides/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 1965
+    },
+    {
+      "url": "/api/animations/roles-snapshot",
+      "method": "PUT",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 4815
+    },
+    {
+      "url": "/api/animations/upload",
+      "method": "POST",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 4847
+    },
+    {
+      "url": "/api/animations/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 4873
+    },
+    {
+      "url": "/api/artifacts",
+      "method": "GET",
+      "file": "ui/scripts/studio/api.js",
+      "line": 54
+    },
+    {
+      "url": "/api/artifacts",
+      "method": "GET",
+      "file": "ui/scripts/studio.js",
+      "line": 2765
+    },
+    {
+      "url": "/api/artifacts/build-cancel",
+      "method": "POST",
+      "file": "ui/scripts/chat/index.js",
+      "line": 2211
+    },
+    {
+      "url": "/api/artifacts/build-cancel",
+      "method": "POST",
+      "file": "ui/scripts/chat/project.js",
+      "line": 486
+    },
+    {
+      "url": "/api/artifacts/build-status",
+      "method": "GET",
+      "file": "ui/scripts/chat/project.js",
+      "line": 1099
+    },
+    {
+      "url": "/api/artifacts/build-status/{param}",
+      "method": "GET",
+      "file": "ui/scripts/chat/project.js",
+      "line": 462
+    },
+    {
+      "url": "/api/artifacts/fix",
+      "method": "POST",
+      "file": "ui/scripts/chat/project.js",
+      "line": 1924
+    },
+    {
+      "url": "/api/artifacts/fix",
+      "method": "POST",
+      "file": "ui/scripts/workspace.js",
+      "line": 3087
+    },
+    {
+      "url": "/api/artifacts/import",
+      "method": "POST",
+      "file": "ui/scripts/library/api.js",
+      "line": 155
+    },
+    {
+      "url": "/api/artifacts/iterate",
+      "method": "POST",
+      "file": "ui/scripts/chat/project.js",
+      "line": 199
+    },
+    {
+      "url": "/api/artifacts/save-html",
+      "method": "POST",
+      "file": "ui/scripts/chat/index.js",
+      "line": 2966
+    },
+    {
+      "url": "/api/artifacts/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/library/api.js",
+      "line": 170
+    },
+    {
+      "url": "/api/artifacts/{param}",
+      "method": "GET",
+      "file": "ui/cast-app/cast-app.js",
+      "line": 76
+    },
+    {
+      "url": "/api/artifacts/{param}",
+      "method": "GET",
+      "file": "ui/scripts/chat/index.js",
+      "line": 119
+    },
+    {
+      "url": "/api/artifacts/{param}",
+      "method": "GET",
+      "file": "ui/scripts/game-surface.js",
+      "line": 601
+    },
+    {
+      "url": "/api/artifacts/{param}",
+      "method": "GET",
+      "file": "ui/scripts/library/detail-pane.js",
+      "line": 645
+    },
+    {
+      "url": "/api/artifacts/{param}",
+      "method": "GET",
+      "file": "ui/scripts/library/open-item.js",
+      "line": 127
+    },
+    {
+      "url": "/api/artifacts/{param}",
+      "method": "GET",
+      "file": "ui/scripts/workspace.js",
+      "line": 121
+    },
+    {
+      "url": "/api/artifacts/{param}",
+      "method": "POST",
+      "file": "ui/scripts/chat/canvas-dock.js",
+      "line": 260
+    },
+    {
+      "url": "/api/artifacts/{param}/capture-preview",
+      "method": "POST",
+      "file": "ui/scripts/library/cover.js",
+      "line": 401
+    },
+    {
+      "url": "/api/artifacts/{param}/convert",
+      "method": "POST",
+      "file": "ui/scripts/studio.js",
+      "line": 1733
+    },
+    {
+      "url": "/api/artifacts/{param}/download",
+      "method": "GET",
+      "file": "ui/scripts/app.js",
+      "line": 2061
+    },
+    {
+      "url": "/api/artifacts/{param}/download",
+      "method": "GET",
+      "file": "ui/scripts/studio.js",
+      "line": 888
+    },
+    {
+      "url": "/api/artifacts/{param}/epub-text",
+      "method": "GET",
+      "file": "ui/scripts/app.js",
+      "line": 2020
+    },
+    {
+      "url": "/api/artifacts/{param}/inpaint",
+      "method": "POST",
+      "file": "ui/scripts/studio.js",
+      "line": 1434
+    },
+    {
+      "url": "/api/artifacts/{param}/open",
+      "method": "PATCH",
+      "file": "ui/scripts/files/preview.js",
+      "line": 52
+    },
+    {
+      "url": "/api/artifacts/{param}/open",
+      "method": "PATCH",
+      "file": "ui/scripts/library/open-item.js",
+      "line": 57
+    },
+    {
+      "url": "/api/artifacts/{param}/revert/{param}",
+      "method": "POST",
+      "file": "ui/scripts/chat/project.js",
+      "line": 1251
+    },
+    {
+      "url": "/api/artifacts/{param}/save",
+      "method": "POST",
+      "file": "ui/scripts/workspace.js",
+      "line": 3322
+    },
+    {
+      "url": "/api/artifacts/{param}/transcribe",
+      "method": "POST",
+      "file": "ui/scripts/app.js",
+      "line": 1999
+    },
+    {
+      "url": "/api/artifacts/{param}/transcribe",
+      "method": "POST",
+      "file": "ui/scripts/studio.js",
+      "line": 1663
+    },
+    {
+      "url": "/api/artifacts/{param}/upload",
+      "method": "POST",
+      "file": "ui/scripts/studio.js",
+      "line": 1357
+    },
+    {
+      "url": "/api/artifacts/{param}/versions",
+      "method": "GET",
+      "file": "ui/scripts/chat/project.js",
+      "line": 1232
+    },
+    {
+      "url": "/api/artifacts/{param}/{param}",
+      "method": "POST",
+      "file": "ui/scripts/studio.js",
+      "line": 1487
+    },
+    {
+      "url": "/api/audio/csm/pin",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 12719
+    },
+    {
+      "url": "/api/audio/csm/pin",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 12729
+    },
+    {
+      "url": "/api/audio/csm/pin?provider_id=",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 12719
+    },
+    {
+      "url": "/api/audio/fabric_diagnostic",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 12392
+    },
+    {
+      "url": "/api/audio/providers",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 12478
+    },
+    {
+      "url": "/api/audio/providers",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 12664
+    },
+    {
+      "url": "/api/audio/providers/bundled",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 12982
+    },
+    {
+      "url": "/api/audio/providers/bundled",
+      "method": "GET",
+      "file": "ui/scripts/voice-mixer.js",
+      "line": 43
+    },
+    {
+      "url": "/api/audio/providers/webui",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 12790
+    },
+    {
+      "url": "/api/audio/providers/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 12746
+    },
+    {
+      "url": "/api/audio/providers/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/discover/index.js",
+      "line": 2068
+    },
+    {
+      "url": "/api/audio/providers/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/settings.js",
+      "line": 12761
+    },
+    {
+      "url": "/api/audio/providers/{param}/test",
+      "method": "POST",
+      "file": "ui/scripts/discover/index.js",
+      "line": 2078
+    },
+    {
+      "url": "/api/audio/providers/{param}/test",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 12696
+    },
+    {
+      "url": "/api/audio/voices",
+      "method": "GET",
+      "file": "ui/scripts/learning.js",
+      "line": 191
+    },
+    {
+      "url": "/api/audio/voices",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/_common.js",
+      "line": 348
+    },
+    {
+      "url": "/api/audio/voices",
+      "method": "GET",
+      "file": "ui/scripts/model-cache.js",
+      "line": 106
+    },
+    {
+      "url": "/api/audio/voices/clone",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 13662
+    },
+    {
+      "url": "/api/audio/voices/clone-kokoro",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 13384
+    },
+    {
+      "url": "/api/audio/voices/cloned/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 12923
+    },
+    {
+      "url": "/api/audio/voices/combine",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 13167
+    },
+    {
+      "url": "/api/audio/voices/combine",
+      "method": "POST",
+      "file": "ui/scripts/voice-mixer.js",
+      "line": 203
+    },
+    {
+      "url": "/api/audio/voices/combine?provider_id=",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 13167
+    },
+    {
+      "url": "/api/audio/voices/combine?provider_id=",
+      "method": "POST",
+      "file": "ui/scripts/voice-mixer.js",
+      "line": 203
+    },
+    {
+      "url": "/api/audio/voices/mixes/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 12940
+    },
+    {
+      "url": "/api/audio/voices/mixes/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/voice-mixer.js",
+      "line": 287
+    },
+    {
+      "url": "/api/audio/voices/preview",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 12958
+    },
+    {
+      "url": "/api/audio/voices/preview",
+      "method": "POST",
+      "file": "ui/scripts/voice-lexicon.js",
+      "line": 33
+    },
+    {
+      "url": "/api/audio/voices/preview",
+      "method": "POST",
+      "file": "ui/scripts/voice-mixer.js",
+      "line": 185
+    },
+    {
+      "url": "/api/audio/voices/preview",
+      "method": "POST",
+      "file": "ui/scripts/voice.js",
+      "line": 1423
+    },
+    {
+      "url": "/api/audio/voices/preview?",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 12958
+    },
+    {
+      "url": "/api/audio/voices/preview?",
+      "method": "POST",
+      "file": "ui/scripts/voice-lexicon.js",
+      "line": 33
+    },
+    {
+      "url": "/api/audio/voices/preview?",
+      "method": "POST",
+      "file": "ui/scripts/voice-mixer.js",
+      "line": 185
+    },
+    {
+      "url": "/api/audio/voices/preview?",
+      "method": "POST",
+      "file": "ui/scripts/voice.js",
+      "line": 1423
+    },
+    {
+      "url": "/api/auth/audit",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 16189
+    },
+    {
+      "url": "/api/auth/audit?limit=100",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 16189
+    },
+    {
+      "url": "/api/auth/invite/{param}",
+      "method": "GET",
+      "file": "ui/connect-join/connect-join.js",
+      "line": 36
+    },
+    {
+      "url": "/api/auth/invite/{param}",
+      "method": "GET",
+      "file": "ui/portal/portal.js",
+      "line": 107
+    },
+    {
+      "url": "/api/auth/invite/{param}/check-username",
+      "method": "GET",
+      "file": "ui/connect-join/connect-join.js",
+      "line": 115
+    },
+    {
+      "url": "/api/auth/invite/{param}/check-username?u=",
+      "method": "GET",
+      "file": "ui/connect-join/connect-join.js",
+      "line": 115
+    },
+    {
+      "url": "/api/auth/invite/{param}/claim",
+      "method": "POST",
+      "file": "ui/connect-join/connect-join.js",
+      "line": 170
+    },
+    {
+      "url": "/api/auth/invites",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 16144
+    },
+    {
+      "url": "/api/auth/invites",
+      "method": "POST",
+      "file": "ui/scripts/connect/invite-mint.js",
+      "line": 28
+    },
+    {
+      "url": "/api/auth/invites/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 16174
+    },
+    {
+      "url": "/api/auth/keys",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 15886
+    },
+    {
+      "url": "/api/auth/keys",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 15962
+    },
+    {
+      "url": "/api/auth/keys/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 15919
+    },
+    {
+      "url": "/api/auth/login",
+      "method": "POST",
+      "file": "ui/cast-pair/cast-pair.js",
+      "line": 98
+    },
+    {
+      "url": "/api/auth/login",
+      "method": "POST",
+      "file": "ui/portal/portal.js",
+      "line": 200
+    },
+    {
+      "url": "/api/auth/login",
+      "method": "POST",
+      "file": "ui/scripts/auth.js",
+      "line": 339
+    },
+    {
+      "url": "/api/auth/logout",
+      "method": "POST",
+      "file": "ui/scripts/auth.js",
+      "line": 390
+    },
+    {
+      "url": "/api/auth/me",
+      "method": "GET",
+      "file": "ui/cast-receiver/cast-receiver.js",
+      "line": 1384
+    },
+    {
+      "url": "/api/auth/me",
+      "method": "GET",
+      "file": "ui/scripts/auth.js",
+      "line": 196
+    },
+    {
+      "url": "/api/auth/me",
+      "method": "GET",
+      "file": "ui/scripts/becca-bootstrap.js",
+      "line": 219
+    },
+    {
+      "url": "/api/auth/me",
+      "method": "GET",
+      "file": "ui/scripts/chat/index.js",
+      "line": 985
+    },
+    {
+      "url": "/api/auth/me",
+      "method": "GET",
+      "file": "ui/scripts/companion-reset.js",
+      "line": 23
+    },
+    {
+      "url": "/api/auth/me",
+      "method": "POST",
+      "file": "ui/scripts/chat/index.js",
+      "line": 1035
+    },
+    {
+      "url": "/api/auth/me/password",
+      "method": "PUT",
+      "file": "ui/scripts/settings.js",
+      "line": 7013
+    },
+    {
+      "url": "/api/auth/pair/approve/{param}",
+      "method": "POST",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 615
+    },
+    {
+      "url": "/api/auth/pair/devices",
+      "method": "GET",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 134
+    },
+    {
+      "url": "/api/auth/pair/devices/{param}/revoke",
+      "method": "POST",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 651
+    },
+    {
+      "url": "/api/auth/pair/start",
+      "method": "POST",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 548
+    },
+    {
+      "url": "/api/auth/setup",
+      "method": "POST",
+      "file": "ui/scripts/auth.js",
+      "line": 266
+    },
+    {
+      "url": "/api/auth/status",
+      "method": "GET",
+      "file": "ui/cast-receiver/cast-receiver.js",
+      "line": 1181
+    },
+    {
+      "url": "/api/auth/status",
+      "method": "GET",
+      "file": "ui/scripts/auth.js",
+      "line": 104
+    },
+    {
+      "url": "/api/auth/users",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 16234
+    },
+    {
+      "url": "/api/auth/users",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 16082
+    },
+    {
+      "url": "/api/auth/users/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 16431
+    },
+    {
+      "url": "/api/auth/users/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/settings.js",
+      "line": 16324
+    },
+    {
+      "url": "/api/auth/users/{param}/password",
+      "method": "PUT",
+      "file": "ui/scripts/settings.js",
+      "line": 16408
+    },
+    {
+      "url": "/api/auth/ws-ticket",
+      "method": "POST",
+      "file": "ui/portal/messenger.js",
+      "line": 83
+    },
+    {
+      "url": "/api/auth/ws-ticket",
+      "method": "POST",
+      "file": "ui/scripts/auth.js",
+      "line": 483
+    },
+    {
+      "url": "/api/auth/ws-ticket",
+      "method": "POST",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 5995
+    },
+    {
+      "url": "/api/auth/ws-ticket",
+      "method": "POST",
+      "file": "ui/scripts/chat/offer-chip.js",
+      "line": 339
+    },
+    {
+      "url": "/api/auth/ws-ticket",
+      "method": "POST",
+      "file": "ui/scripts/connect/client.js",
+      "line": 194
+    },
+    {
+      "url": "/api/auth/ws-ticket",
+      "method": "POST",
+      "file": "ui/scripts/notifications.js",
+      "line": 177
+    },
+    {
+      "url": "/api/avatar/bundled",
+      "method": "GET",
+      "file": "ui/cast-vrm/cast-vrm.js",
+      "line": 187
+    },
+    {
+      "url": "/api/avatar/for-session",
+      "method": "GET",
+      "file": "ui/cast-vrm/cast-vrm.js",
+      "line": 168
+    },
+    {
+      "url": "/api/avatar/for-session",
+      "method": "GET",
+      "file": "ui/scripts/avatar.js",
+      "line": 2410
+    },
+    {
+      "url": "/api/avatar/for-session",
+      "method": "GET",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 904
+    },
+    {
+      "url": "/api/avatar/for-session",
+      "method": "GET",
+      "file": "ui/scripts/presence-fullscreen.js",
+      "line": 36
+    },
+    {
+      "url": "/api/avatar/for-session",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 15692
+    },
+    {
+      "url": "/api/avatar/for-session?",
+      "method": "GET",
+      "file": "ui/scripts/avatar.js",
+      "line": 2410
+    },
+    {
+      "url": "/api/avatar/for-session?",
+      "method": "GET",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 2178
+    },
+    {
+      "url": "/api/avatar/for-session?mode=passthrough",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 15692
+    },
+    {
+      "url": "/api/avatar/for-session?mode={param}&character_id=",
+      "method": "GET",
+      "file": "ui/scripts/avatar.js",
+      "line": 2465
+    },
+    {
+      "url": "/api/avatar/list",
+      "method": "GET",
+      "file": "ui/scripts/avatar.js",
+      "line": 3396
+    },
+    {
+      "url": "/api/avatar/list",
+      "method": "GET",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 1372
+    },
+    {
+      "url": "/api/avatar/list",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 438
+    },
+    {
+      "url": "/api/avatar/list",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 15691
+    },
+    {
+      "url": "/api/avatar/select",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 15806
+    },
+    {
+      "url": "/api/avatar/upload",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 574
+    },
+    {
+      "url": "/api/avatar/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 15788
+    },
+    {
+      "url": "/api/avatar/{param}/character",
+      "method": "PATCH",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 535
+    },
+    {
+      "url": "/api/avatar/{param}/segmentation",
+      "method": "PUT",
+      "file": "ui/scripts/avatar.js",
+      "line": 2260
+    },
+    {
+      "url": "/api/avatar/{param}/thumbnail",
+      "method": "PUT",
+      "file": "ui/scripts/settings.js",
+      "line": 15667
+    },
+    {
+      "url": "/api/backends/discover",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 2510
+    },
+    {
+      "url": "/api/backends/remove",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 3616
+    },
+    {
+      "url": "/api/backends/remove",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 13849
+    },
+    {
+      "url": "/api/balancers",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 10742
+    },
+    {
+      "url": "/api/balancers",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 11028
+    },
+    {
+      "url": "/api/balancers/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 10782
+    },
+    {
+      "url": "/api/balancers/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/settings.js",
+      "line": 11009
+    },
+    {
+      "url": "/api/balancers/{param}/members",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 11023
+    },
+    {
+      "url": "/api/balancers/{param}/members",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 11052
+    },
+    {
+      "url": "/api/balancers/{param}/members",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 11046
+    },
+    {
+      "url": "/api/balancers/{param}/members/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 11025
+    },
+    {
+      "url": "/api/balancers/{param}/members/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/settings.js",
+      "line": 11055
+    },
+    {
+      "url": "/api/balancers/{param}/stats",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 10798
+    },
+    {
+      "url": "/api/balancers/{param}/vote",
+      "method": "POST",
+      "file": "ui/scripts/chat/index.js",
+      "line": 905
+    },
+    {
+      "url": "/api/balancers/{param}/vote",
+      "method": "POST",
+      "file": "ui/scripts/surfaces/chat-surface.js",
+      "line": 607
+    },
+    {
+      "url": "/api/browse/ai",
+      "method": "POST",
+      "file": "ui/scripts/browse.js",
+      "line": 5698
+    },
+    {
+      "url": "/api/browse/ai",
+      "method": "POST",
+      "file": "ui/scripts/studio.js",
+      "line": 6715
+    },
+    {
+      "url": "/api/browse/fetch",
+      "method": "GET",
+      "file": "ui/scripts/app.js",
+      "line": 5096
+    },
+    {
+      "url": "/api/browse/fetch",
+      "method": "GET",
+      "file": "ui/scripts/browse.js",
+      "line": 4483
+    },
+    {
+      "url": "/api/browse/fetch?url=",
+      "method": "GET",
+      "file": "ui/scripts/app.js",
+      "line": 5096
+    },
+    {
+      "url": "/api/browse/fetch?url=",
+      "method": "GET",
+      "file": "ui/scripts/browse.js",
+      "line": 4483
+    },
+    {
+      "url": "/api/browse/notes",
+      "method": "GET",
+      "file": "ui/scripts/browse.js",
+      "line": 6065
+    },
+    {
+      "url": "/api/browse/notes",
+      "method": "GET",
+      "file": "ui/scripts/xr-surface-data.js",
+      "line": 408
+    },
+    {
+      "url": "/api/browse/notes",
+      "method": "POST",
+      "file": "ui/scripts/browse.js",
+      "line": 1611
+    },
+    {
+      "url": "/api/browse/notes/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/browse.js",
+      "line": 6247
+    },
+    {
+      "url": "/api/browse/notes/{param}",
+      "method": "GET",
+      "file": "ui/scripts/browse.js",
+      "line": 6303
+    },
+    {
+      "url": "/api/browse/notes/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/browse.js",
+      "line": 6272
+    },
+    {
+      "url": "/api/browse/notes/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/sticky-note.js",
+      "line": 263
+    },
+    {
+      "url": "/api/browse/save",
+      "method": "POST",
+      "file": "ui/scripts/app.js",
+      "line": 5106
+    },
+    {
+      "url": "/api/browse/save",
+      "method": "POST",
+      "file": "ui/scripts/browse.js",
+      "line": 5782
+    },
+    {
+      "url": "/api/browse/search",
+      "method": "GET",
+      "file": "ui/scripts/browse.js",
+      "line": 3202
+    },
+    {
+      "url": "/api/browse/search",
+      "method": "GET",
+      "file": "ui/scripts/chat/toolbar/web-search.js",
+      "line": 221
+    },
+    {
+      "url": "/api/browse/search?",
+      "method": "GET",
+      "file": "ui/scripts/browse.js",
+      "line": 3202
+    },
+    {
+      "url": "/api/browse/search?q=",
+      "method": "GET",
+      "file": "ui/scripts/chat/toolbar/web-search.js",
+      "line": 221
+    },
+    {
+      "url": "/api/bug-finder/runs",
+      "method": "POST",
+      "file": "ui/scripts/bug-finder.js",
+      "line": 98
+    },
+    {
+      "url": "/api/bug-finder/runs/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/bug-finder.js",
+      "line": 114
+    },
+    {
+      "url": "/api/bug-finder/runs/{param}",
+      "method": "POST",
+      "file": "ui/scripts/bug-finder.js",
+      "line": 103
+    },
+    {
+      "url": "/api/bug-finder/runs/{param}/events",
+      "method": "GET",
+      "file": "ui/scripts/bug-finder.js",
+      "line": 214
+    },
+    {
+      "url": "/api/builds",
+      "method": "GET",
+      "file": "ui/scripts/chat/build-card.js",
+      "line": 90
+    },
+    {
+      "url": "/api/builds",
+      "method": "POST",
+      "file": "ui/scripts/library/build.js",
+      "line": 339
+    },
+    {
+      "url": "/api/builds/from-artifact",
+      "method": "POST",
+      "file": "ui/scripts/workspace.js",
+      "line": 3239
+    },
+    {
+      "url": "/api/builds/{param}",
+      "method": "GET",
+      "file": "ui/scripts/chat/build-card.js",
+      "line": 152
+    },
+    {
+      "url": "/api/builds/{param}",
+      "method": "GET",
+      "file": "ui/scripts/library/build.js",
+      "line": 391
+    },
+    {
+      "url": "/api/builds/{param}",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 15210
+    },
+    {
+      "url": "/api/builds/{param}",
+      "method": "GET",
+      "file": "ui/scripts/workspace.js",
+      "line": 2759
+    },
+    {
+      "url": "/api/builds/{param}/ack",
+      "method": "POST",
+      "file": "ui/scripts/chat/project.js",
+      "line": 1087
+    },
+    {
+      "url": "/api/builds/{param}/cancel",
+      "method": "POST",
+      "file": "ui/scripts/library/build.js",
+      "line": 458
+    },
+    {
+      "url": "/api/builds/{param}/cancel",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 15176
+    },
+    {
+      "url": "/api/builds/{param}/cancel",
+      "method": "POST",
+      "file": "ui/scripts/workspace.js",
+      "line": 3011
+    },
+    {
+      "url": "/api/builds/{param}/open-in-code",
+      "method": "POST",
+      "file": "ui/scripts/chat/build-card.js",
+      "line": 353
+    },
+    {
+      "url": "/api/builds/{param}/open-in-code",
+      "method": "POST",
+      "file": "ui/scripts/library/build.js",
+      "line": 150
+    },
+    {
+      "url": "/api/builds/{param}/resume",
+      "method": "POST",
+      "file": "ui/scripts/chat/build-card.js",
+      "line": 320
+    },
+    {
+      "url": "/api/builds/{param}/resume",
+      "method": "POST",
+      "file": "ui/scripts/library/build.js",
+      "line": 198
+    },
+    {
+      "url": "/api/builds/{param}/resume",
+      "method": "POST",
+      "file": "ui/scripts/workspace.js",
+      "line": 2906
+    },
+    {
+      "url": "/api/builds/{param}/stream",
+      "method": "GET",
+      "file": "ui/scripts/chat/build-card.js",
+      "line": 124
+    },
+    {
+      "url": "/api/builds/{param}/stream",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 15225
+    },
+    {
+      "url": "/api/builds/{param}/stream",
+      "method": "GET",
+      "file": "ui/scripts/workspace.js",
+      "line": 2774
+    },
+    {
+      "url": "/api/builds?limit=50",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 15131
+    },
+    {
+      "url": "/api/calendar/connection",
+      "method": "GET",
+      "file": "ui/scripts/calendar/index.js",
+      "line": 651
+    },
+    {
+      "url": "/api/calendar/events/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/calendar/index.js",
+      "line": 194
+    },
+    {
+      "url": "/api/calendar/services",
+      "method": "GET",
+      "file": "ui/scripts/calendar/index.js",
+      "line": 135
+    },
+    {
+      "url": "/api/canvas/{param}",
+      "method": "GET",
+      "file": "ui/scripts/chat/canvas-dock.js",
+      "line": 102
+    },
+    {
+      "url": "/api/canvas/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/chat/canvas-dock.js",
+      "line": 506
+    },
+    {
+      "url": "/api/canvas/{param}/edit",
+      "method": "POST",
+      "file": "ui/scripts/chat/canvas-dock.js",
+      "line": 364
+    },
+    {
+      "url": "/api/capabilities",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 13791
+    },
+    {
+      "url": "/api/cast/cast-events",
+      "method": "GET",
+      "file": "ui/cast-stage/cast-stage.js",
+      "line": 83
+    },
+    {
+      "url": "/api/cast/games/session/{param}/invite",
+      "method": "POST",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 2969
+    },
+    {
+      "url": "/api/cast/games/session/{param}/invite/{param}/revoke",
+      "method": "POST",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 3007
+    },
+    {
+      "url": "/api/cast/games/session/{param}/pause",
+      "method": "POST",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 3112
+    },
+    {
+      "url": "/api/cast/games/session/{param}/resume",
+      "method": "POST",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 3128
+    },
+    {
+      "url": "/api/cast/games/{param}/classify",
+      "method": "POST",
+      "file": "ui/scripts/library/cast-launch.js",
+      "line": 79
+    },
+    {
+      "url": "/api/cast/games/{param}/start",
+      "method": "POST",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 1807
+    },
+    {
+      "url": "/api/cast/guest/claim",
+      "method": "POST",
+      "file": "ui/cast-guest-join/cast-guest-join.js",
+      "line": 420
+    },
+    {
+      "url": "/api/cast/guest/forget-device",
+      "method": "POST",
+      "file": "ui/cast-guest-join/cast-guest-join.js",
+      "line": 598
+    },
+    {
+      "url": "/api/cast/guest/identify",
+      "method": "POST",
+      "file": "ui/cast-guest-join/cast-guest-join.js",
+      "line": 328
+    },
+    {
+      "url": "/api/cast/guests",
+      "method": "GET",
+      "file": "ui/cast-guests/cast-guests.js",
+      "line": 43
+    },
+    {
+      "url": "/api/cast/guests/{param}",
+      "method": "DELETE",
+      "file": "ui/cast-guests/cast-guests.js",
+      "line": 222
+    },
+    {
+      "url": "/api/cast/guests/{param}",
+      "method": "GET",
+      "file": "ui/cast-guests/cast-guests.js",
+      "line": 116
+    },
+    {
+      "url": "/api/cast/guests/{param}",
+      "method": "PATCH",
+      "file": "ui/cast-guests/cast-guests.js",
+      "line": 180
+    },
+    {
+      "url": "/api/cast/guests/{param}/devices/{param}",
+      "method": "DELETE",
+      "file": "ui/cast-guests/cast-guests.js",
+      "line": 211
+    },
+    {
+      "url": "/api/cast/library/episodes/{param}",
+      "method": "GET",
+      "file": "ui/scripts/consumption/detail.js",
+      "line": 637
+    },
+    {
+      "url": "/api/cast/library/home",
+      "method": "GET",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 944
+    },
+    {
+      "url": "/api/cast/library/home",
+      "method": "GET",
+      "file": "ui/cast-home/cast-home.js",
+      "line": 244
+    },
+    {
+      "url": "/api/cast/library/home",
+      "method": "GET",
+      "file": "ui/scripts/consumption/library-client.js",
+      "line": 22
+    },
+    {
+      "url": "/api/cast/library/search",
+      "method": "GET",
+      "file": "ui/scripts/media.js",
+      "line": 877
+    },
+    {
+      "url": "/api/cast/library/search?q=",
+      "method": "GET",
+      "file": "ui/scripts/media.js",
+      "line": 877
+    },
+    {
+      "url": "/api/cast/library/section/{param}",
+      "method": "GET",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 1326
+    },
+    {
+      "url": "/api/cast/library/section/{param}",
+      "method": "GET",
+      "file": "ui/cast-home/cast-home.js",
+      "line": 330
+    },
+    {
+      "url": "/api/cast/library/section/{param}",
+      "method": "GET",
+      "file": "ui/scripts/consumption/grid.js",
+      "line": 95
+    },
+    {
+      "url": "/api/cast/library/section/{param}?",
+      "method": "GET",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 1326
+    },
+    {
+      "url": "/api/cast/library/section/{param}?",
+      "method": "GET",
+      "file": "ui/scripts/consumption/grid.js",
+      "line": 95
+    },
+    {
+      "url": "/api/cast/library/section/{param}?limit=60",
+      "method": "GET",
+      "file": "ui/cast-home/cast-home.js",
+      "line": 330
+    },
+    {
+      "url": "/api/cast/pair/approve/{param}",
+      "method": "POST",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 800
+    },
+    {
+      "url": "/api/cast/pair/approve/{param}",
+      "method": "POST",
+      "file": "ui/cast-pair/cast-pair.js",
+      "line": 193
+    },
+    {
+      "url": "/api/cast/pair/establish-session",
+      "method": "POST",
+      "file": "ui/cast-receiver/cast-receiver.js",
+      "line": 1153
+    },
+    {
+      "url": "/api/cast/pair/start",
+      "method": "POST",
+      "file": "ui/cast-receiver/cast-receiver.js",
+      "line": 1100
+    },
+    {
+      "url": "/api/cast/playback-status/{param}",
+      "method": "GET",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 2226
+    },
+    {
+      "url": "/api/cast/rails/catalog",
+      "method": "GET",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 241
+    },
+    {
+      "url": "/api/cast/rails/catalog",
+      "method": "GET",
+      "file": "ui/scripts/media.js",
+      "line": 674
+    },
+    {
+      "url": "/api/cast/receiver-self/prefs",
+      "method": "GET",
+      "file": "ui/cast-receiver/cast-receiver.js",
+      "line": 500
+    },
+    {
+      "url": "/api/cast/receivers",
+      "method": "GET",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 482
+    },
+    {
+      "url": "/api/cast/receivers",
+      "method": "GET",
+      "file": "ui/cast-stage/cast-stage.js",
+      "line": 84
+    },
+    {
+      "url": "/api/cast/receivers",
+      "method": "GET",
+      "file": "ui/scripts/cast-shelf.js",
+      "line": 329
+    },
+    {
+      "url": "/api/cast/receivers",
+      "method": "GET",
+      "file": "ui/scripts/library/cast-launch.js",
+      "line": 132
+    },
+    {
+      "url": "/api/cast/receivers",
+      "method": "GET",
+      "file": "ui/scripts/studio/cast.js",
+      "line": 57
+    },
+    {
+      "url": "/api/cast/send",
+      "method": "POST",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 1866
+    },
+    {
+      "url": "/api/cast/send",
+      "method": "POST",
+      "file": "ui/cast-home/cast-home.js",
+      "line": 537
+    },
+    {
+      "url": "/api/cast/send",
+      "method": "POST",
+      "file": "ui/scripts/cast-picker.js",
+      "line": 488
+    },
+    {
+      "url": "/api/cast/send",
+      "method": "POST",
+      "file": "ui/scripts/library/cast-launch.js",
+      "line": 241
+    },
+    {
+      "url": "/api/cast/send",
+      "method": "POST",
+      "file": "ui/scripts/studio/cast.js",
+      "line": 64
+    },
+    {
+      "url": "/api/cast/send/close",
+      "method": "POST",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 2931
+    },
+    {
+      "url": "/api/cast/send/close",
+      "method": "POST",
+      "file": "ui/scripts/cast-shelf.js",
+      "line": 699
+    },
+    {
+      "url": "/api/cast/send/nav",
+      "method": "POST",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 145
+    },
+    {
+      "url": "/api/cast/send/patch",
+      "method": "POST",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 2177
+    },
+    {
+      "url": "/api/cast/send/patch",
+      "method": "POST",
+      "file": "ui/scripts/cast-shelf.js",
+      "line": 674
+    },
+    {
+      "url": "/api/cast/send/system-volume",
+      "method": "POST",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 2491
+    },
+    {
+      "url": "/api/cast/trusted-receivers",
+      "method": "GET",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 495
+    },
+    {
+      "url": "/api/cast/trusted-receivers",
+      "method": "GET",
+      "file": "ui/cast-stage/cast-stage.js",
+      "line": 82
+    },
+    {
+      "url": "/api/cast/trusted-receivers",
+      "method": "GET",
+      "file": "ui/scripts/cast-picker.js",
+      "line": 140
+    },
+    {
+      "url": "/api/cast/trusted-receivers",
+      "method": "GET",
+      "file": "ui/scripts/cast-shelf.js",
+      "line": 346
+    },
+    {
+      "url": "/api/cast/trusted-receivers/{param}",
+      "method": "PATCH",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 729
+    },
+    {
+      "url": "/api/cast/trusted-receivers/{param}",
+      "method": "PATCH",
+      "file": "ui/cast-stage/cast-stage.js",
+      "line": 489
+    },
+    {
+      "url": "/api/cast/trusted-receivers/{param}/prefs",
+      "method": "GET",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 329
+    },
+    {
+      "url": "/api/cast/trusted-receivers/{param}/prefs",
+      "method": "PUT",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 421
+    },
+    {
+      "url": "/api/cast/trusted-receivers/{param}/restore",
+      "method": "POST",
+      "file": "ui/cast-stage/cast-stage.js",
+      "line": 244
+    },
+    {
+      "url": "/api/cast/trusted-receivers/{param}/revoke",
+      "method": "POST",
+      "file": "ui/cast-stage/cast-stage.js",
+      "line": 557
+    },
+    {
+      "url": "/api/cast/trusted-receivers/{param}/wake",
+      "method": "POST",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 690
+    },
+    {
+      "url": "/api/characters/",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 631
+    },
+    {
+      "url": "/api/characters/cardsmith/cancel",
+      "method": "POST",
+      "file": "ui/scripts/narrative/cardsmith.js",
+      "line": 210
+    },
+    {
+      "url": "/api/characters/cardsmith/finalize",
+      "method": "POST",
+      "file": "ui/scripts/narrative/cardsmith.js",
+      "line": 1468
+    },
+    {
+      "url": "/api/characters/cardsmith/session/{param}",
+      "method": "GET",
+      "file": "ui/scripts/narrative/cardsmith.js",
+      "line": 64
+    },
+    {
+      "url": "/api/characters/cardsmith/sessions",
+      "method": "GET",
+      "file": "ui/scripts/narrative/cardsmith.js",
+      "line": 104
+    },
+    {
+      "url": "/api/characters/cardsmith/start",
+      "method": "POST",
+      "file": "ui/scripts/narrative/cardsmith.js",
+      "line": 629
+    },
+    {
+      "url": "/api/characters/cardsmith/turn",
+      "method": "POST",
+      "file": "ui/scripts/narrative/cardsmith.js",
+      "line": 956
+    },
+    {
+      "url": "/api/characters/cardsmith/wiki-preview",
+      "method": "POST",
+      "file": "ui/scripts/narrative/cardsmith.js",
+      "line": 482
+    },
+    {
+      "url": "/api/characters/import",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 645
+    },
+    {
+      "url": "/api/characters/import-json",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 9178
+    },
+    {
+      "url": "/api/characters/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 907
+    },
+    {
+      "url": "/api/characters/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 788
+    },
+    {
+      "url": "/api/chat",
+      "method": "POST",
+      "file": "ui/scripts/chat/code-edit.js",
+      "line": 624
+    },
+    {
+      "url": "/api/chat",
+      "method": "POST",
+      "file": "ui/scripts/chat/impersonate.js",
+      "line": 152
+    },
+    {
+      "url": "/api/chat",
+      "method": "POST",
+      "file": "ui/scripts/chat/project.js",
+      "line": 1784
+    },
+    {
+      "url": "/api/chat",
+      "method": "POST",
+      "file": "ui/scripts/chat/stream.js",
+      "line": 369
+    },
+    {
+      "url": "/api/chat",
+      "method": "POST",
+      "file": "ui/scripts/coder-stream.js",
+      "line": 234
+    },
+    {
+      "url": "/api/chat",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 8785
+    },
+    {
+      "url": "/api/chat",
+      "method": "POST",
+      "file": "ui/scripts/workspace.js",
+      "line": 883
+    },
+    {
+      "url": "/api/chat",
+      "method": "POST",
+      "file": "ui/scripts/youtube-panel.js",
+      "line": 358
+    },
+    {
+      "url": "/api/chat-images",
+      "method": "POST",
+      "file": "ui/scripts/app.js",
+      "line": 2250
+    },
+    {
+      "url": "/api/chat-images",
+      "method": "POST",
+      "file": "ui/scripts/notes-editor.js",
+      "line": 679
+    },
+    {
+      "url": "/api/chats/",
+      "method": "GET",
+      "file": "ui/scripts/chat/sessions.js",
+      "line": 219
+    },
+    {
+      "url": "/api/chats/?meta=1",
+      "method": "GET",
+      "file": "ui/scripts/chat/sessions.js",
+      "line": 62
+    },
+    {
+      "url": "/api/chats/fanout-plan",
+      "method": "POST",
+      "file": "ui/scripts/chat/multi-model.js",
+      "line": 251
+    },
+    {
+      "url": "/api/chats/import",
+      "method": "POST",
+      "file": "ui/scripts/chat/sessions.js",
+      "line": 211
+    },
+    {
+      "url": "/api/chats/sync",
+      "method": "POST",
+      "file": "ui/scripts/chat/sessions.js",
+      "line": 462
+    },
+    {
+      "url": "/api/chats/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/chat/sessions.js",
+      "line": 264
+    },
+    {
+      "url": "/api/chats/{param}",
+      "method": "GET",
+      "file": "ui/scripts/chat/sessions.js",
+      "line": 600
+    },
+    {
+      "url": "/api/chats/{param}",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 2910
+    },
+    {
+      "url": "/api/coder/agents/providers",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 614
+    },
+    {
+      "url": "/api/coder/agents/runs",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 418
+    },
+    {
+      "url": "/api/coder/archives",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 10125
+    },
+    {
+      "url": "/api/coder/archives/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/coder.js",
+      "line": 10358
+    },
+    {
+      "url": "/api/coder/archives/{param}/restore",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 10340
+    },
+    {
+      "url": "/api/coder/checkpoints/{param}",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 8991
+    },
+    {
+      "url": "/api/coder/checkpoints/{param}",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 9087
+    },
+    {
+      "url": "/api/coder/checkpoints/{param}/revert",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 9038
+    },
+    {
+      "url": "/api/coder/checkpoints/{param}/show",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 11129
+    },
+    {
+      "url": "/api/coder/checkpoints/{param}/show?hash=",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 11129
+    },
+    {
+      "url": "/api/coder/checkpoints/{param}?limit=",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 9941
+    },
+    {
+      "url": "/api/coder/checkpoints/{param}?limit=20",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 8991
+    },
+    {
+      "url": "/api/coder/conversation/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/coder.js",
+      "line": 8117
+    },
+    {
+      "url": "/api/coder/conversation/{param}",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 4045
+    },
+    {
+      "url": "/api/coder/conversation/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/coder.js",
+      "line": 4086
+    },
+    {
+      "url": "/api/coder/conversation/{param}/compact",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 8069
+    },
+    {
+      "url": "/api/coder/external/claude/run/stream",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 264
+    },
+    {
+      "url": "/api/coder/external/claude/run/{param}/stop",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 328
+    },
+    {
+      "url": "/api/coder/external/claude/run/{param}/stream",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 308
+    },
+    {
+      "url": "/api/coder/external/claude/runs/{param}",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 491
+    },
+    {
+      "url": "/api/coder/external/claude/status",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 98
+    },
+    {
+      "url": "/api/coder/external/claude/token",
+      "method": "DELETE",
+      "file": "ui/scripts/coder.js",
+      "line": 905
+    },
+    {
+      "url": "/api/coder/external/claude/token",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 887
+    },
+    {
+      "url": "/api/coder/external/pi/runs/{param}",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 518
+    },
+    {
+      "url": "/api/coder/files/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/coder.js",
+      "line": 4503
+    },
+    {
+      "url": "/api/coder/files/{param}",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 4614
+    },
+    {
+      "url": "/api/coder/files/{param}/mkdir",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 5245
+    },
+    {
+      "url": "/api/coder/files/{param}/read",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 5290
+    },
+    {
+      "url": "/api/coder/files/{param}/read?path=",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 5290
+    },
+    {
+      "url": "/api/coder/files/{param}/rename",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 4557
+    },
+    {
+      "url": "/api/coder/files/{param}/restore",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 5357
+    },
+    {
+      "url": "/api/coder/files/{param}/upload",
+      "method": "GET",
+      "file": "ui/scripts/coder-attachments.js",
+      "line": 168
+    },
+    {
+      "url": "/api/coder/files/{param}/upload",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 7297
+    },
+    {
+      "url": "/api/coder/files/{param}/write",
+      "method": "PUT",
+      "file": "ui/scripts/coder.js",
+      "line": 5256
+    },
+    {
+      "url": "/api/coder/files/{param}?path=",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 4614
+    },
+    {
+      "url": "/api/coder/git-tokens",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 11497
+    },
+    {
+      "url": "/api/coder/git-tokens",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 10616
+    },
+    {
+      "url": "/api/coder/git-tokens/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/coder.js",
+      "line": 11512
+    },
+    {
+      "url": "/api/coder/index/{param}",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 2463
+    },
+    {
+      "url": "/api/coder/index/{param}/progress",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 4367
+    },
+    {
+      "url": "/api/coder/preview-token/{param}",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 1751
+    },
+    {
+      "url": "/api/coder/preview-types",
+      "method": "GET",
+      "file": "ui/scripts/coder-file-preview.js",
+      "line": 57
+    },
+    {
+      "url": "/api/coder/reviews/{param}",
+      "method": "GET",
+      "file": "ui/scripts/coder-review.js",
+      "line": 61
+    },
+    {
+      "url": "/api/coder/reviews/{param}/accept",
+      "method": "GET",
+      "file": "ui/scripts/coder-review.js",
+      "line": 359
+    },
+    {
+      "url": "/api/coder/reviews/{param}/partial",
+      "method": "GET",
+      "file": "ui/scripts/coder-review.js",
+      "line": 380
+    },
+    {
+      "url": "/api/coder/reviews/{param}/reject",
+      "method": "GET",
+      "file": "ui/scripts/coder-review.js",
+      "line": 368
+    },
+    {
+      "url": "/api/coder/runs/{param}",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 6814
+    },
+    {
+      "url": "/api/coder/runs/{param}/cancel",
+      "method": "POST",
+      "file": "ui/scripts/coder-inspector.js",
+      "line": 1080
+    },
+    {
+      "url": "/api/coder/runs/{param}/cancel",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 5941
+    },
+    {
+      "url": "/api/coder/runs/{param}/citations",
+      "method": "GET",
+      "file": "ui/scripts/brief-panel.js",
+      "line": 225
+    },
+    {
+      "url": "/api/coder/runs/{param}/events",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 6815
+    },
+    {
+      "url": "/api/coder/runs/{param}/events?limit=120",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 6815
+    },
+    {
+      "url": "/api/coder/runs/{param}/interject",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 6061
+    },
+    {
+      "url": "/api/coder/runs/{param}/verification",
+      "method": "GET",
+      "file": "ui/scripts/brief-panel.js",
+      "line": 300
+    },
+    {
+      "url": "/api/coder/runs/{param}/{param}",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 6178
+    },
+    {
+      "url": "/api/coder/search/{param}",
+      "method": "GET",
+      "file": "ui/scripts/coder-search.js",
+      "line": 214
+    },
+    {
+      "url": "/api/coder/search/{param}?",
+      "method": "GET",
+      "file": "ui/scripts/coder-search.js",
+      "line": 214
+    },
+    {
+      "url": "/api/coder/subagents",
+      "method": "GET",
+      "file": "ui/scripts/coder-subagents-panel.js",
+      "line": 425
+    },
+    {
+      "url": "/api/coder/subagents/roles",
+      "method": "GET",
+      "file": "ui/scripts/coder-subagents-panel.js",
+      "line": 403
+    },
+    {
+      "url": "/api/coder/subagents/{param}",
+      "method": "GET",
+      "file": "ui/scripts/coder-subagents-panel.js",
+      "line": 295
+    },
+    {
+      "url": "/api/coder/subagents/{param}/cancel",
+      "method": "POST",
+      "file": "ui/scripts/coder-conversation.js",
+      "line": 1762
+    },
+    {
+      "url": "/api/coder/tooling-profiles",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 1057
+    },
+    {
+      "url": "/api/coder/tuning",
+      "method": "GET",
+      "file": "ui/scripts/coder-inspector.js",
+      "line": 1291
+    },
+    {
+      "url": "/api/coder/workspaces",
+      "method": "GET",
+      "file": "ui/scripts/bug-finder.js",
+      "line": 582
+    },
+    {
+      "url": "/api/coder/workspaces",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 642
+    },
+    {
+      "url": "/api/coder/workspaces",
+      "method": "GET",
+      "file": "ui/scripts/command-palette.js",
+      "line": 567
+    },
+    {
+      "url": "/api/coder/workspaces",
+      "method": "GET",
+      "file": "ui/scripts/foundry/theater.js",
+      "line": 118
+    },
+    {
+      "url": "/api/coder/workspaces",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 4180
+    },
+    {
+      "url": "/api/coder/workspaces/import",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 10497
+    },
+    {
+      "url": "/api/coder/workspaces/self-test",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 9807
+    },
+    {
+      "url": "/api/coder/workspaces/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/coder.js",
+      "line": 3685
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/active-run",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 6783
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/always-on",
+      "method": "PUT",
+      "file": "ui/scripts/coder.js",
+      "line": 2515
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/background-runs",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 7851
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/background-runs",
+      "method": "POST",
+      "file": "ui/scripts/companion-candidates.js",
+      "line": 81
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/bug-finder-verifier",
+      "method": "PUT",
+      "file": "ui/scripts/coder.js",
+      "line": 3953
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/files-flat",
+      "method": "GET",
+      "file": "ui/scripts/command-palette.js",
+      "line": 547
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/git/branch",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 11472
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/git/branches",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 11397
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/git/checkout",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 11442
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/git/commit",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 11232
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/git/diff",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 10846
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/git/diff?path=",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 11003
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/git/diff?staged=1",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 10846
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/git/diff?staged=1&path=",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 10999
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/git/file-status",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 4245
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/git/pull",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 2724
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/git/push",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 2706
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/git/remote",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 10599
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/git/status",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 9493
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/git/{param}",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 10939
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/inspector-state",
+      "method": "GET",
+      "file": "ui/scripts/coder-inspector.js",
+      "line": 313
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/lan",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 2545
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/name",
+      "method": "PUT",
+      "file": "ui/scripts/coder.js",
+      "line": 10243
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/objective",
+      "method": "GET",
+      "file": "ui/scripts/coder-inspector.js",
+      "line": 329
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/objective",
+      "method": "PUT",
+      "file": "ui/scripts/coder-inspector.js",
+      "line": 648
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/observations",
+      "method": "GET",
+      "file": "ui/scripts/coder-inspector.js",
+      "line": 349
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/observations",
+      "method": "POST",
+      "file": "ui/scripts/coder-inspector.js",
+      "line": 874
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/observations/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/coder-inspector.js",
+      "line": 845
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/observations/{param}",
+      "method": "PATCH",
+      "file": "ui/scripts/coder-inspector.js",
+      "line": 820
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/observations?limit=200",
+      "method": "GET",
+      "file": "ui/scripts/coder-inspector.js",
+      "line": 349
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/pause",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 10220
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/planning-mode",
+      "method": "PUT",
+      "file": "ui/scripts/coder.js",
+      "line": 6399
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/ports",
+      "method": "GET",
+      "file": "ui/scripts/brief-panel.js",
+      "line": 146
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/ports",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 9627
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/ports/publish",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 9599
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/preview-console",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 1879
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/ready",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 4143
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/rewind",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 6295
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/safeguards",
+      "method": "PUT",
+      "file": "ui/scripts/coder.js",
+      "line": 2496
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/search-text",
+      "method": "GET",
+      "file": "ui/scripts/coder-search.js",
+      "line": 205
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/search-text?",
+      "method": "GET",
+      "file": "ui/scripts/coder-search.js",
+      "line": 205
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/services",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 9213
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/services/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/coder.js",
+      "line": 9348
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/services/{param}/logs",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 9327
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/services/{param}/logs?lines=200",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 9327
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/services/{param}/start",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 9299
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/services/{param}/stop",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 9313
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/start",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 2590
+    },
+    {
+      "url": "/api/coder/workspaces/{param}/stop",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 2575
+    },
+    {
+      "url": "/api/coding/runs",
+      "method": "POST",
+      "file": "ui/scripts/coder.js",
+      "line": 805
+    },
+    {
+      "url": "/api/coding/runs/{param}/diff",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 573
+    },
+    {
+      "url": "/api/comic-narration/begin",
+      "method": "POST",
+      "file": "ui/scripts/comic-reader/index.js",
+      "line": 1343
+    },
+    {
+      "url": "/api/comic-narration/{param}",
+      "method": "GET",
+      "file": "ui/scripts/comic-reader/index.js",
+      "line": 1150
+    },
+    {
+      "url": "/api/comic-narration/{param}/cast",
+      "method": "GET",
+      "file": "ui/cast-comic/cast-comic.js",
+      "line": 1806
+    },
+    {
+      "url": "/api/companion/affect_read",
+      "method": "GET",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 3573
+    },
+    {
+      "url": "/api/companion/channel_exit",
+      "method": "POST",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 106
+    },
+    {
+      "url": "/api/companion/day",
+      "method": "GET",
+      "file": "ui/scripts/companion-becca-day.js",
+      "line": 71
+    },
+    {
+      "url": "/api/companion/day?window_hours={param}&limit=200",
+      "method": "GET",
+      "file": "ui/scripts/companion-becca-day.js",
+      "line": 71
+    },
+    {
+      "url": "/api/companion/delete_all",
+      "method": "GET",
+      "file": "ui/scripts/becca-bootstrap.js",
+      "line": 300
+    },
+    {
+      "url": "/api/companion/delete_all",
+      "method": "GET",
+      "file": "ui/scripts/companion-reset.js",
+      "line": 90
+    },
+    {
+      "url": "/api/companion/display_name",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 5014
+    },
+    {
+      "url": "/api/companion/growth/actions",
+      "method": "POST",
+      "file": "ui/scripts/companion-self.js",
+      "line": 102
+    },
+    {
+      "url": "/api/companion/growth/backlog",
+      "method": "GET",
+      "file": "ui/scripts/companion-self.js",
+      "line": 100
+    },
+    {
+      "url": "/api/companion/growth/economy",
+      "method": "GET",
+      "file": "ui/scripts/companion-self.js",
+      "line": 98
+    },
+    {
+      "url": "/api/companion/growth/economy/tx",
+      "method": "POST",
+      "file": "ui/scripts/companion-self.js",
+      "line": 101
+    },
+    {
+      "url": "/api/companion/growth/log",
+      "method": "GET",
+      "file": "ui/scripts/companion-self.js",
+      "line": 99
+    },
+    {
+      "url": "/api/companion/growth/reward",
+      "method": "GET",
+      "file": "ui/scripts/companion-self.js",
+      "line": 643
+    },
+    {
+      "url": "/api/companion/growth/run",
+      "method": "GET",
+      "file": "ui/scripts/companion-self.js",
+      "line": 693
+    },
+    {
+      "url": "/api/companion/growth/sponsor",
+      "method": "GET",
+      "file": "ui/scripts/companion-self.js",
+      "line": 677
+    },
+    {
+      "url": "/api/companion/intensity",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 5090
+    },
+    {
+      "url": "/api/companion/mode_hint",
+      "method": "POST",
+      "file": "ui/scripts/app.js",
+      "line": 1333
+    },
+    {
+      "url": "/api/companion/narrative/graduate",
+      "method": "POST",
+      "file": "ui/scripts/chat/index.js",
+      "line": 997
+    },
+    {
+      "url": "/api/companion/notes",
+      "method": "GET",
+      "file": "ui/scripts/companion-notes.js",
+      "line": 79
+    },
+    {
+      "url": "/api/companion/notes/history",
+      "method": "GET",
+      "file": "ui/scripts/companion-notes.js",
+      "line": 928
+    },
+    {
+      "url": "/api/companion/notes/history?limit=50",
+      "method": "GET",
+      "file": "ui/scripts/companion-notes.js",
+      "line": 928
+    },
+    {
+      "url": "/api/companion/notes/{param}/feedback",
+      "method": "GET",
+      "file": "ui/scripts/companion-self.js",
+      "line": 607
+    },
+    {
+      "url": "/api/companion/notes/{param}/feedback",
+      "method": "POST",
+      "file": "ui/scripts/companion-notes.js",
+      "line": 105
+    },
+    {
+      "url": "/api/companion/notes/{param}/{param}",
+      "method": "POST",
+      "file": "ui/scripts/companion-notes.js",
+      "line": 90
+    },
+    {
+      "url": "/api/companion/observatory",
+      "method": "GET",
+      "file": "ui/scripts/companion-self.js",
+      "line": 97
+    },
+    {
+      "url": "/api/companion/observatory/mutes/{param}",
+      "method": "GET",
+      "file": "ui/scripts/companion-self.js",
+      "line": 627
+    },
+    {
+      "url": "/api/companion/rebuild",
+      "method": "GET",
+      "file": "ui/scripts/becca-bootstrap.js",
+      "line": 267
+    },
+    {
+      "url": "/api/companion/rebuild",
+      "method": "GET",
+      "file": "ui/scripts/companion-reset.js",
+      "line": 57
+    },
+    {
+      "url": "/api/companion/rerun_as",
+      "method": "POST",
+      "file": "ui/scripts/chat/index.js",
+      "line": 1040
+    },
+    {
+      "url": "/api/companion/safety_floor_audit_event",
+      "method": "POST",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 5446
+    },
+    {
+      "url": "/api/companion/status",
+      "method": "GET",
+      "file": "ui/scripts/companion-notes.js",
+      "line": 1394
+    },
+    {
+      "url": "/api/companion/status",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 4973
+    },
+    {
+      "url": "/api/companion/tasks",
+      "method": "GET",
+      "file": "ui/scripts/companion-topics-modal.js",
+      "line": 80
+    },
+    {
+      "url": "/api/companion/tasks",
+      "method": "POST",
+      "file": "ui/scripts/companion-topics-modal.js",
+      "line": 92
+    },
+    {
+      "url": "/api/companion/tasks/cron-preview",
+      "method": "POST",
+      "file": "ui/scripts/companion-topics-modal.js",
+      "line": 113
+    },
+    {
+      "url": "/api/companion/tasks/resolve-feed",
+      "method": "POST",
+      "file": "ui/scripts/companion-topics-modal.js",
+      "line": 130
+    },
+    {
+      "url": "/api/companion/tasks/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/companion-topics-modal.js",
+      "line": 160
+    },
+    {
+      "url": "/api/companion/tasks/{param}",
+      "method": "PATCH",
+      "file": "ui/scripts/companion-topics-modal.js",
+      "line": 143
+    },
+    {
+      "url": "/api/companion/tasks/{param}/run-now",
+      "method": "POST",
+      "file": "ui/scripts/companion-topics-modal.js",
+      "line": 169
+    },
+    {
+      "url": "/api/companion/tasks/{param}/runs",
+      "method": "GET",
+      "file": "ui/scripts/companion-topics-modal.js",
+      "line": 179
+    },
+    {
+      "url": "/api/companion/today",
+      "method": "GET",
+      "file": "ui/scripts/companion-notes.js",
+      "line": 1091
+    },
+    {
+      "url": "/api/companion/today/archive",
+      "method": "GET",
+      "file": "ui/scripts/companion-today-archive.js",
+      "line": 66
+    },
+    {
+      "url": "/api/companion/today/archive?limit=",
+      "method": "GET",
+      "file": "ui/scripts/companion-today-archive.js",
+      "line": 66
+    },
+    {
+      "url": "/api/companion/today/forget",
+      "method": "POST",
+      "file": "ui/scripts/companion-notes.js",
+      "line": 1289
+    },
+    {
+      "url": "/api/companion/topics",
+      "method": "GET",
+      "file": "ui/scripts/companion-topics-modal.js",
+      "line": 48
+    },
+    {
+      "url": "/api/companion/topics",
+      "method": "POST",
+      "file": "ui/scripts/companion-topics-modal.js",
+      "line": 57
+    },
+    {
+      "url": "/api/companion/topics/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/companion-topics-modal.js",
+      "line": 71
+    },
+    {
+      "url": "/api/config/kokoro-status",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 12161
+    },
+    {
+      "url": "/api/config/log-level",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 15066
+    },
+    {
+      "url": "/api/config/log-level",
+      "method": "PUT",
+      "file": "ui/scripts/settings.js",
+      "line": 15085
+    },
+    {
+      "url": "/api/config/passthrough-tools",
+      "method": "GET",
+      "file": "ui/scripts/chat/toolbar/tools.js",
+      "line": 127
+    },
+    {
+      "url": "/api/config/passthrough-tools",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 15038
+    },
+    {
+      "url": "/api/config/personalization",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 387
+    },
+    {
+      "url": "/api/config/personalization",
+      "method": "PUT",
+      "file": "ui/scripts/settings.js",
+      "line": 460
+    },
+    {
+      "url": "/api/config/section/comic",
+      "method": "GET",
+      "file": "ui/cast-comic/cast-comic.js",
+      "line": 576
+    },
+    {
+      "url": "/api/config/section/comic",
+      "method": "GET",
+      "file": "ui/scripts/comic-reader/index.js",
+      "line": 296
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "GET",
+      "file": "ui/scripts/avatar-audio-reactions.js",
+      "line": 143
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "GET",
+      "file": "ui/scripts/avatar.js",
+      "line": 2615
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "GET",
+      "file": "ui/scripts/becca-bootstrap.js",
+      "line": 61
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "GET",
+      "file": "ui/scripts/body-physics-coordinator.js",
+      "line": 120
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 1702
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "GET",
+      "file": "ui/scripts/model-cache.js",
+      "line": 124
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 2976
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 14945
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "GET",
+      "file": "ui/scripts/workshop.js",
+      "line": 162
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "POST",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 3883
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "PUT",
+      "file": "ui/scripts/agentic.js",
+      "line": 1489
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "PUT",
+      "file": "ui/scripts/app.js",
+      "line": 651
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "PUT",
+      "file": "ui/scripts/chat/multi-model.js",
+      "line": 66
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "PUT",
+      "file": "ui/scripts/chat/toolbar/util.js",
+      "line": 40
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "PUT",
+      "file": "ui/scripts/coder-inspector.js",
+      "line": 1263
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "PUT",
+      "file": "ui/scripts/discover/index.js",
+      "line": 1230
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "PUT",
+      "file": "ui/scripts/fabric.js",
+      "line": 864
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "PUT",
+      "file": "ui/scripts/grove-ambient.js",
+      "line": 730
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "PUT",
+      "file": "ui/scripts/image.js",
+      "line": 1694
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "PUT",
+      "file": "ui/scripts/models.js",
+      "line": 767
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "PUT",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5432
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "PUT",
+      "file": "ui/scripts/settings-registry.js",
+      "line": 328
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "PUT",
+      "file": "ui/scripts/settings.js",
+      "line": 6023
+    },
+    {
+      "url": "/api/config/tools",
+      "method": "PUT",
+      "file": "ui/scripts/workshop.js",
+      "line": 219
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "GET",
+      "file": "ui/cast-comic/cast-comic.js",
+      "line": 2012
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "GET",
+      "file": "ui/scripts/app.js",
+      "line": 4233
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "GET",
+      "file": "ui/scripts/avatar-xr-contact.js",
+      "line": 50
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "GET",
+      "file": "ui/scripts/avatar-xr.js",
+      "line": 361
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "GET",
+      "file": "ui/scripts/chat/toolbar/tools.js",
+      "line": 135
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "GET",
+      "file": "ui/scripts/comic-reader/index.js",
+      "line": 281
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "GET",
+      "file": "ui/scripts/media.js",
+      "line": 111
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "GET",
+      "file": "ui/scripts/onboarding.js",
+      "line": 11
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "GET",
+      "file": "ui/scripts/orb-nav.js",
+      "line": 1064
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 504
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "GET",
+      "file": "ui/scripts/stream-stage.js",
+      "line": 488
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "PUT",
+      "file": "ui/cast-comic/cast-comic.js",
+      "line": 1999
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "PUT",
+      "file": "ui/scripts/avatar-xr.js",
+      "line": 423
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "PUT",
+      "file": "ui/scripts/chat/toolbar/auto-read.js",
+      "line": 40
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "PUT",
+      "file": "ui/scripts/chat/toolbar/tools.js",
+      "line": 160
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "PUT",
+      "file": "ui/scripts/comic-reader/index.js",
+      "line": 250
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "PUT",
+      "file": "ui/scripts/grove.js",
+      "line": 283
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "PUT",
+      "file": "ui/scripts/media.js",
+      "line": 126
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "PUT",
+      "file": "ui/scripts/onboarding.js",
+      "line": 178
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "PUT",
+      "file": "ui/scripts/orb-nav.js",
+      "line": 1034
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "PUT",
+      "file": "ui/scripts/settings.js",
+      "line": 487
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "PUT",
+      "file": "ui/scripts/stream-stage.js",
+      "line": 521
+    },
+    {
+      "url": "/api/config/ui",
+      "method": "PUT",
+      "file": "ui/scripts/surface-registry.js",
+      "line": 136
+    },
+    {
+      "url": "/api/config/voice-prefs/{param}",
+      "method": "GET",
+      "file": "ui/scripts/voice.js",
+      "line": 2400
+    },
+    {
+      "url": "/api/config/voice-prefs/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/voice.js",
+      "line": 408
+    },
+    {
+      "url": "/api/connect/calls",
+      "method": "GET",
+      "file": "ui/scripts/connect/messages.js",
+      "line": 513
+    },
+    {
+      "url": "/api/connect/calls/{param}",
+      "method": "GET",
+      "file": "ui/scripts/connect/messages.js",
+      "line": 526
+    },
+    {
+      "url": "/api/connect/calls/{param}/rate",
+      "method": "POST",
+      "file": "ui/scripts/connect/messages.js",
+      "line": 537
+    },
+    {
+      "url": "/api/connect/contacts",
+      "method": "GET",
+      "file": "ui/scripts/connect/messages.js",
+      "line": 416
+    },
+    {
+      "url": "/api/connect/contacts",
+      "method": "POST",
+      "file": "ui/scripts/connect/messages.js",
+      "line": 430
+    },
+    {
+      "url": "/api/connect/contacts/block",
+      "method": "POST",
+      "file": "ui/scripts/connect/messages.js",
+      "line": 472
+    },
+    {
+      "url": "/api/connect/contacts/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/connect/messages.js",
+      "line": 447
+    },
+    {
+      "url": "/api/connect/contacts/{param}",
+      "method": "PATCH",
+      "file": "ui/scripts/connect/messages.js",
+      "line": 458
+    },
+    {
+      "url": "/api/connect/directory",
+      "method": "GET",
+      "file": "ui/scripts/connect/messages.js",
+      "line": 240
+    },
+    {
+      "url": "/api/connect/guest/ping",
+      "method": "POST",
+      "file": "ui/connect-guest/connect-guest.js",
+      "line": 138
+    },
+    {
+      "url": "/api/connect/guest/session",
+      "method": "POST",
+      "file": "ui/connect-guest/connect-guest.js",
+      "line": 48
+    },
+    {
+      "url": "/api/connect/guests",
+      "method": "GET",
+      "file": "ui/scripts/connect/guests-panel.js",
+      "line": 122
+    },
+    {
+      "url": "/api/connect/guests/{param}",
+      "method": "PATCH",
+      "file": "ui/scripts/connect/guests-panel.js",
+      "line": 254
+    },
+    {
+      "url": "/api/connect/guests/{param}/revoke",
+      "method": "POST",
+      "file": "ui/scripts/connect/guests-panel.js",
+      "line": 277
+    },
+    {
+      "url": "/api/connect/search",
+      "method": "GET",
+      "file": "ui/scripts/connect/messages.js",
+      "line": 262
+    },
+    {
+      "url": "/api/connect/search?q=",
+      "method": "GET",
+      "file": "ui/scripts/connect/messages.js",
+      "line": 262
+    },
+    {
+      "url": "/api/connect/threads",
+      "method": "GET",
+      "file": "ui/connect-guest/connect-guest.js",
+      "line": 91
+    },
+    {
+      "url": "/api/connect/threads",
+      "method": "GET",
+      "file": "ui/scripts/connect/messages.js",
+      "line": 549
+    },
+    {
+      "url": "/api/connect/threads/{param}",
+      "method": "PATCH",
+      "file": "ui/scripts/connect/messages.js",
+      "line": 499
+    },
+    {
+      "url": "/api/connect/threads/{param}/mark-read",
+      "method": "POST",
+      "file": "ui/scripts/connect/messages.js",
+      "line": 799
+    },
+    {
+      "url": "/api/connect/threads/{param}/messages",
+      "method": "DELETE",
+      "file": "ui/scripts/connect/messages.js",
+      "line": 486
+    },
+    {
+      "url": "/api/connect/threads/{param}/messages",
+      "method": "GET",
+      "file": "ui/connect-guest/connect-guest.js",
+      "line": 99
+    },
+    {
+      "url": "/api/connect/threads/{param}/messages",
+      "method": "GET",
+      "file": "ui/scripts/connect/messages.js",
+      "line": 560
+    },
+    {
+      "url": "/api/connect/threads/{param}/messages/{param}/react",
+      "method": "POST",
+      "file": "ui/scripts/connect/messages.js",
+      "line": 783
+    },
+    {
+      "url": "/api/connect/threads/{param}/send",
+      "method": "POST",
+      "file": "ui/connect-guest/connect-guest.js",
+      "line": 132
+    },
+    {
+      "url": "/api/connect/threads/{param}/send",
+      "method": "POST",
+      "file": "ui/scripts/connect/messages.js",
+      "line": 668
+    },
+    {
+      "url": "/api/content/preview-token",
+      "method": "POST",
+      "file": "ui/scripts/browse.js",
+      "line": 4618
+    },
+    {
+      "url": "/api/content/preview-token",
+      "method": "POST",
+      "file": "ui/scripts/chat/canvas-dock.js",
+      "line": 49
+    },
+    {
+      "url": "/api/content/preview-token",
+      "method": "POST",
+      "file": "ui/scripts/chat/index.js",
+      "line": 557
+    },
+    {
+      "url": "/api/controllers/profiles",
+      "method": "GET",
+      "file": "ui/scripts/game-surface.js",
+      "line": 376
+    },
+    {
+      "url": "/api/controllers/{param}",
+      "method": "GET",
+      "file": "ui/scripts/game-surface.js",
+      "line": 403
+    },
+    {
+      "url": "/api/controllers/{param}/remap",
+      "method": "DELETE",
+      "file": "ui/scripts/game-surface.js",
+      "line": 475
+    },
+    {
+      "url": "/api/controllers/{param}/remap",
+      "method": "GET",
+      "file": "ui/scripts/game-surface.js",
+      "line": 419
+    },
+    {
+      "url": "/api/controllers/{param}/remap",
+      "method": "PUT",
+      "file": "ui/scripts/game-surface.js",
+      "line": 504
+    },
+    {
+      "url": "/api/dance/history",
+      "method": "GET",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 4758
+    },
+    {
+      "url": "/api/dance/history",
+      "method": "POST",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 4731
+    },
+    {
+      "url": "/api/dance/history?limit=",
+      "method": "GET",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 4758
+    },
+    {
+      "url": "/api/dance/loops",
+      "method": "GET",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 4900
+    },
+    {
+      "url": "/api/dance/loops",
+      "method": "POST",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 2157
+    },
+    {
+      "url": "/api/dance/loops/active",
+      "method": "PUT",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 4926
+    },
+    {
+      "url": "/api/dance/loops/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 4940
+    },
+    {
+      "url": "/api/dance/loops/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 2137
+    },
+    {
+      "url": "/api/dance/ratings",
+      "method": "GET",
+      "file": "ui/scripts/movement-conductor.js",
+      "line": 396
+    },
+    {
+      "url": "/api/dance/ratings/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/movement-conductor.js",
+      "line": 419
+    },
+    {
+      "url": "/api/delete",
+      "method": "DELETE",
+      "file": "ui/scripts/models.js",
+      "line": 6551
+    },
+    {
+      "url": "/api/devices",
+      "method": "GET",
+      "file": "ui/scripts/cast-picker.js",
+      "line": 152
+    },
+    {
+      "url": "/api/devices",
+      "method": "GET",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 133
+    },
+    {
+      "url": "/api/devices",
+      "method": "POST",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 264
+    },
+    {
+      "url": "/api/devices/discover",
+      "method": "GET",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 203
+    },
+    {
+      "url": "/api/devices/discover?refresh=",
+      "method": "GET",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 203
+    },
+    {
+      "url": "/api/devices/drivers",
+      "method": "GET",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 118
+    },
+    {
+      "url": "/api/devices/history/favorite",
+      "method": "POST",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 761
+    },
+    {
+      "url": "/api/devices/history/favorites",
+      "method": "GET",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 713
+    },
+    {
+      "url": "/api/devices/history/favorites?limit=15",
+      "method": "GET",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 713
+    },
+    {
+      "url": "/api/devices/history/recent",
+      "method": "GET",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 712
+    },
+    {
+      "url": "/api/devices/history/recent?limit=15",
+      "method": "GET",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 712
+    },
+    {
+      "url": "/api/devices/sweep",
+      "method": "GET",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 229
+    },
+    {
+      "url": "/api/devices/sweep",
+      "method": "GET",
+      "file": "ui/scripts/lan-probe.js",
+      "line": 132
+    },
+    {
+      "url": "/api/devices/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 363
+    },
+    {
+      "url": "/api/devices/{param}/pair/complete",
+      "method": "POST",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 819
+    },
+    {
+      "url": "/api/devices/{param}/pair/start",
+      "method": "POST",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 793
+    },
+    {
+      "url": "/api/devices/{param}/test",
+      "method": "POST",
+      "file": "ui/scripts/connected-devices.js",
+      "line": 344
+    },
+    {
+      "url": "/api/discover/catalog",
+      "method": "GET",
+      "file": "ui/scripts/discover/index.js",
+      "line": 158
+    },
+    {
+      "url": "/api/discover/catalog?",
+      "method": "GET",
+      "file": "ui/scripts/discover/index.js",
+      "line": 357
+    },
+    {
+      "url": "/api/discover/catalog?featured=true&limit=12",
+      "method": "GET",
+      "file": "ui/scripts/discover/index.js",
+      "line": 158
+    },
+    {
+      "url": "/api/discover/categories",
+      "method": "GET",
+      "file": "ui/scripts/discover/index.js",
+      "line": 154
+    },
+    {
+      "url": "/api/discover/{param}",
+      "method": "GET",
+      "file": "ui/scripts/discover/index.js",
+      "line": 1199
+    },
+    {
+      "url": "/api/discover/{param}/install",
+      "method": "DELETE",
+      "file": "ui/scripts/discover/index.js",
+      "line": 2375
+    },
+    {
+      "url": "/api/discover/{param}/install",
+      "method": "POST",
+      "file": "ui/scripts/discover/index.js",
+      "line": 1793
+    },
+    {
+      "url": "/api/discover/{param}/update",
+      "method": "POST",
+      "file": "ui/scripts/discover/index.js",
+      "line": 2825
+    },
+    {
+      "url": "/api/discovery/dismiss",
+      "method": "POST",
+      "file": "ui/scripts/discovery.js",
+      "line": 1034
+    },
+    {
+      "url": "/api/discovery/feeds",
+      "method": "GET",
+      "file": "ui/scripts/discovery.js",
+      "line": 342
+    },
+    {
+      "url": "/api/discovery/feeds",
+      "method": "PUT",
+      "file": "ui/scripts/discovery.js",
+      "line": 395
+    },
+    {
+      "url": "/api/discovery/for-you",
+      "method": "GET",
+      "file": "ui/scripts/discovery.js",
+      "line": 427
+    },
+    {
+      "url": "/api/discovery/for-you?",
+      "method": "GET",
+      "file": "ui/scripts/discovery.js",
+      "line": 427
+    },
+    {
+      "url": "/api/discovery/history",
+      "method": "GET",
+      "file": "ui/scripts/discovery.js",
+      "line": 1653
+    },
+    {
+      "url": "/api/discovery/history",
+      "method": "GET",
+      "file": "ui/scripts/youtube-panel.js",
+      "line": 716
+    },
+    {
+      "url": "/api/discovery/history/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/discovery.js",
+      "line": 1424
+    },
+    {
+      "url": "/api/discovery/history?",
+      "method": "GET",
+      "file": "ui/scripts/discovery.js",
+      "line": 1653
+    },
+    {
+      "url": "/api/discovery/history?days=30",
+      "method": "GET",
+      "file": "ui/scripts/youtube-panel.js",
+      "line": 716
+    },
+    {
+      "url": "/api/discovery/library",
+      "method": "GET",
+      "file": "ui/scripts/discovery.js",
+      "line": 572
+    },
+    {
+      "url": "/api/discovery/signal",
+      "method": "POST",
+      "file": "ui/scripts/browse.js",
+      "line": 765
+    },
+    {
+      "url": "/api/discovery/signal",
+      "method": "POST",
+      "file": "ui/scripts/discovery.js",
+      "line": 1716
+    },
+    {
+      "url": "/api/discovery/signal",
+      "method": "POST",
+      "file": "ui/scripts/files/actions.js",
+      "line": 80
+    },
+    {
+      "url": "/api/discovery/signal",
+      "method": "POST",
+      "file": "ui/scripts/grove-ambient.js",
+      "line": 1199
+    },
+    {
+      "url": "/api/discovery/signal",
+      "method": "POST",
+      "file": "ui/scripts/media-player.js",
+      "line": 544
+    },
+    {
+      "url": "/api/discovery/signal",
+      "method": "POST",
+      "file": "ui/scripts/youtube-panel.js",
+      "line": 36
+    },
+    {
+      "url": "/api/documents",
+      "method": "GET",
+      "file": "ui/scripts/app.js",
+      "line": 2596
+    },
+    {
+      "url": "/api/documents",
+      "method": "POST",
+      "file": "ui/scripts/app.js",
+      "line": 2273
+    },
+    {
+      "url": "/api/documents/session/{param}",
+      "method": "GET",
+      "file": "ui/scripts/app.js",
+      "line": 2476
+    },
+    {
+      "url": "/api/documents/session/{param}",
+      "method": "POST",
+      "file": "ui/scripts/app.js",
+      "line": 2290
+    },
+    {
+      "url": "/api/documents/session/{param}/packs",
+      "method": "GET",
+      "file": "ui/scripts/app.js",
+      "line": 2477
+    },
+    {
+      "url": "/api/documents/session/{param}/packs",
+      "method": "POST",
+      "file": "ui/scripts/app.js",
+      "line": 2710
+    },
+    {
+      "url": "/api/documents/session/{param}/packs/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/app.js",
+      "line": 2554
+    },
+    {
+      "url": "/api/documents/session/{param}/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/app.js",
+      "line": 2556
+    },
+    {
+      "url": "/api/documents/session/{param}/{param}/mode",
+      "method": "PUT",
+      "file": "ui/scripts/app.js",
+      "line": 2532
+    },
+    {
+      "url": "/api/documents/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/app.js",
+      "line": 3469
+    },
+    {
+      "url": "/api/dream/compact",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 5745
+    },
+    {
+      "url": "/api/dream/cycles",
+      "method": "POST",
+      "file": "ui/scripts/dream.js",
+      "line": 109
+    },
+    {
+      "url": "/api/dream/cycles/{param}",
+      "method": "POST",
+      "file": "ui/scripts/dream.js",
+      "line": 115
+    },
+    {
+      "url": "/api/dream/journal",
+      "method": "GET",
+      "file": "ui/scripts/dream.js",
+      "line": 84
+    },
+    {
+      "url": "/api/dream/journal/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/dream.js",
+      "line": 127
+    },
+    {
+      "url": "/api/dream/journal/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/dream.js",
+      "line": 123
+    },
+    {
+      "url": "/api/dream/portrait",
+      "method": "GET",
+      "file": "ui/scripts/dream.js",
+      "line": 90
+    },
+    {
+      "url": "/api/dream/portrait/checkpoint",
+      "method": "POST",
+      "file": "ui/scripts/dream.js",
+      "line": 131
+    },
+    {
+      "url": "/api/dream/portrait/checkpoints",
+      "method": "GET",
+      "file": "ui/scripts/dream.js",
+      "line": 100
+    },
+    {
+      "url": "/api/dream/portrait/regenerate",
+      "method": "POST",
+      "file": "ui/scripts/dream.js",
+      "line": 139
+    },
+    {
+      "url": "/api/dream/portrait/reset",
+      "method": "POST",
+      "file": "ui/scripts/dream.js",
+      "line": 143
+    },
+    {
+      "url": "/api/dream/portrait/restore/{param}",
+      "method": "POST",
+      "file": "ui/scripts/dream.js",
+      "line": 135
+    },
+    {
+      "url": "/api/dream/status",
+      "method": "GET",
+      "file": "ui/scripts/dream.js",
+      "line": 95
+    },
+    {
+      "url": "/api/dream/trigger",
+      "method": "POST",
+      "file": "ui/scripts/dream.js",
+      "line": 119
+    },
+    {
+      "url": "/api/engine/catalog",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 2539
+    },
+    {
+      "url": "/api/engine/v2/browse",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 4110
+    },
+    {
+      "url": "/api/engine/v2/browse?path=",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 4110
+    },
+    {
+      "url": "/api/engine/v2/classifier/load",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 3412
+    },
+    {
+      "url": "/api/engine/v2/classifier/status",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 3665
+    },
+    {
+      "url": "/api/engine/v2/classifier/status",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 13945
+    },
+    {
+      "url": "/api/engine/v2/classifier/unload",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 3448
+    },
+    {
+      "url": "/api/engine/v2/kv/resume",
+      "method": "POST",
+      "file": "ui/scripts/chat/index.js",
+      "line": 2449
+    },
+    {
+      "url": "/api/engine/v2/kv/speculate",
+      "method": "POST",
+      "file": "ui/scripts/chat/input.js",
+      "line": 227
+    },
+    {
+      "url": "/api/engine/v2/load_progress",
+      "method": "GET",
+      "file": "ui/scripts/chat/load-progress.js",
+      "line": 33
+    },
+    {
+      "url": "/api/engine/v2/load_progress",
+      "method": "GET",
+      "file": "ui/scripts/coder-progress.js",
+      "line": 192
+    },
+    {
+      "url": "/api/engine/v2/models",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 2654
+    },
+    {
+      "url": "/api/engine/v2/models",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 620
+    },
+    {
+      "url": "/api/engine/v2/models/dirs",
+      "method": "DELETE",
+      "file": "ui/scripts/models.js",
+      "line": 3811
+    },
+    {
+      "url": "/api/engine/v2/models/dirs",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 9388
+    },
+    {
+      "url": "/api/engine/v2/models/dirs",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 3727
+    },
+    {
+      "url": "/api/engine/v2/models/dirs",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 4041
+    },
+    {
+      "url": "/api/engine/v2/models/dirs",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 9371
+    },
+    {
+      "url": "/api/engine/v2/models/host-mount",
+      "method": "DELETE",
+      "file": "ui/scripts/models.js",
+      "line": 3844
+    },
+    {
+      "url": "/api/engine/v2/models/host-mount",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 4060
+    },
+    {
+      "url": "/api/engine/v2/models/last-load",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 3019
+    },
+    {
+      "url": "/api/engine/v2/models/last-load?model=",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 3019
+    },
+    {
+      "url": "/api/engine/v2/models/load",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 3336
+    },
+    {
+      "url": "/api/engine/v2/models/load",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 14171
+    },
+    {
+      "url": "/api/engine/v2/models/plan",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 2911
+    },
+    {
+      "url": "/api/engine/v2/models/search",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 4208
+    },
+    {
+      "url": "/api/engine/v2/models/search?q={param}&limit=15&format=",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 4208
+    },
+    {
+      "url": "/api/engine/v2/models/unload",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 5287
+    },
+    {
+      "url": "/api/engine/v2/prefill_progress",
+      "method": "GET",
+      "file": "ui/scripts/chat/prefill-progress.js",
+      "line": 31
+    },
+    {
+      "url": "/api/engine/v2/prefill_progress",
+      "method": "GET",
+      "file": "ui/scripts/coder-progress.js",
+      "line": 113
+    },
+    {
+      "url": "/api/engine/v2/secondary/load",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 3363
+    },
+    {
+      "url": "/api/engine/v2/secondary/status",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 3647
+    },
+    {
+      "url": "/api/engine/v2/secondary/status",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 13944
+    },
+    {
+      "url": "/api/engine/v2/secondary/unload",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 3394
+    },
+    {
+      "url": "/api/engine/v2/status",
+      "method": "GET",
+      "file": "ui/scripts/becca-presence.js",
+      "line": 739
+    },
+    {
+      "url": "/api/engine/v2/status",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 3637
+    },
+    {
+      "url": "/api/engine/v2/status",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 14156
+    },
+    {
+      "url": "/api/execute",
+      "method": "POST",
+      "file": "ui/scripts/chat/code-actions.js",
+      "line": 553
+    },
+    {
+      "url": "/api/fabric/capabilities",
+      "method": "GET",
+      "file": "ui/scripts/fabric.js",
+      "line": 78
+    },
+    {
+      "url": "/api/fabric/contact-card",
+      "method": "POST",
+      "file": "ui/scripts/connect/federation.js",
+      "line": 157
+    },
+    {
+      "url": "/api/fabric/contact-card/accept",
+      "method": "POST",
+      "file": "ui/scripts/connect/federation.js",
+      "line": 192
+    },
+    {
+      "url": "/api/fabric/discover",
+      "method": "POST",
+      "file": "ui/scripts/fabric.js",
+      "line": 1000
+    },
+    {
+      "url": "/api/fabric/knocks",
+      "method": "GET",
+      "file": "ui/scripts/connect/federation.js",
+      "line": 131
+    },
+    {
+      "url": "/api/fabric/knocks/{param}/accept",
+      "method": "POST",
+      "file": "ui/scripts/connect/federation.js",
+      "line": 237
+    },
+    {
+      "url": "/api/fabric/knocks/{param}/reject",
+      "method": "POST",
+      "file": "ui/scripts/connect/federation.js",
+      "line": 238
+    },
+    {
+      "url": "/api/fabric/pair-with-remote",
+      "method": "POST",
+      "file": "ui/scripts/fabric.js",
+      "line": 945
+    },
+    {
+      "url": "/api/fabric/peers",
+      "method": "GET",
+      "file": "ui/scripts/fabric.js",
+      "line": 77
+    },
+    {
+      "url": "/api/fabric/peers/ceremony",
+      "method": "POST",
+      "file": "ui/scripts/connect/federation.js",
+      "line": 87
+    },
+    {
+      "url": "/api/fabric/peers/verified",
+      "method": "GET",
+      "file": "ui/scripts/connect/federation.js",
+      "line": 116
+    },
+    {
+      "url": "/api/fabric/peers/verify",
+      "method": "POST",
+      "file": "ui/scripts/connect/federation.js",
+      "line": 103
+    },
+    {
+      "url": "/api/fabric/peers/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/fabric.js",
+      "line": 909
+    },
+    {
+      "url": "/api/fabric/status",
+      "method": "GET",
+      "file": "ui/scripts/fabric.js",
+      "line": 76
+    },
+    {
+      "url": "/api/files/bookmarks",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 558
+    },
+    {
+      "url": "/api/files/bulk-delete",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 516
+    },
+    {
+      "url": "/api/files/bulk-restore",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 528
+    },
+    {
+      "url": "/api/files/comics/genres",
+      "method": "GET",
+      "file": "ui/scripts/files/index.js",
+      "line": 280
+    },
+    {
+      "url": "/api/files/comics/series",
+      "method": "GET",
+      "file": "ui/scripts/files/comics.js",
+      "line": 150
+    },
+    {
+      "url": "/api/files/comics/series/{param}",
+      "method": "GET",
+      "file": "ui/scripts/consumption/comic-series.js",
+      "line": 43
+    },
+    {
+      "url": "/api/files/comics/series/{param}/chapters",
+      "method": "GET",
+      "file": "ui/cast-comic/cast-comic.js",
+      "line": 642
+    },
+    {
+      "url": "/api/files/comics/series/{param}/chapters",
+      "method": "GET",
+      "file": "ui/scripts/comic-reader/index.js",
+      "line": 3673
+    },
+    {
+      "url": "/api/files/comics/series/{param}/chapters",
+      "method": "GET",
+      "file": "ui/scripts/files/comics.js",
+      "line": 162
+    },
+    {
+      "url": "/api/files/comics/series/{param}/chapters?limit=2000",
+      "method": "GET",
+      "file": "ui/cast-comic/cast-comic.js",
+      "line": 642
+    },
+    {
+      "url": "/api/files/comics/series/{param}/chapters?limit=2000",
+      "method": "GET",
+      "file": "ui/scripts/comic-reader/index.js",
+      "line": 3673
+    },
+    {
+      "url": "/api/files/comics/series/{param}/chapters?limit=2000",
+      "method": "GET",
+      "file": "ui/scripts/files/comics.js",
+      "line": 162
+    },
+    {
+      "url": "/api/files/comics/series?",
+      "method": "GET",
+      "file": "ui/scripts/files/comics.js",
+      "line": 150
+    },
+    {
+      "url": "/api/files/download/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 11
+    },
+    {
+      "url": "/api/files/entry/{param}",
+      "method": "GET",
+      "file": "ui/scripts/comic-reader/index.js",
+      "line": 3666
+    },
+    {
+      "url": "/api/files/entry/{param}",
+      "method": "GET",
+      "file": "ui/scripts/companion-candidates.js",
+      "line": 544
+    },
+    {
+      "url": "/api/files/entry/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 492
+    },
+    {
+      "url": "/api/files/entry/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/render.js",
+      "line": 2153
+    },
+    {
+      "url": "/api/files/favorite/{param}",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 540
+    },
+    {
+      "url": "/api/files/narration/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/actions.js",
+      "line": 661
+    },
+    {
+      "url": "/api/files/narration/{param}",
+      "method": "POST",
+      "file": "ui/scripts/files/actions.js",
+      "line": 680
+    },
+    {
+      "url": "/api/files/preview/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/helpers.js",
+      "line": 295
+    },
+    {
+      "url": "/api/files/purge-trash",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 536
+    },
+    {
+      "url": "/api/files/render/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 12
+    },
+    {
+      "url": "/api/files/restore/{param}",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 524
+    },
+    {
+      "url": "/api/files/search",
+      "method": "GET",
+      "file": "ui/scripts/chat/index.js",
+      "line": 2920
+    },
+    {
+      "url": "/api/files/search",
+      "method": "GET",
+      "file": "ui/scripts/files/continue-rail.js",
+      "line": 103
+    },
+    {
+      "url": "/api/files/search",
+      "method": "GET",
+      "file": "ui/scripts/music-source.js",
+      "line": 252
+    },
+    {
+      "url": "/api/files/search",
+      "method": "GET",
+      "file": "ui/scripts/xr-surface-data.js",
+      "line": 397
+    },
+    {
+      "url": "/api/files/search?",
+      "method": "GET",
+      "file": "ui/scripts/files/continue-rail.js",
+      "line": 103
+    },
+    {
+      "url": "/api/files/search?",
+      "method": "GET",
+      "file": "ui/scripts/music-source.js",
+      "line": 252
+    },
+    {
+      "url": "/api/files/search?q={param}&limit=3",
+      "method": "GET",
+      "file": "ui/scripts/chat/index.js",
+      "line": 2920
+    },
+    {
+      "url": "/api/files/stats",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 414
+    },
+    {
+      "url": "/api/files/summarize/{param}",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 597
+    },
+    {
+      "url": "/api/files/tags/suggest",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 573
+    },
+    {
+      "url": "/api/files/tags/suggest?",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 573
+    },
+    {
+      "url": "/api/files/tags/{param}",
+      "method": "PATCH",
+      "file": "ui/scripts/files/api.js",
+      "line": 546
+    },
+    {
+      "url": "/api/files/text/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/actions.js",
+      "line": 601
+    },
+    {
+      "url": "/api/files/thumb/by-source/{param}/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 22
+    },
+    {
+      "url": "/api/files/thumb/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 17
+    },
+    {
+      "url": "/api/files/transform/{param}",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 583
+    },
+    {
+      "url": "/api/files/tts-studio",
+      "method": "POST",
+      "file": "ui/scripts/tts-studio.js",
+      "line": 178
+    },
+    {
+      "url": "/api/files/video/genres",
+      "method": "GET",
+      "file": "ui/scripts/files/index.js",
+      "line": 299
+    },
+    {
+      "url": "/api/files/zip",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 606
+    },
+    {
+      "url": "/api/files/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/files/api.js",
+      "line": 508
+    },
+    {
+      "url": "/api/files/{param}",
+      "method": "PATCH",
+      "file": "ui/scripts/files/api.js",
+      "line": 500
+    },
+    {
+      "url": "/api/flows",
+      "method": "GET",
+      "file": "ui/scripts/app.js",
+      "line": 1679
+    },
+    {
+      "url": "/api/flows",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 15246
+    },
+    {
+      "url": "/api/flows",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 15500
+    },
+    {
+      "url": "/api/flows/export",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 15572
+    },
+    {
+      "url": "/api/flows/generate",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 15296
+    },
+    {
+      "url": "/api/flows/import",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 15556
+    },
+    {
+      "url": "/api/flows/match",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 15522
+    },
+    {
+      "url": "/api/flows/match?q=",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 15522
+    },
+    {
+      "url": "/api/flows/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 15487
+    },
+    {
+      "url": "/api/flows/{param}",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 15353
+    },
+    {
+      "url": "/api/flows/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/settings.js",
+      "line": 15508
+    },
+    {
+      "url": "/api/flows/{param}/run",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 15534
+    },
+    {
+      "url": "/api/foundry/runs",
+      "method": "POST",
+      "file": "ui/scripts/foundry/theater.js",
+      "line": 165
+    },
+    {
+      "url": "/api/foundry/runs/{param}/events",
+      "method": "GET",
+      "file": "ui/scripts/foundry/theater.js",
+      "line": 215
+    },
+    {
+      "url": "/api/game-agent/probes/{param}",
+      "method": "GET",
+      "file": "ui/scripts/emulator-bridge.js",
+      "line": 434
+    },
+    {
+      "url": "/api/game-agent/sessions",
+      "method": "POST",
+      "file": "ui/scripts/agent/agent-panel.js",
+      "line": 617
+    },
+    {
+      "url": "/api/game-stream/profiles",
+      "method": "GET",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 586
+    },
+    {
+      "url": "/api/game-stream/sessions",
+      "method": "GET",
+      "file": "ui/scripts/stream-stage.js",
+      "line": 934
+    },
+    {
+      "url": "/api/game-stream/sessions",
+      "method": "POST",
+      "file": "ui/scripts/stream-stage.js",
+      "line": 118
+    },
+    {
+      "url": "/api/game-stream/sessions/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/stream-stage.js",
+      "line": 972
+    },
+    {
+      "url": "/api/game-stream/sessions/{param}/heartbeat",
+      "method": "POST",
+      "file": "ui/scripts/stream-stage.js",
+      "line": 793
+    },
+    {
+      "url": "/api/game-stream/sessions/{param}/readiness",
+      "method": "GET",
+      "file": "ui/scripts/stream-stage.js",
+      "line": 779
+    },
+    {
+      "url": "/api/game-stream/sessions/{param}/telemetry",
+      "method": "POST",
+      "file": "ui/scripts/stream-stage.js",
+      "line": 817
+    },
+    {
+      "url": "/api/game-stream/sessions?live_only=1",
+      "method": "GET",
+      "file": "ui/scripts/stream-stage.js",
+      "line": 934
+    },
+    {
+      "url": "/api/game-stream/worlds",
+      "method": "GET",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 485
+    },
+    {
+      "url": "/api/game-stream/worlds",
+      "method": "POST",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 544
+    },
+    {
+      "url": "/api/game-stream/worlds/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 513
+    },
+    {
+      "url": "/api/game-stream/worlds/{param}",
+      "method": "PATCH",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 523
+    },
+    {
+      "url": "/api/game-stream/worlds?profile_id=",
+      "method": "GET",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 485
+    },
+    {
+      "url": "/api/games/pin",
+      "method": "POST",
+      "file": "ui/scripts/library/games-browse.js",
+      "line": 543
+    },
+    {
+      "url": "/api/games/saves/{param}",
+      "method": "GET",
+      "file": "ui/scripts/bundle-composer.js",
+      "line": 206
+    },
+    {
+      "url": "/api/games/saves/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/bundle-composer.js",
+      "line": 254
+    },
+    {
+      "url": "/api/grove/ambient-favorites",
+      "method": "GET",
+      "file": "ui/scripts/grove-ambient.js",
+      "line": 874
+    },
+    {
+      "url": "/api/grove/ambient-favorites",
+      "method": "POST",
+      "file": "ui/scripts/grove-ambient.js",
+      "line": 884
+    },
+    {
+      "url": "/api/grove/favorites",
+      "method": "GET",
+      "file": "ui/scripts/music-source.js",
+      "line": 53
+    },
+    {
+      "url": "/api/grove/favorites",
+      "method": "POST",
+      "file": "ui/scripts/music-source.js",
+      "line": 76
+    },
+    {
+      "url": "/api/grove/stations/soma",
+      "method": "GET",
+      "file": "ui/scripts/music-source.js",
+      "line": 61
+    },
+    {
+      "url": "/api/grove/youtube/prewarm",
+      "method": "GET",
+      "file": "ui/scripts/grove.js",
+      "line": 150
+    },
+    {
+      "url": "/api/grove/youtube/search",
+      "method": "GET",
+      "file": "ui/scripts/music-source.js",
+      "line": 308
+    },
+    {
+      "url": "/api/grove/youtube/search?q={param}&limit=",
+      "method": "GET",
+      "file": "ui/scripts/music-source.js",
+      "line": 308
+    },
+    {
+      "url": "/api/harness/agent/reply",
+      "method": "POST",
+      "file": "ui/scripts/notifications.js",
+      "line": 573
+    },
+    {
+      "url": "/api/harness/agents",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 628
+    },
+    {
+      "url": "/api/health/services",
+      "method": "GET",
+      "file": "ui/scripts/app.js",
+      "line": 3585
+    },
+    {
+      "url": "/api/image/active-settings",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 165
+    },
+    {
+      "url": "/api/image/active-settings",
+      "method": "PUT",
+      "file": "ui/scripts/image.js",
+      "line": 216
+    },
+    {
+      "url": "/api/image/availability",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 1497
+    },
+    {
+      "url": "/api/image/backgrounds",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 9460
+    },
+    {
+      "url": "/api/image/backgrounds/toggle",
+      "method": "POST",
+      "file": "ui/scripts/image.js",
+      "line": 4088
+    },
+    {
+      "url": "/api/image/batch",
+      "method": "DELETE",
+      "file": "ui/scripts/image.js",
+      "line": 3966
+    },
+    {
+      "url": "/api/image/cancel",
+      "method": "POST",
+      "file": "ui/scripts/chat/index.js",
+      "line": 2210
+    },
+    {
+      "url": "/api/image/cancel",
+      "method": "POST",
+      "file": "ui/scripts/image.js",
+      "line": 4918
+    },
+    {
+      "url": "/api/image/cloud/models",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 503
+    },
+    {
+      "url": "/api/image/cloud/models",
+      "method": "GET",
+      "file": "ui/scripts/model-cache.js",
+      "line": 118
+    },
+    {
+      "url": "/api/image/cloud/providers",
+      "method": "GET",
+      "file": "ui/app.js",
+      "line": 564
+    },
+    {
+      "url": "/api/image/cloud/providers",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 11912
+    },
+    {
+      "url": "/api/image/cloud/providers",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 11951
+    },
+    {
+      "url": "/api/image/cloud/providers/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 12034
+    },
+    {
+      "url": "/api/image/cloud/providers/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/settings.js",
+      "line": 12048
+    },
+    {
+      "url": "/api/image/cloud/providers/{param}/test",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 11995
+    },
+    {
+      "url": "/api/image/enhance-prompt",
+      "method": "POST",
+      "file": "ui/scripts/image.js",
+      "line": 4843
+    },
+    {
+      "url": "/api/image/enhance-prompt",
+      "method": "POST",
+      "file": "ui/scripts/voice.js",
+      "line": 5869
+    },
+    {
+      "url": "/api/image/extract-visual-traits",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 1793
+    },
+    {
+      "url": "/api/image/generate",
+      "method": "POST",
+      "file": "ui/scripts/browse.js",
+      "line": 1382
+    },
+    {
+      "url": "/api/image/generate",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 308
+    },
+    {
+      "url": "/api/image/generate",
+      "method": "POST",
+      "file": "ui/scripts/voice.js",
+      "line": 5879
+    },
+    {
+      "url": "/api/image/generate-negative",
+      "method": "POST",
+      "file": "ui/scripts/image.js",
+      "line": 4872
+    },
+    {
+      "url": "/api/image/generate-scene",
+      "method": "POST",
+      "file": "ui/scripts/app.js",
+      "line": 3907
+    },
+    {
+      "url": "/api/image/generate-scene",
+      "method": "POST",
+      "file": "ui/scripts/chat/illustrate.js",
+      "line": 198
+    },
+    {
+      "url": "/api/image/generate-scene",
+      "method": "POST",
+      "file": "ui/scripts/voice.js",
+      "line": 5845
+    },
+    {
+      "url": "/api/image/generation-status",
+      "method": "GET",
+      "file": "ui/scripts/chat/index.js",
+      "line": 1863
+    },
+    {
+      "url": "/api/image/generation-status",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 1818
+    },
+    {
+      "url": "/api/image/generation-status",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5202
+    },
+    {
+      "url": "/api/image/generation-status",
+      "method": "GET",
+      "file": "ui/scripts/voice.js",
+      "line": 5806
+    },
+    {
+      "url": "/api/image/generation-status?session_id={param}&category=auto_bg",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5202
+    },
+    {
+      "url": "/api/image/gguf-families",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 2343
+    },
+    {
+      "url": "/api/image/hardware",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 442
+    },
+    {
+      "url": "/api/image/history",
+      "method": "GET",
+      "file": "ui/scripts/chat/index.js",
+      "line": 2887
+    },
+    {
+      "url": "/api/image/history",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 1575
+    },
+    {
+      "url": "/api/image/history",
+      "method": "GET",
+      "file": "ui/scripts/voice.js",
+      "line": 6046
+    },
+    {
+      "url": "/api/image/history?limit=1&sort=newest",
+      "method": "GET",
+      "file": "ui/scripts/chat/index.js",
+      "line": 2887
+    },
+    {
+      "url": "/api/image/history?limit=1&sort=newest",
+      "method": "GET",
+      "file": "ui/scripts/voice.js",
+      "line": 6046
+    },
+    {
+      "url": "/api/image/history?limit=20&private=false",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 1575
+    },
+    {
+      "url": "/api/image/inpaint",
+      "method": "POST",
+      "file": "ui/scripts/image.js",
+      "line": 4484
+    },
+    {
+      "url": "/api/image/loras",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 2595
+    },
+    {
+      "url": "/api/image/loras/catalog",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 2699
+    },
+    {
+      "url": "/api/image/models",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 494
+    },
+    {
+      "url": "/api/image/models",
+      "method": "GET",
+      "file": "ui/scripts/model-cache.js",
+      "line": 112
+    },
+    {
+      "url": "/api/image/models/catalog",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 2797
+    },
+    {
+      "url": "/api/image/models/detect?source=/{param}",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 2163
+    },
+    {
+      "url": "/api/image/models/pull",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 3114
+    },
+    {
+      "url": "/api/image/models/pull",
+      "method": "POST",
+      "file": "ui/scripts/image.js",
+      "line": 2253
+    },
+    {
+      "url": "/api/image/models/pull/{param}",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 2093
+    },
+    {
+      "url": "/api/image/models/rename",
+      "method": "POST",
+      "file": "ui/scripts/image.js",
+      "line": 2067
+    },
+    {
+      "url": "/api/image/models/variants?repo_id=/{param}",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 2970
+    },
+    {
+      "url": "/api/image/models/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/image.js",
+      "line": 2936
+    },
+    {
+      "url": "/api/image/privacy",
+      "method": "POST",
+      "file": "ui/scripts/image.js",
+      "line": 3999
+    },
+    {
+      "url": "/api/image/reload-pipeline",
+      "method": "POST",
+      "file": "ui/scripts/image.js",
+      "line": 1775
+    },
+    {
+      "url": "/api/image/samplers",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 596
+    },
+    {
+      "url": "/api/image/unload",
+      "method": "POST",
+      "file": "ui/scripts/image.js",
+      "line": 4807
+    },
+    {
+      "url": "/api/image/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/image.js",
+      "line": 3939
+    },
+    {
+      "url": "/api/image/{param}",
+      "method": "GET",
+      "file": "ui/scripts/chat/index.js",
+      "line": 2892
+    },
+    {
+      "url": "/api/image/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/preview.js",
+      "line": 1012
+    },
+    {
+      "url": "/api/image/{param}",
+      "method": "GET",
+      "file": "ui/scripts/voice.js",
+      "line": 5887
+    },
+    {
+      "url": "/api/image/{param}/remove-bg",
+      "method": "POST",
+      "file": "ui/scripts/image.js",
+      "line": 4365
+    },
+    {
+      "url": "/api/image/{param}/upscale",
+      "method": "POST",
+      "file": "ui/scripts/image.js",
+      "line": 4325
+    },
+    {
+      "url": "/api/jobs/{param}",
+      "method": "GET",
+      "file": "ui/scripts/discover/index.js",
+      "line": 2667
+    },
+    {
+      "url": "/api/jobs/{param}",
+      "method": "GET",
+      "file": "ui/scripts/learning.js",
+      "line": 1284
+    },
+    {
+      "url": "/api/jobs/{param}",
+      "method": "GET",
+      "file": "ui/scripts/media-servers.js",
+      "line": 196
+    },
+    {
+      "url": "/api/knowledge/catalog/categories",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 9676
+    },
+    {
+      "url": "/api/knowledge/catalog/featured",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 9742
+    },
+    {
+      "url": "/api/knowledge/catalog?/{param}",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 9665
+    },
+    {
+      "url": "/api/knowledge/discard-failed/{param}",
+      "method": "POST",
+      "file": "ui/scripts/browse.js",
+      "line": 2034
+    },
+    {
+      "url": "/api/knowledge/download",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 10004
+    },
+    {
+      "url": "/api/knowledge/import",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 10052
+    },
+    {
+      "url": "/api/knowledge/install",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 9788
+    },
+    {
+      "url": "/api/knowledge/install/{param}/cancel",
+      "method": "POST",
+      "file": "ui/scripts/browse.js",
+      "line": 2140
+    },
+    {
+      "url": "/api/knowledge/install/{param}/progress",
+      "method": "GET",
+      "file": "ui/scripts/browse.js",
+      "line": 2154
+    },
+    {
+      "url": "/api/knowledge/install/{param}/progress",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 9827
+    },
+    {
+      "url": "/api/knowledge/packs",
+      "method": "GET",
+      "file": "ui/scripts/app.js",
+      "line": 2597
+    },
+    {
+      "url": "/api/knowledge/packs",
+      "method": "GET",
+      "file": "ui/scripts/browse.js",
+      "line": 1745
+    },
+    {
+      "url": "/api/knowledge/packs",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 9896
+    },
+    {
+      "url": "/api/knowledge/packs/{param}/embed",
+      "method": "POST",
+      "file": "ui/scripts/browse.js",
+      "line": 1991
+    },
+    {
+      "url": "/api/knowledge/registry",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 9608
+    },
+    {
+      "url": "/api/knowledge/resume-failed/{param}",
+      "method": "POST",
+      "file": "ui/scripts/browse.js",
+      "line": 2087
+    },
+    {
+      "url": "/api/knowledge/storage-location",
+      "method": "PUT",
+      "file": "ui/scripts/settings.js",
+      "line": 10065
+    },
+    {
+      "url": "/api/knowledge/supported-formats",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 9585
+    },
+    {
+      "url": "/api/knowledge/zim/{param}/_meta",
+      "method": "GET",
+      "file": "ui/scripts/browse.js",
+      "line": 436
+    },
+    {
+      "url": "/api/knowledge/zim/{param}/_random",
+      "method": "GET",
+      "file": "ui/scripts/browse.js",
+      "line": 2380
+    },
+    {
+      "url": "/api/learning/breakdown/{param}",
+      "method": "GET",
+      "file": "ui/scripts/learning.js",
+      "line": 2026
+    },
+    {
+      "url": "/api/learning/breakdown/{param}",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/_common.js",
+      "line": 124
+    },
+    {
+      "url": "/api/learning/breakdown/{param}",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/breakdown_popover.js",
+      "line": 65
+    },
+    {
+      "url": "/api/learning/breakdown/{param}?q=",
+      "method": "GET",
+      "file": "ui/scripts/learning.js",
+      "line": 2026
+    },
+    {
+      "url": "/api/learning/breakdown/{param}?q=",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/_common.js",
+      "line": 124
+    },
+    {
+      "url": "/api/learning/breakdown/{param}?q=",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/breakdown_popover.js",
+      "line": 65
+    },
+    {
+      "url": "/api/learning/games/best",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/_common.js",
+      "line": 58
+    },
+    {
+      "url": "/api/learning/games/best?lang=",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/_common.js",
+      "line": 58
+    },
+    {
+      "url": "/api/learning/games/pool",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/_common.js",
+      "line": 32
+    },
+    {
+      "url": "/api/learning/games/pool?",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/_common.js",
+      "line": 32
+    },
+    {
+      "url": "/api/learning/games/readiness",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/_common.js",
+      "line": 67
+    },
+    {
+      "url": "/api/learning/games/readiness?lang=",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/_common.js",
+      "line": 67
+    },
+    {
+      "url": "/api/learning/games/result",
+      "method": "POST",
+      "file": "ui/scripts/learning_games/_common.js",
+      "line": 42
+    },
+    {
+      "url": "/api/learning/lookup",
+      "method": "GET",
+      "file": "ui/scripts/learning.js",
+      "line": 1786
+    },
+    {
+      "url": "/api/learning/lookup",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/_common.js",
+      "line": 620
+    },
+    {
+      "url": "/api/learning/lookup",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/companion_dialogue.js",
+      "line": 932
+    },
+    {
+      "url": "/api/learning/lookup",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/word_forge.js",
+      "line": 467
+    },
+    {
+      "url": "/api/learning/lookup",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/word_garden.js",
+      "line": 520
+    },
+    {
+      "url": "/api/learning/lookup?lang={param}&q=",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/_common.js",
+      "line": 620
+    },
+    {
+      "url": "/api/learning/lookup?lang={param}&q=",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/companion_dialogue.js",
+      "line": 932
+    },
+    {
+      "url": "/api/learning/lookup?lang={param}&q=",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/word_forge.js",
+      "line": 467
+    },
+    {
+      "url": "/api/learning/lookup?lang={param}&q={param}&limit=8",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/word_garden.js",
+      "line": 520
+    },
+    {
+      "url": "/api/learning/lookup?lang={param}&q={param}&pos=0",
+      "method": "GET",
+      "file": "ui/scripts/learning.js",
+      "line": 1786
+    },
+    {
+      "url": "/api/learning/packs/catalog",
+      "method": "GET",
+      "file": "ui/scripts/learning.js",
+      "line": 1214
+    },
+    {
+      "url": "/api/learning/packs/{param}/install",
+      "method": "POST",
+      "file": "ui/scripts/learning.js",
+      "line": 1268
+    },
+    {
+      "url": "/api/learning/packs/{param}/reseed",
+      "method": "POST",
+      "file": "ui/scripts/learning.js",
+      "line": 967
+    },
+    {
+      "url": "/api/learning/packs/{param}/seed",
+      "method": "POST",
+      "file": "ui/scripts/learning.js",
+      "line": 1478
+    },
+    {
+      "url": "/api/learning/partner",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/partner_launch.js",
+      "line": 45
+    },
+    {
+      "url": "/api/learning/partner?lang=",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/partner_launch.js",
+      "line": 45
+    },
+    {
+      "url": "/api/learning/partners",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/home_partner_card.js",
+      "line": 38
+    },
+    {
+      "url": "/api/learning/paths/{param}",
+      "method": "GET",
+      "file": "ui/scripts/learning.js",
+      "line": 521
+    },
+    {
+      "url": "/api/learning/paths/{param}/aux/{param}",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/hub.js",
+      "line": 438
+    },
+    {
+      "url": "/api/learning/paths/{param}/manifest",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/hub.js",
+      "line": 331
+    },
+    {
+      "url": "/api/learning/paths/{param}/unit/{param}",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/hub.js",
+      "line": 423
+    },
+    {
+      "url": "/api/learning/read/{param}",
+      "method": "GET",
+      "file": "ui/scripts/learning.js",
+      "line": 2289
+    },
+    {
+      "url": "/api/learning/read/{param}",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/_common.js",
+      "line": 134
+    },
+    {
+      "url": "/api/learning/read/{param}?",
+      "method": "GET",
+      "file": "ui/scripts/learning_games/_common.js",
+      "line": 134
+    },
+    {
+      "url": "/api/learning/read/{param}?count=20",
+      "method": "GET",
+      "file": "ui/scripts/learning.js",
+      "line": 2289
+    },
+    {
+      "url": "/api/learning/srs/due",
+      "method": "GET",
+      "file": "ui/scripts/learning.js",
+      "line": 56
+    },
+    {
+      "url": "/api/learning/srs/due?lang={param}&limit=",
+      "method": "GET",
+      "file": "ui/scripts/learning.js",
+      "line": 56
+    },
+    {
+      "url": "/api/learning/srs/grade",
+      "method": "POST",
+      "file": "ui/scripts/learning.js",
+      "line": 764
+    },
+    {
+      "url": "/api/learning/srs/grade",
+      "method": "POST",
+      "file": "ui/scripts/learning_games/_common.js",
+      "line": 142
+    },
+    {
+      "url": "/api/learning/state",
+      "method": "GET",
+      "file": "ui/scripts/learning.js",
+      "line": 41
+    },
+    {
+      "url": "/api/learning/state",
+      "method": "POST",
+      "file": "ui/scripts/learning.js",
+      "line": 346
+    },
+    {
+      "url": "/api/learning/vocab/add",
+      "method": "POST",
+      "file": "ui/scripts/learning.js",
+      "line": 1970
+    },
+    {
+      "url": "/api/learning/vocab/add",
+      "method": "POST",
+      "file": "ui/scripts/learning_games/_common.js",
+      "line": 152
+    },
+    {
+      "url": "/api/learning/vocab/add",
+      "method": "POST",
+      "file": "ui/scripts/learning_games/breakdown_popover.js",
+      "line": 123
+    },
+    {
+      "url": "/api/learning/vocab/leeches",
+      "method": "GET",
+      "file": "ui/scripts/learning.js",
+      "line": 558
+    },
+    {
+      "url": "/api/learning/vocab/leeches?lang={param}&limit=",
+      "method": "GET",
+      "file": "ui/scripts/learning.js",
+      "line": 558
+    },
+    {
+      "url": "/api/learning/vocab/progress",
+      "method": "GET",
+      "file": "ui/scripts/learning.js",
+      "line": 551
+    },
+    {
+      "url": "/api/learning/vocab/progress?lang=",
+      "method": "GET",
+      "file": "ui/scripts/learning.js",
+      "line": 551
+    },
+    {
+      "url": "/api/library/collections",
+      "method": "GET",
+      "file": "ui/scripts/library/api.js",
+      "line": 79
+    },
+    {
+      "url": "/api/library/collections/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/library/api.js",
+      "line": 93
+    },
+    {
+      "url": "/api/library/collections/{param}",
+      "method": "GET",
+      "file": "ui/scripts/library/api.js",
+      "line": 87
+    },
+    {
+      "url": "/api/library/collections/{param}/items",
+      "method": "GET",
+      "file": "ui/scripts/library/api.js",
+      "line": 107
+    },
+    {
+      "url": "/api/library/home",
+      "method": "GET",
+      "file": "ui/scripts/library/api.js",
+      "line": 49
+    },
+    {
+      "url": "/api/library/items",
+      "method": "GET",
+      "file": "ui/scripts/library/api.js",
+      "line": 71
+    },
+    {
+      "url": "/api/library/items/{param}/activity",
+      "method": "GET",
+      "file": "ui/scripts/library/api.js",
+      "line": 131
+    },
+    {
+      "url": "/api/library/items/{param}/pin",
+      "method": "GET",
+      "file": "ui/scripts/library/api.js",
+      "line": 124
+    },
+    {
+      "url": "/api/library/items/{param}/tags",
+      "method": "GET",
+      "file": "ui/scripts/library/api.js",
+      "line": 144
+    },
+    {
+      "url": "/api/library/publications/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/library/api.js",
+      "line": 185
+    },
+    {
+      "url": "/api/library/publications/{param}/launch",
+      "method": "POST",
+      "file": "ui/scripts/library/open-item.js",
+      "line": 53
+    },
+    {
+      "url": "/api/library/save",
+      "method": "POST",
+      "file": "ui/scripts/coder-library-save.js",
+      "line": 62
+    },
+    {
+      "url": "/api/library/save/preflight",
+      "method": "POST",
+      "file": "ui/scripts/coder-library-save.js",
+      "line": 43
+    },
+    {
+      "url": "/api/livetv/play/{param}/{param}",
+      "method": "POST",
+      "file": "ui/cast-livetv/cast-livetv.js",
+      "line": 273
+    },
+    {
+      "url": "/api/livetv/rails",
+      "method": "GET",
+      "file": "ui/scripts/media.js",
+      "line": 459
+    },
+    {
+      "url": "/api/livetv/stop/{param}",
+      "method": "POST",
+      "file": "ui/cast-livetv/cast-livetv.js",
+      "line": 207
+    },
+    {
+      "url": "/api/livetv/stop/{param}",
+      "method": "POST",
+      "file": "ui/scripts/files/live-tv-rails.js",
+      "line": 513
+    },
+    {
+      "url": "/api/llamacpp/lora",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 6920
+    },
+    {
+      "url": "/api/llamacpp/models/load",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 5399
+    },
+    {
+      "url": "/api/llamacpp/models/unload",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 5416
+    },
+    {
+      "url": "/api/llamacpp/slots/{param}/erase",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 6863
+    },
+    {
+      "url": "/api/llamacpp/status",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 4745
+    },
+    {
+      "url": "/api/marketplace/catalog",
+      "method": "GET",
+      "file": "ui/scripts/marketplace.js",
+      "line": 82
+    },
+    {
+      "url": "/api/marketplace/hardware",
+      "method": "GET",
+      "file": "ui/scripts/marketplace.js",
+      "line": 84
+    },
+    {
+      "url": "/api/marketplace/hardware",
+      "method": "GET",
+      "file": "ui/scripts/onboarding.js",
+      "line": 36
+    },
+    {
+      "url": "/api/marketplace/services",
+      "method": "GET",
+      "file": "ui/scripts/marketplace.js",
+      "line": 83
+    },
+    {
+      "url": "/api/marketplace/services/custom",
+      "method": "POST",
+      "file": "ui/scripts/marketplace.js",
+      "line": 547
+    },
+    {
+      "url": "/api/marketplace/services/{param}/disable",
+      "method": "POST",
+      "file": "ui/scripts/marketplace.js",
+      "line": 589
+    },
+    {
+      "url": "/api/marketplace/services/{param}/enable",
+      "method": "POST",
+      "file": "ui/scripts/discover/index.js",
+      "line": 2856
+    },
+    {
+      "url": "/api/marketplace/services/{param}/enable",
+      "method": "POST",
+      "file": "ui/scripts/marketplace.js",
+      "line": 573
+    },
+    {
+      "url": "/api/marketplace/services/{param}/models",
+      "method": "GET",
+      "file": "ui/scripts/discover/index.js",
+      "line": 1987
+    },
+    {
+      "url": "/api/marketplace/services/{param}/provider-status",
+      "method": "GET",
+      "file": "ui/scripts/discover/index.js",
+      "line": 1856
+    },
+    {
+      "url": "/api/marketplace/services/{param}/pull-model",
+      "method": "POST",
+      "file": "ui/scripts/discover/index.js",
+      "line": 2032
+    },
+    {
+      "url": "/api/marketplace/services/{param}/status",
+      "method": "GET",
+      "file": "ui/scripts/discover/index.js",
+      "line": 696
+    },
+    {
+      "url": "/api/marketplace/services/{param}/{param}",
+      "method": "POST",
+      "file": "ui/scripts/discover/index.js",
+      "line": 2333
+    },
+    {
+      "url": "/api/media/backdrop/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 53
+    },
+    {
+      "url": "/api/media/bookmarks/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/files/api.js",
+      "line": 171
+    },
+    {
+      "url": "/api/media/bookmarks/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 141
+    },
+    {
+      "url": "/api/media/bookmarks/{param}",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 155
+    },
+    {
+      "url": "/api/media/browse/librivox",
+      "method": "GET",
+      "file": "ui/scripts/librivox-browse.js",
+      "line": 118
+    },
+    {
+      "url": "/api/media/browse/librivox?",
+      "method": "GET",
+      "file": "ui/scripts/librivox-browse.js",
+      "line": 118
+    },
+    {
+      "url": "/api/media/comic/manifest/{param}",
+      "method": "GET",
+      "file": "ui/cast-comic/cast-comic.js",
+      "line": 585
+    },
+    {
+      "url": "/api/media/comic/manifest/{param}",
+      "method": "GET",
+      "file": "ui/scripts/comic-reader/index.js",
+      "line": 866
+    },
+    {
+      "url": "/api/media/cover/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 44
+    },
+    {
+      "url": "/api/media/details/{param}",
+      "method": "GET",
+      "file": "ui/cast-audio/cast-audio.js",
+      "line": 148
+    },
+    {
+      "url": "/api/media/details/{param}",
+      "method": "GET",
+      "file": "ui/cast-comic/cast-comic.js",
+      "line": 613
+    },
+    {
+      "url": "/api/media/details/{param}",
+      "method": "GET",
+      "file": "ui/cast-control/cast-control.js",
+      "line": 1695
+    },
+    {
+      "url": "/api/media/details/{param}",
+      "method": "GET",
+      "file": "ui/cast-video/cast-video.js",
+      "line": 231
+    },
+    {
+      "url": "/api/media/details/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 108
+    },
+    {
+      "url": "/api/media/details/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/render.js",
+      "line": 2219
+    },
+    {
+      "url": "/api/media/details/{param}",
+      "method": "GET",
+      "file": "ui/scripts/media-player.js",
+      "line": 436
+    },
+    {
+      "url": "/api/media/detect",
+      "method": "POST",
+      "file": "ui/scripts/media-servers.js",
+      "line": 128
+    },
+    {
+      "url": "/api/media/gutenberg-text/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/read-along.js",
+      "line": 123
+    },
+    {
+      "url": "/api/media/outputs/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 183
+    },
+    {
+      "url": "/api/media/outputs/{param}/launch-plan",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 206
+    },
+    {
+      "url": "/api/media/outputs/{param}/remote-command",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 277
+    },
+    {
+      "url": "/api/media/outputs/{param}/remote-play",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 253
+    },
+    {
+      "url": "/api/media/outputs/{param}/transport-play",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 225
+    },
+    {
+      "url": "/api/media/person/{param}/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 63
+    },
+    {
+      "url": "/api/media/person/{param}/{param}/image",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 57
+    },
+    {
+      "url": "/api/media/pin",
+      "method": "POST",
+      "file": "ui/scripts/librivox-browse.js",
+      "line": 165
+    },
+    {
+      "url": "/api/media/pin/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/files/api.js",
+      "line": 512
+    },
+    {
+      "url": "/api/media/pin/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/librivox-browse.js",
+      "line": 214
+    },
+    {
+      "url": "/api/media/progress/{param}",
+      "method": "POST",
+      "file": "ui/cast-audio/cast-audio.js",
+      "line": 350
+    },
+    {
+      "url": "/api/media/progress/{param}",
+      "method": "POST",
+      "file": "ui/cast-comic/cast-comic.js",
+      "line": 688
+    },
+    {
+      "url": "/api/media/progress/{param}",
+      "method": "POST",
+      "file": "ui/cast-video/cast-video.js",
+      "line": 572
+    },
+    {
+      "url": "/api/media/progress/{param}",
+      "method": "POST",
+      "file": "ui/scripts/comic-reader/index.js",
+      "line": 141
+    },
+    {
+      "url": "/api/media/progress/{param}",
+      "method": "POST",
+      "file": "ui/scripts/consumption/comic-series.js",
+      "line": 275
+    },
+    {
+      "url": "/api/media/progress/{param}",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 90
+    },
+    {
+      "url": "/api/media/progress/{param}",
+      "method": "POST",
+      "file": "ui/scripts/files/comics.js",
+      "line": 1017
+    },
+    {
+      "url": "/api/media/receiver-profiles",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 193
+    },
+    {
+      "url": "/api/media/related/{param}",
+      "method": "GET",
+      "file": "ui/scripts/consumption/detail.js",
+      "line": 1088
+    },
+    {
+      "url": "/api/media/related/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/render.js",
+      "line": 2079
+    },
+    {
+      "url": "/api/media/related/{param}?by={param}&limit=18",
+      "method": "GET",
+      "file": "ui/scripts/consumption/detail.js",
+      "line": 1088
+    },
+    {
+      "url": "/api/media/related/{param}?by={param}&limit=30",
+      "method": "GET",
+      "file": "ui/scripts/files/render.js",
+      "line": 2079
+    },
+    {
+      "url": "/api/media/remote-sessions/{param}/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 295
+    },
+    {
+      "url": "/api/media/remote-sessions/{param}/{param}/general",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 370
+    },
+    {
+      "url": "/api/media/remote-sessions/{param}/{param}/playstate",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 321
+    },
+    {
+      "url": "/api/media/resume-listening",
+      "method": "GET",
+      "file": "ui/scripts/discovery.js",
+      "line": 1199
+    },
+    {
+      "url": "/api/media/selection/{param}",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 118
+    },
+    {
+      "url": "/api/media/servers",
+      "method": "GET",
+      "file": "ui/scripts/discover/index.js",
+      "line": 435
+    },
+    {
+      "url": "/api/media/servers",
+      "method": "GET",
+      "file": "ui/scripts/media-servers.js",
+      "line": 107
+    },
+    {
+      "url": "/api/media/servers",
+      "method": "POST",
+      "file": "ui/scripts/media-servers.js",
+      "line": 137
+    },
+    {
+      "url": "/api/media/servers/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/media-servers.js",
+      "line": 311
+    },
+    {
+      "url": "/api/media/servers/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/media-servers.js",
+      "line": 281
+    },
+    {
+      "url": "/api/media/servers/{param}/access",
+      "method": "POST",
+      "file": "ui/scripts/media-servers.js",
+      "line": 797
+    },
+    {
+      "url": "/api/media/servers/{param}/change-password",
+      "method": "POST",
+      "file": "ui/scripts/media-servers.js",
+      "line": 891
+    },
+    {
+      "url": "/api/media/servers/{param}/console-credentials",
+      "method": "GET",
+      "file": "ui/scripts/discover/index.js",
+      "line": 2271
+    },
+    {
+      "url": "/api/media/servers/{param}/libraries",
+      "method": "GET",
+      "file": "ui/scripts/media-servers.js",
+      "line": 114
+    },
+    {
+      "url": "/api/media/servers/{param}/libraries/{param}",
+      "method": "PATCH",
+      "file": "ui/scripts/media-servers.js",
+      "line": 327
+    },
+    {
+      "url": "/api/media/servers/{param}/sync",
+      "method": "POST",
+      "file": "ui/scripts/discover/index.js",
+      "line": 2248
+    },
+    {
+      "url": "/api/media/servers/{param}/sync",
+      "method": "POST",
+      "file": "ui/scripts/media-servers.js",
+      "line": 166
+    },
+    {
+      "url": "/api/media/servers/{param}/test",
+      "method": "POST",
+      "file": "ui/scripts/media-servers.js",
+      "line": 241
+    },
+    {
+      "url": "/api/media/stream/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 28
+    },
+    {
+      "url": "/api/media/subtitle/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 72
+    },
+    {
+      "url": "/api/media/transport-sessions/{param}",
+      "method": "GET",
+      "file": "ui/scripts/files/api.js",
+      "line": 307
+    },
+    {
+      "url": "/api/media/transport-sessions/{param}/general",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 393
+    },
+    {
+      "url": "/api/media/transport-sessions/{param}/playstate",
+      "method": "POST",
+      "file": "ui/scripts/files/api.js",
+      "line": 345
+    },
+    {
+      "url": "/api/models/download/destinations",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 6075
+    },
+    {
+      "url": "/api/models/downloads",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 5752
+    },
+    {
+      "url": "/api/models/downloads/cleanup",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 6012
+    },
+    {
+      "url": "/api/models/downloads/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/models.js",
+      "line": 5964
+    },
+    {
+      "url": "/api/models/downloads/{param}/cancel",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 5930
+    },
+    {
+      "url": "/api/models/downloads/{param}/retry",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 5950
+    },
+    {
+      "url": "/api/models/downloads/{param}/stream",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 5873
+    },
+    {
+      "url": "/api/models/downloads/{param}?delete_partial=true",
+      "method": "DELETE",
+      "file": "ui/scripts/models.js",
+      "line": 5984
+    },
+    {
+      "url": "/api/models/downloads?limit=20",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 5752
+    },
+    {
+      "url": "/api/models/gguf/list",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 6433
+    },
+    {
+      "url": "/api/models/gguf/list?repo=",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 6433
+    },
+    {
+      "url": "/api/models/local",
+      "method": "DELETE",
+      "file": "ui/scripts/models.js",
+      "line": 6626
+    },
+    {
+      "url": "/api/models/pull",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 5491
+    },
+    {
+      "url": "/api/models/pull/bundle",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 6306
+    },
+    {
+      "url": "/api/models/pull/safetensors",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 6254
+    },
+    {
+      "url": "/api/models/safetensors/local",
+      "method": "DELETE",
+      "file": "ui/scripts/models.js",
+      "line": 4616
+    },
+    {
+      "url": "/api/models/safetensors/local",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 4511
+    },
+    {
+      "url": "/api/models/safetensors/local/launch",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 4660
+    },
+    {
+      "url": "/api/models/safetensors/local/launch",
+      "method": "PUT",
+      "file": "ui/scripts/models.js",
+      "line": 4716
+    },
+    {
+      "url": "/api/models/safetensors/local/launch?path=",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 4660
+    },
+    {
+      "url": "/api/models/status",
+      "method": "GET",
+      "file": "ui/scripts/onboarding.js",
+      "line": 37
+    },
+    {
+      "url": "/api/models/storage",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 4756
+    },
+    {
+      "url": "/api/models/vision/captioner-options",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 12283
+    },
+    {
+      "url": "/api/models/vllm/load",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 4637
+    },
+    {
+      "url": "/api/models/{param}/info",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 5364
+    },
+    {
+      "url": "/api/models/{param}/load",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 6649
+    },
+    {
+      "url": "/api/models/{param}/projector",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 14459
+    },
+    {
+      "url": "/api/models/{param}/projector",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 14531
+    },
+    {
+      "url": "/api/models/{param}/sampling",
+      "method": "GET",
+      "file": "ui/scripts/chat/toolbar/tuning.js",
+      "line": 26
+    },
+    {
+      "url": "/api/models/{param}/sampling",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 5034
+    },
+    {
+      "url": "/api/models/{param}/sampling",
+      "method": "PUT",
+      "file": "ui/scripts/models.js",
+      "line": 5051
+    },
+    {
+      "url": "/api/models/{param}/unload",
+      "method": "POST",
+      "file": "ui/scripts/models.js",
+      "line": 6679
+    },
+    {
+      "url": "/api/narrative/background/{param}",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5184
+    },
+    {
+      "url": "/api/narrative/groups",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 8267
+    },
+    {
+      "url": "/api/narrative/groups",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 7101
+    },
+    {
+      "url": "/api/narrative/groups/generate-summary",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 9089
+    },
+    {
+      "url": "/api/narrative/groups/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 8438
+    },
+    {
+      "url": "/api/narrative/groups/{param}/activate",
+      "method": "PUT",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 8387
+    },
+    {
+      "url": "/api/narrative/groups/{param}/force-speaker",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 9840
+    },
+    {
+      "url": "/api/narrative/groups/{param}/turn-state",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 8974
+    },
+    {
+      "url": "/api/narrative/groups/{param}/turn-state?session_id=",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 8974
+    },
+    {
+      "url": "/api/narrative/lorebook/global",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 2772
+    },
+    {
+      "url": "/api/narrative/lorebook/global",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 2740
+    },
+    {
+      "url": "/api/narrative/lorebook/global/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 2886
+    },
+    {
+      "url": "/api/narrative/lorebook/global/{param}",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 2825
+    },
+    {
+      "url": "/api/narrative/lorebook/global/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 2865
+    },
+    {
+      "url": "/api/narrative/presets",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 7769
+    },
+    {
+      "url": "/api/narrative/presets",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 7907
+    },
+    {
+      "url": "/api/narrative/presets/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 7893
+    },
+    {
+      "url": "/api/narrative/regex",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 7999
+    },
+    {
+      "url": "/api/narrative/regex",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 8122
+    },
+    {
+      "url": "/api/narrative/regex/presets",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 8160
+    },
+    {
+      "url": "/api/narrative/regex/presets/{param}/install",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 8187
+    },
+    {
+      "url": "/api/narrative/regex/test",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 8237
+    },
+    {
+      "url": "/api/narrative/regex/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 8099
+    },
+    {
+      "url": "/api/narrative/regex/{param}/toggle",
+      "method": "PATCH",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 8084
+    },
+    {
+      "url": "/api/narrative/session/{param}/branches",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5698
+    },
+    {
+      "url": "/api/narrative/session/{param}/branches/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5760
+    },
+    {
+      "url": "/api/narrative/session/{param}/branches/{param}/status",
+      "method": "PATCH",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5745
+    },
+    {
+      "url": "/api/narrative/session/{param}/branches/{param}?cascade=true",
+      "method": "DELETE",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5760
+    },
+    {
+      "url": "/api/narrative/session/{param}/branches?include_stale=true",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5698
+    },
+    {
+      "url": "/api/narrative/session/{param}/memory-settings",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5590
+    },
+    {
+      "url": "/api/narrative/session/{param}/memory-settings",
+      "method": "PUT",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5532
+    },
+    {
+      "url": "/api/narrative/session/{param}/resolve-model-alert",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5044
+    },
+    {
+      "url": "/api/narrative/session/{param}/storage",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5700
+    },
+    {
+      "url": "/api/narrative/world/{param}",
+      "method": "GET",
+      "file": "ui/scripts/chat/world-panel.js",
+      "line": 23
+    },
+    {
+      "url": "/api/narrative/world/{param}/correct",
+      "method": "POST",
+      "file": "ui/scripts/chat/world-panel.js",
+      "line": 152
+    },
+    {
+      "url": "/api/narrative/world/{param}/roll",
+      "method": "POST",
+      "file": "ui/scripts/chat/world-panel.js",
+      "line": 170
+    },
+    {
+      "url": "/api/narrative/world/{param}/suggestions",
+      "method": "GET",
+      "file": "ui/scripts/chat/world-panel.js",
+      "line": 37
+    },
+    {
+      "url": "/api/narrative/world/{param}/suggestions/resolve",
+      "method": "POST",
+      "file": "ui/scripts/chat/world-panel.js",
+      "line": 45
+    },
+    {
+      "url": "/api/notes/tags",
+      "method": "GET",
+      "file": "ui/scripts/notes-editor.js",
+      "line": 69
+    },
+    {
+      "url": "/api/notes/{param}/ai",
+      "method": "POST",
+      "file": "ui/scripts/notes-editor.js",
+      "line": 49
+    },
+    {
+      "url": "/api/notes/{param}/scan",
+      "method": "POST",
+      "file": "ui/scripts/note-margin.js",
+      "line": 48
+    },
+    {
+      "url": "/api/notify/feed",
+      "method": "GET",
+      "file": "ui/scripts/notifications.js",
+      "line": 265
+    },
+    {
+      "url": "/api/notify/feed?include_read=false&include_dismissed=false",
+      "method": "GET",
+      "file": "ui/scripts/notifications.js",
+      "line": 265
+    },
+    {
+      "url": "/api/notify/subscriptions",
+      "method": "GET",
+      "file": "ui/scripts/notifications/push-subscribe.js",
+      "line": 163
+    },
+    {
+      "url": "/api/notify/subscriptions",
+      "method": "POST",
+      "file": "ui/scripts/notifications/push-subscribe.js",
+      "line": 119
+    },
+    {
+      "url": "/api/notify/subscriptions/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/notifications/push-subscribe.js",
+      "line": 170
+    },
+    {
+      "url": "/api/notify/vapid-public-key",
+      "method": "GET",
+      "file": "ui/scripts/notifications/push-subscribe.js",
+      "line": 70
+    },
+    {
+      "url": "/api/notify/{param}/action/{param}",
+      "method": "POST",
+      "file": "ui/scripts/chat/offer-chip.js",
+      "line": 74
+    },
+    {
+      "url": "/api/notify/{param}/dismiss",
+      "method": "POST",
+      "file": "ui/scripts/notifications.js",
+      "line": 656
+    },
+    {
+      "url": "/api/observation/complete",
+      "method": "GET",
+      "file": "ui/scripts/chat/autocomplete.js",
+      "line": 129
+    },
+    {
+      "url": "/api/offers/suppressions/{param}/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/chat/offer-chip.js",
+      "line": 196
+    },
+    {
+      "url": "/api/personas/",
+      "method": "GET",
+      "file": "ui/scripts/chat/impersonate.js",
+      "line": 120
+    },
+    {
+      "url": "/api/personas/",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 7191
+    },
+    {
+      "url": "/api/personas/",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 7609
+    },
+    {
+      "url": "/api/personas/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 7636
+    },
+    {
+      "url": "/api/personas/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 7601
+    },
+    {
+      "url": "/api/personas/{param}/default",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 7650
+    },
+    {
+      "url": "/api/personas/{param}/undefault",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 7667
+    },
+    {
+      "url": "/api/playlists",
+      "method": "GET",
+      "file": "ui/scripts/playlist.js",
+      "line": 41
+    },
+    {
+      "url": "/api/playlists",
+      "method": "POST",
+      "file": "ui/scripts/playlist.js",
+      "line": 52
+    },
+    {
+      "url": "/api/playlists/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/playlist.js",
+      "line": 91
+    },
+    {
+      "url": "/api/playlists/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/playlist.js",
+      "line": 71
+    },
+    {
+      "url": "/api/portal/env",
+      "method": "POST",
+      "file": "ui/portal/env.js",
+      "line": 142
+    },
+    {
+      "url": "/api/portal/gateway",
+      "method": "GET",
+      "file": "ui/portal/env.js",
+      "line": 85
+    },
+    {
+      "url": "/api/portal/me",
+      "method": "GET",
+      "file": "ui/portal/portal.js",
+      "line": 100
+    },
+    {
+      "url": "/api/portal/pending",
+      "method": "GET",
+      "file": "ui/scripts/connect/guests-panel.js",
+      "line": 150
+    },
+    {
+      "url": "/api/portal/register/{param}",
+      "method": "POST",
+      "file": "ui/portal/portal.js",
+      "line": 170
+    },
+    {
+      "url": "/api/portal/registrations/{param}/confirm",
+      "method": "POST",
+      "file": "ui/scripts/connect/guests-panel.js",
+      "line": 187
+    },
+    {
+      "url": "/api/portal/registrations/{param}/deny",
+      "method": "POST",
+      "file": "ui/scripts/connect/guests-panel.js",
+      "line": 210
+    },
+    {
+      "url": "/api/powers",
+      "method": "GET",
+      "file": "ui/scripts/powers.js",
+      "line": 46
+    },
+    {
+      "url": "/api/powers/active",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 7939
+    },
+    {
+      "url": "/api/powers/clear-activation",
+      "method": "POST",
+      "file": "ui/scripts/powers.js",
+      "line": 65
+    },
+    {
+      "url": "/api/powers/rescan",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 6078
+    },
+    {
+      "url": "/api/powers/{param}/activate",
+      "method": "POST",
+      "file": "ui/scripts/powers.js",
+      "line": 52
+    },
+    {
+      "url": "/api/powers/{param}/{param}",
+      "method": "POST",
+      "file": "ui/scripts/powers.js",
+      "line": 75
+    },
+    {
+      "url": "/api/providers/",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 9318
+    },
+    {
+      "url": "/api/providers/",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 9281
+    },
+    {
+      "url": "/api/providers/probe",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 9203
+    },
+    {
+      "url": "/api/providers/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 9452
+    },
+    {
+      "url": "/api/providers/{param}/share",
+      "method": "PUT",
+      "file": "ui/scripts/settings.js",
+      "line": 9432
+    },
+    {
+      "url": "/api/ps",
+      "method": "GET",
+      "file": "ui/scripts/models.js",
+      "line": 4741
+    },
+    {
+      "url": "/api/ps",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 13719
+    },
+    {
+      "url": "/api/reasoning/flows",
+      "method": "GET",
+      "file": "ui/app.js",
+      "line": 2253
+    },
+    {
+      "url": "/api/reasoning/flows",
+      "method": "GET",
+      "file": "ui/scripts/flow-bar.js",
+      "line": 113
+    },
+    {
+      "url": "/api/reasoning/flows",
+      "method": "GET",
+      "file": "ui/scripts/flow-editor.js",
+      "line": 729
+    },
+    {
+      "url": "/api/reasoning/flows",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 15006
+    },
+    {
+      "url": "/api/reasoning/flows",
+      "method": "POST",
+      "file": "ui/app.js",
+      "line": 2774
+    },
+    {
+      "url": "/api/reasoning/flows",
+      "method": "POST",
+      "file": "ui/scripts/flow-create-sheet.js",
+      "line": 266
+    },
+    {
+      "url": "/api/reasoning/flows/import",
+      "method": "POST",
+      "file": "ui/app.js",
+      "line": 2686
+    },
+    {
+      "url": "/api/reasoning/flows/import",
+      "method": "POST",
+      "file": "ui/scripts/flow-editor.js",
+      "line": 2235
+    },
+    {
+      "url": "/api/reasoning/flows/routing-preview",
+      "method": "POST",
+      "file": "ui/scripts/flow-editor.js",
+      "line": 1505
+    },
+    {
+      "url": "/api/reasoning/flows/{param}",
+      "method": "DELETE",
+      "file": "ui/app.js",
+      "line": 2653
+    },
+    {
+      "url": "/api/reasoning/flows/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/flow-editor.js",
+      "line": 2199
+    },
+    {
+      "url": "/api/reasoning/flows/{param}",
+      "method": "GET",
+      "file": "ui/app.js",
+      "line": 2283
+    },
+    {
+      "url": "/api/reasoning/flows/{param}",
+      "method": "GET",
+      "file": "ui/scripts/agentic.js",
+      "line": 414
+    },
+    {
+      "url": "/api/reasoning/flows/{param}",
+      "method": "GET",
+      "file": "ui/scripts/flow-bar.js",
+      "line": 139
+    },
+    {
+      "url": "/api/reasoning/flows/{param}",
+      "method": "GET",
+      "file": "ui/scripts/flow-editor.js",
+      "line": 889
+    },
+    {
+      "url": "/api/reasoning/flows/{param}",
+      "method": "PUT",
+      "file": "ui/app.js",
+      "line": 2499
+    },
+    {
+      "url": "/api/reasoning/flows/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/flow-create-sheet.js",
+      "line": 297
+    },
+    {
+      "url": "/api/reasoning/flows/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/flow-editor.js",
+      "line": 1153
+    },
+    {
+      "url": "/api/reasoning/flows/{param}/clone",
+      "method": "POST",
+      "file": "ui/app.js",
+      "line": 2523
+    },
+    {
+      "url": "/api/reasoning/flows/{param}/clone",
+      "method": "POST",
+      "file": "ui/scripts/flow-editor.js",
+      "line": 2123
+    },
+    {
+      "url": "/api/reasoning/flows/{param}/clone?name=",
+      "method": "POST",
+      "file": "ui/app.js",
+      "line": 2523
+    },
+    {
+      "url": "/api/reasoning/flows/{param}/default",
+      "method": "PUT",
+      "file": "ui/app.js",
+      "line": 2638
+    },
+    {
+      "url": "/api/reasoning/flows/{param}/default",
+      "method": "PUT",
+      "file": "ui/scripts/flow-editor.js",
+      "line": 2145
+    },
+    {
+      "url": "/api/reasoning/flows/{param}/export",
+      "method": "GET",
+      "file": "ui/app.js",
+      "line": 2667
+    },
+    {
+      "url": "/api/reasoning/flows/{param}/export",
+      "method": "GET",
+      "file": "ui/scripts/flow-editor.js",
+      "line": 2165
+    },
+    {
+      "url": "/api/reasoning/flows/{param}/test",
+      "method": "POST",
+      "file": "ui/scripts/flow-editor.js",
+      "line": 1869
+    },
+    {
+      "url": "/api/reasoning/templates",
+      "method": "GET",
+      "file": "ui/app.js",
+      "line": 2704
+    },
+    {
+      "url": "/api/reasoning/templates",
+      "method": "GET",
+      "file": "ui/scripts/flow-create-sheet.js",
+      "line": 180
+    },
+    {
+      "url": "/api/reasoning/templates/{param}/create",
+      "method": "POST",
+      "file": "ui/scripts/flow-create-sheet.js",
+      "line": 284
+    },
+    {
+      "url": "/api/resources/reclaim",
+      "method": "POST",
+      "file": "ui/scripts/resources.js",
+      "line": 617
+    },
+    {
+      "url": "/api/resources/reclaim/preview",
+      "method": "GET",
+      "file": "ui/scripts/resources.js",
+      "line": 553
+    },
+    {
+      "url": "/api/search/proxies/status",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 16535
+    },
+    {
+      "url": "/api/search/proxies/test",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 16516
+    },
+    {
+      "url": "/api/selfedit/activation",
+      "method": "GET",
+      "file": "ui/scripts/workshop.js",
+      "line": 385
+    },
+    {
+      "url": "/api/selfedit/adaptables",
+      "method": "GET",
+      "file": "ui/scripts/workshop.js",
+      "line": 654
+    },
+    {
+      "url": "/api/selfedit/apply",
+      "method": "POST",
+      "file": "ui/scripts/workshop.js",
+      "line": 1388
+    },
+    {
+      "url": "/api/selfedit/attempts",
+      "method": "GET",
+      "file": "ui/scripts/workshop.js",
+      "line": 538
+    },
+    {
+      "url": "/api/selfedit/attempts/{param}/verdict",
+      "method": "POST",
+      "file": "ui/scripts/workshop.js",
+      "line": 608
+    },
+    {
+      "url": "/api/selfedit/capability",
+      "method": "POST",
+      "file": "ui/scripts/workshop.js",
+      "line": 936
+    },
+    {
+      "url": "/api/selfedit/checkpoints/{param}/restore",
+      "method": "POST",
+      "file": "ui/scripts/workshop.js",
+      "line": 1409
+    },
+    {
+      "url": "/api/selfedit/coverage",
+      "method": "GET",
+      "file": "ui/scripts/workshop.js",
+      "line": 874
+    },
+    {
+      "url": "/api/selfedit/debt/advise",
+      "method": "POST",
+      "file": "ui/scripts/workshop.js",
+      "line": 1510
+    },
+    {
+      "url": "/api/selfedit/evolve/start",
+      "method": "POST",
+      "file": "ui/scripts/workshop.js",
+      "line": 1635
+    },
+    {
+      "url": "/api/selfedit/evolve/{param}",
+      "method": "GET",
+      "file": "ui/scripts/workshop.js",
+      "line": 1649
+    },
+    {
+      "url": "/api/selfedit/health",
+      "method": "GET",
+      "file": "ui/scripts/workshop.js",
+      "line": 263
+    },
+    {
+      "url": "/api/selfedit/palate",
+      "method": "GET",
+      "file": "ui/scripts/workshop.js",
+      "line": 358
+    },
+    {
+      "url": "/api/selfedit/pending",
+      "method": "GET",
+      "file": "ui/scripts/workshop.js",
+      "line": 1325
+    },
+    {
+      "url": "/api/selfedit/preferences",
+      "method": "GET",
+      "file": "ui/scripts/workshop.js",
+      "line": 342
+    },
+    {
+      "url": "/api/selfedit/prompts",
+      "method": "GET",
+      "file": "ui/scripts/workshop.js",
+      "line": 1594
+    },
+    {
+      "url": "/api/selfedit/propose",
+      "method": "POST",
+      "file": "ui/scripts/workshop.js",
+      "line": 776
+    },
+    {
+      "url": "/api/selfedit/reshape",
+      "method": "POST",
+      "file": "ui/scripts/workshop.js",
+      "line": 688
+    },
+    {
+      "url": "/api/selfedit/run",
+      "method": "POST",
+      "file": "ui/scripts/workshop.js",
+      "line": 981
+    },
+    {
+      "url": "/api/selfedit/run/{param}",
+      "method": "GET",
+      "file": "ui/scripts/workshop.js",
+      "line": 1495
+    },
+    {
+      "url": "/api/selfedit/run/{param}/stop",
+      "method": "POST",
+      "file": "ui/scripts/workshop.js",
+      "line": 1284
+    },
+    {
+      "url": "/api/selfedit/run/{param}/stream",
+      "method": "GET",
+      "file": "ui/scripts/workshop.js",
+      "line": 1250
+    },
+    {
+      "url": "/api/selfedit/run/{param}/stream?since=",
+      "method": "GET",
+      "file": "ui/scripts/workshop.js",
+      "line": 1250
+    },
+    {
+      "url": "/api/settings/registry/{param}",
+      "method": "GET",
+      "file": "ui/scripts/settings-registry.js",
+      "line": 347
+    },
+    {
+      "url": "/api/studio/themes/list",
+      "method": "GET",
+      "file": "ui/scripts/studio.js",
+      "line": 3520
+    },
+    {
+      "url": "/api/studio/{param}",
+      "method": "GET",
+      "file": "ui/scripts/studio.js",
+      "line": 618
+    },
+    {
+      "url": "/api/studio/{param}/preview",
+      "method": "POST",
+      "file": "ui/scripts/studio.js",
+      "line": 6236
+    },
+    {
+      "url": "/api/studio/{param}/restore-version/{param}",
+      "method": "POST",
+      "file": "ui/scripts/studio/versions.js",
+      "line": 147
+    },
+    {
+      "url": "/api/studio/{param}/save",
+      "method": "POST",
+      "file": "ui/scripts/studio.js",
+      "line": 6425
+    },
+    {
+      "url": "/api/studio/{param}/versions",
+      "method": "GET",
+      "file": "ui/scripts/studio/versions.js",
+      "line": 80
+    },
+    {
+      "url": "/api/surface-public/{param}/comic/manifest",
+      "method": "GET",
+      "file": "ui/scripts/surface-receiver.js",
+      "line": 77
+    },
+    {
+      "url": "/api/surface-public/{param}/comic/page",
+      "method": "GET",
+      "file": "ui/scripts/surface-receiver.js",
+      "line": 111
+    },
+    {
+      "url": "/api/surface-public/{param}/events",
+      "method": "GET",
+      "file": "ui/scripts/surface-receiver.js",
+      "line": 172
+    },
+    {
+      "url": "/api/surface-public/{param}/join",
+      "method": "POST",
+      "file": "ui/scripts/surface-receiver.js",
+      "line": 56
+    },
+    {
+      "url": "/api/surface-public/{param}/session",
+      "method": "GET",
+      "file": "ui/scripts/surface-receiver.js",
+      "line": 69
+    },
+    {
+      "url": "/api/surfaces/recipes",
+      "method": "GET",
+      "file": "ui/scripts/surface-handoff.js",
+      "line": 106
+    },
+    {
+      "url": "/api/surfaces/sessions",
+      "method": "POST",
+      "file": "ui/scripts/surface-handoff.js",
+      "line": 93
+    },
+    {
+      "url": "/api/surfaces/sessions/{param}/access-token",
+      "method": "POST",
+      "file": "ui/scripts/surface-handoff.js",
+      "line": 128
+    },
+    {
+      "url": "/api/surfaces/sessions/{param}/handoff",
+      "method": "POST",
+      "file": "ui/scripts/surface-handoff.js",
+      "line": 152
+    },
+    {
+      "url": "/api/surfaces/sessions/{param}/state",
+      "method": "POST",
+      "file": "ui/scripts/surface-handoff.js",
+      "line": 182
+    },
+    {
+      "url": "/api/system/events",
+      "method": "GET",
+      "file": "ui/scripts/system-events.js",
+      "line": 26
+    },
+    {
+      "url": "/api/tags",
+      "method": "GET",
+      "file": "ui/scripts/image.js",
+      "line": 637
+    },
+    {
+      "url": "/api/titles/?kind=emulator_rom&limit=200",
+      "method": "GET",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 2153
+    },
+    {
+      "url": "/api/titles/_/scrape",
+      "method": "POST",
+      "file": "ui/scripts/library/games-browse.js",
+      "line": 276
+    },
+    {
+      "url": "/api/titles/_/scrape/{param}",
+      "method": "GET",
+      "file": "ui/scripts/library/games-browse.js",
+      "line": 307
+    },
+    {
+      "url": "/api/titles/_/systems",
+      "method": "GET",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 897
+    },
+    {
+      "url": "/api/titles/bios/_/catalog",
+      "method": "GET",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 1523
+    },
+    {
+      "url": "/api/titles/bios/status",
+      "method": "GET",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 1299
+    },
+    {
+      "url": "/api/titles/bios/status?system_id=",
+      "method": "GET",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 1537
+    },
+    {
+      "url": "/api/titles/bios/{param}/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 2065
+    },
+    {
+      "url": "/api/titles/bios/{param}/{param}",
+      "method": "POST",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 1838
+    },
+    {
+      "url": "/api/titles/bulk-import",
+      "method": "POST",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 2502
+    },
+    {
+      "url": "/api/titles/marketplace",
+      "method": "GET",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 385
+    },
+    {
+      "url": "/api/titles/marketplace/",
+      "method": "GET",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 385
+    },
+    {
+      "url": "/api/titles/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 2230
+    },
+    {
+      "url": "/api/titles/{param}",
+      "method": "GET",
+      "file": "ui/play/play.js",
+      "line": 50
+    },
+    {
+      "url": "/api/titles/{param}",
+      "method": "PATCH",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 948
+    },
+    {
+      "url": "/api/titles/{param}/cover-candidates",
+      "method": "GET",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 1179
+    },
+    {
+      "url": "/api/titles/{param}/cover-from-url",
+      "method": "POST",
+      "file": "ui/scripts/library-game-sources.js",
+      "line": 1124
+    },
+    {
+      "url": "/api/titles/{param}/launch",
+      "method": "POST",
+      "file": "ui/scripts/emulator-stage.js",
+      "line": 90
+    },
+    {
+      "url": "/api/titles/{param}/runs/{param}/end",
+      "method": "POST",
+      "file": "ui/scripts/emulator-stage.js",
+      "line": 318
+    },
+    {
+      "url": "/api/titles/{param}/saves",
+      "method": "GET",
+      "file": "ui/scripts/emulator-bridge.js",
+      "line": 982
+    },
+    {
+      "url": "/api/tools?surface=flow",
+      "method": "GET",
+      "file": "ui/scripts/flow-editor.js",
+      "line": 485
+    },
+    {
+      "url": "/api/ui-version",
+      "method": "GET",
+      "file": "ui/scripts/workshop.js",
+      "line": 1449
+    },
+    {
+      "url": "/api/ui/about",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 6142
+    },
+    {
+      "url": "/api/ui/archive/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5486
+    },
+    {
+      "url": "/api/ui/character-portrait-prompt",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 261
+    },
+    {
+      "url": "/api/ui/enhance-field",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 174
+    },
+    {
+      "url": "/api/ui/fetch-url",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 3772
+    },
+    {
+      "url": "/api/ui/generate-title",
+      "method": "POST",
+      "file": "ui/scripts/chat/index.js",
+      "line": 2137
+    },
+    {
+      "url": "/api/ui/generate-title",
+      "method": "POST",
+      "file": "ui/scripts/surfaces/chat-surface.js",
+      "line": 484
+    },
+    {
+      "url": "/api/ui/risurealm/search",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 4709
+    },
+    {
+      "url": "/api/ui/risurealm/search?",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 4709
+    },
+    {
+      "url": "/api/ui/session/{param}/archive",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5095
+    },
+    {
+      "url": "/api/ui/session/{param}/ltm-prompt",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5922
+    },
+    {
+      "url": "/api/ui/session/{param}/request-log",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5401
+    },
+    {
+      "url": "/api/ui/session/{param}/state",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5094
+    },
+    {
+      "url": "/api/ui/session/{param}/state",
+      "method": "PATCH",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5449
+    },
+    {
+      "url": "/api/ui/sessions",
+      "method": "GET",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 5137
+    },
+    {
+      "url": "/api/ui/translate-card",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 2163
+    },
+    {
+      "url": "/api/version",
+      "method": "GET",
+      "file": "ui/scripts/chat/index.js",
+      "line": 1314
+    },
+    {
+      "url": "/api/vision/restart",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 12230
+    },
+    {
+      "url": "/api/vision/status",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 12180
+    },
+    {
+      "url": "/api/voice/enrollment",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 14984
+    },
+    {
+      "url": "/api/voice/enrollment",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 14899
+    },
+    {
+      "url": "/api/voice/enrollment",
+      "method": "POST",
+      "file": "ui/scripts/voice.js",
+      "line": 6294
+    },
+    {
+      "url": "/api/voice/enrollment/decline",
+      "method": "POST",
+      "file": "ui/scripts/voice.js",
+      "line": 6155
+    },
+    {
+      "url": "/api/voice/enrollment/phrases",
+      "method": "GET",
+      "file": "ui/scripts/voice.js",
+      "line": 6082
+    },
+    {
+      "url": "/api/voice/lexicon",
+      "method": "GET",
+      "file": "ui/scripts/voice-lexicon.js",
+      "line": 122
+    },
+    {
+      "url": "/api/voice/lexicon",
+      "method": "POST",
+      "file": "ui/scripts/voice-lexicon.js",
+      "line": 135
+    },
+    {
+      "url": "/api/voice/lexicon/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/voice-lexicon.js",
+      "line": 110
+    },
+    {
+      "url": "/api/voice/turn",
+      "method": "POST",
+      "file": "ui/scripts/intent-action-router.js",
+      "line": 161
+    },
+    {
+      "url": "/api/wake_word/corpora",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 6645
+    },
+    {
+      "url": "/api/wake_word/corpora",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 6505
+    },
+    {
+      "url": "/api/wake_word/models",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 6378
+    },
+    {
+      "url": "/api/wake_word/personal_samples",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 6919
+    },
+    {
+      "url": "/api/wake_word/personal_samples",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 6836
+    },
+    {
+      "url": "/api/wake_word/personal_samples/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 6960
+    },
+    {
+      "url": "/api/wake_word/personal_samples/{param}?avatar_id=",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 6960
+    },
+    {
+      "url": "/api/wake_word/personal_samples?avatar_id=",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 6919
+    },
+    {
+      "url": "/api/wake_word/train",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 6876
+    },
+    {
+      "url": "/api/xr/browser-panels",
+      "method": "POST",
+      "file": "ui/scripts/avatar-xr.js",
+      "line": 4796
+    },
+    {
+      "url": "/api/xr/browser-panels/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/avatar-xr.js",
+      "line": 4860
+    },
+    {
+      "url": "/api/xr/browser-panels/{param}/frame",
+      "method": "GET",
+      "file": "ui/scripts/avatar-xr.js",
+      "line": 5001
+    },
+    {
+      "url": "/api/xr/browser-panels/{param}/frame?rev=",
+      "method": "GET",
+      "file": "ui/scripts/avatar-xr.js",
+      "line": 5001
+    },
+    {
+      "url": "/api/xr/browser-panels/{param}/input",
+      "method": "POST",
+      "file": "ui/scripts/avatar-xr.js",
+      "line": 5039
+    },
+    {
+      "url": "/api/xr/capabilities",
+      "method": "GET",
+      "file": "ui/scripts/xr-session.js",
+      "line": 51
+    },
+    {
+      "url": "/api/xr/seats/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/xr-session.js",
+      "line": 113
+    },
+    {
+      "url": "/api/xr/sessions",
+      "method": "POST",
+      "file": "ui/scripts/xr-session.js",
+      "line": 64
+    },
+    {
+      "url": "/api/xr/sessions/{param}",
+      "method": "PATCH",
+      "file": "ui/scripts/xr-session.js",
+      "line": 85
+    },
+    {
+      "url": "/api/xr/sessions/{param}/events",
+      "method": "POST",
+      "file": "ui/scripts/xr-session.js",
+      "line": 101
+    },
+    {
+      "url": "/api/youtube/related",
+      "method": "GET",
+      "file": "ui/scripts/youtube-panel.js",
+      "line": 468
+    },
+    {
+      "url": "/api/youtube/related?q={param}&exclude=",
+      "method": "GET",
+      "file": "ui/scripts/youtube-panel.js",
+      "line": 468
+    },
+    {
+      "url": "/api/youtube/transcript",
+      "method": "GET",
+      "file": "ui/scripts/youtube-panel.js",
+      "line": 542
+    },
+    {
+      "url": "/api/youtube/transcript?v=",
+      "method": "GET",
+      "file": "ui/scripts/youtube-panel.js",
+      "line": 542
+    },
+    {
+      "url": "/ui/lib/katex/katex.min.css",
+      "method": "HEAD",
+      "file": "ui/scripts/math-renderer.js",
+      "line": 80
+    },
+    {
+      "url": "/v1/audio/speech",
+      "method": "POST",
+      "file": "ui/scripts/browse.js",
+      "line": 7056
+    },
+    {
+      "url": "/v1/audio/speech",
+      "method": "POST",
+      "file": "ui/scripts/learning.js",
+      "line": 211
+    },
+    {
+      "url": "/v1/audio/speech",
+      "method": "POST",
+      "file": "ui/scripts/learning_games/_common.js",
+      "line": 395
+    },
+    {
+      "url": "/v1/audio/speech",
+      "method": "POST",
+      "file": "ui/scripts/narrative/index.js",
+      "line": 1897
+    },
+    {
+      "url": "/v1/audio/transcriptions",
+      "method": "POST",
+      "file": "ui/scripts/chat/stt.js",
+      "line": 219
+    },
+    {
+      "url": "/v1/audio/transcriptions",
+      "method": "POST",
+      "file": "ui/scripts/learning_games/companion_dialogue.js",
+      "line": 669
+    },
+    {
+      "url": "/v1/audio/transcriptions",
+      "method": "POST",
+      "file": "ui/scripts/learning_games/whisper_race.js",
+      "line": 419
+    },
+    {
+      "url": "/v1/audio/transcriptions",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 13589
+    },
+    {
+      "url": "/v1/audio/transcriptions",
+      "method": "POST",
+      "file": "ui/scripts/voice/batch-stt.js",
+      "line": 92
+    },
+    {
+      "url": "/v1/chat/completions",
+      "method": "POST",
+      "file": "ui/scripts/learning.js",
+      "line": 1833
+    },
+    {
+      "url": "/v1/chat/completions",
+      "method": "POST",
+      "file": "ui/scripts/learning_games/_common.js",
+      "line": 191
+    },
+    {
+      "url": "/v1/chat/completions",
+      "method": "POST",
+      "file": "ui/scripts/learning_games/story_weaver.js",
+      "line": 343
+    },
+    {
+      "url": "/v1/coder/permissions/{param}/{param}",
+      "method": "POST",
+      "file": "ui/scripts/coder-permissions.js",
+      "line": 92
+    },
+    {
+      "url": "/v1/mcp/connect",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 11720
+    },
+    {
+      "url": "/v1/mcp/servers",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 2235
+    },
+    {
+      "url": "/v1/mcp/servers",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 11587
+    },
+    {
+      "url": "/v1/mcp/servers/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 11749
+    },
+    {
+      "url": "/v1/mcp/servers?health=false",
+      "method": "GET",
+      "file": "ui/scripts/coder.js",
+      "line": 2235
+    },
+    {
+      "url": "/v1/mcp/tools",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 11683
+    },
+    {
+      "url": "/v1/memory/compact",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 11364
+    },
+    {
+      "url": "/v1/memory/config",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 11226
+    },
+    {
+      "url": "/v1/memory/config",
+      "method": "PUT",
+      "file": "ui/scripts/settings.js",
+      "line": 11324
+    },
+    {
+      "url": "/v1/memory/context-preview",
+      "method": "GET",
+      "file": "ui/scripts/chat/memory-glow.js",
+      "line": 31
+    },
+    {
+      "url": "/v1/memory/context-preview",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 10201
+    },
+    {
+      "url": "/v1/memory/diagnostics",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 10121
+    },
+    {
+      "url": "/v1/memory/facts",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 11346
+    },
+    {
+      "url": "/v1/memory/facts/{param}",
+      "method": "DELETE",
+      "file": "ui/scripts/settings.js",
+      "line": 10446
+    },
+    {
+      "url": "/v1/memory/facts/{param}",
+      "method": "PUT",
+      "file": "ui/scripts/settings.js",
+      "line": 11112
+    },
+    {
+      "url": "/v1/memory/facts/{param}/history",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 11135
+    },
+    {
+      "url": "/v1/memory/facts/{param}/tier",
+      "method": "PUT",
+      "file": "ui/scripts/settings.js",
+      "line": 10429
+    },
+    {
+      "url": "/v1/memory/facts?limit=10000",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 11346
+    },
+    {
+      "url": "/v1/memory/notifications",
+      "method": "GET",
+      "file": "ui/scripts/chat/memory-glow.js",
+      "line": 102
+    },
+    {
+      "url": "/v1/memory/notifications/{param}/approve",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 10459
+    },
+    {
+      "url": "/v1/memory/notifications/{param}/dismiss",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 10470
+    },
+    {
+      "url": "/v1/memory/notifications/{param}/{param}",
+      "method": "POST",
+      "file": "ui/scripts/chat/memory-glow.js",
+      "line": 165
+    },
+    {
+      "url": "/v1/memory/profile",
+      "method": "GET",
+      "file": "ui/scripts/settings.js",
+      "line": 10200
+    },
+    {
+      "url": "/v1/memory/rebuild-profile",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 11206
+    },
+    {
+      "url": "/v1/memory/store",
+      "method": "POST",
+      "file": "ui/scripts/settings.js",
+      "line": 10707
+    },
+    {
+      "url": "/v1/models",
+      "method": "GET",
+      "file": "ui/scripts/foundry/theater.js",
+      "line": 135
+    },
+    {
+      "url": "{param}://{param}/api/connect/signaling?ticket={param}",
+      "method": "WS",
+      "file": "ui/portal/messenger.js",
+      "line": 87
+    }
+  ],
+  "count": 1314
+}

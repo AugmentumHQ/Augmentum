@@ -1,0 +1,611 @@
+Emby REST API Tree
+Generated: 2026-04-22
+Source: https://dev.emby.media/reference/RestAPI.html
+Groups: 70
+Operations: 535
+
+├─ ActivityLogService
+│  └─ GET /System/ActivityLog/Entries
+├─ ArtistsService
+│  ├─ GET /Artists
+│  ├─ GET /Artists/AlbumArtists
+│  └─ GET /Artists/{Name}
+├─ AudioService
+│  ├─ GET /Audio/{Id}/stream
+│  ├─ GET /Audio/{Id}/stream.{Container}
+│  ├─ GET /Audio/{Id}/{StreamFileName}
+│  ├─ HEAD /Audio/{Id}/stream
+│  ├─ HEAD /Audio/{Id}/stream.{Container}
+│  └─ HEAD /Audio/{Id}/{StreamFileName}
+├─ BackupApi
+│  ├─ GET /BackupRestore/BackupInfo
+│  ├─ POST /BackupRestore/Restore
+│  └─ POST /BackupRestore/RestoreData
+├─ BifService
+│  ├─ GET /Items/{Id}/ThumbnailSet
+│  └─ GET /Videos/{Id}/index.bif
+├─ BrandingService
+│  ├─ GET /Branding/Configuration
+│  ├─ GET /Branding/Css
+│  └─ GET /Branding/Css.css
+├─ ChannelService
+│  └─ GET /Channels
+├─ CodecParameterService
+│  ├─ GET /Encoding/CodecParameters
+│  └─ POST /Encoding/CodecParameters
+├─ CollectionService
+│  ├─ DELETE /Collections/{Id}/Items
+│  ├─ POST /Collections
+│  ├─ POST /Collections/{Id}/Items
+│  └─ POST /Collections/{Id}/Items/Delete
+├─ ConfigurationService
+│  ├─ GET /System/Configuration
+│  ├─ GET /System/Configuration/{Key}
+│  ├─ POST /System/Configuration
+│  ├─ POST /System/Configuration/Partial
+│  └─ POST /System/Configuration/{Key}
+├─ ConnectService
+│  ├─ DELETE /Users/{Id}/Connect/Link
+│  ├─ GET /Connect/Exchange
+│  ├─ GET /Connect/Pending
+│  ├─ POST /Users/{Id}/Connect/Link
+│  └─ POST /Users/{Id}/Connect/Link/Delete
+├─ ContentService
+│  ├─ GET /Users/{UserId}/HomeSections
+│  └─ GET /Users/{UserId}/Sections/{SectionId}/Items
+├─ DeviceService
+│  ├─ DELETE /Devices
+│  ├─ GET /Devices
+│  ├─ GET /Devices/CameraUploads
+│  ├─ GET /Devices/Info
+│  ├─ GET /Devices/Options
+│  ├─ POST /Devices/CameraUploads
+│  ├─ POST /Devices/Delete
+│  └─ POST /Devices/Options
+├─ DisplayPreferencesService
+│  ├─ GET /DisplayPreferences/{Id}
+│  ├─ GET /UserSettings/{UserId}
+│  ├─ POST /DisplayPreferences/{DisplayPreferencesId}
+│  ├─ POST /UserSettings/{UserId}
+│  └─ POST /UserSettings/{UserId}/Partial
+├─ DlnaServerService
+│  ├─ GET /Dlna/icons/{Filename}
+│  ├─ GET /Dlna/{UuId}/connectionmanager/connectionmanager
+│  ├─ GET /Dlna/{UuId}/connectionmanager/connectionmanager.xml
+│  ├─ GET /Dlna/{UuId}/contentdirectory/contentdirectory
+│  ├─ GET /Dlna/{UuId}/contentdirectory/contentdirectory.xml
+│  ├─ GET /Dlna/{UuId}/description
+│  ├─ GET /Dlna/{UuId}/description.xml
+│  ├─ GET /Dlna/{UuId}/icons/{Filename}
+│  ├─ HEAD /Dlna/{UuId}/connectionmanager/connectionmanager
+│  ├─ HEAD /Dlna/{UuId}/connectionmanager/connectionmanager.xml
+│  ├─ HEAD /Dlna/{UuId}/contentdirectory/contentdirectory
+│  ├─ HEAD /Dlna/{UuId}/contentdirectory/contentdirectory.xml
+│  ├─ HEAD /Dlna/{UuId}/description
+│  ├─ HEAD /Dlna/{UuId}/description.xml
+│  ├─ POST /Dlna/{UuId}/connectionmanager/control
+│  └─ POST /Dlna/{UuId}/contentdirectory/control
+├─ DlnaService
+│  ├─ DELETE /Dlna/Profiles/{Id}
+│  ├─ GET /Dlna/ProfileInfos
+│  ├─ GET /Dlna/Profiles/Default
+│  ├─ GET /Dlna/Profiles/{Id}
+│  ├─ POST /Dlna/Profiles
+│  └─ POST /Dlna/Profiles/{Id}
+├─ DynamicHlsService
+│  ├─ GET /Audio/{Id}/hls1/{PlaylistId}/{SegmentId}.{SegmentContainer}
+│  ├─ GET /Audio/{Id}/live.m3u8
+│  ├─ GET /Audio/{Id}/main.m3u8
+│  ├─ GET /Audio/{Id}/master.m3u8
+│  ├─ GET /Videos/{Id}/hls1/{PlaylistId}/{SegmentId}.{SegmentContainer}
+│  ├─ GET /Videos/{Id}/live.m3u8
+│  ├─ GET /Videos/{Id}/live_subtitles.m3u8
+│  ├─ GET /Videos/{Id}/main.m3u8
+│  ├─ GET /Videos/{Id}/master.m3u8
+│  ├─ GET /Videos/{Id}/subtitles.m3u8
+│  ├─ HEAD /Audio/{Id}/hls1/{PlaylistId}/{SegmentId}.{SegmentContainer}
+│  ├─ HEAD /Audio/{Id}/master.m3u8
+│  ├─ HEAD /Videos/{Id}/hls1/{PlaylistId}/{SegmentId}.{SegmentContainer}
+│  └─ HEAD /Videos/{Id}/master.m3u8
+├─ EncodingInfoService
+│  ├─ GET /Encoding/CodecConfiguration/Defaults
+│  ├─ GET /Encoding/CodecInformation/Video
+│  └─ GET /Encoding/ToneMapOptions
+├─ EnvironmentService
+│  ├─ GET /Environment/DefaultDirectoryBrowser
+│  ├─ GET /Environment/DirectoryContents
+│  ├─ GET /Environment/Drives
+│  ├─ GET /Environment/NetworkDevices
+│  ├─ GET /Environment/NetworkShares
+│  ├─ GET /Environment/ParentPath
+│  ├─ POST /Environment/DirectoryContents
+│  └─ POST /Environment/ValidatePath
+├─ FeatureService
+│  └─ GET /Features
+├─ FfmpegOptionsService
+│  ├─ GET /Encoding/FfmpegOptions
+│  └─ POST /Encoding/FfmpegOptions
+├─ GameGenresService
+│  ├─ GET /GameGenres
+│  └─ GET /GameGenres/{Name}
+├─ GenericUIApiService
+│  ├─ GET /UI/View
+│  └─ POST /UI/Command
+├─ GenresService
+│  ├─ GET /Genres
+│  └─ GET /Genres/{Name}
+├─ HlsSegmentService
+│  ├─ DELETE /Videos/ActiveEncodings
+│  └─ POST /Videos/ActiveEncodings/Delete
+├─ ImageService
+│  ├─ DELETE /Items/{Id}/Images/{Type}
+│  ├─ DELETE /Items/{Id}/Images/{Type}/{Index}
+│  ├─ DELETE /Users/{Id}/Images/{Type}
+│  ├─ DELETE /Users/{Id}/Images/{Type}/{Index}
+│  ├─ GET /Artists/{Name}/Images/{Type}
+│  ├─ GET /Artists/{Name}/Images/{Type}/{Index}
+│  ├─ GET /GameGenres/{Name}/Images/{Type}
+│  ├─ GET /GameGenres/{Name}/Images/{Type}/{Index}
+│  ├─ GET /Genres/{Name}/Images/{Type}
+│  ├─ GET /Genres/{Name}/Images/{Type}/{Index}
+│  ├─ GET /Items/{Id}/Images
+│  ├─ GET /Items/{Id}/Images/{Type}
+│  ├─ GET /Items/{Id}/Images/{Type}/{Index}
+│  ├─ GET /Items/{Id}/Images/{Type}/{Index}/{Tag}/{Format}/{MaxWidth}/{MaxHeight}/{PercentPlayed}/{UnPlayedCount}
+│  ├─ GET /MusicGenres/{Name}/Images/{Type}
+│  ├─ GET /MusicGenres/{Name}/Images/{Type}/{Index}
+│  ├─ GET /Persons/{Name}/Images/{Type}
+│  ├─ GET /Persons/{Name}/Images/{Type}/{Index}
+│  ├─ GET /Studios/{Name}/Images/{Type}
+│  ├─ GET /Studios/{Name}/Images/{Type}/{Index}
+│  ├─ GET /Users/{Id}/Images/{Type}
+│  ├─ GET /Users/{Id}/Images/{Type}/{Index}
+│  ├─ HEAD /Artists/{Name}/Images/{Type}
+│  ├─ HEAD /Artists/{Name}/Images/{Type}/{Index}
+│  ├─ HEAD /GameGenres/{Name}/Images/{Type}
+│  ├─ HEAD /GameGenres/{Name}/Images/{Type}/{Index}
+│  ├─ HEAD /Genres/{Name}/Images/{Type}
+│  ├─ HEAD /Genres/{Name}/Images/{Type}/{Index}
+│  ├─ HEAD /Items/{Id}/Images/{Type}
+│  ├─ HEAD /Items/{Id}/Images/{Type}/{Index}
+│  ├─ HEAD /Items/{Id}/Images/{Type}/{Index}/{Tag}/{Format}/{MaxWidth}/{MaxHeight}/{PercentPlayed}/{UnPlayedCount}
+│  ├─ HEAD /MusicGenres/{Name}/Images/{Type}
+│  ├─ HEAD /MusicGenres/{Name}/Images/{Type}/{Index}
+│  ├─ HEAD /Persons/{Name}/Images/{Type}
+│  ├─ HEAD /Persons/{Name}/Images/{Type}/{Index}
+│  ├─ HEAD /Studios/{Name}/Images/{Type}
+│  ├─ HEAD /Studios/{Name}/Images/{Type}/{Index}
+│  ├─ HEAD /Users/{Id}/Images/{Type}
+│  ├─ HEAD /Users/{Id}/Images/{Type}/{Index}
+│  ├─ POST /Items/{Id}/Images/{Type}
+│  ├─ POST /Items/{Id}/Images/{Type}/Delete
+│  ├─ POST /Items/{Id}/Images/{Type}/{Index}
+│  ├─ POST /Items/{Id}/Images/{Type}/{Index}/Delete
+│  ├─ POST /Items/{Id}/Images/{Type}/{Index}/Index
+│  ├─ POST /Items/{Id}/Images/{Type}/{Index}/Url
+│  ├─ POST /Users/{Id}/Images/{Type}
+│  ├─ POST /Users/{Id}/Images/{Type}/Delete
+│  ├─ POST /Users/{Id}/Images/{Type}/{Index}
+│  └─ POST /Users/{Id}/Images/{Type}/{Index}/Delete
+├─ InstantMixService
+│  ├─ GET /Albums/{Id}/InstantMix
+│  ├─ GET /Artists/InstantMix
+│  ├─ GET /AudioBooks/NextUp
+│  ├─ GET /Items/{Id}/InstantMix
+│  ├─ GET /MusicGenres/InstantMix
+│  ├─ GET /MusicGenres/{Name}/InstantMix
+│  ├─ GET /Playlists/{Id}/InstantMix
+│  └─ GET /Songs/{Id}/InstantMix
+├─ ItemLookupService
+│  ├─ GET /Items/RemoteSearch/Image
+│  ├─ GET /Items/{Id}/ExternalIdInfos
+│  ├─ POST /Items/Metadata/Reset
+│  ├─ POST /Items/RemoteSearch/Apply/{Id}
+│  ├─ POST /Items/RemoteSearch/Book
+│  ├─ POST /Items/RemoteSearch/BoxSet
+│  ├─ POST /Items/RemoteSearch/Game
+│  ├─ POST /Items/RemoteSearch/Movie
+│  ├─ POST /Items/RemoteSearch/MusicAlbum
+│  ├─ POST /Items/RemoteSearch/MusicArtist
+│  ├─ POST /Items/RemoteSearch/MusicVideo
+│  ├─ POST /Items/RemoteSearch/Person
+│  ├─ POST /Items/RemoteSearch/Series
+│  └─ POST /Items/RemoteSearch/Trailer
+├─ ItemRefreshService
+│  └─ POST /Items/{Id}/Refresh
+├─ ItemUpdateService
+│  ├─ GET /Items/{ItemId}/MetadataEditor
+│  └─ POST /Items/{ItemId}
+├─ ItemsService
+│  ├─ GET /Items
+│  ├─ GET /Users/{UserId}/Items
+│  └─ GET /Users/{UserId}/Items/Resume
+├─ LibraryService
+│  ├─ DELETE /Items
+│  ├─ DELETE /Items/{Id}
+│  ├─ GET /Albums/{Id}/Similar
+│  ├─ GET /Artists/{Id}/Similar
+│  ├─ GET /Games/{Id}/Similar
+│  ├─ GET /Items/Counts
+│  ├─ GET /Items/Intros
+│  ├─ GET /Items/{Id}/Ancestors
+│  ├─ GET /Items/{Id}/CriticReviews
+│  ├─ GET /Items/{Id}/DeleteInfo
+│  ├─ GET /Items/{Id}/Download
+│  ├─ GET /Items/{Id}/File
+│  ├─ GET /Items/{Id}/Similar
+│  ├─ GET /Items/{Id}/ThemeMedia
+│  ├─ GET /Items/{Id}/ThemeSongs
+│  ├─ GET /Items/{Id}/ThemeVideos
+│  ├─ GET /Libraries/AvailableOptions
+│  ├─ GET /Library/MediaFolders
+│  ├─ GET /Library/PhysicalPaths
+│  ├─ GET /Library/SelectableMediaFolders
+│  ├─ GET /Movies/{Id}/Similar
+│  ├─ GET /Shows/{Id}/Similar
+│  ├─ GET /Trailers/{Id}/Similar
+│  ├─ POST /Items/Delete
+│  ├─ POST /Items/{Id}/Delete
+│  ├─ POST /Library/Media/Updated
+│  ├─ POST /Library/Movies/Added
+│  ├─ POST /Library/Movies/Updated
+│  ├─ POST /Library/Refresh
+│  ├─ POST /Library/Series/Added
+│  └─ POST /Library/Series/Updated
+├─ LibraryStructureService
+│  ├─ DELETE /Library/VirtualFolders
+│  ├─ DELETE /Library/VirtualFolders/Paths
+│  ├─ GET /Library/VirtualFolders/Query
+│  ├─ POST /Library/VirtualFolders
+│  ├─ POST /Library/VirtualFolders/Delete
+│  ├─ POST /Library/VirtualFolders/LibraryOptions
+│  ├─ POST /Library/VirtualFolders/Name
+│  ├─ POST /Library/VirtualFolders/Paths
+│  ├─ POST /Library/VirtualFolders/Paths/Delete
+│  └─ POST /Library/VirtualFolders/Paths/Update
+├─ LiveStreamService
+│  ├─ GET /LiveTv/LiveRecordings/{Id}/hls/live.m3u8
+│  ├─ GET /LiveTv/LiveRecordings/{Id}/hls/master.m3u8
+│  ├─ GET /LiveTv/LiveRecordings/{Id}/hls/{Segment}
+│  ├─ GET /LiveTv/LiveRecordings/{Id}/stream
+│  ├─ GET /LiveTv/LiveStreamFiles/{Id}/hls/live.m3u8
+│  ├─ GET /LiveTv/LiveStreamFiles/{Id}/hls/master.m3u8
+│  ├─ GET /LiveTv/LiveStreamFiles/{Id}/hls/{Segment}
+│  ├─ GET /LiveTv/LiveStreamFiles/{Id}/stream.{Container}
+│  ├─ HEAD /LiveTv/LiveRecordings/{Id}/hls/live.m3u8
+│  ├─ HEAD /LiveTv/LiveRecordings/{Id}/hls/master.m3u8
+│  ├─ HEAD /LiveTv/LiveRecordings/{Id}/hls/{Segment}
+│  ├─ HEAD /LiveTv/LiveStreamFiles/{Id}/hls/live.m3u8
+│  ├─ HEAD /LiveTv/LiveStreamFiles/{Id}/hls/master.m3u8
+│  └─ HEAD /LiveTv/LiveStreamFiles/{Id}/hls/{Segment}
+├─ LiveTvService
+│  ├─ DELETE /LiveTv/ChannelMappingOptions
+│  ├─ DELETE /LiveTv/ChannelMappings
+│  ├─ DELETE /LiveTv/ListingProviders
+│  ├─ DELETE /LiveTv/Recordings/{Id}
+│  ├─ DELETE /LiveTv/SeriesTimers/{Id}
+│  ├─ DELETE /LiveTv/Timers/{Id}
+│  ├─ DELETE /LiveTv/TunerHosts
+│  ├─ GET /LiveTv/AvailableRecordingOptions
+│  ├─ GET /LiveTv/ChannelMappingOptions
+│  ├─ GET /LiveTv/ChannelMappings
+│  ├─ GET /LiveTv/ChannelTags
+│  ├─ GET /LiveTv/ChannelTags/Prefixes
+│  ├─ GET /LiveTv/Channels
+│  ├─ GET /LiveTv/Channels/{Id}
+│  ├─ GET /LiveTv/EPG
+│  ├─ GET /LiveTv/Folder
+│  ├─ GET /LiveTv/GuideInfo
+│  ├─ GET /LiveTv/Info
+│  ├─ GET /LiveTv/ListingProviders
+│  ├─ GET /LiveTv/ListingProviders/Available
+│  ├─ GET /LiveTv/ListingProviders/Default
+│  ├─ GET /LiveTv/ListingProviders/Lineups
+│  ├─ GET /LiveTv/Manage/Channels
+│  ├─ GET /LiveTv/Programs
+│  ├─ GET /LiveTv/Programs/Recommended
+│  ├─ GET /LiveTv/Recordings
+│  ├─ GET /LiveTv/Recordings/Folders
+│  ├─ GET /LiveTv/Recordings/Groups
+│  ├─ GET /LiveTv/Recordings/Series
+│  ├─ GET /LiveTv/Recordings/{Id}
+│  ├─ GET /LiveTv/SeriesTimers
+│  ├─ GET /LiveTv/SeriesTimers/{Id}
+│  ├─ GET /LiveTv/Timers
+│  ├─ GET /LiveTv/Timers/Defaults
+│  ├─ GET /LiveTv/Timers/{Id}
+│  ├─ GET /LiveTv/TunerHosts
+│  ├─ GET /LiveTv/TunerHosts/Default/{Type}
+│  ├─ GET /LiveTv/TunerHosts/Types
+│  ├─ GET /LiveTv/Tuners/Discover
+│  ├─ GET /LiveTv/Tuners/Discvover
+│  ├─ HEAD /LiveTv/ChannelMappingOptions
+│  ├─ HEAD /LiveTv/ChannelMappings
+│  ├─ POST /LiveTv/ChannelMappingOptions
+│  ├─ POST /LiveTv/ChannelMappings
+│  ├─ POST /LiveTv/ListingProviders
+│  ├─ POST /LiveTv/ListingProviders/Delete
+│  ├─ POST /LiveTv/Manage/Channels/{Id}/Disabled
+│  ├─ POST /LiveTv/Manage/Channels/{Id}/SortIndex
+│  ├─ POST /LiveTv/Programs
+│  ├─ POST /LiveTv/Recordings/{Id}/Delete
+│  ├─ POST /LiveTv/SeriesTimers
+│  ├─ POST /LiveTv/SeriesTimers/{Id}
+│  ├─ POST /LiveTv/SeriesTimers/{Id}/Delete
+│  ├─ POST /LiveTv/Timers
+│  ├─ POST /LiveTv/Timers/{Id}
+│  ├─ POST /LiveTv/Timers/{Id}/Delete
+│  ├─ POST /LiveTv/TunerHosts
+│  ├─ POST /LiveTv/TunerHosts/Delete
+│  ├─ POST /LiveTv/Tuners/{Id}/Reset
+│  ├─ PUT /LiveTv/ChannelMappingOptions
+│  └─ PUT /LiveTv/ChannelMappings
+├─ LocalizationService
+│  ├─ GET /Localization/Countries
+│  ├─ GET /Localization/Cultures
+│  ├─ GET /Localization/Options
+│  └─ GET /Localization/ParentalRatings
+├─ MediaInfoService
+│  ├─ GET /Items/{Id}/PlaybackInfo
+│  ├─ GET /Playback/BitrateTest
+│  ├─ POST /Items/{Id}/PlaybackInfo
+│  ├─ POST /LiveStreams/Close
+│  ├─ POST /LiveStreams/MediaInfo
+│  └─ POST /LiveStreams/Open
+├─ MoviesService
+│  └─ GET /Movies/Recommendations
+├─ MusicGenresService
+│  ├─ GET /MusicGenres
+│  └─ GET /MusicGenres/{Name}
+├─ NotificationsService
+│  ├─ GET /Notifications/Types
+│  └─ POST /Notifications/Admin
+├─ OfficialRatingService
+│  └─ GET /OfficialRatings
+├─ OpenApiService
+│  ├─ GET /openapi
+│  ├─ GET /openapi.json
+│  ├─ GET /swagger
+│  └─ GET /swagger.json
+├─ PackageService
+│  ├─ DELETE /Packages/Installing/{Id}
+│  ├─ GET /Packages
+│  ├─ GET /Packages/Updates
+│  ├─ GET /Packages/{Name}
+│  ├─ POST /Packages/Installed/{Name}
+│  └─ POST /Packages/Installing/{Id}/Delete
+├─ PartyService
+│  ├─ GET /Parties
+│  ├─ GET /Parties/Info
+│  ├─ POST /Parties
+│  ├─ POST /Parties/Leave
+│  └─ POST /Parties/{Id}/Join
+├─ PersonsService
+│  ├─ GET /Persons
+│  └─ GET /Persons/{Name}
+├─ PlaylistService
+│  ├─ DELETE /Playlists/{Id}/Items
+│  ├─ GET /Playlists/{Id}/AddToPlaylistInfo
+│  ├─ GET /Playlists/{Id}/Items
+│  ├─ POST /Playlists
+│  ├─ POST /Playlists/{Id}/Items
+│  ├─ POST /Playlists/{Id}/Items/Delete
+│  └─ POST /Playlists/{Id}/Items/{ItemId}/Move/{NewIndex}
+├─ PlaystateService
+│  ├─ DELETE /Users/{UserId}/PlayedItems/{Id}
+│  ├─ DELETE /Users/{UserId}/PlayingItems/{Id}
+│  ├─ POST /Sessions/Playing
+│  ├─ POST /Sessions/Playing/Ping
+│  ├─ POST /Sessions/Playing/Progress
+│  ├─ POST /Sessions/Playing/Stopped
+│  ├─ POST /Users/{UserId}/Items/{ItemId}/UserData
+│  ├─ POST /Users/{UserId}/PlayedItems/{Id}
+│  ├─ POST /Users/{UserId}/PlayedItems/{Id}/Delete
+│  ├─ POST /Users/{UserId}/PlayingItems/{Id}
+│  ├─ POST /Users/{UserId}/PlayingItems/{Id}/Delete
+│  └─ POST /Users/{UserId}/PlayingItems/{Id}/Progress
+├─ PluginService
+│  ├─ DELETE /Plugins/{Id}
+│  ├─ GET /Plugins
+│  ├─ GET /Plugins/{Id}/Configuration
+│  ├─ GET /Plugins/{Id}/Thumb
+│  ├─ POST /Plugins/{Id}/Configuration
+│  └─ POST /Plugins/{Id}/Delete
+├─ RemoteImageService
+│  ├─ GET /Images/Remote
+│  ├─ GET /Items/{Id}/RemoteImages
+│  ├─ GET /Items/{Id}/RemoteImages/Providers
+│  └─ POST /Items/{Id}/RemoteImages/Download
+├─ ScheduledTaskService
+│  ├─ DELETE /ScheduledTasks/Running/{Id}
+│  ├─ GET /ScheduledTasks
+│  ├─ GET /ScheduledTasks/{Id}
+│  ├─ POST /ScheduledTasks/Running/{Id}
+│  ├─ POST /ScheduledTasks/Running/{Id}/Delete
+│  └─ POST /ScheduledTasks/{Id}/Triggers
+├─ SessionsService
+│  ├─ DELETE /Auth/Keys/{Key}
+│  ├─ DELETE /Sessions/{Id}/Users/{UserId}
+│  ├─ GET /Auth/Keys
+│  ├─ GET /Auth/Providers
+│  ├─ GET /Sessions
+│  ├─ GET /Sessions/PlayQueue
+│  ├─ POST /Auth/Keys
+│  ├─ POST /Auth/Keys/{Key}/Delete
+│  ├─ POST /Sessions/Capabilities
+│  ├─ POST /Sessions/Capabilities/Full
+│  ├─ POST /Sessions/Logout
+│  ├─ POST /Sessions/{Id}/Command
+│  ├─ POST /Sessions/{Id}/Command/{Command}
+│  ├─ POST /Sessions/{Id}/Message
+│  ├─ POST /Sessions/{Id}/Playing
+│  ├─ POST /Sessions/{Id}/Playing/{Command}
+│  ├─ POST /Sessions/{Id}/System/{Command}
+│  ├─ POST /Sessions/{Id}/Users/{UserId}
+│  ├─ POST /Sessions/{Id}/Users/{UserId}/Delete
+│  └─ POST /Sessions/{Id}/Viewing
+├─ StudiosService
+│  ├─ GET /Studios
+│  └─ GET /Studios/{Name}
+├─ SubtitleOptionsService
+│  ├─ GET /Encoding/SubtitleOptions
+│  └─ POST /Encoding/SubtitleOptions
+├─ SubtitleService
+│  ├─ DELETE /Items/{Id}/Subtitles/{Index}
+│  ├─ DELETE /Videos/{Id}/Subtitles/{Index}
+│  ├─ GET /Items/{Id}/RemoteSearch/Subtitles/{Language}
+│  ├─ GET /Items/{Id}/{MediaSourceId}/Subtitles/{Index}/Stream.{Format}
+│  ├─ GET /Items/{Id}/{MediaSourceId}/Subtitles/{Index}/{StartPositionTicks}/Stream.{Format}
+│  ├─ GET /Providers/Subtitles/Subtitles/{Id}
+│  ├─ GET /Videos/{Id}/{MediaSourceId}/Attachments/{Index}/Stream
+│  ├─ GET /Videos/{Id}/{MediaSourceId}/Subtitles/{Index}/Stream.{Format}
+│  ├─ GET /Videos/{Id}/{MediaSourceId}/Subtitles/{Index}/{StartPositionTicks}/Stream.{Format}
+│  ├─ HEAD /Items/{Id}/{MediaSourceId}/Subtitles/{Index}/Stream.{Format}
+│  ├─ HEAD /Items/{Id}/{MediaSourceId}/Subtitles/{Index}/{StartPositionTicks}/Stream.{Format}
+│  ├─ HEAD /Videos/{Id}/{MediaSourceId}/Subtitles/{Index}/Stream.{Format}
+│  ├─ HEAD /Videos/{Id}/{MediaSourceId}/Subtitles/{Index}/{StartPositionTicks}/Stream.{Format}
+│  ├─ POST /Items/{Id}/RemoteSearch/Subtitles/{SubtitleId}
+│  ├─ POST /Items/{Id}/Subtitles/{Index}/Delete
+│  └─ POST /Videos/{Id}/Subtitles/{Index}/Delete
+├─ SuggestionsService
+│  └─ GET /Users/{UserId}/Suggestions
+├─ SyncService
+│  ├─ DELETE /Sync/JobItems/{Id}
+│  ├─ DELETE /Sync/Jobs/{Id}
+│  ├─ DELETE /Sync/{TargetId}/Items
+│  ├─ GET /Sync/Items/Ready
+│  ├─ GET /Sync/JobItems
+│  ├─ GET /Sync/JobItems/{Id}/AdditionalFiles
+│  ├─ GET /Sync/JobItems/{Id}/File
+│  ├─ GET /Sync/Jobs
+│  ├─ GET /Sync/Jobs/{Id}
+│  ├─ GET /Sync/Options
+│  ├─ GET /Sync/Targets
+│  ├─ HEAD /Sync/JobItems/{Id}/File
+│  ├─ POST /Sync/Data
+│  ├─ POST /Sync/Items/Cancel
+│  ├─ POST /Sync/JobItems/{Id}/Delete
+│  ├─ POST /Sync/JobItems/{Id}/Enable
+│  ├─ POST /Sync/JobItems/{Id}/MarkForRemoval
+│  ├─ POST /Sync/JobItems/{Id}/Transferred
+│  ├─ POST /Sync/JobItems/{Id}/UnmarkForRemoval
+│  ├─ POST /Sync/Jobs
+│  ├─ POST /Sync/Jobs/{Id}
+│  ├─ POST /Sync/Jobs/{Id}/Delete
+│  ├─ POST /Sync/OfflineActions
+│  ├─ POST /Sync/{ItemId}/Status
+│  └─ POST /Sync/{TargetId}/Items/Delete
+├─ SystemService
+│  ├─ GET /System/Endpoint
+│  ├─ GET /System/Info
+│  ├─ GET /System/Info/Public
+│  ├─ GET /System/Logs/Query
+│  ├─ GET /System/Logs/{Name}
+│  ├─ GET /System/Logs/{Name}/Lines
+│  ├─ GET /System/Ping
+│  ├─ GET /System/ReleaseNotes
+│  ├─ GET /System/ReleaseNotes/Versions
+│  ├─ GET /System/WakeOnLanInfo
+│  ├─ HEAD /System/Ping
+│  ├─ POST /System/Ping
+│  ├─ POST /System/Restart
+│  └─ POST /System/Shutdown
+├─ TagService
+│  ├─ GET /Artists/Prefixes
+│  ├─ GET /AudioCodecs
+│  ├─ GET /AudioLayouts
+│  ├─ GET /Containers
+│  ├─ GET /ExtendedVideoTypes
+│  ├─ GET /ItemTypes
+│  ├─ GET /Items/Prefixes
+│  ├─ GET /StreamLanguages
+│  ├─ GET /SubtitleCodecs
+│  ├─ GET /Tags
+│  ├─ GET /VideoCodecs
+│  ├─ GET /Years
+│  ├─ POST /Items/{Id}/Tags/Add
+│  └─ POST /Items/{Id}/Tags/Delete
+├─ ToneMapOptionsService
+│  ├─ GET /Encoding/FullToneMapOptions
+│  ├─ GET /Encoding/PublicToneMapOptions
+│  ├─ POST /Encoding/FullToneMapOptions
+│  └─ POST /Encoding/PublicToneMapOptions
+├─ TrailersService
+│  └─ GET /Trailers
+├─ TvShowsService
+│  ├─ GET /Shows/Missing
+│  ├─ GET /Shows/NextUp
+│  ├─ GET /Shows/Upcoming
+│  ├─ GET /Shows/{Id}/Episodes
+│  └─ GET /Shows/{Id}/Seasons
+├─ UniversalAudioService
+│  ├─ GET /Audio/{Id}/universal
+│  ├─ GET /Audio/{Id}/universal.{Container}
+│  ├─ HEAD /Audio/{Id}/universal
+│  └─ HEAD /Audio/{Id}/universal.{Container}
+├─ UserLibraryService
+│  ├─ DELETE /Users/{UserId}/FavoriteItems/{Id}
+│  ├─ DELETE /Users/{UserId}/Items/{Id}/Rating
+│  ├─ GET /LiveTv/Programs/{Id}
+│  ├─ GET /Users/{UserId}/Items/Latest
+│  ├─ GET /Users/{UserId}/Items/Root
+│  ├─ GET /Users/{UserId}/Items/{Id}
+│  ├─ GET /Users/{UserId}/Items/{Id}/Intros
+│  ├─ GET /Users/{UserId}/Items/{Id}/LocalTrailers
+│  ├─ GET /Users/{UserId}/Items/{Id}/SpecialFeatures
+│  ├─ GET /Videos/{Id}/AdditionalParts
+│  ├─ POST /Items/Access
+│  ├─ POST /Items/Shared/Leave
+│  ├─ POST /Items/{Id}/MakePrivate
+│  ├─ POST /Items/{Id}/MakePublic
+│  ├─ POST /Users/{UserId}/FavoriteItems/{Id}
+│  ├─ POST /Users/{UserId}/FavoriteItems/{Id}/Delete
+│  ├─ POST /Users/{UserId}/Items/{Id}/HideFromResume
+│  ├─ POST /Users/{UserId}/Items/{Id}/Rating
+│  └─ POST /Users/{UserId}/Items/{Id}/Rating/Delete
+├─ UserNotificationsService
+│  ├─ GET /Notifications/Services/Defaults
+│  └─ POST /Notifications/Services/Test
+├─ UserService
+│  ├─ DELETE /Users/{Id}
+│  ├─ DELETE /Users/{Id}/TrackSelections/{TrackType}
+│  ├─ GET /Users/ItemAccess
+│  ├─ GET /Users/Prefixes
+│  ├─ GET /Users/Public
+│  ├─ GET /Users/Query
+│  ├─ GET /Users/{Id}
+│  ├─ GET /Users/{UserId}/TypedSettings/{Key}
+│  ├─ POST /Users/AuthenticateByName
+│  ├─ POST /Users/ForgotPassword
+│  ├─ POST /Users/ForgotPassword/Pin
+│  ├─ POST /Users/New
+│  ├─ POST /Users/{Id}
+│  ├─ POST /Users/{Id}/Authenticate
+│  ├─ POST /Users/{Id}/Configuration
+│  ├─ POST /Users/{Id}/Configuration/Partial
+│  ├─ POST /Users/{Id}/Delete
+│  ├─ POST /Users/{Id}/Password
+│  ├─ POST /Users/{Id}/Policy
+│  ├─ POST /Users/{Id}/TrackSelections/{TrackType}/Delete
+│  └─ POST /Users/{UserId}/TypedSettings/{Key}
+├─ UserViewsService
+│  └─ GET /Users/{UserId}/Views
+├─ VideoHlsService
+│  ├─ GET /Audio/{Id}/hls/{PlaylistId}/{SegmentId}.{SegmentContainer}
+│  └─ GET /Videos/{Id}/hls/{PlaylistId}/{SegmentId}.{SegmentContainer}
+├─ VideoService
+│  ├─ GET /Videos/{Id}/stream
+│  ├─ GET /Videos/{Id}/stream.{Container}
+│  ├─ GET /Videos/{Id}/{StreamFileName}
+│  ├─ HEAD /Videos/{Id}/stream
+│  ├─ HEAD /Videos/{Id}/stream.{Container}
+│  └─ HEAD /Videos/{Id}/{StreamFileName}
+├─ VideosService
+│  ├─ DELETE /Videos/{Id}/AlternateSources
+│  ├─ POST /Videos/MergeVersions
+│  └─ POST /Videos/{Id}/AlternateSources/Delete
+└─ WebAppService
+   ├─ GET /web/ConfigurationPage
+   ├─ GET /web/ConfigurationPages
+   ├─ GET /web/strings
+   └─ GET /web/stringset

@@ -1,0 +1,32 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "arm_chin_L",
+  "tags": [
+    "single-arm",
+    "L",
+    "face",
+    "self-touch",
+    "thinking"
+  ],
+  "description": "Single-arm primitive: left arm in 'chin_L' pose. Lands at region 'sternum' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+  "family": "per_arm",
+  "anchors": {
+    "leftHand": {
+      "type": "region-contact",
+      "region": "sternum",
+      "tolerance": 0.04,
+      "fingerStyle": "chin_L"
+    },
+    "rightHand": {
+      "type": "free-space"
+    }
+  },
+  "body": {},
+  "provenance": {
+    "source": "auto-generated",
+    "generator": "scripts/generate_per_arm_primitives.py",
+    "wrapsAffordance": "chin_L",
+    "consensusRegion": "sternum",
+    "createdAt": "2026-05-14"
+  }
+}

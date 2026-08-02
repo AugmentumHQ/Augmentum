@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Augmentum Cast Surface</title>
+  <link rel="stylesheet" href="/ui/styles/surface-receiver.css">
+</head>
+<body>
+  <main class="surface-shell" id="surfaceShell">
+    <div class="surface-status" id="surfaceStatus">
+      <span id="surfaceTitle">Surface</span>
+      <span id="surfaceMeta">Waiting for Cast</span>
+    </div>
+    <section class="reader-stage" id="readerStage" aria-live="polite"></section>
+  </main>
+  <script>window.AUGMENTUM_SURFACE_RECEIVER_SOURCE = 'cast';</script>
+  <script src="https://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+  <script type="module" src="/ui/scripts/surface-cast-receiver.js"></script>
+</body>
+</html>

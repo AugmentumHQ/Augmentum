@@ -1,0 +1,22 @@
+# CSM voice-training harness deps. Install in a fresh venv on the 3090 box.
+# Kept separate from the sidecar's inference deps — this is a training toolchain.
+#
+# torch/torchaudio: install the CUDA build matching your driver from
+#   https://pytorch.org  (e.g. cu121). The pins below are minimums.
+torch>=2.4
+torchaudio>=2.4
+
+# transformers must be recent enough to include CSM training
+# (CsmForConditionalGeneration + CsmProcessor with apply_chat_template
+# output_labels). Verify the version exposes CSM before training; bump if not.
+transformers>=4.53
+peft>=0.13
+accelerate>=1.0
+datasets>=3.0
+
+# transcription for clips without provided text
+faster-whisper>=1.0
+
+soundfile
+pyyaml
+numpy

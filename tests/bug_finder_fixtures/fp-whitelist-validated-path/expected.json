@@ -1,0 +1,8 @@
+{
+  "fixture_id": "fp-whitelist-validated-path",
+  "language": "python",
+  "kind": "fp_bait",
+  "expected_findings": [],
+  "max_extra_findings": 0,
+  "notes": "FP-bait. The Path join with user input pattern triggers many heuristics, but the whitelist gate makes it safe. PoC attempt should fail — ValueError before any read."
+}

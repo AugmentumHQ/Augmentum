@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Leanback launcher banner placeholder (320x180 default). Shows
+  on the Android TV home rail. Replace with branded art for a
+  production build.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="320dp"
+        android:height="180dp"
+        android:viewportWidth="320"
+        android:viewportHeight="180">
+    <path
+        android:fillColor="#0a0c12"
+        android:pathData="M0,0 L320,0 L320,180 L0,180 Z" />
+    <path
+        android:fillColor="#7a86ff"
+        android:pathData="M150,60 L190,140 L178,140 L170,120 L150,120 L142,140 L130,140 Z M160,90 L154,114 L166,114 Z" />
+</vector>

@@ -1,0 +1,27 @@
+# Hand-edited override: mounts WSL ext4 drives into the container at native
+# ext4 speed (no 9P bridge). These drives are formatted ext4 directly and
+# attached via `wsl --mount` rather than going through the Windows filesystem.
+#
+# Source paths use /mnt/host/wsl/<name> because that is where Docker Desktop's
+# daemon (the `docker-desktop` WSL distro) sees named mounts. From a regular
+# Ubuntu shell the same content lives at /mnt/wsl/<name>.
+#
+# Drives mounted here:
+#   /mnt/host/wsl/models  → /models/host   (primary; downloads land here)
+#   /mnt/host/wsl/spare   → /models/spare  (secondary; overflow + scan-only)
+#
+# Disk numbers shift across USB plug events. Verify with `Get-Disk` (PowerShell)
+# and remount via the setup_wsl_ext4_drive.ps1 helper if a mount goes missing.
+#
+# WARNING: re-running setup.bat will regenerate compose files and may overwrite
+# this file. Re-apply this content + the matching .env keys if that happens:
+#   AUGMENTUM_ENGINE_MODEL_DIR=/models/host
+#   AUGMENTUM_LLAMACPP_MODEL_DIR=/models/host
+#   AUGMENTUM_ENGINE_EXTRA_MODEL_DIRS=/models/spare;/data/models
+#   AUGMENTUM_BIND_HOST=0.0.0.0
+#   COMPOSE_FILE must include compose.engine-models.yaml
+services:
+  augmentum:
+    volumes:
+      - /mnt/host/wsl/models:/models/host
+      - /mnt/host/wsl/spare:/models/spare

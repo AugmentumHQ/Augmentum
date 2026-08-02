@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- See console-emulation.svg for why this is authored art, not a screenshot. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" width="480" height="300" role="img" aria-label="Cast to TV">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2a1d2b"/>
+      <stop offset="1" stop-color="#0f1014"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f2a35c"/>
+      <stop offset="1" stop-color="#e4566e"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="45%" r="55%">
+      <stop offset="0" stop-color="#e4566e" stop-opacity=".24"/>
+      <stop offset="1" stop-color="#e4566e" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="480" height="300" fill="url(#bg)"/>
+  <rect width="480" height="300" fill="url(#glow)"/>
+  <g transform="translate(240 138)" fill="none" stroke="url(#accent)" stroke-width="7"
+     stroke-linecap="round" stroke-linejoin="round">
+    <rect x="-96" y="-58" width="192" height="112" rx="10"/>
+    <line x1="-34" y1="70" x2="34" y2="70"/>
+    <line x1="0" y1="54" x2="0" y2="70"/>
+    <!-- cast waves -->
+    <path d="M-66 26 a12 12 0 0 1 12 12"/>
+    <path d="M-66 2 a36 36 0 0 1 36 36"/>
+    <path d="M-66 -22 a60 60 0 0 1 60 60"/>
+  </g>
+  <text x="240" y="248" text-anchor="middle" fill="#e7e7ea"
+        font-family="Instrument Sans, system-ui, sans-serif" font-size="26" font-weight="600"
+        letter-spacing="1.5">Cast to TV</text>
+  <text x="240" y="274" text-anchor="middle" fill="#9aa0ae"
+        font-family="Instrument Sans, system-ui, sans-serif" font-size="15">Send Augmentum's own surfaces to a screen</text>
+</svg>

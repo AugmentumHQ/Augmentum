@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Augmentum · Cast</title>
+  <link rel="stylesheet" href="cast-app.css">
+</head>
+<body>
+  <!-- Iframe fills the TV. Sandbox flags match game-surface.js so a
+       composed bundle behaves identically here. allow-same-origin stays
+       enabled — without it Chrome marks localStorage as non-configurable
+       and the composer's Object.defineProperty fallback can't override
+       it, breaking the save shim. -->
+  <iframe
+    data-cast-frame
+    sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-forms allow-modals"
+    allow="autoplay; fullscreen; gamepad; web-share"
+    referrerpolicy="no-referrer">
+  </iframe>
+
+  <!-- Boot overlay. Visible until the iframe load event fires so a
+       slow artifact fetch never shows a black frame. Title comes from
+       the artifact's display_name once the fetch resolves. -->
+  <div class="boot" data-cast-boot>
+    <div class="boot-pulse"></div>
+    <div class="boot-title" data-cast-title>Loading…</div>
+    <div class="boot-sub" data-cast-sub>Casting from Augmentum</div>
+  </div>
+
+  <!-- Error overlay. Replaces boot if the artifact can't render. The TV
+       has no keyboard, so the message stands alone — the user dismisses
+       by stopping the cast from the controller. -->
+  <div class="error" data-cast-error hidden>
+    <div class="error-icon">!</div>
+    <div class="error-title" data-cast-error-title>Can't cast this artifact</div>
+    <div class="error-detail" data-cast-error-detail></div>
+  </div>
+
+  <script type="module" src="cast-app.js"></script>
+</body>
+</html>

@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Series Detail — Design Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* =========================================================================
+   DESIGN TOKENS
+   "Printed manga volume — editorial dark"
+   Deep near-black canvas + cream/bone text + vermillion accent. References:
+   Criterion Collection film pages, Letterboxd, Kinfolk print layouts.
+   =========================================================================*/
+:root {
+  --bg:           #0b0b0e;          /* near-black with a faint cool tint */
+  --bg-elevated:  #131318;          /* rare — used for chapter filter chip bg */
+  --bg-paper:     #1a1a1f;
+  --border:       #2a2a30;
+  --border-soft:  #1e1e24;
+  --text:         #f0ece3;          /* bone — warmer than pure white, print-like */
+  --text-dim:     #a3a097;
+  --text-sub:     #5c5b55;
+  --accent:       #d14836;          /* vermillion — book-jacket red */
+  --accent-soft:  rgba(209, 72, 54, 0.15);
+  --accent-hover: #e55a46;
+  --ease:         cubic-bezier(0.2, 0, 0, 1);
+  --serif:        'Fraunces', Georgia, serif;
+  --sans:         'Instrument Sans', -apple-system, sans-serif;
+  --mono:         'JetBrains Mono', ui-monospace, monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Layered atmosphere:
+     1. A soft vermillion wash in the upper-left — subtly colors the page
+        without screaming. Evokes the red of a book jacket bleeding through.
+     2. Paper-grain noise overlay via inline SVG. 120x120 tile at ~50%
+        opacity — visible up close, invisible at normal viewing distance.
+        Prints-on-screen feel without a real texture asset. */
+  background-image:
+    radial-gradient(ellipse 70vw 55vh at 12% 8%, rgba(209, 72, 54, 0.055), transparent 72%),
+    radial-gradient(ellipse 100vw 60vh at 88% 100%, rgba(209, 72, 54, 0.025), transparent 75%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='0.35'/></svg>");
+  background-size: 100% 100%, 100% 100%, 140px 140px;
+  background-attachment: fixed, fixed, fixed;
+}
+
+/* =========================================================================
+   LAYOUT
+   =========================================================================*/
+main {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 56px 140px;
+}
+
+@media (max-width: 720px) {
+  main { padding: 22px 20px 90px; }
+}
+
+/* =========================================================================
+   BACK NAVIGATION
+   Small-caps, tracked. Arrow nudges left on hover — old print-revival style.
+   =========================================================================*/
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 8px 0;
+  transition: color 180ms var(--ease);
+}
+.back:hover { color: var(--text); }
+.back svg { transition: transform 200ms var(--ease); }
+.back:hover svg { transform: translateX(-3px); }
+
+/* =========================================================================
+   HERO  —  cover + masthead
+   280x420 cover with a thin vermillion "spine" rule along its left edge,
+   giving a book-jacket silhouette even though the cover art itself may
+   have no binding visible. Masthead typography stacks title (Fraunces
+   display), author (serif italic), thin accent rule, metadata row, serif
+   description, CTAs, then a mono "last read" timestamp that feels like a
+   library-stamp or binding sticker.
+   =========================================================================*/
+.hero {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 56px;
+  align-items: start;
+  margin-top: 32px;
+  animation: fadeUp 700ms var(--ease) both;
+}
+
+.cover {
+  margin: 0;
+  position: relative;
+  animation: fadeUp 700ms var(--ease) 80ms both;
+}
+.cover-art {
+  width: 280px;
+  height: 420px;
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px var(--border),
+    0 14px 32px rgba(0, 0, 0, 0.55),
+    0 48px 110px -30px rgba(0, 0, 0, 0.75);
+  background:
+    radial-gradient(ellipse at 30% 20%, #3a1a14 0%, #140707 70%),
+    #0a0605;
+  position: relative;
+  isolation: isolate;
+}
+/* Cover surface treatment — a dramatic diagonal light-to-shadow sweep
+   plus a subtle repeating line pattern to evoke ink cross-hatching */
+.cover-art::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(108deg, rgba(209, 72, 54, 0.18) 0%, transparent 40%, rgba(0,0,0,0.45) 100%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.012) 0 2px, transparent 2px 5px);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+.cover-art::after {
+  /* paper sheen + vignette */
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
+  pointer-events: none;
+}
+.cover-spine {
+  /* Accent rule on the left edge — reads as the spine of a printed volume.
+     Offset slightly off the cover so it sits proud, like an embossed band. */
+  position: absolute;
+  left: -4px;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 1px 0 0 1px;
+  box-shadow: 0 0 14px rgba(209, 72, 54, 0.4);
+}
+.cover-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px 26px;
+  color: var(--text);
+  text-align: center;
+  z-index: 1;
+}
+.cover-label-top {
+  font-family: var(--sans);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.cover-label-main {
+  font-family: var(--serif);
+  font-size: 46px;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: var(--text);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+}
+.cover-label-author {
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.cover-label-author::before,
+.cover-label-author::after {
+  content: '—';
+  margin: 0 8px;
+  color: var(--text-sub);
+  letter-spacing: 0;
+}
+
+/* =========================================================================
+   MASTHEAD (right-of-cover column)
+   =========================================================================*/
+.meta {
+  animation: fadeUp 700ms var(--ease) 140ms both;
+}
+
+.title {
+  font-family: var(--serif);
+  font-size: clamp(44px, 6.2vw, 72px);
+  font-weight: 600;
+  font-variation-settings: "opsz" 144;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  margin: -10px 0 6px;
+  color: var(--text);
+}
+.author {
+  margin: 0 0 28px;
+  color: var(--text-dim);
+  font-size: 15px;
+  line-height: 1.4;
+}
+.author em {
+  font-style: italic;
+  font-family: var(--serif);
+  color: var(--text);
+  font-weight: 500;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+}
+
+.divider-line {
+  width: 42px;
+  height: 2px;
+  background: var(--accent);
+  margin: 0 0 22px;
+}
+
+.meta-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 28px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--text-dim);
+}
+.meta-row .sep {
+  color: var(--text-sub);
+  font-size: 10px;
+}
+.meta-row .status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+}
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+  animation: pulse 2.6s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 4px var(--accent-soft); }
+  50%      { box-shadow: 0 0 0 7px rgba(209, 72, 54, 0.04); }
+}
+
+.description {
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: 16.5px;
+  line-height: 1.6;
+  max-width: 62ch;
+  margin: 0 0 36px;
+  font-weight: 300;
+  font-variation-settings: "opsz" 20;
+}
+/* Editorial drop-cap for the first letter of the description — a quiet
+   nod to printed-book conventions. */
+.description::first-letter {
+  font-family: var(--serif);
+  font-size: 2.2em;
+  font-weight: 500;
+  float: left;
+  line-height: 0.85;
+  margin: 6px 8px 0 0;
+  color: var(--accent);
+  font-variation-settings: "opsz" 144;
+}
+
+/* =========================================================================
+   CTAs
+   Primary = vermillion filled pill with a fine-lined play icon + mono
+   chapter number appended. Secondary = outlined "Start over".
+   =========================================================================*/
+.cta-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 22px;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.015em;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 200ms var(--ease);
+  position: relative;
+  outline: none;
+}
+.btn:focus-visible {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow:
+    0 4px 14px -4px rgba(209, 72, 54, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+.btn-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 24px -6px rgba(209, 72, 54, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.btn-primary:active { transform: translateY(0); }
+.btn-primary .ch-num {
+  font-family: var(--mono);
+  font-weight: 400;
+  opacity: 0.82;
+  padding-left: 8px;
+  border-left: 1px solid rgba(255,255,255,0.2);
+  margin-left: 4px;
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover {
+  color: var(--text);
+  border-color: var(--text-dim);
+  background: rgba(255,255,255,0.02);
+}
+
+.last-read {
+  font-size: 11px;
+  color: var(--text-sub);
+  letter-spacing: 0.12em;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+
+/* =========================================================================
+   CHAPTER SECTION
+   Header: italic serif "Chapters" + chapter count (mono, very small) +
+   filter text-buttons (underline for active) + sort control.
+   List rows are rich-but-spare: state dot / chapter number / title /
+   progress indicator / right-aligned metadata.
+   =========================================================================*/
+.chapters {
+  margin-top: 96px;
+  animation: fadeUp 700ms var(--ease) 220ms both;
+}
+.chapters-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  column-gap: 24px;
+  row-gap: 8px;
+  align-items: baseline;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.chapters-header h2 {
+  font-family: var(--serif);
+  font-size: 34px;
+  font-weight: 400;
+  font-style: italic;
+  font-variation-settings: "opsz" 144;
+  margin: 0;
+  grid-column: 1;
+  grid-row: 1;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  color: var(--text);
+}
+.chapters-count {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--text-sub);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  grid-column: 1;
+  grid-row: 2;
+}
+/* The unread-count inside the count line gets accent color when non-zero —
+   a single glanceable "you have N new chapters" signal without needing a
+   dedicated filter pill. */
+.chapters-count .unread-count {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* Right-side controls — hide-read toggle + sort cycle. Lives in a
+   single horizontal row spanning both header rows. Compact so the
+   header doesn't balloon on mobile; keeps decision surface minimal. */
+.chapters-controls {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: center;
+}
+
+/* "Hide read" pill — off-state outlined, on-state fills with accent.
+   A single toggle covers ~90% of filtering needs (users want to focus
+   on what they haven't read yet); anything more exotic belongs behind
+   a "…" menu and can be added later without changing this row. */
+.toggle-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 7px 14px 7px 10px;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 180ms var(--ease);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+.toggle-btn:hover {
+  color: var(--text);
+  border-color: var(--text-dim);
+}
+.toggle-btn .toggle-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 13px;
+  height: 13px;
+  border: 1.5px solid var(--text-sub);
+  border-radius: 2px;
+  transition: all 180ms var(--ease);
+  flex-shrink: 0;
+}
+.toggle-btn .toggle-check svg {
+  opacity: 0;
+  transition: opacity 180ms var(--ease);
+}
+.toggle-btn.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text);
+  box-shadow: 0 4px 12px -4px rgba(209, 72, 54, 0.45);
+}
+.toggle-btn.on .toggle-check {
+  background: var(--text);
+  border-color: var(--text);
+}
+.toggle-btn.on .toggle-check svg {
+  opacity: 1;
+  color: var(--accent);
+}
+
+.sort {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  user-select: none;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  transition: all 180ms var(--ease);
+  background: transparent;
+}
+.sort:hover {
+  color: var(--text);
+  border-color: var(--text-dim);
+  background: rgba(255,255,255,0.015);
+}
+.sort .sort-arrow {
+  display: inline-block;
+  transition: transform 240ms var(--ease);
+  margin-right: 4px;
+  color: var(--accent);
+}
+.sort.reversed .sort-arrow {
+  transform: rotate(180deg);
+}
+
+.chapter-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.chapter {
+  display: grid;
+  grid-template-columns: 28px 76px 1fr 90px auto;
+  gap: 18px;
+  align-items: center;
+  padding: 14px 16px;
+  margin: 0 -16px;
+  border-bottom: 1px solid var(--border-soft);
+  cursor: pointer;
+  position: relative;
+  transition:
+    background 160ms var(--ease),
+    transform 180ms var(--ease);
+  animation: fadeUp 500ms var(--ease) both;
+}
+.chapter:hover {
+  background: rgba(255, 255, 255, 0.022);
+  transform: translateX(2px);
+}
+.chapter:hover::after {
+  /* a thin vermillion bar slides in on hover — book-jacket accent on scroll */
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 2px;
+  background: var(--accent);
+  border-radius: 0 1px 1px 0;
+}
+
+.chapter-state {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  justify-self: center;
+  background: var(--border);
+  transition: background 160ms var(--ease), box-shadow 160ms var(--ease);
+}
+.chapter.unread .chapter-state { background: var(--border); }
+.chapter.in-progress .chapter-state {
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.chapter.read .chapter-state {
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  width: 8px;
+  height: 8px;
+}
+
+.chapter-num {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+.chapter.in-progress .chapter-num { color: var(--accent); font-weight: 500; }
+.chapter.read .chapter-num { color: var(--text-sub); }
+
+.chapter-title {
+  font-family: var(--sans);
+  font-size: 14.5px;
+  font-weight: 400;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  letter-spacing: -0.005em;
+}
+.chapter.in-progress .chapter-title {
+  color: var(--text);
+  font-weight: 600;
+}
+.chapter.read .chapter-title {
+  color: var(--text-dim);
+}
+
+.chapter-progress-bar {
+  width: 80px;
+  height: 2px;
+  background: var(--border);
+  overflow: hidden;
+  border-radius: 1px;
+}
+.chapter-progress-fill {
+  height: 100%;
+  background: var(--accent);
+}
+.chapter .chapter-progress-bar:empty,
+.chapter:not(.in-progress) .chapter-progress-bar { visibility: hidden; }
+
+.chapter-meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-sub);
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-transform: uppercase;
+  text-align: right;
+}
+.chapter.in-progress .chapter-meta { color: var(--accent); }
+
+/* Staggered entry for the first visible run of chapters */
+.chapter-list .chapter:nth-child(1) { animation-delay: 300ms; }
+.chapter-list .chapter:nth-child(2) { animation-delay: 340ms; }
+.chapter-list .chapter:nth-child(3) { animation-delay: 380ms; }
+.chapter-list .chapter:nth-child(4) { animation-delay: 420ms; }
+.chapter-list .chapter:nth-child(5) { animation-delay: 460ms; }
+.chapter-list .chapter:nth-child(6) { animation-delay: 500ms; }
+.chapter-list .chapter:nth-child(7) { animation-delay: 540ms; }
+.chapter-list .chapter:nth-child(8) { animation-delay: 580ms; }
+.chapter-list .chapter:nth-child(n+9) { animation-delay: 620ms; }
+
+/* =========================================================================
+   MOTION PRIMITIVE
+   Subtle fade-up — 14px rise over 500-700ms. Not hyper-enthusiastic;
+   the hero and chapter list stagger gracefully so you feel the content
+   settle rather than slam in.
+   =========================================================================*/
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* =========================================================================
+   RESPONSIVE
+   Hero stacks vertically on mobile. Cover scales down to 200px. Chapter
+   progress bar drops (space-constrained); chapter-meta slides right.
+   =========================================================================*/
+@media (max-width: 720px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    justify-items: center;
+  }
+  .cover-art {
+    width: 200px;
+    height: 300px;
+  }
+  .cover-spine {
+    left: -3px;
+    width: 2.5px;
+  }
+  .cover-label-main { font-size: 34px; }
+  .title {
+    font-size: clamp(34px, 11vw, 52px);
+    text-align: center;
+  }
+  .author, .meta-row, .cta-row, .last-read, .description, .divider-line {
+    text-align: center;
+    justify-content: center;
+  }
+  .divider-line { margin-left: auto; margin-right: auto; }
+  .description::first-letter { float: none; font-size: 1em; margin: 0; }
+  .description { font-size: 15px; max-width: 100%; }
+  .chapters-header {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .chapters-controls {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: start;
+    flex-wrap: wrap;
+  }
+  .chapter {
+    grid-template-columns: 24px 64px 1fr auto;
+    gap: 14px;
+  }
+  .chapter-progress-bar { display: none; }
+}
+</style>
+</head>
+<body>
+
+<main>
+  <a href="#" class="back">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+    </svg>
+    Comics
+  </a>
+
+  <section class="hero">
+    <figure class="cover">
+      <div class="cover-spine"></div>
+      <div class="cover-art">
+        <div class="cover-label">
+          <div class="cover-label-top">Dark Horse · Vol. XLII</div>
+          <div class="cover-label-main">Berserk</div>
+          <div class="cover-label-author">Kentaro Miura</div>
+        </div>
+      </div>
+    </figure>
+
+    <div class="meta">
+      <h1 class="title">Berserk</h1>
+      <p class="author">by <em>Kentaro Miura</em></p>
+
+      <div class="divider-line"></div>
+
+      <div class="meta-row">
+        <span class="status">
+          <span class="status-dot"></span>
+          Ongoing
+        </span>
+        <span class="sep">·</span>
+        <span>1989—</span>
+        <span class="sep">·</span>
+        <span>Seinen</span>
+        <span class="sep">·</span>
+        <span>Action</span>
+        <span class="sep">·</span>
+        <span>Dark Fantasy</span>
+      </div>
+
+      <p class="description">
+        A wandering swordsman traverses a medieval European-inspired dark fantasy world seeking vengeance. Haunted by a demonic brand, he hunts the god-like beings who sacrificed his dreams — a meditation on friendship, fate, and what remains of a person after everything has been taken.
+      </p>
+
+      <div class="cta-row">
+        <button class="btn btn-primary" type="button">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"
+               aria-hidden="true"><polygon points="6 4 20 12 6 20"/></svg>
+          Continue reading
+          <span class="ch-num">Ch. 374</span>
+        </button>
+        <button class="btn btn-secondary" type="button">Start from Ch. 1</button>
+      </div>
+      <div class="last-read">Last read 2 days ago · Page 12 / 24</div>
+    </div>
+  </section>
+
+  <section class="chapters">
+    <header class="chapters-header">
+      <h2>Chapters</h2>
+      <div class="chapters-count">
+        373 chapters
+        · <span class="unread-count">8 unread</span>
+        · 1 in progress
+      </div>
+      <div class="chapters-controls">
+        <button class="toggle-btn" type="button" data-toggle="hide-read" aria-pressed="false">
+          <span class="toggle-check">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </span>
+          Hide read
+        </button>
+        <button class="sort" type="button" aria-pressed="false">
+          <span class="sort-arrow">↓</span>Newest
+        </button>
+      </div>
+    </header>
+
+    <ul class="chapter-list">
+      <li class="chapter in-progress">
+        <div class="chapter-state"></div>
+        <div class="chapter-num">Ch. 374</div>
+        <div class="chapter-title">The Berserker's Final Stand</div>
+        <div class="chapter-progress-bar"><div class="chapter-progress-fill" style="width: 50%"></div></div>
+        <div class="chapter-meta">12 / 24</div>
+      </li>
+      <li class="chapter unread">
+        <div class="chapter-state"></div>
+        <div class="chapter-num">Ch. 373</div>
+        <div class="chapter-title">Into the Darkness We Walk</div>
+        <div class="chapter-progress-bar"></div>
+        <div class="chapter-meta">5 days ago</div>
+      </li>
+      <li class="chapter unread">
+        <div class="chapter-state"></div>
+        <div class="chapter-num">Ch. 372</div>
+        <div class="chapter-title">A Pale Moon Rises Over Midland</div>
+        <div class="chapter-progress-bar"></div>
+        <div class="chapter-meta">2 weeks ago</div>
+      </li>
+      <li class="chapter unread">
+        <div class="chapter-state"></div>
+        <div class="chapter-num">Ch. 371</div>
+        <div class="chapter-title">The Crucible of the Broken</div>
+        <div class="chapter-progress-bar"></div>
+        <div class="chapter-meta">3 weeks ago</div>
+      </li>
+      <li class="chapter read">
+        <div class="chapter-state"></div>
+        <div class="chapter-num">Ch. 370</div>
+        <div class="chapter-title">Lost in Endless Night</div>
+        <div class="chapter-progress-bar"></div>
+        <div class="chapter-meta">Read</div>
+      </li>
+      <li class="chapter read">
+        <div class="chapter-state"></div>
+        <div class="chapter-num">Ch. 369</div>
+        <div class="chapter-title">Journey of a Thousand Steps</div>
+        <div class="chapter-progress-bar"></div>
+        <div class="chapter-meta">Read</div>
+      </li>
+      <li class="chapter read">
+        <div class="chapter-state"></div>
+        <div class="chapter-num">Ch. 368</div>
+        <div class="chapter-title">The Dream Eternal</div>
+        <div class="chapter-progress-bar"></div>
+        <div class="chapter-meta">Read</div>
+      </li>
+      <li class="chapter read">
+        <div class="chapter-state"></div>
+        <div class="chapter-num">Ch. 367</div>
+        <div class="chapter-title">Shadow of the Moonlight God</div>
+        <div class="chapter-progress-bar"></div>
+        <div class="chapter-meta">Read</div>
+      </li>
+      <li class="chapter read">
+        <div class="chapter-state"></div>
+        <div class="chapter-num">Ch. 366</div>
+        <div class="chapter-title">Old Wounds, Older Enemies</div>
+        <div class="chapter-progress-bar"></div>
+        <div class="chapter-meta">Read</div>
+      </li>
+      <li class="chapter read">
+        <div class="chapter-state"></div>
+        <div class="chapter-num">Ch. 365</div>
+        <div class="chapter-title">The Hawk and the Raven</div>
+        <div class="chapter-progress-bar"></div>
+        <div class="chapter-meta">Read</div>
+      </li>
+      <li class="chapter read">
+        <div class="chapter-state"></div>
+        <div class="chapter-num">Ch. 364</div>
+        <div class="chapter-title">Before the Dawn</div>
+        <div class="chapter-progress-bar"></div>
+        <div class="chapter-meta">Read</div>
+      </li>
+    </ul>
+  </section>
+</main>
+
+<script>
+// Hide-read toggle — single binary filter that hides chapters marked
+// "read" from the list. Covers the most common user intent (focus on
+// what I haven't read yet) without the complexity of exclusive filters.
+const hideReadBtn = document.querySelector('[data-toggle="hide-read"]');
+hideReadBtn?.addEventListener('click', () => {
+  const on = !hideReadBtn.classList.contains('on');
+  hideReadBtn.classList.toggle('on', on);
+  hideReadBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  document.querySelectorAll('.chapter.read').forEach(row => {
+    row.style.display = on ? 'none' : '';
+  });
+});
+
+// Sort toggle — flips list direction with a pivoting arrow (the
+// arrow rotates 180°, the label swaps). More kinetic than just swapping
+// glyphs; the rotation cues the underlying re-ordering is mechanical.
+const sortEl = document.querySelector('.sort');
+sortEl?.addEventListener('click', () => {
+  const reversed = sortEl.classList.toggle('reversed');
+  sortEl.setAttribute('aria-pressed', reversed ? 'true' : 'false');
+  const arrow = sortEl.querySelector('.sort-arrow');
+  const labelNode = Array.from(sortEl.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
+  if (labelNode) labelNode.textContent = reversed ? 'Oldest' : 'Newest';
+  const list = document.querySelector('.chapter-list');
+  if (list) {
+    const rows = Array.from(list.children);
+    rows.reverse().forEach(r => list.appendChild(r));
+  }
+});
+
+// Continue-reading button kinetic feedback
+document.querySelectorAll('.btn, .chapter').forEach(el => {
+  el.addEventListener('click', (e) => {
+    if (el.classList.contains('chapter')) {
+      el.style.background = 'rgba(255, 255, 255, 0.04)';
+      setTimeout(() => { el.style.background = ''; }, 150);
+    }
+  });
+});
+</script>
+
+</body>
+</html>

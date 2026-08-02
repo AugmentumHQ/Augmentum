@@ -1,0 +1,970 @@
+/* ==========================================================================
+   Living Stream — Memory Management Page
+   All classes prefixed with `mem-` to avoid conflicts.
+   Lives inside .settings-pane; respects the container's max-height/scroll.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Local tokens — semantic layer over global design tokens
+   -------------------------------------------------------------------------- */
+.mem-page {
+  --mem-gold:          #fbbf24;
+  --mem-gold-dim:      rgba(251, 191, 36, 0.18);
+  --mem-gold-glow:     rgba(251, 191, 36, 0.08);
+  --mem-amber:         var(--color-amber);
+  --mem-amber-dim:     rgba(245, 158, 11, 0.15);
+  --mem-purple:        #c084fc;
+  --mem-purple-dim:    rgba(192, 132, 252, 0.15);
+  --mem-cyan:          #22d3ee;
+  --mem-cyan-dim:      rgba(34, 211, 238, 0.12);
+  --mem-green-dim:     rgba(74, 222, 128, 0.12);
+  --mem-blue-dim:      rgba(108, 138, 255, 0.12);
+  --mem-timeline-line: var(--border-light);
+  --mem-dot-size:      10px;
+  --mem-entry-indent:  28px;
+}
+
+/* --------------------------------------------------------------------------
+   Page Root
+   -------------------------------------------------------------------------- */
+.mem-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  position: relative;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Page Header
+   -------------------------------------------------------------------------- */
+.mem-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-md) var(--space-sm);
+  flex-shrink: 0;
+}
+
+
+.mem-header-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.mem-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-shrink: 0;
+}
+
+.mem-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px var(--space-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    color     var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.mem-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.mem-btn-primary {
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.mem-btn-primary:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.mem-btn-icon {
+  padding: 6px;
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+.mem-btn-icon:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Core Identity Card
+   -------------------------------------------------------------------------- */
+.mem-identity {
+  margin: 0 var(--space-md) var(--space-sm);
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--mem-gold) 30%, transparent);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--mem-gold) 6%, var(--bg-elevated)) 0%,
+      var(--bg-elevated) 60%,
+      color-mix(in srgb, var(--accent) 4%, var(--bg-elevated)) 100%
+    );
+  padding: var(--space-md);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* Subtle shimmer behind the card */
+.mem-identity::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 70% 60% at 90% 10%,
+    color-mix(in srgb, var(--mem-gold) 8%, transparent) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.mem-identity-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+
+
+.mem-identity-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mem-gold);
+  opacity: 0.85;
+  margin-bottom: 2px;
+}
+
+
+
+.mem-identity-stats {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+
+
+
+/* --------------------------------------------------------------------------
+   "Crystallized from" Connector — decorative text divider
+   -------------------------------------------------------------------------- */
+.mem-connector {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: var(--space-xs) var(--space-md);
+  flex-shrink: 0;
+}
+
+.mem-connector-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    color-mix(in srgb, var(--mem-gold) 25%, transparent),
+    color-mix(in srgb, var(--mem-gold) 25%, transparent)
+  );
+}
+
+.mem-connector-line:last-child {
+  background: linear-gradient(
+    to left,
+    transparent,
+    color-mix(in srgb, var(--mem-gold) 25%, transparent),
+    color-mix(in srgb, var(--mem-gold) 25%, transparent)
+  );
+}
+
+.mem-connector-text {
+  font-size: var(--text-xs);
+  color: color-mix(in srgb, var(--mem-gold) 70%, var(--text-muted));
+  font-style: italic;
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* --------------------------------------------------------------------------
+   Search Bar + Filter Chips
+   -------------------------------------------------------------------------- */
+.mem-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md) var(--space-sm);
+  flex-shrink: 0;
+}
+
+.mem-search-wrap {
+  position: relative;
+}
+
+.mem-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.mem-search {
+  width: 100%;
+  padding: 7px var(--space-sm) 7px 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--input-bg, var(--surface));
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow   var(--duration-fast) var(--ease-standard);
+  box-sizing: border-box;
+}
+
+.mem-search:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+
+.mem-search::placeholder {
+  color: var(--text-muted);
+}
+
+/* Filter chip row */
+.mem-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  align-items: center;
+}
+
+.mem-filter-group {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+
+.mem-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background  var(--duration-fast) var(--ease-standard),
+    color       var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
+  white-space: nowrap;
+  line-height: 1.5;
+}
+
+.mem-chip:hover {
+  background: var(--surface-hover);
+  color: var(--text-secondary);
+}
+
+/* Active state variants by type */
+.mem-chip.active {
+  font-weight: 600;
+}
+
+.mem-chip[data-type="fact"].active    { background: var(--mem-green-dim); border-color: var(--success); color: var(--success); }
+.mem-chip[data-type="pref"].active    { background: var(--mem-cyan-dim);  border-color: var(--mem-cyan); color: var(--mem-cyan); }
+.mem-chip[data-type="entity"].active  { background: var(--mem-purple-dim); border-color: var(--mem-purple); color: var(--mem-purple); }
+.mem-chip[data-type="skill"].active   { background: var(--mem-blue-dim); border-color: var(--accent); color: var(--accent); }
+.mem-chip[data-tier="core"].active    { background: var(--mem-gold-dim); border-color: var(--mem-gold); color: var(--mem-gold); }
+.mem-chip[data-tier="active"].active  { background: var(--mem-green-dim); border-color: var(--success); color: var(--success); }
+.mem-chip[data-tier="prov"].active    { background: var(--mem-amber-dim); border-color: var(--mem-amber); color: var(--mem-amber); }
+.mem-chip[data-tier="arch"].active    { background: var(--surface-hover); border-color: var(--text-muted); color: var(--text-muted); }
+
+/* --------------------------------------------------------------------------
+   The Stream — scrollable timeline container
+   -------------------------------------------------------------------------- */
+.mem-stream {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 var(--space-md);
+  /* Custom scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+.mem-stream::-webkit-scrollbar {
+  width: 6px;
+}
+
+.mem-stream::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mem-stream::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: var(--radius-full);
+}
+
+/* Timeline column wrapper — the left border "rail" */
+.mem-timeline {
+  position: relative;
+  padding-left: var(--mem-entry-indent);
+}
+
+/* The continuous vertical rail */
+.mem-timeline::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--mem-dot-size) / 2 - 0.5px);
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--mem-timeline-line);
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Date Headers — pin on the rail with a dot
+   -------------------------------------------------------------------------- */
+.mem-date-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: var(--space-md) 0 var(--space-xs);
+  padding-left: calc(var(--space-sm));
+}
+
+/* The dot on the rail */
+.mem-date-header::before {
+  content: '';
+  position: absolute;
+  left: calc(-1 * var(--mem-entry-indent) + (var(--mem-dot-size) / 2) - (var(--mem-dot-size) / 2));
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--mem-dot-size);
+  height: var(--mem-dot-size);
+  border-radius: var(--radius-full);
+  background: var(--bg);
+  border: 2px solid var(--border);
+  z-index: 1;
+}
+
+.mem-date-text {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.mem-date-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border-light);
+}
+
+/* --------------------------------------------------------------------------
+   Memory Entry — base
+   -------------------------------------------------------------------------- */
+.mem-entry {
+  position: relative;
+  margin-bottom: var(--space-xs);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  padding: 8px var(--space-sm) 8px 10px;
+  background: transparent;
+  transition:
+    background      var(--duration-fast) var(--ease-standard),
+    border-color    var(--duration-fast) var(--ease-standard);
+}
+
+.mem-entry:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-light);
+}
+
+/* Entry dot on the rail */
+.mem-entry::before {
+  content: '';
+  position: absolute;
+  left: calc(-1 * var(--mem-entry-indent) + (var(--mem-dot-size) / 2) - 3px);
+  top: 14px;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--border);
+  border: 1px solid var(--border-light);
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.mem-entry:hover::before {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Row: content + actions side by side */
+
+
+/* Content text */
+.mem-entry-content {
+  font-size: var(--text-sm);
+  line-height: var(--line-height);
+  color: var(--text-primary);
+  word-break: break-word;
+  margin: 0 0 4px;
+}
+
+/* Metadata row: badges + source */
+.mem-entry-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.mem-entry-source {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+
+/* Hover-to-reveal action buttons */
+.mem-entry-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+  padding-top: 2px;
+}
+
+.mem-entry:hover .mem-entry-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mem-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background var(--duration-fast) var(--ease-standard),
+              color     var(--duration-fast) var(--ease-standard);
+  padding: 0;
+  line-height: 1;
+}
+
+.mem-action-btn-promote {
+  color: var(--mem-gold);
+}
+.mem-action-btn-promote:hover {
+  background: var(--mem-gold-dim);
+}
+
+.mem-action-btn-edit {
+  color: var(--text-muted);
+}
+.mem-action-btn-edit:hover {
+  background: var(--surface-active, var(--surface-hover));
+  color: var(--text-primary);
+}
+
+.mem-action-btn-delete {
+  color: var(--text-muted);
+}
+.mem-action-btn-delete:hover {
+  background: var(--error-subtle);
+  color: var(--error);
+}
+
+/* --------------------------------------------------------------------------
+   Type Badges
+   -------------------------------------------------------------------------- */
+.mem-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+/* Type badges */
+
+
+
+
+/* Tier badges */
+
+
+.mem-badge-provisional {
+  background: var(--mem-amber-dim);
+  color: var(--mem-amber);
+  border: 1px solid color-mix(in srgb, var(--mem-amber) 30%, transparent);
+}
+
+
+/* --------------------------------------------------------------------------
+   Pending Approval Entries
+   -------------------------------------------------------------------------- */
+.mem-entry-pending {
+  border: 1px dashed color-mix(in srgb, var(--mem-amber) 50%, transparent);
+  background: color-mix(in srgb, var(--mem-amber) 4%, transparent);
+}
+
+.mem-entry-pending:hover {
+  background: color-mix(in srgb, var(--mem-amber) 7%, var(--surface-hover));
+  border-color: var(--mem-amber);
+}
+
+.mem-entry-pending::before {
+  background: var(--mem-amber);
+  border-color: color-mix(in srgb, var(--mem-amber) 60%, transparent);
+}
+
+
+
+@keyframes mem-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* Inline approve/dismiss buttons */
+
+
+
+
+
+/* --------------------------------------------------------------------------
+   Dream Events — purple left border, seed icon
+   -------------------------------------------------------------------------- */
+.mem-entry-dream {
+  border-left: 2px solid var(--mem-purple);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: color-mix(in srgb, var(--mem-purple) 4%, transparent);
+}
+
+.mem-entry-dream:hover {
+  background: color-mix(in srgb, var(--mem-purple) 7%, var(--surface-hover));
+}
+
+.mem-entry-dream::before {
+  background: var(--mem-purple);
+  border-color: color-mix(in srgb, var(--mem-purple) 50%, transparent);
+}
+
+
+/* --------------------------------------------------------------------------
+   Promotion Events — single-line gold arrow
+   -------------------------------------------------------------------------- */
+.mem-entry-promotion {
+  padding: 5px var(--space-sm) 5px 10px;
+  background: transparent;
+}
+
+.mem-entry-promotion:hover {
+  background: var(--mem-gold-glow);
+}
+
+.mem-entry-promotion::before {
+  background: var(--mem-gold);
+  border-color: color-mix(in srgb, var(--mem-gold) 50%, transparent);
+}
+
+
+
+
+/* --------------------------------------------------------------------------
+   Load More Button
+   -------------------------------------------------------------------------- */
+
+
+
+
+/* --------------------------------------------------------------------------
+   Empty / Loading States
+   -------------------------------------------------------------------------- */
+
+
+
+/* Skeleton shimmer for loading state */
+
+@keyframes mem-shimmer {
+  from { background-position: 200% center; }
+  to   { background-position: -200% center; }
+}
+
+
+
+/* --------------------------------------------------------------------------
+   Config Overlay — slides in from right
+   -------------------------------------------------------------------------- */
+.mem-config-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  z-index: calc(var(--z-modal) + 1);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-normal) var(--ease-standard);
+}
+
+.mem-config-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mem-config-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 320px;
+  max-width: 90vw;
+  background: var(--bg-elevated);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-xl);
+  z-index: calc(var(--z-modal) + 2);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform var(--duration-normal) var(--ease-out);
+  overflow: hidden;
+}
+
+.mem-config-panel.open {
+  transform: translateX(0);
+}
+
+.mem-config-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--border-light);
+  flex-shrink: 0;
+}
+
+.mem-config-title {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.mem-config-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard),
+              color     var(--duration-fast) var(--ease-standard);
+}
+
+.mem-config-close:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.mem-config-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-sm) 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+/* Collapsible sections via <details> */
+.mem-config-section {
+  border-bottom: 1px solid var(--border-light);
+}
+
+.mem-config-section:last-child {
+  border-bottom: none;
+}
+
+.mem-config-section summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  user-select: none;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  list-style: none;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.mem-config-section summary::-webkit-details-marker {
+  display: none;
+}
+
+.mem-config-section summary::after {
+  content: '›';
+  margin-left: auto;
+  font-size: 16px;
+  color: var(--text-muted);
+  transition: transform var(--duration-fast) var(--ease-standard);
+  display: inline-block;
+  line-height: 1;
+}
+
+.mem-config-section[open] summary::after {
+  transform: rotate(90deg);
+}
+
+.mem-config-section summary:hover {
+  color: var(--text-primary);
+}
+
+.mem-config-section[open] summary {
+  color: var(--text-primary);
+}
+
+.mem-config-content {
+  padding: var(--space-xs) var(--space-md) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* Config fields */
+.mem-config-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.mem-config-label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  flex: 1;
+  min-width: 0;
+}
+
+
+/* Toggle switch inside config */
+.mem-toggle {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.mem-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.mem-toggle-track {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--border);
+  transition: background var(--duration-fast) var(--ease-standard);
+  cursor: pointer;
+}
+
+.mem-toggle input:checked + .mem-toggle-track {
+  background: var(--accent);
+}
+
+.mem-toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+  background: #fff;
+  transition: transform var(--duration-fast) var(--ease-bounce);
+}
+
+.mem-toggle input:checked + .mem-toggle-track::after {
+  transform: translateX(16px);
+}
+
+/* Number input inside config */
+.mem-config-input {
+  width: 64px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--input-bg, var(--surface));
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  text-align: right;
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.mem-config-input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+}
+
+/* Select inputs */
+select.mem-config-input {
+  width: auto;
+  text-align: left;
+  padding-right: 24px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2371717a' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  cursor: pointer;
+}
+
+/* Config footer with save button */
+.mem-config-footer {
+  flex-shrink: 0;
+  padding: var(--space-sm) var(--space-md);
+  border-top: 1px solid var(--border-light);
+}
+
+.mem-config-footer .mem-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive — stack controls vertically on narrow viewports
+   -------------------------------------------------------------------------- */
+@media (max-width: 600px) {
+  .mem-controls {
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
+  }
+
+  .mem-filters {
+    gap: 6px;
+  }
+
+  
+  .mem-header {
+    padding: var(--space-sm);
+  }
+
+  .mem-identity {
+    margin-left: var(--space-sm);
+    margin-right: var(--space-sm);
+  }
+
+  .mem-connector {
+    margin-left: var(--space-sm);
+    margin-right: var(--space-sm);
+  }
+
+  .mem-stream {
+    padding: 0 var(--space-sm);
+  }
+
+  .mem-config-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .mem-identity-stats {
+    gap: var(--space-sm);
+  }
+
+  /* Simplify action buttons on touch */
+  .mem-entry-actions {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mem-entry {
+    padding-right: var(--space-xs);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion overrides
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  
+  
+  .mem-config-panel {
+    transition: none;
+  }
+
+  .mem-config-backdrop {
+    transition: none;
+  }
+}

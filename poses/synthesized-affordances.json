@@ -1,0 +1,1470 @@
+{
+  "schema": "augmentum.synthesized-affordances.v1",
+  "generatedAt": "2026-05-03T21:05:06.760Z",
+  "source": "affordance-composer.html (headless synthesize.mjs)",
+  "note": "Synthesized via IK-arm + style-pillar fingers. Each pose verified to land wrist within 5cm of body-region target.",
+  "attemptCount": 14,
+  "reachedCount": 14,
+  "failedCount": 0,
+  "failed": [],
+  "affordances": {
+    "point_at_chest_R": {
+      "rightUpperArm": [
+        -0.5521,
+        2.6037,
+        -0.1559
+      ],
+      "rightLowerArm": [
+        1.4331,
+        -1.8743,
+        1.1384
+      ],
+      "rightHand": [
+        1.0028,
+        0,
+        0
+      ],
+      "rightThumbProximal": [
+        -0.2183,
+        0.0359,
+        -0.09
+      ],
+      "rightThumbDistal": [
+        0,
+        0.2234,
+        0
+      ],
+      "rightIndexProximal": [
+        -0.0992,
+        -0.146,
+        0.2482
+      ],
+      "rightIndexIntermediate": [
+        0,
+        0,
+        0.4331
+      ],
+      "rightIndexDistal": [
+        0,
+        0,
+        0.0289
+      ],
+      "rightMiddleProximal": [
+        -0.0742,
+        0.0361,
+        1.1182
+      ],
+      "rightMiddleIntermediate": [
+        0,
+        0,
+        1.0427
+      ],
+      "rightMiddleDistal": [
+        0,
+        0,
+        0.9016
+      ],
+      "rightRingProximal": [
+        -0.2143,
+        -0.1142,
+        1.1757
+      ],
+      "rightRingIntermediate": [
+        0,
+        0,
+        1.3654
+      ],
+      "rightRingDistal": [
+        0,
+        0,
+        0.8358
+      ],
+      "rightLittleProximal": [
+        -0.3486,
+        -0.268,
+        0.981
+      ],
+      "rightLittleIntermediate": [
+        0,
+        0,
+        1.3498
+      ],
+      "rightLittleDistal": [
+        0,
+        0,
+        0.9379
+      ]
+    },
+    "point_at_sternum_R": {
+      "rightUpperArm": [
+        0.1503,
+        2.5957,
+        0.0421
+      ],
+      "rightLowerArm": [
+        0.5162,
+        -1.5108,
+        0.5465
+      ],
+      "rightHand": [
+        1.4549,
+        -0.0001,
+        0
+      ],
+      "rightThumbProximal": [
+        -0.2183,
+        0.0359,
+        -0.09
+      ],
+      "rightThumbDistal": [
+        0,
+        0.2234,
+        0
+      ],
+      "rightIndexProximal": [
+        -0.0992,
+        -0.146,
+        0.2482
+      ],
+      "rightIndexIntermediate": [
+        0,
+        0,
+        0.4331
+      ],
+      "rightIndexDistal": [
+        0,
+        0,
+        0.0289
+      ],
+      "rightMiddleProximal": [
+        -0.0742,
+        0.0361,
+        1.1182
+      ],
+      "rightMiddleIntermediate": [
+        0,
+        0,
+        1.0427
+      ],
+      "rightMiddleDistal": [
+        0,
+        0,
+        0.9016
+      ],
+      "rightRingProximal": [
+        -0.2143,
+        -0.1142,
+        1.1757
+      ],
+      "rightRingIntermediate": [
+        0,
+        0,
+        1.3654
+      ],
+      "rightRingDistal": [
+        0,
+        0,
+        0.8358
+      ],
+      "rightLittleProximal": [
+        -0.3486,
+        -0.268,
+        0.981
+      ],
+      "rightLittleIntermediate": [
+        0,
+        0,
+        1.3498
+      ],
+      "rightLittleDistal": [
+        0,
+        0,
+        0.9379
+      ]
+    },
+    "point_at_belly_R": {
+      "rightUpperArm": [
+        0.732,
+        1.1059,
+        1.1115
+      ],
+      "rightLowerArm": [
+        0.0367,
+        -0.4514,
+        0.1596
+      ],
+      "rightHand": [
+        -1.256,
+        0,
+        0.0001
+      ],
+      "rightThumbProximal": [
+        -0.2183,
+        0.0359,
+        -0.09
+      ],
+      "rightThumbDistal": [
+        0,
+        0.2234,
+        0
+      ],
+      "rightIndexProximal": [
+        -0.0992,
+        -0.146,
+        0.2482
+      ],
+      "rightIndexIntermediate": [
+        0,
+        0,
+        0.4331
+      ],
+      "rightIndexDistal": [
+        0,
+        0,
+        0.0289
+      ],
+      "rightMiddleProximal": [
+        -0.0742,
+        0.0361,
+        1.1182
+      ],
+      "rightMiddleIntermediate": [
+        0,
+        0,
+        1.0427
+      ],
+      "rightMiddleDistal": [
+        0,
+        0,
+        0.9016
+      ],
+      "rightRingProximal": [
+        -0.2143,
+        -0.1142,
+        1.1757
+      ],
+      "rightRingIntermediate": [
+        0,
+        0,
+        1.3654
+      ],
+      "rightRingDistal": [
+        0,
+        0,
+        0.8358
+      ],
+      "rightLittleProximal": [
+        -0.3486,
+        -0.268,
+        0.981
+      ],
+      "rightLittleIntermediate": [
+        0,
+        0,
+        1.3498
+      ],
+      "rightLittleDistal": [
+        0,
+        0,
+        0.9379
+      ]
+    },
+    "point_at_temple_R": {
+      "rightUpperArm": [
+        -0.5246,
+        2.0235,
+        -0.3328
+      ],
+      "rightLowerArm": [
+        -1.4307,
+        -2.6612,
+        -0.4193
+      ],
+      "rightHand": [
+        2.4947,
+        -0.0001,
+        0
+      ],
+      "rightThumbProximal": [
+        -0.2183,
+        0.0359,
+        -0.09
+      ],
+      "rightThumbDistal": [
+        0,
+        0.2234,
+        0
+      ],
+      "rightIndexProximal": [
+        -0.0992,
+        -0.146,
+        0.2482
+      ],
+      "rightIndexIntermediate": [
+        0,
+        0,
+        0.4331
+      ],
+      "rightIndexDistal": [
+        0,
+        0,
+        0.0289
+      ],
+      "rightMiddleProximal": [
+        -0.0742,
+        0.0361,
+        1.1182
+      ],
+      "rightMiddleIntermediate": [
+        0,
+        0,
+        1.0427
+      ],
+      "rightMiddleDistal": [
+        0,
+        0,
+        0.9016
+      ],
+      "rightRingProximal": [
+        -0.2143,
+        -0.1142,
+        1.1757
+      ],
+      "rightRingIntermediate": [
+        0,
+        0,
+        1.3654
+      ],
+      "rightRingDistal": [
+        0,
+        0,
+        0.8358
+      ],
+      "rightLittleProximal": [
+        -0.3486,
+        -0.268,
+        0.981
+      ],
+      "rightLittleIntermediate": [
+        0,
+        0,
+        1.3498
+      ],
+      "rightLittleDistal": [
+        0,
+        0,
+        0.9379
+      ]
+    },
+    "pinch_forehead_R": {
+      "rightUpperArm": [
+        0.1534,
+        1.5514,
+        0.1564
+      ],
+      "rightLowerArm": [
+        1.0715,
+        2.4777,
+        -0.4037
+      ],
+      "rightHand": [
+        -2.2675,
+        -0.0001,
+        0.0001
+      ],
+      "rightThumbProximal": [
+        -0.0004,
+        -0.3961,
+        -0.0004
+      ],
+      "rightThumbDistal": [
+        0,
+        -0.2856,
+        0
+      ],
+      "rightIndexProximal": [
+        -0.0025,
+        0.0863,
+        0.1695
+      ],
+      "rightIndexIntermediate": [
+        0,
+        0,
+        0.2424
+      ],
+      "rightIndexDistal": [
+        0,
+        0,
+        -0.0474
+      ],
+      "rightMiddleProximal": [
+        0.0327,
+        -0.1143,
+        0.2805
+      ],
+      "rightMiddleIntermediate": [
+        0,
+        0,
+        0.2942
+      ],
+      "rightMiddleDistal": [
+        0,
+        0,
+        0.2397
+      ],
+      "rightRingProximal": [
+        -0.1372,
+        -0.1869,
+        0.624
+      ],
+      "rightRingIntermediate": [
+        0,
+        0,
+        1.1025
+      ],
+      "rightRingDistal": [
+        0,
+        0,
+        0.5403
+      ],
+      "rightLittleProximal": [
+        -0.3069,
+        -0.3647,
+        0.6881
+      ],
+      "rightLittleIntermediate": [
+        0,
+        0,
+        1.0363
+      ],
+      "rightLittleDistal": [
+        0,
+        0,
+        0.6089
+      ]
+    },
+    "pinch_ear_R": {
+      "rightUpperArm": [
+        -0.8475,
+        0.8804,
+        -1.5275
+      ],
+      "rightLowerArm": [
+        -0.6524,
+        -2.6058,
+        -0.1851
+      ],
+      "rightHand": [
+        2.9118,
+        -0.0001,
+        0
+      ],
+      "rightThumbProximal": [
+        -0.0004,
+        -0.3961,
+        -0.0004
+      ],
+      "rightThumbDistal": [
+        0,
+        -0.2856,
+        0
+      ],
+      "rightIndexProximal": [
+        -0.0025,
+        0.0863,
+        0.1695
+      ],
+      "rightIndexIntermediate": [
+        0,
+        0,
+        0.2424
+      ],
+      "rightIndexDistal": [
+        0,
+        0,
+        -0.0474
+      ],
+      "rightMiddleProximal": [
+        0.0327,
+        -0.1143,
+        0.2805
+      ],
+      "rightMiddleIntermediate": [
+        0,
+        0,
+        0.2942
+      ],
+      "rightMiddleDistal": [
+        0,
+        0,
+        0.2397
+      ],
+      "rightRingProximal": [
+        -0.1372,
+        -0.1869,
+        0.624
+      ],
+      "rightRingIntermediate": [
+        0,
+        0,
+        1.1025
+      ],
+      "rightRingDistal": [
+        0,
+        0,
+        0.5403
+      ],
+      "rightLittleProximal": [
+        -0.3069,
+        -0.3647,
+        0.6881
+      ],
+      "rightLittleIntermediate": [
+        0,
+        0,
+        1.0363
+      ],
+      "rightLittleDistal": [
+        0,
+        0,
+        0.6089
+      ]
+    },
+    "palm_at_cheek_R": {
+      "rightUpperArm": [
+        -0.9974,
+        2.4693,
+        -0.3761
+      ],
+      "rightLowerArm": [
+        -2.3756,
+        -2.9383,
+        -0.4956
+      ],
+      "rightHand": [
+        1.5061,
+        -0.0001,
+        0
+      ],
+      "rightThumbProximal": [
+        -0.0189,
+        -0.0652,
+        -0.0989
+      ],
+      "rightThumbDistal": [
+        -0.0647,
+        0.0931,
+        -0.0083
+      ],
+      "rightIndexProximal": [
+        -0.0108,
+        0.2107,
+        0.0036
+      ],
+      "rightIndexIntermediate": [
+        0.0013,
+        -0.0176,
+        0.1489
+      ],
+      "rightIndexDistal": [
+        0.0003,
+        0.0084,
+        -0.0703
+      ],
+      "rightMiddleProximal": [
+        -0.0026,
+        0.0189,
+        0.0483
+      ],
+      "rightMiddleIntermediate": [
+        0.0046,
+        -0.0321,
+        0.2812
+      ],
+      "rightMiddleDistal": [
+        0,
+        -0.0016,
+        0.008
+      ],
+      "rightRingProximal": [
+        0.0225,
+        -0.1076,
+        0.1663
+      ],
+      "rightRingIntermediate": [
+        0.0049,
+        -0.0344,
+        0.2821
+      ],
+      "rightRingDistal": [
+        -0.0117,
+        0.0013,
+        -0.0165
+      ],
+      "rightLittleProximal": [
+        0.1014,
+        -0.2751,
+        0.3049
+      ],
+      "rightLittleIntermediate": [
+        0.0001,
+        -0.0074,
+        0.0746
+      ],
+      "rightLittleDistal": [
+        0.0018,
+        -0.0238,
+        0.1883
+      ]
+    },
+    "finger_to_chin_R": {
+      "rightUpperArm": [
+        0.2814,
+        1.4373,
+        0.3211
+      ],
+      "rightLowerArm": [
+        0.4842,
+        2.502,
+        -0.1632
+      ],
+      "rightHand": [
+        -0.1303,
+        0,
+        0
+      ],
+      "rightThumbProximal": [
+        -0.2183,
+        0.0359,
+        -0.09
+      ],
+      "rightThumbDistal": [
+        0,
+        0.2234,
+        0
+      ],
+      "rightIndexProximal": [
+        -0.0992,
+        -0.146,
+        0.2482
+      ],
+      "rightIndexIntermediate": [
+        0,
+        0,
+        0.4331
+      ],
+      "rightIndexDistal": [
+        0,
+        0,
+        0.0289
+      ],
+      "rightMiddleProximal": [
+        -0.0742,
+        0.0361,
+        1.1182
+      ],
+      "rightMiddleIntermediate": [
+        0,
+        0,
+        1.0427
+      ],
+      "rightMiddleDistal": [
+        0,
+        0,
+        0.9016
+      ],
+      "rightRingProximal": [
+        -0.2143,
+        -0.1142,
+        1.1757
+      ],
+      "rightRingIntermediate": [
+        0,
+        0,
+        1.3654
+      ],
+      "rightRingDistal": [
+        0,
+        0,
+        0.8358
+      ],
+      "rightLittleProximal": [
+        -0.3486,
+        -0.268,
+        0.981
+      ],
+      "rightLittleIntermediate": [
+        0,
+        0,
+        1.3498
+      ],
+      "rightLittleDistal": [
+        0,
+        0,
+        0.9379
+      ]
+    },
+    "hand_at_mouth_R": {
+      "rightUpperArm": [
+        0.2497,
+        1.7786,
+        0.2029
+      ],
+      "rightLowerArm": [
+        1.0175,
+        2.682,
+        -0.2595
+      ],
+      "rightHand": [
+        1.1625,
+        0,
+        0
+      ],
+      "rightThumbProximal": [
+        -0.0004,
+        -0.3961,
+        -0.0004
+      ],
+      "rightThumbDistal": [
+        0,
+        -0.2856,
+        0
+      ],
+      "rightIndexProximal": [
+        -0.0025,
+        0.0863,
+        0.1695
+      ],
+      "rightIndexIntermediate": [
+        0,
+        0,
+        0.2424
+      ],
+      "rightIndexDistal": [
+        0,
+        0,
+        -0.0474
+      ],
+      "rightMiddleProximal": [
+        0.0327,
+        -0.1143,
+        0.2805
+      ],
+      "rightMiddleIntermediate": [
+        0,
+        0,
+        0.2942
+      ],
+      "rightMiddleDistal": [
+        0,
+        0,
+        0.2397
+      ],
+      "rightRingProximal": [
+        -0.1372,
+        -0.1869,
+        0.624
+      ],
+      "rightRingIntermediate": [
+        0,
+        0,
+        1.1025
+      ],
+      "rightRingDistal": [
+        0,
+        0,
+        0.5403
+      ],
+      "rightLittleProximal": [
+        -0.3069,
+        -0.3647,
+        0.6881
+      ],
+      "rightLittleIntermediate": [
+        0,
+        0,
+        1.0363
+      ],
+      "rightLittleDistal": [
+        0,
+        0,
+        0.6089
+      ]
+    },
+    "present_open_chest_R": {
+      "rightUpperArm": [
+        0.5138,
+        1.8277,
+        0.3998
+      ],
+      "rightLowerArm": [
+        -0.0265,
+        -0.3192,
+        -0.164
+      ],
+      "rightHand": [
+        1.4838,
+        -0.0001,
+        0
+      ],
+      "rightThumbProximal": [
+        -0.0189,
+        -0.0652,
+        -0.0989
+      ],
+      "rightThumbDistal": [
+        -0.0647,
+        0.0931,
+        -0.0083
+      ],
+      "rightIndexProximal": [
+        -0.0108,
+        0.2107,
+        0.0036
+      ],
+      "rightIndexIntermediate": [
+        0.0013,
+        -0.0176,
+        0.1489
+      ],
+      "rightIndexDistal": [
+        0.0003,
+        0.0084,
+        -0.0703
+      ],
+      "rightMiddleProximal": [
+        -0.0026,
+        0.0189,
+        0.0483
+      ],
+      "rightMiddleIntermediate": [
+        0.0046,
+        -0.0321,
+        0.2812
+      ],
+      "rightMiddleDistal": [
+        0,
+        -0.0016,
+        0.008
+      ],
+      "rightRingProximal": [
+        0.0225,
+        -0.1076,
+        0.1663
+      ],
+      "rightRingIntermediate": [
+        0.0049,
+        -0.0344,
+        0.2821
+      ],
+      "rightRingDistal": [
+        -0.0117,
+        0.0013,
+        -0.0165
+      ],
+      "rightLittleProximal": [
+        0.1014,
+        -0.2751,
+        0.3049
+      ],
+      "rightLittleIntermediate": [
+        0.0001,
+        -0.0074,
+        0.0746
+      ],
+      "rightLittleDistal": [
+        0.0018,
+        -0.0238,
+        0.1883
+      ]
+    },
+    "peace_at_chest_R": {
+      "rightUpperArm": [
+        0.4475,
+        1.822,
+        0.3495
+      ],
+      "rightLowerArm": [
+        -0.0183,
+        -0.2315,
+        -0.1574
+      ],
+      "rightHand": [
+        1.2569,
+        -0.0001,
+        0
+      ],
+      "rightThumbProximal": [
+        0.0074,
+        -0.4016,
+        0.0086
+      ],
+      "rightThumbDistal": [
+        0,
+        -0.288,
+        0
+      ],
+      "rightIndexProximal": [
+        0.0088,
+        0.0859,
+        0.1429
+      ],
+      "rightIndexIntermediate": [
+        0,
+        0,
+        0.2249
+      ],
+      "rightIndexDistal": [
+        0,
+        0,
+        -0.0457
+      ],
+      "rightMiddleProximal": [
+        0.0373,
+        -0.1505,
+        0.243
+      ],
+      "rightMiddleIntermediate": [
+        0,
+        0,
+        0.2931
+      ],
+      "rightMiddleDistal": [
+        0,
+        0,
+        0.1792
+      ],
+      "rightRingProximal": [
+        -0.1287,
+        -0.1938,
+        0.607
+      ],
+      "rightRingIntermediate": [
+        0,
+        0,
+        1.1151
+      ],
+      "rightRingDistal": [
+        0,
+        0,
+        0.5242
+      ],
+      "rightLittleProximal": [
+        -0.3003,
+        -0.3667,
+        0.6883
+      ],
+      "rightLittleIntermediate": [
+        0,
+        0,
+        1.0319
+      ],
+      "rightLittleDistal": [
+        0,
+        0,
+        0.602
+      ]
+    },
+    "thumb_up_at_chest_L": {
+      "leftUpperArm": [
+        0.4991,
+        -1.9669,
+        -0.3361
+      ],
+      "leftLowerArm": [
+        -0.059,
+        0.5102,
+        0.2252
+      ],
+      "leftHand": [
+        0.0866,
+        0,
+        0
+      ],
+      "leftThumbProximal": [
+        0.0403,
+        0.1943,
+        0.0347
+      ],
+      "leftThumbDistal": [
+        -0.0041,
+        0.0307,
+        0.002
+      ],
+      "leftIndexProximal": [
+        0.1398,
+        0.1505,
+        -0.5575
+      ],
+      "leftIndexIntermediate": [
+        0.0066,
+        -0.0171,
+        -1.3634
+      ],
+      "leftIndexDistal": [
+        0.0039,
+        -0.0124,
+        -1.3079
+      ],
+      "leftMiddleProximal": [
+        0.0487,
+        0.0004,
+        -0.9688
+      ],
+      "leftMiddleIntermediate": [
+        -0.0356,
+        0.0418,
+        -1.3321
+      ],
+      "leftMiddleDistal": [
+        -0.0525,
+        0.0359,
+        -1.2914
+      ],
+      "leftRingProximal": [
+        -0.2517,
+        -0.0242,
+        -1.1642
+      ],
+      "leftRingIntermediate": [
+        -0.1533,
+        0.1433,
+        -1.369
+      ],
+      "leftRingDistal": [
+        -0.1533,
+        0.1433,
+        -1.369
+      ],
+      "leftLittleProximal": [
+        -0.4704,
+        -0.1195,
+        -1.0382
+      ],
+      "leftLittleIntermediate": [
+        -0.2471,
+        0.282,
+        -1.283
+      ],
+      "leftLittleDistal": [
+        -0.2471,
+        0.282,
+        -1.283
+      ]
+    },
+    "fist_at_lower_back_R": {
+      "rightUpperArm": [
+        -0.7279,
+        -0.4277,
+        2.1052
+      ],
+      "rightLowerArm": [
+        0.2701,
+        0.5784,
+        -0.8569
+      ],
+      "rightHand": [
+        0.0738,
+        0,
+        0
+      ],
+      "rightThumbProximal": [
+        -0.3537,
+        -0.8712,
+        0.0469
+      ],
+      "rightThumbDistal": [
+        -0.4445,
+        -1.0117,
+        0.0055
+      ],
+      "rightIndexProximal": [
+        -0.0183,
+        -0.0128,
+        1.2212
+      ],
+      "rightIndexIntermediate": [
+        -0.0378,
+        -0.035,
+        1.4642
+      ],
+      "rightIndexDistal": [
+        -0.0311,
+        -0.0223,
+        1.2206
+      ],
+      "rightMiddleProximal": [
+        0,
+        0,
+        1.2215
+      ],
+      "rightMiddleIntermediate": [
+        0,
+        0,
+        1.4656
+      ],
+      "rightMiddleDistal": [
+        0,
+        0,
+        1.0808
+      ],
+      "rightRingProximal": [
+        0,
+        0,
+        1.2215
+      ],
+      "rightRingIntermediate": [
+        0,
+        0,
+        1.2215
+      ],
+      "rightRingDistal": [
+        -0.0214,
+        -0.0152,
+        1.221
+      ],
+      "rightLittleProximal": [
+        0,
+        0,
+        1.2215
+      ],
+      "rightLittleIntermediate": [
+        0,
+        0,
+        1.2215
+      ],
+      "rightLittleDistal": [
+        0.0182,
+        0.0125,
+        1.2212
+      ]
+    },
+    "salute_L_L": {
+      "leftUpperArm": [
+        0.1563,
+        -1.5615,
+        -0.1578
+      ],
+      "leftLowerArm": [
+        1.0551,
+        -2.4685,
+        0.4022
+      ],
+      "leftHand": [
+        2.4348,
+        0.0001,
+        0
+      ]
+    }
+  },
+  "provenance": {
+    "point_at_chest_R": {
+      "spec": {
+        "name": "point_at_chest",
+        "side": "R",
+        "region": "torso/upper",
+        "h": 1,
+        "dr": 0.05,
+        "dir": "front",
+        "style": "finger_point_R",
+        "palmFacing": "body"
+      },
+      "target": [
+        -9.615700000000065e-18,
+        1.18111132264719,
+        0.22371350524706785
+      ],
+      "wrist": [
+        2.7755575615628914e-17,
+        1.18111132264719,
+        0.2237135052470677
+      ],
+      "wristErrorMeters": 0
+    },
+    "point_at_sternum_R": {
+      "spec": {
+        "name": "point_at_sternum",
+        "side": "R",
+        "region": "torso/upper",
+        "h": 0.5,
+        "dr": 0.05,
+        "dir": "front",
+        "style": "finger_point_R",
+        "palmFacing": "body"
+      },
+      "target": [
+        6.0353330999999355e-18,
+        1.1272893815285845,
+        0.23103680557819387
+      ],
+      "wrist": [
+        1.5265566588595902e-16,
+        1.1272893815285845,
+        0.23103680557819362
+      ],
+      "wristErrorMeters": 0
+    },
+    "point_at_belly_R": {
+      "spec": {
+        "name": "point_at_belly",
+        "side": "R",
+        "region": "torso/lower",
+        "h": 0.5,
+        "dr": 0.05,
+        "dir": "front",
+        "style": "finger_point_R",
+        "palmFacing": "body"
+      },
+      "target": [
+        -3.2012605e-32,
+        0.9344190090286193,
+        0.20791716915833944
+      ],
+      "wrist": [
+        -0.008998482030586414,
+        0.927745906696396,
+        0.19388358782332424
+      ],
+      "wristErrorMeters": 0.018
+    },
+    "point_at_temple_R": {
+      "spec": {
+        "name": "point_at_temple",
+        "side": "R",
+        "atlasRegion": "temple_R",
+        "dr": 0.05,
+        "style": "finger_point_R",
+        "palmFacing": "body"
+      },
+      "target": [
+        -0.12860841760653902,
+        1.4044245966885134,
+        0.000832558389322155
+      ],
+      "wrist": [
+        -0.12860841760653902,
+        1.4044245966885134,
+        0.0008325583893221133
+      ],
+      "wristErrorMeters": 0
+    },
+    "pinch_forehead_R": {
+      "spec": {
+        "name": "pinch_forehead",
+        "side": "R",
+        "atlasRegion": "forehead",
+        "dr": 0.04,
+        "style": "pinch_at_face_R",
+        "palmFacing": "body"
+      },
+      "target": [
+        -0.0010441908683404553,
+        1.3655404212267195,
+        0.053324061132946105
+      ],
+      "wrist": [
+        -0.0010441908683404694,
+        1.3655404212267195,
+        0.05332406113294613
+      ],
+      "wristErrorMeters": 0
+    },
+    "pinch_ear_R": {
+      "spec": {
+        "name": "pinch_ear",
+        "side": "R",
+        "atlasRegion": "ear_R",
+        "dr": 0.04,
+        "style": "pinch_at_face_R",
+        "palmFacing": "body"
+      },
+      "target": [
+        -0.11627985240461189,
+        1.3818402112590866,
+        -0.08091085292106827
+      ],
+      "wrist": [
+        -0.11627985240461178,
+        1.3818402112590866,
+        -0.08091085292106831
+      ],
+      "wristErrorMeters": 0
+    },
+    "palm_at_cheek_R": {
+      "spec": {
+        "name": "palm_at_cheek",
+        "side": "R",
+        "atlasRegion": "cheek_R",
+        "dr": 0.03,
+        "style": "high_five_R",
+        "palmFacing": "body"
+      },
+      "target": [
+        -0.06900027578316448,
+        1.3650287492119861,
+        -0.08327393618719009
+      ],
+      "wrist": [
+        -0.06900027578316437,
+        1.365028749211986,
+        -0.08327393618719042
+      ],
+      "wristErrorMeters": 0
+    },
+    "finger_to_chin_R": {
+      "spec": {
+        "name": "finger_to_chin",
+        "side": "R",
+        "atlasRegion": "chin",
+        "dr": 0.04,
+        "style": "finger_point_R",
+        "palmFacing": "body"
+      },
+      "target": [
+        -0.0007262448731780787,
+        1.3263191526322107,
+        0.047877795661180333
+      ],
+      "wrist": [
+        -0.000726244873178114,
+        1.3263191526322107,
+        0.04787779566118025
+      ],
+      "wristErrorMeters": 0
+    },
+    "hand_at_mouth_R": {
+      "spec": {
+        "name": "hand_at_mouth",
+        "side": "R",
+        "atlasRegion": "mouth",
+        "dr": 0.03,
+        "style": "pinch_at_face_R",
+        "palmFacing": "body"
+      },
+      "target": [
+        -0.02354481210650007,
+        1.3429510603701946,
+        0.0018680605530268582
+      ],
+      "wrist": [
+        -0.02354481210649996,
+        1.3429510603701946,
+        0.0018680605530269068
+      ],
+      "wristErrorMeters": 0
+    },
+    "present_open_chest_R": {
+      "spec": {
+        "name": "present_open_chest",
+        "side": "R",
+        "region": "torso/upper",
+        "h": 0.5,
+        "dr": 0.18,
+        "dir": "front",
+        "style": "high_five_R",
+        "palmFacing": "forward"
+      },
+      "target": [
+        6.0353330999999355e-18,
+        1.1272893815285845,
+        0.3610368055781939
+      ],
+      "wrist": [
+        5.898059818321144e-17,
+        1.1272893815285845,
+        0.36103680557819395
+      ],
+      "wristErrorMeters": 0
+    },
+    "peace_at_chest_R": {
+      "spec": {
+        "name": "peace_at_chest",
+        "side": "R",
+        "region": "torso/upper",
+        "h": 0.7,
+        "dr": 0.2,
+        "dir": "front",
+        "style": "peace_R",
+        "palmFacing": "forward"
+      },
+      "target": [
+        -2.250801400000641e-19,
+        1.1488181579760268,
+        0.37810748544574346
+      ],
+      "wrist": [
+        -0.0007171198183062409,
+        1.1504344591372289,
+        0.37219641649855517
+      ],
+      "wristErrorMeters": 0.0062
+    },
+    "thumb_up_at_chest_L": {
+      "spec": {
+        "name": "thumb_up_at_chest",
+        "side": "L",
+        "region": "torso/upper",
+        "h": 0.7,
+        "dr": 0.18,
+        "dir": "front",
+        "style": "thumb_up_L",
+        "palmFacing": "inward"
+      },
+      "target": [
+        -2.250801400000641e-19,
+        1.1488181579760268,
+        0.35810748544574345
+      ],
+      "wrist": [
+        6.982261990806649e-17,
+        1.1488181579760268,
+        0.35810748544574345
+      ],
+      "wristErrorMeters": 0
+    },
+    "fist_at_lower_back_R": {
+      "spec": {
+        "name": "fist_at_lower_back",
+        "side": "R",
+        "region": "torso/lower",
+        "h": 0.7,
+        "dr": 0.05,
+        "dir": "back",
+        "style": "fist_chest_R",
+        "palmFacing": "body"
+      },
+      "target": [
+        -4.4817646999999996e-32,
+        0.9448331726400672,
+        -0.18574414082204763
+      ],
+      "wrist": [
+        2.0816681711721685e-16,
+        0.9448331726400673,
+        -0.1857441408220476
+      ],
+      "wristErrorMeters": 0
+    },
+    "salute_L_L": {
+      "spec": {
+        "name": "salute_L",
+        "side": "L",
+        "atlasRegion": "forehead",
+        "dr": 0.04,
+        "style": "salute_R",
+        "palmFacing": "forward"
+      },
+      "target": [
+        -0.0010441908683404553,
+        1.3655404212267195,
+        0.053324061132946105
+      ],
+      "wrist": [
+        -0.0010441908683403445,
+        1.3655404212267195,
+        0.05332406113294608
+      ],
+      "wristErrorMeters": 0
+    }
+  }
+}

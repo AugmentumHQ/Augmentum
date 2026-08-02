@@ -1,0 +1,234 @@
+/* Cast guest-join surface.
+ *
+ * Loaded by a guest's phone after they scan the QR on the TV. The
+ * page reads its invite token from ?token=, opens the controller WS
+ * via that token, and shows the user where they are in the join
+ * lifecycle: connecting → needs-pad → claim-slot → playing → terminal.
+ *
+ * Visual goals:
+ *   - Self-explanatory at a glance — no nav, no menus, no Augmentum
+ *     branding noise. The guest came here from a QR, not a deliberate
+ *     navigation; the page is one screen with one purpose.
+ *   - Landscape and portrait both work — phones held sideways for
+ *     gaming should still see the status text cleanly.
+ *   - Dark surface so it doesn't blast the room when the guest is
+ *     sitting in front of an active TV.
+ */
+
+:root {
+  --gj-bg: #0a0a0c;
+  --gj-card: #16161a;
+  --gj-ink: #f3f3f3;
+  --gj-ink-soft: rgba(243, 243, 243, 0.65);
+  --gj-line: rgba(255, 255, 255, 0.08);
+  --gj-ok: #4ade80;
+  --gj-warn: #fbbf24;
+  --gj-err: #f87171;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--gj-bg);
+  color: var(--gj-ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.gj-wrap {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  gap: 20px;
+}
+
+.gj-header {
+  text-align: center;
+}
+.gj-brand {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--gj-ink-soft);
+  text-transform: uppercase;
+}
+.gj-tagline {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--gj-ink-soft);
+}
+
+.gj-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 28px 24px;
+  background: var(--gj-card);
+  border: 1px solid var(--gj-line);
+  border-radius: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.gj-title {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.gj-sub {
+  font-size: 14px;
+  color: var(--gj-ink-soft);
+  line-height: 1.5;
+}
+
+.gj-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--gj-line);
+  border-top-color: var(--gj-ok);
+  border-radius: 50%;
+  animation: gj-spin 0.9s linear infinite;
+}
+@keyframes gj-spin { to { transform: rotate(360deg); } }
+
+.gj-status-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  box-shadow: 0 0 12px currentColor;
+}
+.gj-status-dot.gj-status-ok   { background: var(--gj-ok); color: var(--gj-ok); }
+.gj-status-dot.gj-status-warn { background: var(--gj-warn); color: var(--gj-warn); }
+.gj-status-dot.gj-status-err  { background: var(--gj-err); color: var(--gj-err); }
+
+.gj-leave {
+  margin-top: 12px;
+  padding: 10px 22px;
+  background: transparent;
+  color: var(--gj-err);
+  border: 1px solid var(--gj-err);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.gj-leave:hover {
+  background: rgba(248, 113, 113, 0.08);
+}
+
+/* Profile picker + name entry. */
+.gj-profile-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.gj-profile-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--gj-line);
+  border-radius: 12px;
+  color: var(--gj-ink);
+  font-size: 16px;
+  cursor: pointer;
+  text-align: left;
+}
+.gj-profile-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.gj-profile-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.gj-profile-name {
+  font-weight: 500;
+}
+
+.gj-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--gj-line);
+  margin: 4px 0;
+  position: relative;
+}
+.gj-divider::after {
+  content: 'or';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--gj-card);
+  padding: 0 10px;
+  font-size: 11px;
+  color: var(--gj-ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.gj-name-form {
+  width: 100%;
+  display: flex;
+  gap: 8px;
+}
+.gj-name-form input {
+  flex: 1;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--gj-line);
+  border-radius: 12px;
+  color: var(--gj-ink);
+  font-size: 16px;
+  font-family: inherit;
+}
+.gj-name-form input:focus {
+  outline: none;
+  border-color: var(--gj-ok);
+}
+.gj-confirm {
+  padding: 12px 18px;
+  background: var(--gj-ok);
+  border: 0;
+  border-radius: 12px;
+  color: #0a0a0c;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+.gj-confirm:hover {
+  filter: brightness(1.1);
+}
+.gj-error {
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(248, 113, 113, 0.08);
+  border-radius: 8px;
+  color: var(--gj-err);
+  font-size: 13px;
+}
+
+.gj-not-me {
+  margin-top: 8px;
+  background: transparent;
+  border: 0;
+  color: var(--gj-ink-soft);
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.gj-not-me:hover {
+  color: var(--gj-ink);
+}

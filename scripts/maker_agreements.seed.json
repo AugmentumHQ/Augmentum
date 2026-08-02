@@ -1,0 +1,29 @@
+[
+  {
+    "principle": "Tell me the blast radius before irreversible changes",
+    "rationale": "what changes, what could break, whether it's reversible",
+    "category": "communication"
+  },
+  {
+    "principle": "Finish one thing well before starting three",
+    "category": "scope"
+  },
+  {
+    "principle": "Verify version- or provider-specific facts before recommending them",
+    "rationale": "model params, defaults, and prices drift over time",
+    "category": "reliability"
+  },
+  {
+    "principle": "Default to server-side persistence; treat local storage as a cache only",
+    "category": "reliability"
+  },
+  {
+    "principle": "Wire existing systems before building parallel ones",
+    "category": "process"
+  },
+  {
+    "principle": "Write error messages in ownership voice, not blame voice",
+    "rationale": "'Couldn't X', not 'Failed to X'",
+    "category": "communication"
+  }
+]

@@ -1,0 +1,129 @@
+/* companion-reset.css — Reset gestures panel modal.
+ *
+ * Surfaces from Settings → Companion → "Reset gestures ↗". Visual
+ * language matches companion-self.css (same overlay shell, same
+ * section heading scale). Split out of the former
+ * companion-observatory.css when observatory was folded into the
+ * unified Becca panel.
+ */
+
+.companion-reset-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.companion-reset-panel {
+  background: var(--bg-elevated, rgba(28, 28, 32, 0.98));
+  color: var(--text-primary, #eaeae8);
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  width: min(640px, calc(100vw - 48px));
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+}
+
+.companion-reset-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.companion-reset-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.companion-reset-close {
+  background: none;
+  border: 0;
+  color: inherit;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  opacity: 0.55;
+}
+
+.companion-reset-close:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.companion-reset-body {
+  padding: 18px 24px 28px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+
+.companion-reset-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+
+.companion-reset-card.danger {
+  border-color: rgba(255, 130, 130, 0.18);
+  background: rgba(255, 130, 130, 0.03);
+}
+
+.companion-reset-card h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.companion-reset-card p {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.55;
+  opacity: 0.85;
+}
+
+.companion-reset-button {
+  background: rgba(255, 255, 255, 0.05);
+  color: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.companion-reset-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.companion-reset-button.danger {
+  color: rgba(255, 200, 200, 0.92);
+  border-color: rgba(255, 130, 130, 0.28);
+}
+
+.companion-reset-button.danger:hover {
+  background: rgba(255, 130, 130, 0.12);
+  border-color: rgba(255, 130, 130, 0.45);
+}
+
+.companion-reset-footnote {
+  font-size: 11px;
+  opacity: 0.5;
+  margin-top: 18px;
+  line-height: 1.5;
+}

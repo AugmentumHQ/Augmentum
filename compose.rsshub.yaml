@@ -1,0 +1,37 @@
+# RSSHub — "everything is RSSible". Converts 5,000+ routes across
+# 100+ platforms (YouTube channels, subreddits, GitHub releases,
+# Twitter/X users, news sites, ...) into RSS feeds the Discovery
+# layer already parses.
+#
+# Usage: add this file to your compose list in .augmentum.conf, then
+# subscribe with rsshub:// shorthands in Discovery RSS feeds, e.g.
+#   rsshub://github/release/DIYgod/RSSHub
+#   rsshub://youtube/user/@veritasium
+# Route catalog: https://docs.rsshub.app
+#
+# No published port — Augmentum reaches it server-side at
+# http://rsshub:1200 (the rsshub_base_url setting). Publish 1200 if
+# you also want to browse routes from a desktop feed reader.
+
+services:
+  rsshub:
+    image: diygod/rsshub:latest
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      CACHE_TYPE: memory
+      CACHE_EXPIRE: "900"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://0.0.0.0:1200/healthz"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    logging:
+      options:
+        max-size: "20m"
+        max-file: "2"
+    # No mem_limit by default. This is third-party software whose appetite
+    # depends on how YOU use it (CACHE_TYPE=memory above holds every fetched
+    # route's rendered feed in-process, so it scales with what you subscribe
+    # to) — add one here only from a measurement of your own instance.

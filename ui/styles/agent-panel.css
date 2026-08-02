@@ -1,0 +1,507 @@
+/* Augmentum game-agent side panel.
+ *
+ * Lives next to (or overlaid on top of, on phone) the EmulatorJS iframe
+ * inside .emulator-stage-play-area. Inherits the shared gametime
+ * tokens (--gametime-*) declared on .emulator-stage-overlay so the
+ * panel matches the surrounding chrome.
+ *
+ * Streaming surface — observations, action chips, status dot, and the
+ * companion speech bubble all update live as the agent plays. Polish
+ * priorities here: enter animations for new items, no DOM-flash
+ * re-renders, recency cues so the user can track the latest event at
+ * a glance, and a clearly-readable "thinking" state between plan ticks.
+ */
+
+
+/* ── Play-area layout ─────────────────────────────────────────────── */
+
+.emulator-stage-play-area {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.emulator-stage-play-area > .emulator-stage-slot {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* Scrim — only visible on phone when the agent panel is expanded. Tap
+ * to dismiss (the JS toggles .agent-panel-scrim-active on the play-area
+ * when the panel goes expanded under <=720px). */
+.agent-panel-scrim {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(2px);
+    z-index: 15;
+    animation: agent-scrim-in 200ms ease-out;
+}
+.emulator-stage-play-area[data-panel-state="expanded-mobile"] .agent-panel-scrim {
+    display: block;
+}
+@keyframes agent-scrim-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+
+/* ── Panel ───────────────────────────────────────────────────────── */
+
+.agent-panel {
+    /* Expanded width caps at 280px but never exceeds 40% of viewport,
+     * so a small laptop or tablet keeps gameplay readable. */
+    flex: 0 0 min(280px, 40vw);
+    display: flex;
+    flex-direction: column;
+    background: var(--gametime-surface);
+    color: var(--gametime-ink);
+    border-left: 1px solid var(--gametime-rule);
+    overflow-y: auto;
+    font: inherit;
+    padding: 12px 14px 16px;
+    box-sizing: border-box;
+    transition: flex-basis 200ms ease, padding 200ms ease;
+}
+
+/* Collapsed: a thin sliver against the right edge. Expanded mode
+ * reveals the controls; collapsed leaves the gameplay full-width. */
+.agent-panel-collapsed {
+    flex-basis: 32px;
+    padding: 12px 4px 16px;
+    cursor: pointer;
+}
+.agent-panel-collapsed .agent-panel-body,
+.agent-panel-collapsed .agent-panel-title {
+    display: none;
+}
+.agent-panel-collapsed .agent-panel-header {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+}
+
+/* Phone: panel slides as an overlay sheet instead of stealing
+ * horizontal flex space. Collapsed becomes a small tab on the right
+ * edge; expanded is a 75vw sheet over the game with a scrim behind. */
+@media (max-width: 720px) {
+    .agent-panel {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 20;
+        flex: 0 0 75vw;
+        width: 75vw;
+        max-width: 360px;
+        background: var(--gametime-surface);
+        box-shadow: -8px 0 24px rgba(0, 0, 0, 0.45);
+        border-left: 1px solid var(--gametime-rule-strong);
+        transition: transform 220ms ease, flex-basis 200ms ease;
+    }
+    .agent-panel-collapsed {
+        flex: 0 0 36px;
+        width: 36px;
+        max-width: 36px;
+        background: rgba(20, 22, 28, 0.85);
+        box-shadow: -2px 0 6px rgba(0, 0, 0, 0.3);
+    }
+    .emulator-stage-play-area > .emulator-stage-slot { flex: 1 1 100%; }
+}
+
+
+/* ── Header ──────────────────────────────────────────────────────── */
+
+.agent-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.agent-panel-toggle {
+    background: transparent;
+    color: inherit;
+    border: 1px solid var(--gametime-rule-strong);
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 24px;
+    transition: background 0.12s ease, border-color 0.12s ease;
+}
+.agent-panel-toggle:hover {
+    background: var(--gametime-surface-hover);
+    border-color: var(--gametime-accent-dim);
+}
+.agent-panel-toggle:focus-visible {
+    outline: 2px solid var(--gametime-accent);
+    outline-offset: 1px;
+}
+.agent-panel-toggle-icon {
+    font-size: 14px;
+    line-height: 1;
+    color: var(--gametime-ink-soft);
+}
+
+
+/* Status dot — animated per status. Pulse during transient states
+ * ("starting", "reconnecting", "thinking") so the user notices state
+ * is in flight. */
+.agent-panel-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--gametime-ink-whisper);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.04);
+    transition: background 220ms ease, box-shadow 220ms ease;
+    flex-shrink: 0;
+}
+
+.agent-panel-status-dot[data-status="off"]          { background: var(--gametime-ink-whisper); }
+.agent-panel-status-dot[data-status="starting"]     { background: var(--gametime-warn); animation: agent-dot-pulse 1100ms ease-in-out infinite; }
+.agent-panel-status-dot[data-status="watch"]        { background: var(--gametime-accent); box-shadow: 0 0 0 2px var(--gametime-accent-soft); }
+.agent-panel-status-dot[data-status="co-pilot"]     { background: var(--gametime-success); box-shadow: 0 0 0 2px rgba(74, 208, 122, 0.18); }
+.agent-panel-status-dot[data-status="thinking"]     { background: var(--gametime-accent-bright); animation: agent-dot-pulse 900ms ease-in-out infinite; }
+.agent-panel-status-dot[data-status="reconnecting"] {
+    background: var(--gametime-warn);
+    animation: agent-dot-pulse 1600ms ease-in-out infinite;
+    box-shadow: 0 0 0 2px rgba(208, 185, 74, 0.16);
+}
+.agent-panel-status-dot[data-status="error"]        { background: var(--gametime-error); }
+
+@keyframes agent-dot-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.25); opacity: 0.65; }
+}
+
+.agent-panel-title {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* Inline status text next to the title — "thinking…", "reconnecting…"
+ * etc. Italic so it reads as a transient state, not a fixed label. */
+.agent-panel-status-text {
+    font-size: 11px;
+    color: var(--gametime-ink-faint);
+    font-style: italic;
+    flex: 1 1 auto;
+    text-align: right;
+    transition: opacity 180ms ease;
+}
+.agent-panel-status-text[hidden] { display: none; }
+
+
+/* ── Body ────────────────────────────────────────────────────────── */
+
+.agent-panel-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.agent-panel-unsupported {
+    color: var(--gametime-ink-faint);
+    font-style: italic;
+    margin: 6px 0 0;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+
+/* ── Form controls ───────────────────────────────────────────────── */
+
+.agent-panel-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.agent-panel-field > span {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gametime-ink-faint);
+}
+
+.agent-panel-objective {
+    background: var(--gametime-surface-raised);
+    color: inherit;
+    border: 1px solid var(--gametime-rule);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font: inherit;
+    resize: vertical;
+    min-height: 64px;
+    transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.agent-panel-objective:focus {
+    outline: none;
+    border-color: var(--gametime-accent);
+    box-shadow: 0 0 0 3px var(--gametime-accent-soft);
+}
+
+.agent-panel-modes {
+    display: flex;
+    gap: 6px;
+}
+
+.agent-panel-mode {
+    flex: 1 1 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 7px 6px;
+    background: var(--gametime-surface-raised);
+    border: 1px solid var(--gametime-rule);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.12s ease, border-color 0.12s ease;
+}
+.agent-panel-mode:hover {
+    background: var(--gametime-surface-hover);
+}
+.agent-panel-mode:has(input:checked) {
+    background: var(--gametime-accent-soft);
+    border-color: var(--gametime-accent);
+}
+.agent-panel-mode input {
+    accent-color: var(--gametime-accent);
+    /* Slightly smaller default so the label dominates. */
+    transform: scale(0.9);
+}
+
+.agent-panel-action {
+    background: var(--gametime-accent-soft);
+    color: var(--gametime-ink);
+    border: 1px solid var(--gametime-accent);
+    border-radius: 6px;
+    padding: 9px 12px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.12s ease, transform 0.12s ease;
+}
+.agent-panel-action:hover:not([disabled]) {
+    background: var(--gametime-accent-dim);
+    transform: translateY(-1px);
+}
+.agent-panel-action:active:not([disabled]) {
+    transform: translateY(0);
+}
+.agent-panel-action:focus-visible {
+    outline: 2px solid var(--gametime-accent-bright);
+    outline-offset: 2px;
+}
+.agent-panel-action[disabled] {
+    opacity: 0.6;
+    cursor: progress;
+}
+.agent-panel-action[data-state="running"] {
+    background: rgba(208, 74, 74, 0.16);
+    border-color: rgba(208, 74, 74, 0.55);
+}
+.agent-panel-action[data-state="running"]:hover:not([disabled]) {
+    background: rgba(208, 74, 74, 0.28);
+}
+
+
+/* ── Streaming sections (thinking + recent) ──────────────────────── */
+
+.agent-panel-thinking,
+.agent-panel-recent {
+    border-top: 1px solid var(--gametime-rule);
+    padding-top: 12px;
+}
+
+.agent-panel-thinking h4,
+.agent-panel-recent h4 {
+    margin: 0 0 8px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gametime-ink-faint);
+}
+
+.agent-panel-observations {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* Each observation. New items animate in via a subtle fade-from-top
+ * so the eye catches the change without the layout jumping. */
+.agent-panel-observations li {
+    background: var(--gametime-surface-raised);
+    border-radius: 4px;
+    padding: 5px 8px;
+    font-size: 12px;
+    line-height: 1.35;
+    color: var(--gametime-ink-soft);
+    animation: agent-fade-in 280ms ease-out;
+}
+.agent-panel-observations li.is-fresh {
+    /* The just-arrived plan tick gets a thin brass left edge that
+     * fades over the next ~2 s so the user knows which line is new. */
+    box-shadow: inset 2px 0 0 0 var(--gametime-accent);
+    animation: agent-fade-in 280ms ease-out, agent-fresh-decay 2200ms 280ms ease-out forwards;
+}
+@keyframes agent-fade-in {
+    from { opacity: 0; transform: translateY(-3px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes agent-fresh-decay {
+    from { box-shadow: inset 2px 0 0 0 var(--gametime-accent); }
+    to   { box-shadow: inset 2px 0 0 0 transparent; }
+}
+
+/* Empty state — italic placeholder, not a debug message. */
+.agent-panel-observations:empty::before,
+.agent-panel-observations-empty {
+    display: block;
+    font-size: 12px;
+    color: var(--gametime-ink-whisper);
+    font-style: italic;
+    padding: 4px 0;
+}
+.agent-panel-observations-empty::before {
+    content: "Waiting for the agent's first read of the screen…";
+}
+
+.agent-panel-state {
+    background: var(--gametime-accent-faint);
+    border-left: 2px solid var(--gametime-accent-dim);
+    padding: 8px 10px;
+    font-size: 12px;
+    color: var(--gametime-ink-soft);
+    white-space: pre-wrap;
+    word-break: break-word;
+    border-radius: 0 4px 4px 0;
+    transition: background 240ms ease;
+}
+.agent-panel-state.is-empty {
+    color: var(--gametime-ink-whisper);
+    font-style: italic;
+}
+.agent-panel-state.is-fresh {
+    /* Quick flash when state updates, decays back over ~1.4s. */
+    animation: agent-state-flash 1400ms ease-out forwards;
+}
+@keyframes agent-state-flash {
+    0%   { background: var(--gametime-accent-soft); }
+    100% { background: var(--gametime-accent-faint); }
+}
+
+
+/* ── Recent input chips ─────────────────────────────────────────── */
+
+.agent-panel-action-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    min-height: 22px;
+}
+.agent-panel-action-row:empty::before {
+    content: "No inputs sent yet.";
+    font-size: 11px;
+    color: var(--gametime-ink-whisper);
+    font-style: italic;
+}
+
+.agent-panel-action-chip {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: rgba(74, 208, 122, 0.18);
+    border: 1px solid rgba(74, 208, 122, 0.5);
+    padding: 2px 8px;
+    border-radius: 999px;
+    color: var(--gametime-ink);
+    animation: agent-chip-in 220ms ease-out;
+    transition: opacity 220ms ease, transform 220ms ease;
+}
+.agent-panel-action-chip.watching {
+    background: var(--gametime-accent-soft);
+    border-color: var(--gametime-accent-dim);
+    opacity: 0.75;
+}
+.agent-panel-action-chip.is-leaving {
+    /* Smooth fade-out before removal so older chips don't pop out of
+     * existence as the strip overflows. */
+    opacity: 0;
+    transform: translateY(-2px);
+}
+@keyframes agent-chip-in {
+    from { opacity: 0; transform: translateY(-2px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ── Companion speech bubble ─────────────────────────────────────── */
+
+.agent-panel-speech {
+    position: relative;
+    background: var(--gametime-accent-soft);
+    border: 1px solid var(--gametime-accent);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--gametime-ink);
+    margin-bottom: 4px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    animation: agent-panel-speech-in 220ms ease-out;
+}
+.agent-panel-speech::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 22px;
+    width: 10px;
+    height: 10px;
+    background: var(--gametime-accent-soft);
+    border-left: 1px solid var(--gametime-accent);
+    border-top: 1px solid var(--gametime-accent);
+    transform: rotate(45deg);
+}
+.agent-panel-speech[hidden] { display: none; }
+.agent-panel-speech.agent-panel-speech-fading {
+    animation: agent-panel-speech-out 1200ms ease-in forwards;
+}
+.agent-panel-collapsed .agent-panel-speech { display: none; }
+
+@keyframes agent-panel-speech-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes agent-panel-speech-out {
+    from { opacity: 1; }
+    to   { opacity: 0; transform: translateY(-2px); }
+}
+
+
+/* ── Reduced motion ──────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+    .agent-panel,
+    .agent-panel * {
+        animation-duration: 0ms !important;
+        transition-duration: 0ms !important;
+    }
+}

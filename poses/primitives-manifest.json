@@ -1,0 +1,713 @@
+{
+  "schema": "augmentum.primitive-manifest.v1",
+  "generatedAt": "2026-05-14T16:39:08",
+  "count": 51,
+  "primitives": [
+    {
+      "name": "arm_arms_crossed_L",
+      "file": "arm_arms_crossed_L.json",
+      "tags": [
+        "single-arm",
+        "L",
+        "closed",
+        "defensive"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: left arm in 'arms_crossed_L' pose. Lands at region 'side_R' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_arms_crossed_R",
+      "file": "arm_arms_crossed_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "closed",
+        "defensive"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'arms_crossed_R' pose. Lands at region 'other' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_behind_back_L",
+      "file": "arm_behind_back_L.json",
+      "tags": [
+        "single-arm",
+        "L",
+        "torso",
+        "formal"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: left arm in 'behind_back_L' pose. Lands at region 'hip_L' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_behind_back_R",
+      "file": "arm_behind_back_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "torso",
+        "formal"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'behind_back_R' pose. Lands at region 'hip_R' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_chest_L",
+      "file": "arm_chest_L.json",
+      "tags": [
+        "single-arm",
+        "L",
+        "chest",
+        "emphasis"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: left arm in 'chest_L' pose. Lands at region 'side_R' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_chest_R",
+      "file": "arm_chest_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "chest",
+        "emphasis"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'chest_R' pose. Lands at region 'side_L' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_chin_L",
+      "file": "arm_chin_L.json",
+      "tags": [
+        "single-arm",
+        "L",
+        "face",
+        "self-touch",
+        "thinking"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: left arm in 'chin_L' pose. Lands at region 'sternum' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_chin_R",
+      "file": "arm_chin_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "face",
+        "self-touch",
+        "thinking"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'chin_R' pose. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_clasp_low_front_L",
+      "file": "arm_clasp_low_front_L.json",
+      "tags": [
+        "single-arm",
+        "L",
+        "formal",
+        "attentive"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: left arm in 'clasp_low_front_L' pose. Lands at region 'belly' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_clasp_low_front_R",
+      "file": "arm_clasp_low_front_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "formal",
+        "attentive"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'clasp_low_front_R' pose. Lands at region 'belly' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_extended_side_R",
+      "file": "arm_extended_side_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "reaching"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'extended_side_R' pose. Lands at region 'belly' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_finger_point_R",
+      "file": "arm_finger_point_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "pointing",
+        "directing"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'finger_point_R' pose. Lands at region 'head_top' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_fist_at_face_R",
+      "file": "arm_fist_at_face_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "face",
+        "emphatic"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'fist_at_face_R' pose. Lands at region 'other' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_fist_at_shoulder_L",
+      "file": "arm_fist_at_shoulder_L.json",
+      "tags": [
+        "single-arm",
+        "L",
+        "stance",
+        "shoulder"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: left arm in 'fist_at_shoulder_L' pose. Lands at region 'upper_arm_L' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_fist_chest_R",
+      "file": "arm_fist_chest_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "chest",
+        "emphasis"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'fist_chest_R' pose. Lands at region 'upper_arm_R' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_forward_high_L",
+      "file": "arm_forward_high_L.json",
+      "tags": [
+        "single-arm",
+        "L",
+        "reaching",
+        "gesture"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: left arm in 'forward_high_L' pose. Lands at region 'other' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_forward_high_R",
+      "file": "arm_forward_high_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "reaching",
+        "gesture"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'forward_high_R' pose. Lands at region 'other' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_forward_low_L",
+      "file": "arm_forward_low_L.json",
+      "tags": [
+        "single-arm",
+        "L",
+        "open",
+        "inviting"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: left arm in 'forward_low_L' pose. Lands at region 'belly' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_forward_low_R",
+      "file": "arm_forward_low_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "open",
+        "inviting"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'forward_low_R' pose. Lands at region 'belly' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_hand_closed_L",
+      "file": "arm_hand_closed_L.json",
+      "tags": [
+        "single-arm",
+        "L",
+        "passive",
+        "rest"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: left arm in 'hand_closed_L' pose. Lands at region 'thigh_L' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_hand_open_L",
+      "file": "arm_hand_open_L.json",
+      "tags": [
+        "single-arm",
+        "L",
+        "passive",
+        "rest"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: left arm in 'hand_open_L' pose. Lands at region 'hip_L' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_high_five_R",
+      "file": "arm_high_five_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "greeting",
+        "casual"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'high_five_R' pose. Lands at region 'upper_arm_R' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_hip_L",
+      "file": "arm_hip_L.json",
+      "tags": [
+        "single-arm",
+        "L",
+        "torso",
+        "stance"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: left arm in 'hip_L' pose. Lands at region 'hip_L' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_hip_R",
+      "file": "arm_hip_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "torso",
+        "stance"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'hip_R' pose. Lands at region 'hip_R' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_in_front_face_R",
+      "file": "arm_in_front_face_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "face",
+        "gesture"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'in_front_face_R' pose. Lands at region 'cheek_R' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_in_front_thigh_L",
+      "file": "arm_in_front_thigh_L.json",
+      "tags": [
+        "single-arm",
+        "L",
+        "torso",
+        "casual"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: left arm in 'in_front_thigh_L' pose. Lands at region 'belly' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_index_up_R",
+      "file": "arm_index_up_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "greeting",
+        "attention"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'index_up_R' pose. Lands at region 'upper_arm_R' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_on_chest_L",
+      "file": "arm_on_chest_L.json",
+      "tags": [
+        "single-arm",
+        "L",
+        "chest",
+        "emphasis",
+        "sincere"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: left arm in 'on_chest_L' pose. Lands at region 'other' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_palm_out_side_R",
+      "file": "arm_palm_out_side_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "gesture",
+        "open"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'palm_out_side_R' pose. Lands at region 'lower_arm_R' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_peace_R",
+      "file": "arm_peace_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "casual",
+        "gesture"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'peace_R' pose. Lands at region 'other' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_pinch_at_face_R",
+      "file": "arm_pinch_at_face_R.json",
+      "tags": [
+        "single-arm",
+        "R"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'pinch_at_face_R' pose. Lands at region 'other' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_salute_R",
+      "file": "arm_salute_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "greeting",
+        "formal"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'salute_R' pose. Lands at region 'head_top' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_side_relaxed_L",
+      "file": "arm_side_relaxed_L.json",
+      "tags": [
+        "single-arm",
+        "L"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: left arm in 'side_relaxed_L' pose. Lands at region 'thigh_L' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_side_relaxed_R",
+      "file": "arm_side_relaxed_R.json",
+      "tags": [
+        "single-arm",
+        "R"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'side_relaxed_R' pose. Lands at region 'thigh_R' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_stomach_L",
+      "file": "arm_stomach_L.json",
+      "tags": [
+        "single-arm",
+        "L",
+        "torso",
+        "self-soothing"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: left arm in 'stomach_L' pose. Lands at region 'belly' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_stomach_R",
+      "file": "arm_stomach_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "torso",
+        "self-soothing"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'stomach_R' pose. Lands at region 'belly' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_thumb_up_L",
+      "file": "arm_thumb_up_L.json",
+      "tags": [
+        "single-arm",
+        "L",
+        "greeting",
+        "attention"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: left arm in 'thumb_up_L' pose. Lands at region 'other' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_up_L",
+      "file": "arm_up_L.json",
+      "tags": [
+        "single-arm",
+        "L",
+        "greeting",
+        "attention"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: left arm in 'up_L' pose. Lands at region 'head_top' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "arm_up_R",
+      "file": "arm_up_R.json",
+      "tags": [
+        "single-arm",
+        "R",
+        "greeting",
+        "attention"
+      ],
+      "family": "per_arm",
+      "description": "Single-arm primitive: right arm in 'up_R' pose. Lands at region 'head_top' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+      "source": "auto-generated",
+      "kind": "per-arm"
+    },
+    {
+      "name": "casual_hand_on_hip",
+      "file": "casual_hand_on_hip.json",
+      "tags": [
+        "casual",
+        "confident",
+        "stance"
+      ],
+      "family": "idle_lefthip",
+      "description": "Left hand on left hip (hip_L affordance), right arm rests at side. Slight head turn + spine twist for casual confidence.",
+      "source": "manual",
+      "kind": "curated"
+    },
+    {
+      "name": "confident_both_hips",
+      "file": "confident_both_hips.json",
+      "tags": [
+        "confident",
+        "power",
+        "stance",
+        "assertive"
+      ],
+      "family": "idle_standing",
+      "description": "Both hands on hips \u2014 the classic 'power pose' or assertive stance.",
+      "source": "manual",
+      "kind": "curated"
+    },
+    {
+      "name": "emphatic_fist_chest",
+      "file": "emphatic_fist_chest.json",
+      "tags": [
+        "emphatic",
+        "sincere",
+        "expression",
+        "heartfelt"
+      ],
+      "family": "thinking",
+      "description": "Right hand as fist near chest. Emphasis gesture \u2014 heartfelt sincerity, conviction, or 'I promise'.",
+      "source": "manual",
+      "kind": "curated"
+    },
+    {
+      "name": "hands_clasped_front",
+      "file": "hands_clasped_front.json",
+      "tags": [
+        "formal",
+        "attentive",
+        "polite"
+      ],
+      "family": "formal",
+      "description": "Both hands clasped low in front (clasp_low_front affordances). Polite/formal listening pose.",
+      "source": "manual",
+      "kind": "curated"
+    },
+    {
+      "name": "idle_arms_crossed",
+      "file": "idle_arms_crossed.json",
+      "tags": [
+        "idle",
+        "closed",
+        "defensive",
+        "thoughtful"
+      ],
+      "family": "closed",
+      "description": "Both arms crossed in front. Reads as closed/defensive in some contexts, contemplative in others.",
+      "source": "manual",
+      "kind": "curated"
+    },
+    {
+      "name": "idle_hands_behind",
+      "file": "idle_hands_behind.json",
+      "tags": [
+        "idle",
+        "formal",
+        "attentive",
+        "at-ease"
+      ],
+      "family": "formal_behind",
+      "description": "Both hands behind back (parade rest / at-ease). Formal listening posture.",
+      "source": "manual",
+      "kind": "curated"
+    },
+    {
+      "name": "idle_natural",
+      "file": "idle_natural.json",
+      "tags": [
+        "idle",
+        "neutral",
+        "standing"
+      ],
+      "family": "idle_standing",
+      "description": "Baseline natural standing pose \u2014 arms at sides, head level. The primitive that applying does nothing extra beyond the avatar's authored natural pose.",
+      "source": "manual",
+      "kind": "curated"
+    },
+    {
+      "name": "making_a_point",
+      "file": "making_a_point.json",
+      "tags": [
+        "emphatic",
+        "teaching",
+        "gesture",
+        "attention"
+      ],
+      "family": "thinking",
+      "description": "Right hand index finger raised \u2014 'one more thing', 'wait', 'pay attention'.",
+      "source": "manual",
+      "kind": "curated"
+    },
+    {
+      "name": "palms_open_low",
+      "file": "palms_open_low.json",
+      "tags": [
+        "open",
+        "inviting",
+        "honest",
+        "explanatory"
+      ],
+      "family": "thinking",
+      "description": "Both hands held low in front, palms partially open. Reads as 'here it is' / open + non-threatening.",
+      "source": "manual",
+      "kind": "curated"
+    },
+    {
+      "name": "salute",
+      "file": "salute.json",
+      "tags": [
+        "greeting",
+        "formal",
+        "respect",
+        "gesture"
+      ],
+      "family": "thinking",
+      "description": "Right hand salute to forehead \u2014 formal greeting or sign of respect.",
+      "source": "manual",
+      "kind": "curated"
+    },
+    {
+      "name": "stomach_hold",
+      "file": "stomach_hold.json",
+      "tags": [
+        "nervous",
+        "self-soothing",
+        "comforting",
+        "anxious"
+      ],
+      "family": "thinking",
+      "description": "Right hand resting on stomach \u2014 comforting self-touch or nervous holding.",
+      "source": "manual",
+      "kind": "curated"
+    },
+    {
+      "name": "thoughtful_chin_touch",
+      "file": "thoughtful_chin_touch.json",
+      "tags": [
+        "thinking",
+        "self-touch",
+        "contemplative"
+      ],
+      "family": "thinking",
+      "description": "Right hand at chin (chin_R affordance), left arm rests at side. Head pitched slightly down + spine subtle lean.",
+      "source": "manual",
+      "kind": "curated"
+    }
+  ]
+}

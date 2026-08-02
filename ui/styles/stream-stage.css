@@ -1,0 +1,386 @@
+/* ==========================================================================
+   Stream stage — server-streamed game player chrome.
+   ==========================================================================
+
+   Mounted full-screen at z-index 9000. Iframes Selkies' WebRTC viewer
+   for the allocated stream port. Mirrors the visual register of
+   emulator-stage.css — same gametime tokens, same icon button style,
+   same popover treatment — so the user experience across emulator /
+   web game / streamed game is one surface, not three.
+
+   Tokens come from .emulator-stage-overlay; the stream surface declares
+   its own copy so it works even when emulator-stage.css isn't loaded.
+   ========================================================================== */
+
+
+.stream-stage-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  font: 13px/1.4 "Source Sans 3", "Inter", system-ui, -apple-system, sans-serif;
+  color: var(--gametime-ink, #e7e9ee);
+
+  /* Same gametime tokens as emulator-stage. Duplicated here so the
+     stream surface stays coherent even if loaded standalone (e.g.
+     deep-link to a stream without library bootstrap). */
+  --gametime-accent: #6ea2ef;
+  --gametime-accent-bright: #8db8f4;
+  --gametime-accent-dim: rgba(110, 162, 239, 0.28);
+  --gametime-accent-soft: rgba(110, 162, 239, 0.14);
+  --gametime-accent-faint: rgba(110, 162, 239, 0.06);
+
+  --gametime-success: #4ad07a;
+  --gametime-warn:    #d0b94a;
+  --gametime-error:   #d04a4a;
+
+  --gametime-surface:        #151517;
+  --gametime-surface-raised: #1c1c1f;
+  --gametime-surface-hover:  #232328;
+  --gametime-rule:           rgba(255, 255, 255, 0.07);
+  --gametime-rule-strong:    rgba(255, 255, 255, 0.12);
+
+  --gametime-ink:        #e7e9ee;
+  --gametime-ink-soft:   rgba(231, 233, 238, 0.78);
+  --gametime-ink-faint:  rgba(231, 233, 238, 0.5);
+  --gametime-ink-whisper: rgba(231, 233, 238, 0.32);
+}
+
+
+/* ── Header bar ─────────────────────────────────────────────────── */
+
+.stream-stage-bar {
+  flex: 0 0 40px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  background: linear-gradient(to bottom, #161616, #0e0e0e);
+  color: var(--gametime-ink);
+  border-bottom: 1px solid var(--gametime-rule);
+  gap: 12px;
+  user-select: none;
+}
+
+.stream-stage-title {
+  font-weight: 500;
+  color: var(--gametime-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 280px;
+}
+
+.stream-stage-sub {
+  color: var(--gametime-ink-faint);
+  font-size: 11px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  white-space: nowrap;
+}
+
+.stream-stage-spacer { flex: 1; }
+
+
+/* Icon-button style matches emulator-stage so a user moving between
+   surfaces sees the same controls. 32px square, ghost on idle. */
+.stream-stage-iconbtn,
+.stream-stage-textbtn {
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  color: var(--gametime-ink-soft);
+  border: 1px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+.stream-stage-iconbtn { width: 32px; }
+.stream-stage-textbtn { padding: 0 10px; font-size: 12px; font-family: inherit; }
+
+.stream-stage-iconbtn svg,
+.stream-stage-textbtn svg { width: 16px; height: 16px; }
+
+.stream-stage-iconbtn:hover,
+.stream-stage-textbtn:hover {
+  background: var(--gametime-surface-hover);
+  color: var(--gametime-ink);
+  border-color: var(--gametime-rule-strong);
+}
+
+.stream-stage-iconbtn:focus-visible,
+.stream-stage-textbtn:focus-visible {
+  outline: 2px solid var(--gametime-accent);
+  outline-offset: 1px;
+}
+
+.stream-stage-close-btn:hover {
+  background: rgba(208, 74, 74, 0.18);
+  color: #fff;
+  border-color: rgba(208, 74, 74, 0.5);
+}
+
+
+/* Connection-status pill in the header — left of the buttons. Pulses
+   while reconnecting, steady-state otherwise. */
+.stream-stage-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--gametime-ink-faint);
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+.stream-stage-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--gametime-ink-whisper);
+  transition: background 220ms ease;
+}
+.stream-stage-status[data-status="connecting"] .stream-stage-status-dot {
+  background: var(--gametime-warn);
+  animation: stream-dot-pulse 1100ms ease-in-out infinite;
+}
+.stream-stage-status[data-status="live"] .stream-stage-status-dot {
+  background: var(--gametime-success);
+}
+.stream-stage-status[data-status="reconnecting"] .stream-stage-status-dot {
+  background: var(--gametime-warn);
+  animation: stream-dot-pulse 1600ms ease-in-out infinite;
+}
+.stream-stage-status[data-status="error"] .stream-stage-status-dot {
+  background: var(--gametime-error);
+}
+@keyframes stream-dot-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.4); opacity: 0.55; }
+}
+
+
+/* ── Iframe (game viewport) ─────────────────────────────────────── */
+
+.stream-stage-iframe {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  border: 0;
+  background: #000;
+  /* The Selkies viewer captures gestures itself; we disable native
+     touch-action so it doesn't fight the iframe's input handlers. */
+  touch-action: none;
+}
+
+
+/* ── Loading state ──────────────────────────────────────────────── */
+
+.stream-stage-loading {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: #000;
+  padding: 24px;
+  text-align: center;
+}
+
+/* Subtle pulsing dot above the title — gives the user a visible
+   "something is happening" signal during the multi-second cold boot. */
+.stream-stage-loading-pulse {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--gametime-accent);
+  animation: stream-loading-pulse 1100ms ease-in-out infinite;
+  box-shadow: 0 0 18px var(--gametime-accent-dim);
+}
+@keyframes stream-loading-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50%      { transform: scale(1.35); opacity: 0.4; }
+}
+
+.stream-stage-loading-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--gametime-ink);
+  letter-spacing: -0.005em;
+}
+
+.stream-stage-loading-detail {
+  font-size: 12px;
+  color: var(--gametime-ink-faint);
+}
+
+.stream-stage-loading-diag {
+  font-size: 11px;
+  color: var(--gametime-ink-whisper);
+  max-width: min(720px, calc(100vw - 48px));
+  line-height: 1.5;
+}
+
+
+/* ── Settings popover ───────────────────────────────────────────── */
+
+.stream-stage-input-panel {
+  position: absolute;
+  top: 46px;
+  right: 12px;
+  width: min(360px, calc(100vw - 24px));
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  background: var(--gametime-surface-raised);
+  color: var(--gametime-ink);
+  border: 1px solid var(--gametime-rule-strong);
+  border-radius: 8px;
+  padding: 12px 14px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.5);
+  z-index: 2;
+  font-size: 12px;
+  line-height: 1.4;
+  animation: stream-panel-in 180ms ease-out;
+}
+@keyframes stream-panel-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.stream-stage-input-panel form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stream-stage-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--gametime-rule);
+}
+.stream-stage-panel-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  flex: 1;
+}
+
+.stream-stage-field {
+  display: grid;
+  gap: 5px;
+}
+.stream-stage-field-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gametime-ink-faint);
+}
+.stream-stage-field-pair {
+  display: grid;
+  grid-template-columns: 1fr 76px;
+  gap: 8px;
+  align-items: center;
+}
+
+.stream-stage-input,
+.stream-stage-select {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--gametime-surface);
+  color: var(--gametime-ink);
+  border: 1px solid var(--gametime-rule);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font: inherit;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.stream-stage-input:focus,
+.stream-stage-select:focus {
+  outline: none;
+  border-color: var(--gametime-accent);
+  box-shadow: 0 0 0 2px var(--gametime-accent-soft);
+}
+.stream-stage-input[type="range"] {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  accent-color: var(--gametime-accent);
+}
+.stream-stage-input[disabled],
+.stream-stage-select[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.stream-stage-panel-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--gametime-rule);
+}
+
+.stream-stage-btn-save,
+.stream-stage-btn-restart {
+  background: var(--gametime-surface);
+  color: var(--gametime-ink);
+  border: 1px solid var(--gametime-rule-strong);
+  border-radius: 4px;
+  padding: 6px 12px;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+.stream-stage-btn-save:hover {
+  background: var(--gametime-surface-hover);
+  border-color: var(--gametime-accent);
+}
+.stream-stage-btn-restart {
+  background: var(--gametime-accent);
+  color: #0a0e15;
+  border-color: var(--gametime-accent);
+  font-weight: 600;
+}
+.stream-stage-btn-restart:hover {
+  background: var(--gametime-accent-bright);
+  border-color: var(--gametime-accent-bright);
+}
+.stream-stage-btn-save:focus-visible,
+.stream-stage-btn-restart:focus-visible {
+  outline: 2px solid var(--gametime-accent-bright);
+  outline-offset: 2px;
+}
+
+
+/* ── Mobile ─────────────────────────────────────────────────────── */
+
+@media (max-width: 540px) {
+  .stream-stage-title { max-width: 140px; }
+  .stream-stage-sub { display: none; }
+  .stream-stage-textbtn { padding: 0 8px; }
+  .stream-stage-textbtn span { display: none; }   /* icon-only on phone */
+  .stream-stage-input-panel {
+    right: 8px;
+    width: calc(100vw - 16px);
+  }
+}
+
+
+/* ── Reduced motion ─────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .stream-stage-overlay,
+  .stream-stage-overlay * {
+    animation-duration: 0ms !important;
+    transition-duration: 0ms !important;
+  }
+}

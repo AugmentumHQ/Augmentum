@@ -1,0 +1,386 @@
+/* cast-comic — TV comic/manga reader.
+ *
+ * Three layout modes (single / dual / webtoon) and four fit modes
+ * (smart / width / height / native) compose via CSS classes on the
+ * stage so JS can switch without re-rendering. All transitions are
+ * opacity-only — no transform jank on TVs with weak compositors.
+ */
+
+:root {
+  --paper:        #15110c;
+  --ink:          #ede2cb;
+  --ink-soft:     #b8aa92;
+  --ink-mute:     #877a66;
+  --accent:       #d9a14e;
+  --accent-glow:  rgba(217, 161, 78, 0.45);
+  --err:          #d96b4e;
+  --gap-dual:     2px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: #0a0807;
+  color: var(--ink);
+  overflow: hidden;
+  font-family: "Fraunces", "Newsreader", Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+
+/* ── Stage ─────────────────────────────────────────────────────────
+ * The reader is a flex container that switches layout by mode class.
+ * Each rendered page lives in a `.page-slot` that holds the current
+ * <img> (or two crossfading <img>s during a turn). Slots are flex
+ * children, so dual mode is just `flex-direction: row` and webtoon is
+ * column with internal scroll. */
+.stage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #0a0807;
+  contain: layout paint;
+}
+
+/* ─ single ─────────────────────────────────────────────────────── */
+.stage.mode-single {
+  flex-direction: row;
+  gap: 0;
+}
+.stage.mode-single .page-slot {
+  width: 100%;
+  height: 100%;
+}
+
+/* ─ dual ───────────────────────────────────────────────────────── */
+.stage.mode-dual {
+  flex-direction: row;
+  gap: var(--gap-dual);
+}
+.stage.mode-dual.dir-rtl {
+  flex-direction: row-reverse;
+}
+.stage.mode-dual .page-slot {
+  width: 50%;
+  height: 100%;
+}
+/* A solo slot (last page, or first page on RTL manga) gets the whole
+ * stage so it isn't pushed to one edge. */
+.stage.mode-dual .page-slot.solo {
+  width: 100%;
+}
+
+/* ─ webtoon ────────────────────────────────────────────────────── */
+.stage.mode-webtoon {
+  flex-direction: column;
+  align-items: center;
+  /* Override .stage's `justify-content: center`. With a column far
+   * taller than the viewport + overflow-y: auto, `center` on TV-class
+   * WebKit can leave half the column above scrollTop=0 (no safe-
+   * overflow fallback). flex-start anchors at the top so the scroll
+   * range starts at slot 1 and ends at slot N as expected. */
+  justify-content: flex-start;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  /* Hide scrollbar — auto-scroll only, no user-facing scroll on TV */
+  scrollbar-width: none;
+}
+.stage.mode-webtoon::-webkit-scrollbar { display: none; }
+/* Webtoon column width: derived from the dominant page aspect ratio
+ * (see updateWebtoonColumnWidth in cast-comic.js) so every slot —
+ * normal page or sliver — renders at the same visual column. Falls
+ * back to 65% of viewport height before we've sampled any pages,
+ * which is reasonable for typical manga/webtoon aspect (~2:3).
+ * --webtoon-col-width is set as an inline custom property on .stage. */
+.stage.mode-webtoon .page-slot {
+  width: var(--webtoon-col-width, 65vh);
+  max-width: 100%;       /* never wider than viewport */
+  height: auto;
+  flex-shrink: 0;
+}
+/* Image fills the column. Height is purely aspect-driven from the
+ * fixed column width — normal pages get a tall slot, slivers get a
+ * short slot, both same width. No max-height needed because the
+ * column was sized to make typical-aspect pages match viewport height. */
+.stage.mode-webtoon .page-slot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  max-height: none;
+}
+
+
+/* ── Page slot ───────────────────────────────────────────────────
+ * Holds the active <img> plus any crossfading-out <img> being
+ * removed. New images fade in, old ones fade out, then the old DOM
+ * node is removed by JS. Fresh element per navigation means no buffer
+ * state pollution across pages (the every-other-page bug). */
+.page-slot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.page-slot img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  /* Bicubic/Lanczos in modern browsers — kills the soft "upscale" look
+   * that plain auto gives on big TVs. Chromium honours high-quality;
+   * other engines fall back to -webkit-optimize-contrast. */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+  opacity: 0;
+  transition: opacity 0.32s ease-in-out;
+  /* Hint compositor — keeps fade smooth on weak TV GPUs */
+  will-change: opacity;
+}
+.page-slot img.is-active { opacity: 1; }
+.page-slot img.is-leaving { opacity: 0; }
+
+/* ─ fit modes ──────────────────────────────────────────────────── */
+.stage.fit-width .page-slot img {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  max-height: none;
+}
+.stage.fit-height .page-slot img {
+  width: auto;
+  height: 100%;
+  max-width: none;
+  max-height: 100%;
+}
+.stage.fit-native .page-slot img {
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+}
+/* smart is the default (object-fit: contain) */
+
+
+/* ── Progress strip (always-on) ───────────────────────────────── */
+/* ── Autoplay countdown (bottom edge) ─────────────────────────── */
+/* ── Spinner ──────────────────────────────────────────────────── */
+.spinner {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px; height: 56px;
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out;
+  pointer-events: none;
+  z-index: 15;
+}
+.spinner.on { opacity: 1; }
+@keyframes cc-spin {
+  to { transform: rotate(360deg); }
+}
+
+
+/* ── Error overlay ────────────────────────────────────────────── */
+.error-icon {
+  width: 4vw; height: 4vw;
+  min-width: 36px; min-height: 36px;
+  border-radius: 50%;
+  background: rgba(217, 107, 78, 0.18);
+  color: var(--err);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2vw;
+  font-weight: 600;
+  font-family: "JetBrains Mono", monospace;
+}
+/* ── HUD ──────────────────────────────────────────────────────── */
+.hud {
+  position: fixed;
+  /* Lifts above the iPhone home-indicator when this surface is held
+   * on a phone; falls back to a clean 4vh on devices without one. */
+  bottom: calc(4vh + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1.4vh 3vw;
+  background: rgba(21, 17, 12, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(217, 161, 78, 0.22);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2vw;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+  z-index: 20;
+  pointer-events: none;
+}
+.hud.on { opacity: 1; }
+.hud.persistent { opacity: 1; }  /* sticky during autoplay */
+
+/* Type scale via clamp() — readable at couch distance on 1080p, and
+ * doesn't blow up to billboard sizes on 4K. Pre-clamp values used
+ * raw `vw` units which gave ~10 px on 1080p (unreadable). */
+.hud-title {
+  font-family: "Fraunces", Georgia, serif;
+  font-variation-settings: "opsz" 30;
+  font-size: clamp(14px, 1.5vw, 28px);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-soft);
+  max-width: 30vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hud-sep {
+  color: var(--ink-mute);
+  opacity: 0.6;
+  margin: 0 0.5ch;
+}
+/* ── Webtoon failure placeholder ───────────────────────────── */
+.webtoon-fail {
+  width: 100%;
+  min-height: 20vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4vh 2vw;
+  color: var(--ink-mute);
+  font-family: "JetBrains Mono", monospace;
+  font-size: clamp(12px, 1vw, 18px);
+  letter-spacing: 0.1em;
+  border-top: 1px dashed rgba(135, 122, 102, 0.25);
+  border-bottom: 1px dashed rgba(135, 122, 102, 0.25);
+}
+
+
+/* ── Narration caption (TTS read-along subtitle) ───────────────
+ * The currently-spoken bubble, rendered as a TV-legible subtitle pinned
+ * near the bottom of the screen. Kind-aware accent: speech vs narration
+ * vs a neutral hint (availability / synthesizing). Large, high-contrast,
+ * with a soft scrim so it reads over any panel art. */
+.cc-narration-caption {
+  position: fixed;
+  left: 50%;
+  bottom: 7vh;
+  transform: translateX(-50%);
+  max-width: 82vw;
+  z-index: 40;
+  padding: 0.6em 1.1em;
+  border-radius: 12px;
+  background: rgba(10, 8, 7, 0.82);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  color: var(--ink);
+  font-family: "Fraunces", "Newsreader", Georgia, serif;
+  font-size: clamp(18px, 2.4vw, 40px);
+  line-height: 1.3;
+  text-align: center;
+  text-wrap: balance;
+  backdrop-filter: blur(3px);
+  transition: opacity 180ms ease;
+}
+.cc-narration-caption[hidden] { display: none; }
+/* Narration (caption-box text) reads in the soft ink; speech gets the warm
+ * accent so dialogue stands apart from descriptive narration. */
+.cc-narration-caption[data-kind="narration"] { color: var(--ink-soft); font-style: italic; }
+.cc-narration-caption[data-kind="speech"]    { color: var(--ink); }
+.cc-narration-caption[data-kind="hint"] {
+  color: var(--ink-mute);
+  font-family: "JetBrains Mono", monospace;
+  font-size: clamp(12px, 1.2vw, 20px);
+  letter-spacing: 0.06em;
+}
+
+
+/* ── Bed picker overlay ────────────────────────────────────────
+ * Right-anchored panel listing "Off" + favorites / search results.
+ * Selection (D-pad) is a warm highlight; the ACTIVE bed gets an accent
+ * dot. Sized big for across-the-room legibility. */
+.cc-bed-picker {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(6, 5, 4, 0.55);
+  backdrop-filter: blur(2px);
+}
+.cc-bed-picker[hidden] { display: none; }
+.cc-bed-panel {
+  width: min(38vw, 560px);
+  height: 100%;
+  background: rgba(14, 11, 8, 0.96);
+  border-left: 1px solid rgba(217, 161, 78, 0.25);
+  padding: 3vh 2vw;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vh;
+  overflow: hidden;
+}
+.cc-bed-title {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(20px, 1.8vw, 34px);
+  color: var(--accent);
+  letter-spacing: 0.02em;
+}
+.cc-bed-hint {
+  font-family: "JetBrains Mono", monospace;
+  font-size: clamp(10px, 0.9vw, 16px);
+  color: var(--ink-mute);
+  letter-spacing: 0.04em;
+  margin-bottom: 0.6vh;
+}
+.cc-bed-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4vh;
+}
+.cc-bed-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+  padding: 1.1vh 1vw;
+  border-radius: 10px;
+  border: 1px solid transparent;
+}
+.cc-bed-row.sel {
+  background: rgba(217, 161, 78, 0.16);
+  border-color: rgba(217, 161, 78, 0.5);
+}
+.cc-bed-row.active .cc-bed-name::before {
+  content: "● ";
+  color: var(--accent);
+}
+.cc-bed-name {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(16px, 1.4vw, 28px);
+  color: var(--ink);
+}
+.cc-bed-sub {
+  font-family: "JetBrains Mono", monospace;
+  font-size: clamp(10px, 0.85vw, 15px);
+  color: var(--ink-mute);
+}
+
+
+/* ── Responsive tweaks for smaller / portrait displays ──────── */
+@media (max-aspect-ratio: 1/1) {
+  /* Portrait-oriented TV or projector — disable dual mode forcibly. */
+  .stage.mode-dual { flex-direction: column; }
+  .stage.mode-dual .page-slot { width: 100%; height: 50%; }
+  .stage.mode-dual .page-slot.solo { height: 100%; }
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1&family=JetBrains+Mono:wght@300..600&display=swap");

@@ -1,0 +1,31 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "making_a_point",
+  "tags": ["emphatic", "teaching", "gesture", "attention"],
+  "description": "Right hand index finger raised — 'one more thing', 'wait', 'pay attention'.",
+  "family": "thinking",
+
+  "anchors": {
+    "rightHand": {
+      "type": "region-contact",
+      "region": "upper_arm_R",
+      "tolerance": 0.04,
+      "fingerStyle": "index_up_R"
+    },
+    "leftHand": {
+      "type": "free-space"
+    }
+  },
+
+  "body": {
+    "head":  { "pitch": -3, "yaw": 2 },
+    "spine": { "forwardLean": 2 }
+  },
+
+  "provenance": {
+    "source": "manual",
+    "curatedBy": "maintainer",
+    "createdAt": "2026-05-14",
+    "notes": "index_up_R consensus → upper_arm_R (100%). Slight head turn + lean amplify 'making a point' read."
+  }
+}

@@ -1,0 +1,612 @@
+/* =============================================================
+   media-servers.css — Per-user Media Servers panel.
+   Same slide-in style as the marketplace, scoped by .ms-overlay
+   so rules don't leak.
+   ============================================================= */
+
+.ms-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 15, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: var(--z-fullscreen);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+.ms-overlay.visible { opacity: 1; pointer-events: auto; }
+body.ms-lock-scroll { overflow: hidden; }
+
+.ms-panel {
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: min(760px, 96vw);
+  background: var(--bg-primary);
+  border-left: 1px solid var(--border);
+  box-shadow: -24px 0 48px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(4%);
+  opacity: 0;
+  transition: transform 0.28s ease, opacity 0.22s ease;
+}
+.ms-overlay.visible .ms-panel {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.ms-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.ms-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.ms-subtitle {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+.ms-close {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  border-radius: 8px;
+  padding: 6px;
+  cursor: pointer;
+}
+.ms-close:hover { color: var(--text-primary); border-color: var(--text-secondary); }
+
+.ms-body {
+  padding: 20px 24px 40px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.ms-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 20px 0 10px;
+}
+
+/* ---- Detect banner -------------------------------------------- */
+
+.ms-banner {
+  background: color-mix(in srgb, var(--accent-primary, #6366f1) 10%, var(--bg-secondary));
+  border: 1px solid color-mix(in srgb, var(--accent-primary, #6366f1) 30%, transparent);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.ms-banner-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.ms-banner-head svg { color: var(--accent-primary, #6366f1); flex: 0 0 auto; }
+.ms-banner-dismiss {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 4px;
+}
+.ms-banner-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ms-banner-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  background: var(--bg-primary);
+  border-radius: 8px;
+}
+.ms-banner-label { flex: 1; display: flex; flex-direction: column; }
+.ms-banner-url { font-size: 11px; color: var(--text-secondary); font-family: ui-monospace, monospace; }
+
+/* ---- Server list ---------------------------------------------- */
+
+.ms-empty {
+  padding: 28px 20px;
+  text-align: center;
+  color: var(--text-secondary);
+  background:
+    radial-gradient(circle at 50% -10%, color-mix(in srgb, var(--accent-primary, #6366f1) 12%, transparent), transparent 60%),
+    var(--bg-secondary);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.ms-empty-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent-primary, #6366f1) 10%, var(--bg-primary));
+  color: color-mix(in srgb, var(--accent-primary, #6366f1) 70%, var(--text-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ms-empty-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 15px;
+}
+.ms-empty-sub {
+  font-size: 12px;
+  line-height: 1.5;
+  max-width: 420px;
+}
+
+.ms-server-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ms-server-main { flex: 1; min-width: 0; }
+.ms-server-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+.ms-server-type {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--bg-tertiary, var(--bg-primary));
+  color: var(--text-secondary);
+}
+.ms-server-url {
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ms-server-meta {
+  margin-top: 4px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.ms-detail { color: #f59e0b; }
+.ms-server-actions {
+  display: flex;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+/* Access & login panel (admin recovery + change-password) */
+.ms-access-panel {
+  flex: 1 1 100%;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--border) 75%, transparent);
+}
+.ms-access-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ms-access-group-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+.ms-access-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+.ms-access-label {
+  color: var(--text-secondary);
+  min-width: 64px;
+}
+.ms-access-val {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--bg-primary) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  user-select: all;
+  word-break: break-all;
+}
+.ms-access-sub {
+  color: var(--text-secondary);
+  font-size: 12px;
+  opacity: 0.8;
+}
+.ms-access-pw {
+  flex: 1 1 auto;
+  min-width: 140px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  background: color-mix(in srgb, var(--bg-primary) 72%, transparent);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 13px;
+}
+.ms-access-loading,
+.ms-access-err {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.ms-access-err { color: var(--danger, #d9534f); }
+.ms-library-block {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--border) 75%, transparent);
+}
+.ms-library-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+.ms-library-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ms-library {
+  padding: 10px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--bg-primary) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+}
+.ms-library-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+.ms-library-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.ms-library-badges {
+  display: inline-flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.ms-library-sub {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.ms-library-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin-top: 10px;
+  align-items: center;
+}
+.ms-library-input,
+.ms-library-select {
+  min-width: 180px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 12px;
+  color: var(--text-primary);
+}
+.ms-library-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.ms-danger { color: var(--error, #ef4444); }
+.ms-danger:hover { background: color-mix(in srgb, var(--error, #ef4444) 15%, transparent); }
+
+.ms-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-full, 9999px);
+  background: color-mix(in srgb, var(--text-muted) 16%, transparent);
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.ms-badge.ok       { background: color-mix(in srgb, #10b981 18%, transparent); color: #10b981; }
+.ms-badge.err      { background: color-mix(in srgb, #ef4444 18%, transparent); color: #ef4444; }
+.ms-badge.syncing  { background: color-mix(in srgb, var(--accent-primary, #6366f1) 18%, transparent); color: var(--accent-primary, #6366f1); }
+.ms-badge.warn     { background: color-mix(in srgb, #f59e0b 20%, transparent); color: #f59e0b; }
+.ms-badge.idle     { /* neutral — uses default */ }
+
+/* Admin-shared servers — distinct from status colors so the viewer
+ * can scan a long list and spot which connections belong to them vs
+ * which an admin has published for everyone. Indigo/violet sits
+ * between the accent and the warn palette so it doesn't read as
+ * "active sync" or "needs attention". */
+.ms-badge-shared {
+  background: color-mix(in srgb, #8b5cf6 18%, transparent);
+  color: #8b5cf6;
+}
+
+/* Read-only shared rows get a hairline indent stripe so the visual
+ * weight matches the action affordances (no Test, no Remove). Keeps
+ * the layout from looking lopsided when buttons disappear. */
+/* Subtle pulse while syncing so "syncing" feels alive, not stuck */
+.ms-badge.syncing {
+  animation: ms-pulse 1.6s ease-in-out infinite;
+}
+@keyframes ms-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
+/* ---- Add form ------------------------------------------------- */
+
+.ms-form {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px 14px;
+  padding: 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.ms-field { display: flex; flex-direction: column; gap: 4px; }
+.ms-field label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+.ms-field input, .ms-field select {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+.ms-field input:focus, .ms-field select:focus {
+  outline: none;
+  border-color: var(--accent-primary, #6366f1);
+}
+.ms-field-host  { grid-column: 1 / 2; }
+.ms-field-port  { grid-column: 2 / 3; }
+.ms-field-token { grid-column: 1 / -1; }
+.ms-field-share { grid-column: 1 / -1; }
+.ms-form-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; }
+
+/* Admin-only "share" toggle on the add form. Lays out inline so it
+ * doesn't look like a regular text field (those have stacked labels). */
+.ms-share-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.ms-share-toggle input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #8b5cf6;
+}
+.ms-share-blurb {
+  margin: 4px 0 0 24px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.ms-form-hint {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Provider blurb — a one-line description under the Type dropdown that
+ * changes as the user flips between providers. Gives enough context to
+ * pick the right one without opening external docs. */
+.ms-provider-blurb {
+  grid-column: 1 / -1;
+  margin: -8px 0 0;
+  padding: 8px 12px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  background: var(--bg-primary);
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  min-height: 1.45em;
+}
+.ms-provider-blurb:empty { display: none; }
+
+@media (max-width: 640px) {
+  .ms-form { grid-template-columns: 1fr; }
+  .ms-field-host, .ms-field-port, .ms-field-token { grid-column: 1; }
+  .ms-server-actions { justify-content: flex-end; }
+  .ms-library-head { align-items: flex-start; flex-direction: column; }
+  .ms-library-input,
+  .ms-library-select { min-width: 0; width: 100%; }
+}
+
+/* --- Sync diagnostics chip ----------------------------------------- */
+
+.ms-diag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: var(--radius-full, 9999px);
+  white-space: nowrap;
+  line-height: 1.5;
+}
+.ms-diag-ok {
+  background: color-mix(in srgb, #10b981 14%, transparent);
+  color: #10b981;
+}
+.ms-diag-warn {
+  background: color-mix(in srgb, #f59e0b 18%, transparent);
+  color: #f59e0b;
+  border: 1px solid color-mix(in srgb, #f59e0b 35%, transparent);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.ms-diag-warn:hover {
+  background: color-mix(in srgb, #f59e0b 28%, transparent);
+}
+
+/* --- Skipped-titles modal ----------------------------------------- */
+
+.ms-skipped-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 15, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: calc(var(--z-fullscreen, 60) + 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: msSkippedIn 0.2s ease;
+}
+@keyframes msSkippedIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.ms-skipped-modal {
+  display: flex;
+  flex-direction: column;
+  width: min(560px, 100%);
+  max-height: 80vh;
+  background: var(--bg-primary);
+  border: 1px solid var(--border, var(--border));
+  border-radius: 14px;
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.45);
+}
+.ms-skipped-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.ms-skipped-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.ms-skipped-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+.ms-skipped-body {
+  padding: 16px 20px 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+.ms-skipped-group {
+  margin-bottom: 16px;
+}
+.ms-skipped-group:last-child { margin-bottom: 0; }
+.ms-skipped-reason {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, #f59e0b 80%, var(--text-primary));
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid color-mix(in srgb, #f59e0b 20%, transparent);
+}
+.ms-skipped-count {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, #f59e0b 22%, transparent);
+}
+.ms-skipped-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.ms-skipped-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 0;
+  font-size: 12.5px;
+  color: var(--text-primary);
+  border-bottom: 1px dashed color-mix(in srgb, var(--border) 60%, transparent);
+}
+.ms-skipped-list li:last-child { border-bottom: none; }
+.ms-skipped-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ms-skipped-author {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-style: italic;
+}

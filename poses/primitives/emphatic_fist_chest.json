@@ -1,0 +1,31 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "emphatic_fist_chest",
+  "tags": ["emphatic", "sincere", "expression", "heartfelt"],
+  "description": "Right hand as fist near chest. Emphasis gesture — heartfelt sincerity, conviction, or 'I promise'.",
+  "family": "thinking",
+
+  "anchors": {
+    "rightHand": {
+      "type": "region-contact",
+      "region": "chest_R",
+      "tolerance": 0.025,
+      "fingerStyle": "fist_chest_R"
+    },
+    "leftHand": {
+      "type": "free-space"
+    }
+  },
+
+  "body": {
+    "head":  { "pitch": 3 },
+    "spine": { "forwardLean": 2 }
+  },
+
+  "provenance": {
+    "source": "manual",
+    "curatedBy": "maintainer",
+    "createdAt": "2026-05-14",
+    "notes": "fist_chest_R consensus → upper_arm_R (100%). Slight forward lean amplifies sincerity reading."
+  }
+}

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Augmentum Play</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #ddd;
+      font: 14px/1.4 "Source Sans 3", "Inter", system-ui, sans-serif;
+      height: 100%;
+      overflow: hidden;
+    }
+    .play-web-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      background: #000;
+    }
+    .play-web-overlay.is-kiosk .play-web-bar { display: none; }
+    .play-web-bar {
+      flex: 0 0 40px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      background: linear-gradient(to bottom, #161616, #0e0e0e);
+      border-bottom: 1px solid #222;
+      gap: 12px;
+      user-select: none;
+    }
+    .play-web-title { font-weight: 600; opacity: 0.92; }
+    .play-web-spacer { flex: 1; }
+    .play-web-close {
+      background: transparent;
+      border: 1px solid #2c2c2c;
+      color: #ddd;
+      width: 32px;
+      height: 28px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .play-web-close:hover { background: #5a1f1f; color: #fff; border-color: #7a2a2a; }
+    .play-web-iframe {
+      flex: 1;
+      width: 100%;
+      border: 0;
+      display: block;
+      background: #000;
+    }
+    .play-web-fallback {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      text-align: center;
+      padding: 32px;
+    }
+    .play-web-fallback-title { font-size: 18px; opacity: 0.9; }
+    .play-web-fallback-detail { font-size: 13px; opacity: 0.55; max-width: 480px; }
+  </style>
+</head>
+<body>
+  <div class="play-web-fallback" id="play-web-fallback">
+    <div class="play-web-fallback-title">Loading…</div>
+    <div class="play-web-fallback-detail" id="play-web-fallback-detail"></div>
+  </div>
+  <!-- Universal cast-input adapter pipeline — installed BEFORE
+       play-web.js so the gamepad shim is in place before the game
+       iframe loads. Only SAME-ORIGIN games see the adapters in
+       Phase 1 — cross-origin games keep their native navigator.
+       Phase 3's origin proxy serves cross-origin games through our
+       origin so the adapters reach them too. See spec docs/superpowers/
+       specs/2026-06-04-universal-cast-pipeline-design.md. -->
+  <script type="module" src="../scripts/cast-input/universal-input-adapter.js"></script>
+  <script type="module" src="./play-web.js"></script>
+</body>
+</html>

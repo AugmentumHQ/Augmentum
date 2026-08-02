@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Augmentum Receiver — Android TV shell.
+  Single Activity wrapping a fullscreen WebView pointed at the
+  user-configured Augmentum cast-receiver URL. No other surface area.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.augmentum.castreceiver">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- Foreground service for the media session. ``FOREGROUND_SERVICE``
+         is the baseline grant; ``FOREGROUND_SERVICE_MEDIA_PLAYBACK`` is
+         the SDK 34+ typed sub-grant required when the service's type
+         attribute is ``mediaPlayback`` (see PlaybackService below). -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+
+    <!-- Android TV — leanback launcher is mandatory; touchscreen is not. -->
+    <uses-feature android:name="android.software.leanback" android:required="true" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <application
+        android:label="@string/app_name"
+        android:icon="@drawable/ic_launcher_foreground"
+        android:banner="@drawable/tv_banner"
+        android:theme="@style/Theme.Augmentum.Fullscreen"
+        android:hardwareAccelerated="true"
+        android:usesCleartextTraffic="true"
+        android:supportsRtl="true">
+
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:launchMode="singleTask"
+            android:exported="true"
+            android:keepScreenOn="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <!-- Both categories so the icon appears on TV launchers
+                     (LEANBACK) and side-loaded dev builds (LAUNCHER). -->
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ConfigActivity"
+            android:exported="false"
+            android:label="@string/config_title" />
+
+        <!-- Auto-relaunch when the TV powers on. Without this, the
+             user would have to navigate to the Augmentum icon in the
+             leanback launcher every boot. -->
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Foreground media session service. Holds the MediaSessionCompat
+             that publishes whatever's casting to the TV remote, the system
+             now-playing card, and Google Assistant. Service is typed
+             ``mediaPlayback`` (required since SDK 34); the matching
+             permission is granted above. -->
+        <service
+            android:name=".PlaybackService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+
+        <!-- Routes TV-remote media buttons to whichever service is currently
+             holding an active MediaSessionCompat. androidx.media ships the
+             implementation; we just need to register it so the system
+             knows where to deliver play/pause/skip/seek key events. -->
+        <receiver
+            android:name="androidx.media.session.MediaButtonReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+</manifest>

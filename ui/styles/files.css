@@ -1,0 +1,5727 @@
+/* ============================================================
+   files.css — File Browser UI + Passive File Surfacing chips
+   ============================================================ */
+
+/* Passive file surfacing — related file chips */
+.related-files-strip {
+    display: flex;
+    gap: var(--space-xs, 4px);
+    padding: 2px var(--space-md, 16px);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.related-files-strip::-webkit-scrollbar { display: none; }
+.file-chip {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 8px;
+    font-size: 0.6875rem;
+    color: var(--text-secondary, #8888aa);
+    background: var(--surface, #1a1a2e);
+    border: 1px solid var(--border, #2a2a4a);
+    border-radius: var(--radius-full, 9999px);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color 0.15s, color 0.15s;
+}
+.file-chip:hover {
+    border-color: var(--accent, #6c63ff);
+    color: var(--text-primary, #e0e0e0);
+}
+.file-chip-icon { font-size: 0.75rem; }
+
+/* ---------------------------------------------------------------------------
+   Panel Shell
+   --------------------------------------------------------------------------- */
+.files-panel {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-overlay);
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--duration-normal) var(--ease-out),
+              transform var(--duration-normal) var(--ease-out);
+  pointer-events: none;
+}
+
+.files-panel.visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.files-panel.hidden {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Topbar — title + stats + search + sort/view/close on one line
+   --------------------------------------------------------------------------- */
+.files-topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 8px var(--space-md);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+  flex-shrink: 0;
+  min-height: 48px;
+}
+
+.files-topbar-close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.files-topbar-close:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+/* Back-to-prior-overlay pill. Sits next to the close button, surfaced
+   only when state.cameFromOverlay is set (i.e. the user got here from
+   a Discovery card click rather than a direct Files-button open).
+   Visually distinct from close: chevron + label + accent border so it
+   reads as "navigation," not "dismiss."
+   The .hidden default is set in HTML so the pill never flashes on
+   initial mount before JS has a chance to evaluate state. */
+.files-topbar-back {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  padding: 0 12px 0 8px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard);
+  /* Slide-in entrance so the pill arriving feels like a designed beat
+     rather than an abrupt button popping in. The keyframe runs on
+     class change (hidden → visible) since the entire element is gated
+     by .hidden being toggled at runtime. */
+  animation: files-back-in 0.22s var(--ease-decelerate, cubic-bezier(0.2, 0.8, 0.2, 1));
+}
+.files-topbar-back.hidden { display: none; }
+
+.files-topbar-back:hover {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.files-topbar-back:active {
+  transform: scale(0.97);
+}
+.files-topbar-back:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  outline-offset: 2px;
+}
+.files-topbar-back svg {
+  flex-shrink: 0;
+}
+.files-topbar-back-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+@keyframes files-back-in {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .files-topbar-back { animation: none; }
+}
+
+/* On narrow widths the label can hide; the chevron alone reads as
+   "back" and reclaims toolbar space for the chips/search. */
+@media (max-width: 480px) {
+  .files-topbar-back {
+    padding: 0 8px;
+  }
+  .files-topbar-back-label {
+    display: none;
+  }
+}
+
+.files-topbar-title {
+  flex-shrink: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+.files-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.files-stats {
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.files-search-wrap {
+  flex: 1 1 auto;
+  max-width: 480px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+}
+.files-search-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+.files-search {
+  width: 100%;
+  height: 32px;
+  padding: 0 var(--space-md) 0 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  outline: none;
+  transition: border-color var(--duration-fast);
+}
+.files-search::placeholder { color: var(--text-muted); }
+.files-search:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.files-topbar-tools {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Upload button — primary-styled, distinguishes from the subtler icon
+ * buttons next to it. Cloud apps put "New" / "Upload" in the right rail. */
+.files-upload-btn {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 38%, transparent);
+  color: color-mix(in srgb, var(--accent) 90%, var(--text-primary));
+  font-weight: 500;
+}
+.files-upload-btn:hover {
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  color: var(--text-primary);
+}
+.files-upload-btn svg { opacity: 0.9; }
+@media (max-width: 700px) {
+  .files-upload-btn span,
+  .files-select-btn span,
+  .files-media-btn span { display: none; }
+  .files-upload-btn,
+  .files-select-btn,
+  .files-media-btn { padding: 0 10px; }
+}
+.files-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+}
+.files-icon-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+.files-sort-label { line-height: 1; }
+
+/* ---------------------------------------------------------------------------
+   Nav row — holds the Local/Cloud scope toggle (pinned left) and the
+   filter chips row (flex-fills, horizontally scrolls). Border + background
+   live here so the two children look like one unified toolbar strip.
+   --------------------------------------------------------------------------- */
+.files-nav-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px var(--space-md);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Filter chips — primary navigation surface.
+
+   Desktop: single horizontal row, fits comfortably with the active
+   scope's chip set (~7-8 chips). Edge-fade mask kept as graceful
+   degradation if the user squeezes the panel narrow enough that
+   chips do overflow.
+
+   Mobile: chips wrap to multiple lines via flex-wrap so every option
+   is directly tappable without scrolling through a cramped strip.
+   The mask is dropped on mobile because there's nothing to scroll
+   past — every chip is visible.
+   --------------------------------------------------------------------------- */
+.files-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: 1 1 auto;
+  min-width: 0;
+  /* Subtle crossfade hook — _setScope adds .scope-changing for ~180ms
+     so the chip set swap reads as "different set" rather than a hard
+     jump-cut. Reduced-motion users skip this transition (rule below). */
+  transition: opacity 180ms ease;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 20px,
+    #000 calc(100% - 20px),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 20px,
+    #000 calc(100% - 20px),
+    transparent 100%
+  );
+}
+.files-chips::-webkit-scrollbar { display: none; }
+.files-chips.scope-changing { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .files-chips { transition: none; }
+  .files-chips.scope-changing { opacity: 1; }
+}
+
+/* Mobile: single-row horizontal scroll. The vertical-space win comes
+   from moving scope into the title bar (the chip row now has the full
+   viewport width to itself, ~2× the room it had when the segmented
+   scope toggle was eating ~140px of it). Wrapping chips to multiple
+   lines was tested and felt too heavy vertically; scrolling a
+   roomier strip turned out to be the better tradeoff.
+
+   Chips compact slightly so more fit per scroll-page; counts hide
+   below the smallest viewport class so chip *labels* read first
+   without horizontal hunting. */
+@media (max-width: 700px) {
+  .files-chip {
+    padding: 5px 11px;
+    gap: 5px;
+  }
+}
+@media (max-width: 480px) {
+  /* On very narrow viewports, drop the inline count to claw back
+     horizontal space. Counts still appear on the scope-chooser
+     popover and on the active chip — where they actually help — but
+     hiding them on every inactive chip lets ~30% more chips fit
+     per scroll-page on a 360px phone. */
+  .files-chip:not(.active) .files-chip-count { display: none; }
+}
+.files-chip-divider {
+  flex-shrink: 0;
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 4px;
+}
+/* Hidden chips — used by the scope toggle to show only chips that
+   belong to the current Local/Cloud scope. Kept as a CSS class rather
+   than the [hidden] attribute so future transitions (crossfade between
+   scopes) can attach here cleanly. */
+.files-chip-hidden { display: none !important; }
+
+/* ---------------------------------------------------------------------------
+   Scope chooser — title-line button replacing the old segmented Local /
+   Cloud control. Treats scope as ambient view-mode context (set-and-
+   forget for most users) rather than primary navigation, freeing the
+   chip cloud below to own that role with full viewport width.
+
+   Visual: text-button styling, soft hover, caret affordance for menu
+   intent. Sits inline with "Files" + a subtle "·" separator in the
+   panel title.
+   --------------------------------------------------------------------------- */
+.files-title-sep {
+  color: var(--text-muted);
+  margin: 0 6px;
+  font-weight: 400;
+  opacity: 0.5;
+  user-select: none;
+}
+.files-scope-chooser {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px 3px 10px;
+  margin-left: -2px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: inherit;     /* match panel title size */
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background var(--duration-fast),
+    color var(--duration-fast),
+    border-color var(--duration-fast);
+}
+.files-scope-chooser:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+.files-scope-chooser:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.files-scope-chooser[aria-expanded="true"] {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: color-mix(in srgb, var(--accent) 90%, var(--text-primary));
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.files-scope-chooser-caret {
+  opacity: 0.6;
+  transition: transform 200ms cubic-bezier(0.2, 0, 0, 1), opacity 160ms ease;
+}
+.files-scope-chooser[aria-expanded="true"] .files-scope-chooser-caret {
+  transform: rotate(180deg);
+  opacity: 0.95;
+}
+
+/* Scope chooser popover — anchored under the title button. Mirrors the
+   Comics chapter "more" popover chrome. Inactive item is plain; active
+   gets accent-tint + checkmark via ::before. */
+.files-scope-menu {
+  position: fixed;
+  z-index: var(--z-overlay, 40);
+  min-width: 180px;
+  padding: 6px;
+  background: color-mix(in srgb, var(--bg-elevated, var(--bg-primary)) 96%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  animation: files-popover-in 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes files-popover-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+.files-scope-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: 8px 12px 8px 28px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: var(--text-sm, 13px);
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+  transition: background 120ms ease, color 120ms ease;
+}
+.files-scope-menu-item:hover {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+.files-scope-menu-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.files-scope-menu-item.is-active {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--text-primary);
+}
+.files-scope-menu-item.is-active::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  width: 10px;
+  height: 6px;
+  border-left: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  transform: translateY(-70%) rotate(-45deg);
+}
+.files-scope-menu-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.files-scope-menu-meta {
+  font-size: 11px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+/* ---------------------------------------------------------------------------
+   Filter chips — primary navigation surface.
+
+   Inactive chips are text-only with a soft hover state. Active chip is
+   filled with the accent color so it reads as the loudest element in
+   the row, not just a slight tint difference. Counts use tabular-num
+   so digits align across chips, and a softened color so the chip
+   *label* reads first.
+   --------------------------------------------------------------------------- */
+.files-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--duration-fast),
+    color var(--duration-fast),
+    border-color var(--duration-fast),
+    transform var(--duration-fast);
+}
+.files-chip:hover:not(.active) {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+}
+.files-chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.files-chip:active:not(.active) {
+  transform: scale(0.96);
+}
+.files-chip.active {
+  /* Filled accent — loudest element in the nav surface, matches the
+     "active state should announce itself" principle. The shadow gives
+     a hint of depth without going full Material. */
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--accent) 40%, transparent),
+              0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.files-chip svg { flex-shrink: 0; opacity: 0.7; }
+.files-chip.active svg { opacity: 1; }
+
+.files-chip-count {
+  font-size: 10px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  padding: 0 4px;
+  color: var(--text-muted);
+  opacity: 0.85;
+  line-height: 1.3;
+}
+.files-chip-count:empty { display: none; }
+.files-chip.active .files-chip-count {
+  /* On the filled active chip, the count needs to read as a quiet
+     metadata row against the strong fill — slightly transparent white
+     does this without competing with the label. */
+  color: rgba(255, 255, 255, 0.85);
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------------------------
+   Unified Filter dropdown — single button (next to Sort) whose contents
+   adapt to the active chip's filter schema. Replaced the previous two
+   horizontal filter rows (status bar + comic filter bar) with a single
+   popover surface. The button hides on chips with no filter dimensions;
+   when filters are active, a small count badge surfaces on the button.
+   --------------------------------------------------------------------------- */
+.files-filter {
+  position: relative;
+}
+.files-filter-btn {
+  /* Inherits .files-icon-btn for base shape; we only adjust spacing
+     so the count badge fits between the label and the chevron. */
+  gap: 6px;
+}
+.files-filter-btn.hidden { display: none; }
+.files-filter-btn.has-filters {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: color-mix(in srgb, var(--accent) 90%, var(--text-primary));
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.files-filter-count {
+  display: none;
+  min-width: 16px;
+  padding: 0 5px;
+  font-size: 10px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 14px;
+  border-radius: 9999px;
+  background: var(--accent);
+  color: white;
+  text-align: center;
+}
+.files-filter-btn.has-filters .files-filter-count {
+  display: inline-block;
+}
+
+.files-filter-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 220px;
+  max-width: min(320px, calc(100vw - 24px));
+  max-height: min(420px, calc(100dvh - 120px));
+  overflow-y: auto;
+  background: color-mix(in srgb, var(--bg-elevated) 96%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 14px 32px -10px rgba(0, 0, 0, 0.45),
+              0 2px 6px rgba(0, 0, 0, 0.18);
+  padding: 6px;
+  z-index: 60;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  animation: files-filter-popover-in 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.files-filter-dropdown.open { display: flex; }
+@keyframes files-filter-popover-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* Section grouping with progressive disclosure. Each section is a
+   single collapsed row by default — header shows label + current-value
+   summary + chevron. Click → expand to reveal the helper (radios,
+   list, range slider). Active sections (non-default value) auto-
+   expand on first show after a chip switch so the user lands on
+   visible state rather than having to remember to look. */
+.files-filter-section-header {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 9px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-primary);
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: background 120ms ease, color 120ms ease;
+}
+.files-filter-section-header:hover {
+  background: var(--surface-hover);
+}
+.files-filter-section-header:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.files-filter-section-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+}
+.files-filter-section-summary {
+  /* Right-aligned current-value summary — the at-a-glance state of
+     the section. Uses the muted text color so the section LABEL
+     reads first; active sections promote it to the accent tint so
+     the user sees what's filtering. */
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.files-filter-section-chev {
+  flex-shrink: 0;
+  opacity: 0.55;
+  transition: transform 220ms cubic-bezier(0.2, 0, 0, 1), opacity 160ms ease;
+}
+/* Body wrapper — uses max-height transition for the disclosure
+   animation. 320px is the practical ceiling for the largest body
+   (genre list); shorter bodies just don't reach it, which is fine.
+   ``contain: layout`` so the parent dropdown doesn't reflow during
+   the open animation. */
+.files-filter-section-body {
+  max-height: 0;
+  overflow: hidden;
+  contain: layout;
+  transition: max-height 240ms cubic-bezier(0.2, 0, 0, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .files-filter-section-body { transition: none; }
+}
+
+/* List wrapper for genre — caps height so a long genre list scrolls
+   inside the section rather than ballooning the popover. */
+.files-filter-list {
+  max-height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 2px 4px 4px;
+}
+
+.files-filter-item-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.files-filter-item-count {
+  flex-shrink: 0;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10.5px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.files-filter-empty {
+  padding: 8px 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* --- Range slider (year filter) ------------------------------------- */
+/* Two overlapping <input type="range"> sharing one visual track. Both
+   inputs are positioned absolutely on top of a single .track div; the
+   .fill bar tints the active segment between the thumbs. Native range
+   inputs handle keyboard + a11y for free, so users can tab into the
+   slider and arrow-key the bounds. Touch users get the native
+   thumb-drag UX with system-defined hit zones (large enough on phones
+   that we don't have to grow them ourselves). */
+.files-filter-range {
+  padding: 10px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.files-filter-range-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+}
+.files-filter-range-sep {
+  color: var(--text-muted);
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+.files-filter-range-track {
+  position: relative;
+  height: 24px;
+  /* Track sits in the vertical middle; thumbs grow above + below. */
+}
+.files-filter-range-track::before {
+  /* Inactive (full-range) track — sits behind the fill so the gradient
+     transition reads as "selected segment vs unselected." */
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 4px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--text-muted) 22%, transparent);
+}
+.files-filter-range-fill {
+  /* JS sets left/right percentages on this element to track the active
+     segment between the two thumbs. */
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--accent);
+  pointer-events: none;
+  transition: left 90ms ease, right 90ms ease;
+}
+
+/* Both inputs absolute-positioned on the same row, transparent so the
+   visual track shows through. ``pointer-events`` is split so each
+   thumb stays draggable: the inputs themselves take pointer events,
+   but their tracks (the long bands beside the thumb) are visually
+   hidden by the rule above so they don't fight the .fill display. */
+.files-filter-range-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  pointer-events: none;
+}
+.files-filter-range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg-elevated);
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--accent) 50%, transparent),
+              0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent);
+  cursor: grab;
+  pointer-events: auto;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.files-filter-range-input::-webkit-slider-thumb:hover {
+  transform: scale(1.08);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 55%, transparent),
+              0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.files-filter-range-input:active::-webkit-slider-thumb {
+  cursor: grabbing;
+  transform: scale(1.12);
+}
+.files-filter-range-input:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+/* Firefox thumb — same look as WebKit. Firefox doesn't honor the
+   inherit-from-WebKit cascade, hence the duplicate rule. */
+.files-filter-range-input::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg-elevated);
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--accent) 50%, transparent),
+              0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent);
+  cursor: grab;
+  pointer-events: auto;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.files-filter-range-input::-moz-range-thumb:hover {
+  transform: scale(1.08);
+}
+.files-filter-range-input::-moz-range-track {
+  background: transparent;  /* visual track lives on .files-filter-range-track */
+  border: none;
+}
+.files-filter-range-input::-webkit-slider-runnable-track {
+  background: transparent;
+}
+
+.files-filter-range-bounds {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+.files-filter-range-reset {
+  align-self: stretch;
+  padding: 6px 10px;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+.files-filter-range-reset:hover {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: color-mix(in srgb, var(--accent) 90%, var(--text-primary));
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.files-filter-footer {
+  border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  padding-top: 4px;
+  margin-top: 2px;
+}
+.files-filter-reset {
+  width: 100%;
+  padding: 7px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: color-mix(in srgb, var(--accent) 80%, var(--text-secondary));
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.files-filter-reset:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: color-mix(in srgb, var(--accent) 95%, var(--text-primary));
+}
+
+/* --- Audiobooks view toggle (Library / Catalog) ------------------
+ * Sits below the chip row when the Audiobooks chip is active. Lives
+ * outside the unified Filter dropdown because Library/Catalog is a
+ * view-mode toggle (changes WHAT is shown — local pins vs live LibriVox
+ * browse), not a filter. Pairing it with filters in the popover would
+ * blur "view mode" with "filter dimension."
+ */
+.files-media-view-bar {
+  display: flex;
+  gap: 4px;
+  padding: 6px var(--space-md);
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--accent) 5%, var(--bg-elevated));
+  flex-shrink: 0;
+}
+.files-media-view-bar.hidden { display: none; }
+
+.files-media-view-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  font-family: inherit;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.files-media-view-btn:hover:not(.active) {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+}
+.files-media-view-btn.active {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  color: color-mix(in srgb, var(--accent) 95%, var(--text-primary));
+}
+.files-media-view-btn svg { opacity: .85; }
+
+/* Media-only sort options hide when a non-media chip is active. */
+.files-sort-option.hidden { display: none; }
+
+/* --- Media detail view: responsive stacking -----------------------
+ * On narrow screens the cover + metadata flex row gets cramped; the
+ * "Also by" strip's horizontal scroll keeps working but the metadata
+ * block can collapse to <120px. Stack the cover above the metadata
+ * below 520px so each gets full width. */
+@media (max-width: 520px) {
+  /* Audiobook hero stays hero-sized on small screens now that the detail
+   * panel is a full-height overlay. Cap at 60% of viewport width so very
+   * narrow phones still leave breathing room for the title + CTA below. */
+  .files-abs-cover {
+    width: min(260px, 60vw);
+  }
+  .files-abs-related-card,
+  .files-abs-related-cover {
+    flex-basis: 84px;
+    width: 84px;
+    height: 84px;
+  }
+}
+
+/* Narrow viewport: shrink title block so search keeps breathing room. */
+@media (max-width: 700px) {
+  .files-topbar { gap: 6px; padding: 6px 10px; }
+  .files-stats { display: none; }
+  .files-topbar-title .files-title { font-size: 13px; }
+  .files-search-wrap { max-width: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Drag-drop overlay — full-panel dashed frame while a file drag is over.
+   `active` is toggled by JS on dragenter/dragleave so it only appears when
+   the user is actually holding files.
+   --------------------------------------------------------------------------- */
+.files-drop-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--accent) 18%, rgba(10, 10, 20, 0.8));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+.files-drop-overlay.active {
+  opacity: 1;
+}
+.files-drop-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 64px;
+  border: 2px dashed color-mix(in srgb, var(--accent) 60%, transparent);
+  border-radius: var(--radius-lg, 16px);
+  background: color-mix(in srgb, var(--bg-elevated) 70%, transparent);
+  color: var(--text-primary);
+  text-align: center;
+  max-width: 90%;
+}
+.files-drop-message svg {
+  color: var(--accent);
+  opacity: 0.85;
+}
+.files-drop-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+.files-drop-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+  max-width: 320px;
+  line-height: 1.5;
+}
+@media (max-width: 600px) {
+  .files-drop-message { padding: 32px 24px; }
+  .files-drop-title { font-size: 15px; }
+}
+
+/* ---------------------------------------------------------------------------
+   Sort Dropdown
+   --------------------------------------------------------------------------- */
+.files-sort {
+  position: relative;
+}
+
+.files-sort-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.files-sort-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+.files-sort-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  min-width: 140px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  z-index: 50;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.97);
+  pointer-events: none;
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.files-sort-dropdown.open {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.files-sort-option {
+  display: block;
+  width: 100%;
+  padding: 8px 14px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.files-sort-option:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.files-sort-option.active {
+  color: var(--accent);
+}
+
+/* ---------------------------------------------------------------------------
+   Content Area — grid full width; detail floats over the right edge so
+   clicking to select never reflows the grid (which would send a follow-up
+   double-click to the wrong card).
+   --------------------------------------------------------------------------- */
+.files-content {
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Continue watching / listening rail
+   ---------------------------------------------------------------------------
+   Lives above .files-content (full width at the top of the chip view).
+   Hidden by default; shown when continue-rail.js renders content.
+
+   Cards are the SAME .files-card markup the grid below uses — same
+   thumb sizing, title, meta, progress bar. The rail just wraps them
+   in a horizontally scrolling row instead of the grid's auto-fill
+   columns. No card-shape duplication; the rail inherits any future
+   tweaks to .files-card automatically.
+*/
+.files-continue-rail {
+  flex: 0 0 auto;
+  padding: var(--space-sm) var(--space-md) 0;
+  overflow: hidden;
+}
+.files-continue-rail.hidden { display: none; }
+
+/* Header is a <button> so the entire row is one tap target — chevron
+   alone would be too small on touch. Reset native button chrome so it
+   reads as a strip header. */
+.files-continue-rail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  margin: 0 0 6px;
+  padding: 4px 2px;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+.files-continue-rail-header:hover,
+.files-continue-rail-header:focus-visible {
+  color: var(--text);
+  background: color-mix(in srgb, var(--text-muted) 8%, transparent);
+  outline: none;
+}
+
+/* Chevron — points up when expanded (you can collapse by clicking),
+   rotates to point down when collapsed (click to expand). 200ms ease
+   matches the track collapse duration.
+
+   Explicit width/height on the SVG element. The HTML's ``width="14"
+   height="14"`` attributes specify intrinsic dimensions, but iOS
+   Safari + some Android engines collapse SVG flex children to 0
+   when the only sizing comes from those attrs (no CSS box). Forcing
+   CSS dimensions here keeps the chevron visible across all engines
+   regardless of orientation — the bug surfaced as "chevron hidden in
+   portrait" because portrait mode triggered a layout pass that
+   re-computed flex children's intrinsic sizes more aggressively. */
+.files-continue-rail-chevron {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  transition: transform 200ms ease;
+}
+.files-continue-rail.collapsed .files-continue-rail-chevron {
+  transform: rotate(180deg);
+}
+
+/* Collapsed state — header stays, track + its scrollbar disappear.
+   Animate max-height for smoothness; using overflow:hidden so cards
+   don't peek out mid-transition. */
+.files-continue-rail-track {
+  /* max-height needs a numeric value (not ``none``) for the collapse
+     transition to interpolate. 420px is generous enough for the
+     tallest card kind we render (video posters in a .files-card with
+     tag pills + meta line typically max around 280-300px). Bump if
+     a future card design exceeds it. */
+  max-height: 420px;
+  transition: max-height 200ms ease, opacity 160ms ease,
+              padding-bottom 200ms ease;
+}
+.files-continue-rail.collapsed .files-continue-rail-track {
+  max-height: 0;
+  opacity: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Horizontal-scroll wrapper around .files-card children. The grid
+   below uses ``display: grid`` to lay them out in columns; the rail
+   uses ``display: flex`` with a fixed per-card width so they line up
+   in a single horizontal row that scrolls. */
+.files-continue-rail-track {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 10px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text-muted) 30%, transparent) transparent;
+}
+.files-continue-rail-track::-webkit-scrollbar { height: 6px; }
+.files-continue-rail-track::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-muted) 30%, transparent);
+  border-radius: 3px;
+}
+/* Cards inside the rail get a fixed width matching the grid card's
+   minimum width (240px) so they look identical to the grid below.
+   ``flex-shrink: 0`` so a long title doesn't squish neighbours. */
+.files-continue-rail-track > .files-card {
+  flex: 0 0 240px;
+  scroll-snap-align: start;
+}
+
+/* ---------------------------------------------------------------------------
+   Grid View
+   --------------------------------------------------------------------------- */
+.files-grid {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md) var(--space-md) var(--space-lg);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-auto-rows: max-content;
+  gap: 10px;
+  align-content: start;
+}
+
+.files-grid::-webkit-scrollbar { width: 4px; }
+.files-grid::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-muted) 30%, transparent);
+  border-radius: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   File Card — horizontal tile
+   --------------------------------------------------------------------------- */
+.files-card {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px 12px 16px;
+  min-height: 68px;
+  cursor: pointer;
+  overflow: hidden;
+  user-select: none;
+  /* Perf: isolate each card's layout + paint. In a grid of hundreds of
+     cards, hovering or mutating one card would otherwise trigger layout
+     work on every sibling. `contain: content` covers layout + style +
+     paint + size, which is safe here because the card's own min-height
+     and aspect-ratio keep the intrinsic size deterministic. */
+  contain: content;
+  transition: border-color var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out),
+              transform 80ms var(--ease-out);
+  animation: files-card-in var(--duration-normal) var(--ease-out) both;
+}
+
+@keyframes files-card-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.files-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+  background: color-mix(in srgb, var(--accent) 3%, var(--surface));
+}
+
+.files-card:active {
+  transform: scale(0.985);
+}
+
+.files-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.files-card.selected {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.files-card.focused {
+  outline: 2px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  outline-offset: -1px;
+}
+
+/* Icon badge — line SVG on tinted source-color square */
+.files-card-icon-badge {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  flex-shrink: 0;
+  background: color-mix(in srgb, var(--card-source-color, var(--accent)) 14%, var(--bg));
+  color: color-mix(in srgb, var(--card-source-color, var(--accent)) 90%, var(--text-primary));
+  transition: transform var(--duration-normal) var(--ease-out);
+}
+
+.files-card-icon-badge svg {
+  width: 55%;
+  height: 55%;
+  display: block;
+}
+
+.files-card:hover .files-card-icon-badge {
+  transform: scale(1.05);
+}
+
+/* Tint color — drives spine, badge, halo.
+ * Kind-first (image/document/…) so everything in the Images tab is tinted
+ * the same regardless of whether it came from image_generations or flowed
+ * through ArtifactStore. Legacy source tokens still resolve for un-classified
+ * rows. */
+.files-card                            { --card-source-color: var(--accent); }
+.files-card[data-tint="image"]         { --card-source-color: #f59e0b; }
+.files-card[data-tint="document"]      { --card-source-color: #3b82f6; }
+.files-card[data-tint="audio"]         { --card-source-color: #ec4899; }
+.files-card[data-tint="video"]         { --card-source-color: #ef4444; }
+.files-card[data-tint="show"]          { --card-source-color: #0ea5e9; }
+.files-card[data-tint="movie"]         { --card-source-color: #f97316; }
+.files-card[data-tint="music_video"]   { --card-source-color: #22c55e; }
+.files-card[data-tint="archive"]       { --card-source-color: #8b5cf6; }
+.files-card[data-tint="code"]          { --card-source-color: #06b6d4; }
+.files-card[data-tint="knowledge"]     { --card-source-color: #10b981; }
+/* Back-compat for rows whose kind hasn't been backfilled yet */
+.files-card[data-tint="artifacts"]     { --card-source-color: #6c63ff; }
+.files-card[data-tint="images"]        { --card-source-color: #f59e0b; }
+.files-card[data-tint="documents"]     { --card-source-color: #3b82f6; }
+.files-card[data-tint="voices"]        { --card-source-color: #ec4899; }
+.files-card[data-tint="chat_images"]   { --card-source-color: #f97316; }
+
+/* Source spine — 3px left bar in source color */
+.files-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: color-mix(in srgb, var(--card-source-color) 70%, transparent);
+  opacity: 0.55;
+  transition: opacity var(--duration-fast), transform var(--duration-fast);
+  z-index: 1;
+}
+
+.files-card:hover::before {
+  opacity: 1;
+  transform: scaleY(1.05);
+}
+
+.files-card.selected::before {
+  opacity: 1;
+  width: 4px;
+}
+
+/* Recency halo — fresher = warmer glow */
+.files-card.recency-fresh {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--card-source-color) 35%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--card-source-color) 18%, transparent),
+    0 0 14px -2px color-mix(in srgb, var(--card-source-color) 30%, transparent);
+}
+
+.files-card.recency-recent {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--card-source-color) 22%, transparent),
+    0 0 10px -3px color-mix(in srgb, var(--card-source-color) 18%, transparent);
+}
+
+.files-card.recency-today {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--card-source-color) 12%, transparent);
+}
+
+/* Thumbnail (for files with preview) */
+.files-card-thumb-img {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+  background: color-mix(in srgb, var(--card-source-color) 14%, var(--bg));
+  color: color-mix(in srgb, var(--card-source-color) 90%, var(--text-primary));
+}
+
+/* Fallback icon sits underneath the img — visible if img fails to load */
+.files-card-thumb-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.files-card-thumb-fallback svg {
+  width: 55%;
+  height: 55%;
+}
+
+.files-card-thumb-img img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Card text */
+.files-card-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.files-card-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+.files-card-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Extension badge */
+.files-card-ext {
+  flex-shrink: 0;
+  padding: 2px 6px;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-secondary);
+  background: var(--bg);
+  border-radius: 4px;
+}
+
+/* Inline rename input */
+.files-rename-input {
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 2px 6px;
+  outline: none;
+  width: 100%;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   List View — tighter rows
+   --------------------------------------------------------------------------- */
+.files-grid.list-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  grid-template-columns: unset;
+  padding: var(--space-xs) var(--space-md) var(--space-md);
+}
+
+.files-grid.list-view .files-card {
+  gap: 10px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  border-color: transparent;
+  background: transparent;
+}
+
+.files-grid.list-view .files-card:nth-child(even) {
+  background: color-mix(in srgb, var(--surface) 50%, transparent);
+}
+
+.files-grid.list-view .files-card:hover {
+  background: var(--surface);
+  border-color: var(--border);
+  transform: none;
+}
+
+.files-grid.list-view .files-card.selected {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.files-grid.list-view .files-card-icon-badge,
+.files-grid.list-view .files-card-thumb-img {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.files-grid.list-view .files-card-ext {
+  min-width: 38px;
+  text-align: center;
+}
+
+/* List view spine sits flush with row */
+.files-grid.list-view .files-card::before {
+  top: 4px;
+  bottom: 4px;
+}
+
+/* ---------------------------------------------------------------------------
+   Tag pills — inline in flex flow (grid/list), absolute overlay (gallery)
+   --------------------------------------------------------------------------- */
+.files-card-tags {
+  flex-shrink: 0;
+  display: flex;
+  gap: 3px;
+  pointer-events: none;
+  max-width: 40%;
+  overflow: hidden;
+}
+
+.files-card-tag {
+  padding: 1px 6px;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  color: color-mix(in srgb, var(--card-source-color) 80%, var(--text-primary));
+  background: color-mix(in srgb, var(--card-source-color) 12%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--card-source-color) 24%, transparent);
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90px;
+}
+
+.files-card-tag-more {
+  background: color-mix(in srgb, var(--text-muted) 18%, var(--bg));
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+
+/* ---------------------------------------------------------------------------
+   Time-spine dividers
+   --------------------------------------------------------------------------- */
+.files-time-divider {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) 2px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.files-time-divider span {
+  flex-shrink: 0;
+}
+
+.files-time-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--border), transparent);
+}
+
+.files-time-divider:first-child {
+  padding-top: 0;
+}
+
+/* In list view, dividers are tighter */
+.files-grid.list-view .files-time-divider {
+  padding: 10px 4px 2px;
+}
+
+/* In gallery view, span all columns and add breathing room */
+.files-grid.gallery-view .files-time-divider {
+  padding-top: var(--space-lg);
+}
+
+/* ---------------------------------------------------------------------------
+   Content peek (gallery view, code/text/markdown)
+   --------------------------------------------------------------------------- */
+.files-card-peek {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 14px 14px 56px;
+  font-family: ui-monospace, 'JetBrains Mono', SFMono-Regular, Consolas, monospace;
+  font-size: 9.5px;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--card-source-color) 60%, var(--text-secondary));
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--card-source-color) 6%, var(--bg)) 0%,
+    color-mix(in srgb, var(--card-source-color) 2%, var(--bg)) 100%);
+  white-space: pre;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-out);
+  pointer-events: none;
+  /* Fade out at the bottom to make room for the name overlay */
+  mask-image: linear-gradient(180deg, #000 50%, transparent 90%);
+  -webkit-mask-image: linear-gradient(180deg, #000 50%, transparent 90%);
+}
+
+.files-card-peek.hydrated {
+  opacity: 0.85;
+}
+
+.files-card-peek.empty {
+  opacity: 0;
+}
+
+/* Markdown peek gets prose styling instead of mono */
+.files-card-peek[data-ext="md"],
+.files-card-peek[data-ext="txt"],
+.files-card-peek[data-ext="rst"] {
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  letter-spacing: 0.1px;
+}
+
+/* ---------------------------------------------------------------------------
+   Gallery View — large square tiles with overlay name
+   --------------------------------------------------------------------------- */
+.files-grid.gallery-view {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+.files-grid.gallery-view .files-card {
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+  position: relative;
+  aspect-ratio: 4 / 5;
+  min-height: 0;
+  gap: 0;
+  overflow: hidden;
+}
+
+.files-grid.gallery-view .files-card-icon-badge,
+.files-grid.gallery-view .files-card-thumb-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--card-source-color) 14%, var(--bg)) 0%,
+    color-mix(in srgb, var(--card-source-color) 4%, var(--bg)) 100%);
+}
+
+/* Big centered SVG fills the tile properly — was 20px stuck inside 200px */
+.files-grid.gallery-view .files-card-icon-badge svg,
+.files-grid.gallery-view .files-card-thumb-fallback svg {
+  width: 38%;
+  height: 38%;
+  opacity: 0.85;
+  stroke-width: 1.2;
+}
+
+.files-grid.gallery-view .files-card-thumb-img img {
+  transition: transform var(--duration-normal) var(--ease-out);
+}
+
+.files-grid.gallery-view .files-card:hover .files-card-thumb-img img {
+  transform: scale(1.04);
+}
+
+.files-grid.gallery-view .files-card:hover .files-card-icon-badge {
+  transform: none;
+}
+
+.files-grid.gallery-view .files-card-info {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 22px 12px 10px;
+  background: linear-gradient(to top,
+    color-mix(in srgb, var(--bg) 92%, transparent) 0%,
+    color-mix(in srgb, var(--bg) 70%, transparent) 60%,
+    transparent 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* When the gallery card has a thumbnail, fall back to dark overlay */
+.files-grid.gallery-view .files-card:has(.files-card-thumb-img) .files-card-info {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+/* Tag pills float above peek/thumb in gallery only */
+.files-grid.gallery-view .files-card-tags {
+  position: absolute;
+  top: 8px;
+  right: 38px;
+  max-width: 60%;
+  z-index: 2;
+}
+
+/* Peek tile hides the source icon badge — content IS the visual identity */
+.files-grid.gallery-view .files-card[data-peekable="1"] .files-card-icon-badge {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  width: 22px;
+  height: 22px;
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--card-source-color) 25%, transparent);
+  z-index: 2;
+}
+
+.files-grid.gallery-view .files-card[data-peekable="1"] .files-card-icon-badge svg {
+  width: 12px;
+  height: 12px;
+}
+
+.files-grid.gallery-view .files-card-name {
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.files-grid.gallery-view .files-card-meta {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.files-grid.gallery-view .files-card:has(.files-card-thumb-img) .files-card-name {
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.files-grid.gallery-view .files-card:has(.files-card-thumb-img) .files-card-meta {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.files-grid.gallery-view .files-card-ext {
+  display: none;
+}
+
+.files-grid.gallery-view .files-card-fav {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.45);
+  color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(6px);
+  z-index: 1;
+}
+
+.files-grid.gallery-view .files-card-fav:hover,
+.files-grid.gallery-view .files-card-fav.active {
+  color: #f59e0b;
+  opacity: 1;
+}
+
+.files-grid.gallery-view .files-card.selected {
+  box-shadow: 0 0 0 2px var(--accent);
+  border-color: var(--accent);
+}
+
+/* ---------------------------------------------------------------------------
+   Infinite-scroll Sentinel
+   --------------------------------------------------------------------------- */
+.files-load-sentinel {
+  grid-column: 1 / -1;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: var(--text-2xs);
+}
+
+.files-load-sentinel::after {
+  content: '';
+  width: 14px;
+  height: 14px;
+  border: 2px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: files-spin 0.7s linear infinite;
+}
+
+@keyframes files-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------------------------------------------------------------------------
+   Bulk Action Bar
+   --------------------------------------------------------------------------- */
+.files-bulk-bar {
+  display: none;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px var(--space-md);
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg-elevated));
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
+  flex-shrink: 0;
+}
+
+.files-bulk-bar.visible {
+  display: flex;
+}
+
+.files-bulk-count {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--accent);
+  margin-right: auto;
+}
+
+.files-bulk-bar .btn {
+  font-size: var(--text-xs);
+  padding: 3px 10px;
+}
+
+.files-bulk-bar.confirming {
+  background: color-mix(in srgb, var(--error, #ef4444) 10%, var(--bg-elevated));
+  border-bottom-color: color-mix(in srgb, var(--error, #ef4444) 35%, var(--border));
+}
+
+.files-bulk-bar.confirming .files-bulk-count {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.files-bulk-bar .btn.danger {
+  color: var(--error, #ef4444);
+}
+
+/* ---------------------------------------------------------------------------
+   Detail Panel — floats over the right edge of the grid (absolute-positioned
+   so single-click selection doesn't re-layout cards underneath).
+   --------------------------------------------------------------------------- */
+.files-detail {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 380px;
+  border-left: 1px solid var(--border);
+  background: var(--bg-elevated);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: 0;
+  transform: translateX(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform var(--duration-normal) var(--ease-out),
+              opacity var(--duration-normal) var(--ease-out);
+  z-index: 5;
+  box-shadow: -12px 0 32px -20px rgba(0, 0, 0, 0.4);
+}
+/* Edge-to-edge preview + padded body below. The detail panel now uses the
+ * unified hero scaffolding (`.files-detail-hero`, `.files-detail-identity`,
+ * `.files-detail-primary`, `.files-detail-actions`) — see the big block
+ * further down this file. These padding rules only apply to the legacy
+ * kv/props/tags/actions blocks which still live inside the panel. */
+.files-detail-desc,
+.files-detail-props,
+.files-detail-tags-editor,
+.files-detail-actions {
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+.files-detail-actions { padding-bottom: var(--space-md); }
+
+.files-detail:not(.hidden) {
+  transform: none;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Keep the .hidden modifier working — display:none kills the transition,
+ * so we rely on pointer-events + opacity for the hidden state instead.
+ * Intentionally NOT nudging the grid's padding when the panel opens — any
+ * grid reflow defeats the whole point of making the panel float. The last
+ * column gets partially covered, which is the right trade: the grid is
+ * scrollable and the panel is dismissible. */
+.files-detail.hidden {
+  transform: translateX(8px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.files-detail-close {
+  flex-shrink: 0;
+  margin-top: -2px;
+}
+
+.files-detail-desc {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.files-detail-props {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--space-sm) 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.files-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.files-detail-label {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.files-detail-row > span:last-child {
+  color: var(--text-secondary);
+  text-align: right;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.files-detail-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: auto;
+  padding-top: var(--space-sm);
+}
+
+.files-detail-actions .btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+}
+
+/* ---------------------------------------------------------------------------
+   Context Menu
+   --------------------------------------------------------------------------- */
+.files-context-menu {
+  position: fixed;
+  z-index: 9999;
+  min-width: 180px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 1px rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 120ms var(--ease-out), transform 120ms var(--ease-out);
+}
+
+.files-context-menu.visible {
+  opacity: 1;
+  transform: none;
+}
+
+.files-context-menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-radius: calc(var(--radius-md) - 4px);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 80ms, color 80ms;
+}
+
+.files-context-menu button:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.files-context-menu button.danger {
+  color: var(--error, #ef4444);
+}
+
+.files-context-menu button.danger:hover {
+  background: color-mix(in srgb, var(--error, #ef4444) 10%, transparent);
+  color: var(--error, #ef4444);
+}
+
+.files-context-menu button svg {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.files-context-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 8px;
+}
+
+/* ---------------------------------------------------------------------------
+   Empty State
+   --------------------------------------------------------------------------- */
+.files-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-2xl) var(--space-md);
+  color: var(--text-muted);
+}
+
+.files-empty-icon {
+  font-size: 40px;
+  opacity: 0.3;
+}
+
+.files-empty-text {
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.files-empty-hint {
+  font-size: var(--text-xs);
+  max-width: 260px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ---------------------------------------------------------------------------
+   Comics chip — series-first rendering. Series cards replace flat chapter
+   rows; clicking drills into a chapter list with a breadcrumb above.
+   Layout reuses .files-grid's auto-fill so card width responds to panel
+   width the same way file cards do.
+   --------------------------------------------------------------------------- */
+.files-card-comic-series {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+  transition: transform var(--duration-fast), border-color var(--duration-fast), box-shadow var(--duration-fast);
+}
+.files-card-comic-series:hover {
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+.files-card-comic-series:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.files-card-thumb-comic {
+  position: relative;
+  aspect-ratio: 2 / 3;                   /* standard manga cover proportions */
+  background: color-mix(in srgb, var(--text-muted) 8%, var(--bg-primary));
+  overflow: hidden;
+}
+.files-card-thumb-comic img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.files-card-thumb-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: color-mix(in srgb, var(--text-muted) 70%, transparent);
+}
+.files-card-progress-bar {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 3px;
+  background: color-mix(in srgb, #000 40%, transparent);
+}
+.files-card-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width var(--duration-fast);
+}
+.files-card-comic-series .files-card-body {
+  padding: 4px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.files-card-comic-series .files-card-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.files-card-comic-series .files-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+.files-card-comic-series .files-card-author {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  white-space: nowrap;
+}
+.files-card-comic-series .files-card-chapter-count {
+  font-variant-numeric: tabular-nums;
+}
+.files-card-comic-series .files-card-unread-badge {
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  color: color-mix(in srgb, var(--accent) 90%, var(--text-primary));
+  font-weight: 600;
+}
+
+/* Breadcrumb shown when the user has drilled into a specific series'
+   chapter list. Sits above .files-grid; back button returns to the
+   series view. Intentionally quiet styling — the grid is the focus. */
+
+.files-comics-loading {
+  grid-column: 1 / -1;
+  padding: var(--space-2xl) var(--space-md);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+/* ---------------------------------------------------------------------------
+   Comic Series Detail page (.csd-*)
+   Editorial "printed manga volume" aesthetic — Fraunces serif display,
+   vermillion accent, cream-on-charcoal, typography-first. Rendered when
+   the user drills into a comic series under the Comics chip. Replaces
+   the earlier compact chapter-list view entirely.
+
+   All selectors are prefixed with .csd- to live cleanly alongside the
+   generic Files panel styles. Tokens (fonts, colors) scoped to
+   .csd-root so they don't leak into other surfaces that should keep
+   the app's default theme.
+   --------------------------------------------------------------------------- */
+
+/* When the grid is in detail mode, cancel its default layout so the
+   single container child can span full width without fighting CSS Grid. */
+.files-grid-csd {
+  display: block !important;
+  padding: 0 !important;
+  gap: 0 !important;
+}
+.csd-root {
+  /* Scoped tokens — vermillion accent + bone text over the shared
+     theme's darker-base. Deliberately does NOT override --bg so the
+     panel backdrop stays continuous with the rest of Files. */
+  --csd-text:         #f0ece3;
+  --csd-text-dim:     #a3a097;
+  --csd-text-sub:     #5c5b55;
+  --csd-border:       rgba(255, 255, 255, 0.09);
+  --csd-border-soft:  rgba(255, 255, 255, 0.05);
+  --csd-accent:       #d14836;
+  --csd-accent-hover: #e55a46;
+  --csd-accent-soft:  rgba(209, 72, 54, 0.15);
+  --csd-ease:         cubic-bezier(0.2, 0, 0, 1);
+  --csd-serif:        'Fraunces', Georgia, serif;
+  --csd-sans:         'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --csd-mono:         'JetBrains Mono', ui-monospace, SFMono-Regular, 'Cascadia Code', monospace;
+
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px 48px 120px;
+  color: var(--csd-text);
+  font-family: var(--csd-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  /* Subtle layered atmosphere over the panel's own bg. Low-opacity
+     vermillion wash in the upper-left hints at a book-jacket tint
+     bleeding in without shouting. Paper-grain noise tile adds print
+     feeling at tight viewing distance. */
+  background-image:
+    radial-gradient(ellipse 70vw 55vh at 12% 8%, rgba(209, 72, 54, 0.05), transparent 72%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='0.35'/></svg>");
+  background-size: 100% 100%, 140px 140px;
+  background-attachment: local, local;
+}
+
+/* Back navigation — small-caps tracked letters, arrow nudges on hover */
+.csd-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--csd-text-dim);
+  background: transparent;
+  border: none;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-family: var(--csd-sans);
+  padding: 8px 0;
+  cursor: pointer;
+  transition: color 180ms var(--csd-ease);
+}
+.csd-back:hover { color: var(--csd-text); }
+.csd-back svg { transition: transform 200ms var(--csd-ease); }
+.csd-back:hover svg { transform: translateX(-3px); }
+
+/* -------- Hero -------- */
+.csd-hero {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 56px;
+  align-items: start;
+  margin-top: 32px;
+  animation: csd-fadeUp 700ms var(--csd-ease) both;
+}
+.csd-cover {
+  margin: 0;
+  position: relative;
+  animation: csd-fadeUp 700ms var(--csd-ease) 80ms both;
+}
+.csd-cover-art {
+  width: 280px;
+  height: 420px;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 30% 20%, #3a1a14 0%, #140707 70%),
+    #0a0605;
+  box-shadow:
+    0 0 0 1px var(--csd-border),
+    0 14px 32px rgba(0, 0, 0, 0.55),
+    0 48px 110px -30px rgba(0, 0, 0, 0.75);
+}
+.csd-cover-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  position: relative;
+  z-index: 2;
+}
+/* Cover surface treatment only visible when image load fails — below
+   the image in z-order. Evokes ink cross-hatching + diagonal sheen. */
+.csd-cover-art::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(108deg, rgba(209, 72, 54, 0.18) 0%, transparent 40%, rgba(0,0,0,0.45) 100%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.012) 0 2px, transparent 2px 5px);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 1;
+}
+.csd-cover-art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  z-index: 3;
+}
+/* Accent rule on the left edge, reads as a book-jacket spine */
+.csd-cover-spine {
+  position: absolute;
+  left: -4px;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  background: var(--csd-accent);
+  border-radius: 1px 0 0 1px;
+  box-shadow: 0 0 14px rgba(209, 72, 54, 0.4);
+}
+/* Fallback label only visible when the cover image fails or is absent;
+   hidden whenever an <img> is present (stacking-order handles it). */
+.csd-cover-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px 26px;
+  color: var(--csd-text);
+  text-align: center;
+  z-index: 0;
+}
+.csd-cover-label-top {
+  font-family: var(--csd-sans);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--csd-text-dim);
+}
+.csd-cover-label-main {
+  font-family: var(--csd-serif);
+  font-size: 38px;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: var(--csd-text);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+.csd-cover-label-author {
+  font-family: var(--csd-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--csd-accent);
+}
+.csd-cover-label-author::before,
+.csd-cover-label-author::after {
+  content: '—';
+  margin: 0 8px;
+  color: var(--csd-text-sub);
+  letter-spacing: 0;
+}
+
+/* Masthead (right of cover) */
+.csd-meta { animation: csd-fadeUp 700ms var(--csd-ease) 140ms both; }
+.csd-title {
+  font-family: var(--csd-serif);
+  font-size: clamp(44px, 6.2vw, 72px);
+  font-weight: 600;
+  font-variation-settings: "opsz" 144;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  margin: -10px 0 6px;
+  color: var(--csd-text);
+}
+.csd-author {
+  margin: 0 0 28px;
+  color: var(--csd-text-dim);
+  font-size: 15px;
+  line-height: 1.4;
+}
+.csd-author em {
+  font-style: italic;
+  font-family: var(--csd-serif);
+  color: var(--csd-text);
+  font-weight: 500;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+}
+.csd-divider {
+  width: 42px;
+  height: 2px;
+  background: var(--csd-accent);
+  margin: 0 0 22px;
+}
+.csd-meta-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 28px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--csd-text-dim);
+}
+.csd-sep { color: var(--csd-text-sub); font-size: 10px; }
+.csd-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--csd-text);
+}
+.csd-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--csd-accent);
+  box-shadow: 0 0 0 4px var(--csd-accent-soft);
+  animation: csd-pulse 2.6s ease-in-out infinite;
+}
+@keyframes csd-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px var(--csd-accent-soft); }
+  50%      { box-shadow: 0 0 0 7px rgba(209, 72, 54, 0.04); }
+}
+.csd-description {
+  color: var(--csd-text);
+  font-family: var(--csd-serif);
+  font-size: 16.5px;
+  line-height: 1.6;
+  max-width: 62ch;
+  margin: 0 0 36px;
+  font-weight: 300;
+  font-variation-settings: "opsz" 20;
+}
+/* Editorial drop-cap on the first letter — quiet nod to printed books */
+.csd-description::first-letter {
+  font-family: var(--csd-serif);
+  font-size: 2.2em;
+  font-weight: 500;
+  float: left;
+  line-height: 0.85;
+  margin: 6px 8px 0 0;
+  color: var(--csd-accent);
+  font-variation-settings: "opsz" 144;
+}
+
+/* CTAs */
+.csd-cta-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.csd-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 22px;
+  font-family: var(--csd-sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.015em;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 200ms var(--csd-ease);
+  color: var(--csd-text);
+  background: transparent;
+}
+.csd-btn:focus-visible {
+  outline: 2px solid var(--csd-accent);
+  outline-offset: 2px;
+}
+.csd-btn-primary {
+  background: var(--csd-accent);
+  color: var(--csd-text);
+  font-weight: 600;
+  box-shadow:
+    0 4px 14px -4px rgba(209, 72, 54, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+.csd-btn-primary:hover {
+  background: var(--csd-accent-hover);
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 24px -6px rgba(209, 72, 54, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.csd-btn-primary:active { transform: translateY(0); }
+.csd-btn-primary-chnum {
+  font-family: var(--csd-mono);
+  font-weight: 400;
+  opacity: 0.82;
+  padding-left: 8px;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  margin-left: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.csd-btn-secondary {
+  background: transparent;
+  color: var(--csd-text-dim);
+  border: 1px solid var(--csd-border);
+}
+.csd-btn-secondary:hover {
+  color: var(--csd-text);
+  border-color: var(--csd-text-dim);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.csd-last-read {
+  font-size: 11px;
+  color: var(--csd-text-sub);
+  letter-spacing: 0.12em;
+  font-family: var(--csd-mono);
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+
+/* -------- Chapter section -------- */
+.csd-chapters {
+  margin-top: 96px;
+  animation: csd-fadeUp 700ms var(--csd-ease) 220ms both;
+}
+.csd-chapters-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  column-gap: 24px;
+  row-gap: 8px;
+  align-items: baseline;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--csd-border);
+}
+.csd-chapters-header h2 {
+  font-family: var(--csd-serif);
+  font-size: 34px;
+  font-weight: 400;
+  font-style: italic;
+  font-variation-settings: "opsz" 144;
+  margin: 0;
+  grid-column: 1;
+  grid-row: 1;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  color: var(--csd-text);
+}
+.csd-chapters-count {
+  font-family: var(--csd-mono);
+  font-size: 10.5px;
+  color: var(--csd-text-sub);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  grid-column: 1;
+  grid-row: 2;
+}
+.csd-unread-count {
+  color: var(--csd-accent);
+  font-weight: 500;
+}
+.csd-chapters-controls {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Chapter search input — compact pill with inline search icon. Sits in
+   the chapter section header alongside Hide Read / sort. */
+.csd-chapter-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid var(--csd-border);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--csd-text-dim);
+  transition: all 180ms var(--csd-ease);
+}
+.csd-chapter-search:focus-within {
+  border-color: var(--csd-accent);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--csd-text);
+}
+.csd-chapter-search svg { flex-shrink: 0; opacity: 0.7; }
+.csd-chapter-search input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: inherit;
+  font-family: var(--csd-sans);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  padding: 0;
+  min-width: 0;
+  width: 140px;
+}
+.csd-chapter-search input::placeholder {
+  color: var(--csd-text-sub);
+}
+/* Hide the browser's default "clear X" button on search inputs —
+   conflicts with our minimal styling; user can Cmd/Ctrl+A + Delete. */
+.csd-chapter-search input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Hide-read toggle — outlined off, accent-filled on. Ported from the
+   design source of truth (ui/comic-detail-preview.html .toggle-btn);
+   without the base rule the button falls back to browser-default
+   <button> chrome and the checkmark never shows. */
+.csd-toggle-btn {
+  background: transparent;
+  border: 1px solid var(--csd-border);
+  color: var(--csd-text-dim);
+  padding: 7px 14px 7px 10px;
+  font-family: var(--csd-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 180ms var(--csd-ease);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+.csd-toggle-btn:hover {
+  color: var(--csd-text);
+  border-color: var(--csd-text-dim);
+}
+.csd-toggle-btn.on {
+  background: var(--csd-accent);
+  border-color: var(--csd-accent);
+  color: var(--csd-text);
+  box-shadow: 0 4px 12px -4px rgba(209, 72, 54, 0.45);
+}
+.csd-toggle-btn.on .csd-toggle-check {
+  background: var(--csd-text);
+  border-color: var(--csd-text);
+}
+.csd-toggle-btn.on .csd-toggle-check svg {
+  opacity: 1;
+  color: var(--csd-accent);
+}
+.csd-toggle-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 13px;
+  height: 13px;
+  border: 1.5px solid var(--csd-text-sub);
+  border-radius: 2px;
+  transition: all 180ms var(--csd-ease);
+  flex-shrink: 0;
+}
+.csd-toggle-check svg {
+  opacity: 0;
+  transition: opacity 180ms var(--csd-ease);
+}
+/* Sort button */
+.csd-sort {
+  font-family: var(--csd-mono);
+  font-size: 11px;
+  color: var(--csd-text-dim);
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  user-select: none;
+  padding: 7px 12px;
+  border: 1px solid var(--csd-border);
+  border-radius: 2px;
+  transition: all 180ms var(--csd-ease);
+  background: transparent;
+}
+.csd-sort:hover {
+  color: var(--csd-text);
+  border-color: var(--csd-text-dim);
+  background: rgba(255, 255, 255, 0.015);
+}
+.csd-sort-arrow {
+  display: inline-block;
+  transition: transform 240ms var(--csd-ease);
+  margin-right: 4px;
+  color: var(--csd-accent);
+}
+.csd-sort.reversed .csd-sort-arrow { transform: rotate(180deg); }
+
+/* Chapter list */
+.csd-chapter-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.csd-chapter-empty {
+  padding: 32px 0;
+  text-align: center;
+  color: var(--csd-text-sub);
+  font-family: var(--csd-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.csd-chapter {
+  display: grid;
+  grid-template-columns: 28px 76px 1fr 90px auto;
+  gap: 18px;
+  align-items: center;
+  padding: 14px 16px;
+  margin: 0 -16px;
+  border-bottom: 1px solid var(--csd-border-soft);
+  cursor: pointer;
+  position: relative;
+  transition: background 160ms var(--csd-ease), transform 180ms var(--csd-ease);
+  outline: none;
+}
+.csd-chapter:hover {
+  background: rgba(255, 255, 255, 0.022);
+  transform: translateX(2px);
+}
+.csd-chapter:hover::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 2px;
+  background: var(--csd-accent);
+  border-radius: 0 1px 1px 0;
+}
+.csd-chapter:focus-visible {
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 2px 0 0 var(--csd-accent);
+}
+
+.csd-chapter-state {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  justify-self: center;
+  background: var(--csd-border);
+  transition: background 160ms var(--csd-ease), box-shadow 160ms var(--csd-ease);
+}
+.csd-chapter.state-in-progress .csd-chapter-state {
+  background: var(--csd-accent);
+  box-shadow: 0 0 0 3px var(--csd-accent-soft);
+}
+.csd-chapter.state-read .csd-chapter-state {
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  width: 8px;
+  height: 8px;
+}
+
+.csd-chapter-num {
+  font-family: var(--csd-mono);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--csd-text-dim);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+.csd-chapter.state-in-progress .csd-chapter-num {
+  color: var(--csd-accent);
+  font-weight: 500;
+}
+.csd-chapter.state-read .csd-chapter-num { color: var(--csd-text-sub); }
+
+.csd-chapter-title {
+  font-family: var(--csd-sans);
+  font-size: 14.5px;
+  font-weight: 400;
+  color: var(--csd-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  letter-spacing: -0.005em;
+}
+.csd-chapter.state-in-progress .csd-chapter-title {
+  color: var(--csd-text);
+  font-weight: 600;
+}
+.csd-chapter.state-read .csd-chapter-title { color: var(--csd-text-dim); }
+
+.csd-chapter-progress-bar {
+  width: 80px;
+  height: 2px;
+  background: var(--csd-border);
+  overflow: hidden;
+  border-radius: 1px;
+}
+.csd-chapter-progress-fill {
+  height: 100%;
+  background: var(--csd-accent);
+}
+.csd-chapter:not(.state-in-progress) .csd-chapter-progress-bar { visibility: hidden; }
+
+.csd-chapter-meta {
+  font-family: var(--csd-mono);
+  font-size: 11px;
+  color: var(--csd-text-sub);
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-transform: uppercase;
+  text-align: right;
+}
+.csd-chapter.state-in-progress .csd-chapter-meta { color: var(--csd-accent); }
+
+/* Trailing actions cell — holds the meta text plus the per-chapter
+   ✓ toggle and ⋯ "more" buttons. Wrapping all three in one flex
+   container keeps the original 5-column grid template intact. The
+   meta still gets pushed to the right via flex-grow:0 and tab-num
+   width, so the buttons appear after it without overlap. */
+.csd-chapter-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: end;
+}
+
+/* ✓ toggle: subtle hint when unread, filled when read. Always visible
+   so the action stays discoverable without a hover state — direct
+   user feedback was that auto-hiding chrome makes the action feel
+   hidden rather than minimal. The hit target is 28×28; the icon is
+   smaller so the visual weight stays light. */
+.csd-chapter-toggle,
+.csd-chapter-more {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 50%;
+  color: var(--csd-text-sub);
+  cursor: pointer;
+  transition:
+    background 140ms var(--csd-ease),
+    color 140ms var(--csd-ease),
+    border-color 140ms var(--csd-ease),
+    transform 140ms var(--csd-ease);
+}
+.csd-chapter-toggle:hover,
+.csd-chapter-more:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--csd-text);
+}
+.csd-chapter-toggle:focus-visible,
+.csd-chapter-more:focus-visible {
+  outline: 2px solid var(--csd-accent);
+  outline-offset: 2px;
+}
+.csd-chapter-toggle:active,
+.csd-chapter-more:active {
+  transform: scale(0.94);
+}
+
+/* When a chapter is marked read, the ✓ button gets a fully-filled
+   accent treatment so the read state reads at a glance. Hovering the
+   read-state button preserves the filled look but adds a subtle
+   shadow so the click target still has affordance. */
+/* Series-level ⋯ button sits at the end of the chapters-controls row.
+   Slightly larger touch target than the per-row buttons since it's a
+   destination users have to find, not an inline affordance. */
+.csd-series-more {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--csd-border);
+  background: transparent;
+  border-radius: 50%;
+  color: var(--csd-text-sub);
+  cursor: pointer;
+  transition:
+    background 140ms var(--csd-ease),
+    color 140ms var(--csd-ease),
+    border-color 140ms var(--csd-ease);
+}
+.csd-series-more:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--csd-text);
+  border-color: color-mix(in srgb, var(--csd-text-sub) 50%, transparent);
+}
+.csd-series-more:focus-visible {
+  outline: 2px solid var(--csd-accent);
+  outline-offset: 2px;
+}
+
+/* Shared "more" popover — used by both per-chapter and series-level
+   action menus. Anchored via JS-set inline left/top. Compact list of
+   buttons inside; .is-danger gets accent-red treatment for the
+   destructive Reset action. */
+.csd-chapter-more-menu {
+  /* Re-declare the csd tokens: this popover is appended to document.body
+     (so it can't be clipped by the panel), which puts it OUTSIDE
+     .csd-root — the tokens scoped there don't resolve here. */
+  --csd-text:     #f0ece3;
+  --csd-text-dim: #a3a097;
+  --csd-border:   rgba(255, 255, 255, 0.09);
+  --csd-accent:   #d14836;
+  --csd-ease:     cubic-bezier(0.2, 0, 0, 1);
+  --csd-sans:     'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  position: fixed;
+  z-index: var(--z-overlay, 40);
+  min-width: 200px;
+  padding: 6px;
+  background: color-mix(in srgb, var(--bg-elevated, var(--bg-primary, #1a1a1f)) 96%, transparent);
+  border: 1px solid var(--csd-border);
+  border-radius: 12px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  animation: csd-fadeUp 180ms var(--csd-ease) both;
+}
+@keyframes csd-fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.csd-more-item {
+  display: block;
+  width: 100%;
+  padding: 9px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  color: var(--csd-text);
+  font-family: var(--csd-sans);
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms var(--csd-ease), color 120ms var(--csd-ease);
+}
+.csd-more-item:hover,
+.csd-more-item:focus-visible {
+  background: rgba(255, 255, 255, 0.07);
+  outline: none;
+}
+.csd-more-item.is-danger {
+  color: var(--csd-accent-hover, #e55a46);
+}
+.csd-more-item.is-danger:hover,
+.csd-more-item.is-danger:focus-visible {
+  background: rgba(209, 72, 54, 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .csd-root *,
+  .csd-root *::before,
+  .csd-root *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Responsive: stack hero vertically, shrink cover, tighten chapter grid */
+@media (max-width: 720px) {
+  .csd-root { padding: 18px 20px 80px; }
+  .csd-hero {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    justify-items: center;
+  }
+  .csd-cover-art { width: 200px; height: 300px; }
+  .csd-cover-spine { left: -3px; width: 2.5px; }
+  .csd-cover-label-main { font-size: 32px; }
+  .csd-title { font-size: clamp(34px, 11vw, 52px); text-align: center; }
+  .csd-author, .csd-meta-row, .csd-cta-row, .csd-last-read,
+  .csd-description, .csd-divider {
+    text-align: center;
+    justify-content: center;
+  }
+  .csd-divider { margin-left: auto; margin-right: auto; }
+  .csd-description::first-letter { float: none; font-size: 1em; margin: 0; }
+  .csd-description { font-size: 15px; max-width: 100%; }
+  .csd-chapters-header {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .csd-chapters-controls {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: start;
+    flex-wrap: wrap;
+  }
+  .csd-chapter {
+    grid-template-columns: 24px 64px 1fr auto;
+    gap: 14px;
+  }
+  .csd-chapter-progress-bar { display: none; }
+}
+
+/* Cloud scope CTA — first-time visits to the Cloud scope with no
+   connected servers get a "Connect a media server" button instead
+   of a blank grid. Matches the accent pill style used elsewhere. */
+.files-empty-cta {
+  margin-top: var(--space-sm);
+  padding: 8px 18px;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: color-mix(in srgb, var(--accent) 90%, var(--text-primary));
+  font-family: inherit;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--duration-fast), border-color var(--duration-fast);
+}
+.files-empty-cta:hover {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   View Toggle Button
+   --------------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------------
+   Responsive Breakpoints
+   --------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .files-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+
+  .files-grid.gallery-view {
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  }
+
+  .files-detail {
+    width: 320px;
+  }
+}
+
+/* Phone overlay rules were moved to the end of this file so they can layer
+ * cleanly on top of the broader detail-panel styles (and coexist with the
+ * landscape + sticky-footer rules). Search for "RESPONSIVE DETAIL PANEL". */
+
+/* Phone-width tightenings — the topbar / bulk bar can't fit everything on
+ * one row at iPhone widths without text truncating, so we let both wrap.
+ * Kept separate from the 600px grid-collapse block above so landscape
+ * tablets (600–768px) keep the richer layout. */
+@media (max-width: 480px) {
+  /* Topbar: let the search drop to its own row under the toolbar. Close
+   * + title + icon buttons stay on row 1; search claims row 2 for full-
+   * width typing comfort. Order bumped high so it lands last regardless
+   * of DOM position. */
+  .files-topbar {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+  .files-search-wrap {
+    flex-basis: 100%;
+    max-width: none;
+    order: 10;
+    margin: 0;
+  }
+
+  /* Bulk bar: wrap so the selected-count chip can sit on its own row
+   * when the three action buttons would otherwise squeeze its text.
+   * Kept the ≥480px one-line layout intact since that already fits. */
+  .files-bulk-bar {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+  .files-bulk-count {
+    flex-basis: 100%;
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .files-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-xs);
+    padding: var(--space-sm);
+  }
+
+  .files-grid.gallery-view {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: var(--space-sm);
+  }
+
+  .files-card {
+    padding: 10px 12px;
+    gap: 10px;
+    min-height: 56px;
+  }
+
+  .files-card-icon-badge,
+  .files-card-thumb-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+  }
+
+  .files-card-ext,
+  .files-card-tags {
+    display: none;
+  }
+
+  
+  .files-detail-actions {
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 767px),
+       (max-height: 600px) and (max-width: 1024px) {
+  .files-panel {
+    /* Use dynamic viewport units so the panel tracks Safari's shrinking
+     * visual viewport (URL bar + home indicator). Without this, the panel
+     * extends below the visible area and the sticky footer ends up hidden.
+     * Covers both portrait phones (≤767w) and landscape phones (short +
+     * tablet-or-narrower width). */
+    top: var(--header-height);
+    bottom: auto;
+    height: calc(100dvh - var(--header-height) - 56px - env(safe-area-inset-bottom, 0px));
+  }
+}
+@supports not (height: 100dvh) {
+  @media (max-width: 767px),
+         (max-height: 600px) and (max-width: 1024px) {
+    .files-panel {
+      height: auto;
+      bottom: calc(var(--orb-bar-height) + env(safe-area-inset-bottom, 0px));
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Multi-select mode — checkbox affordance on every card.
+   Hidden by default; revealed when `.files-grid.select-mode` is on. The
+   ring fills with accent when the card also has `.selected`, which the
+   selection UI already toggles. Entirely CSS-driven so entering/leaving
+   the mode doesn't re-render any cards.
+   --------------------------------------------------------------------------- */
+.files-card-check {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--border) 70%, var(--text-muted));
+  background: var(--surface);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  color: var(--bg);
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast),
+    transform var(--duration-fast);
+  pointer-events: none;
+}
+.files-card-check svg {
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity var(--duration-fast), transform var(--duration-fast);
+}
+.files-grid.select-mode .files-card-check { display: flex; }
+.files-grid.select-mode .files-card.selected .files-card-check {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.files-grid.select-mode .files-card.selected .files-card-check svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Toolbar Select button — glows accent when mode is on so the state is
+ * obvious even when no cards are selected yet. Matches the pattern used
+ * by other active-state icon buttons in the panel. */
+.files-select-btn[aria-pressed="true"],
+.files-select-btn.active {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+}
+
+/* ---------------------------------------------------------------------------
+   Favorite Star
+   --------------------------------------------------------------------------- */
+.files-card-fav {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--duration-fast), color var(--duration-fast);
+}
+.files-card:hover .files-card-fav,
+.files-card-fav.active { opacity: 1; }
+.files-card-fav.active { color: #f59e0b; }
+.files-card-fav:hover { color: #f59e0b; }
+
+/* ---------------------------------------------------------------------------
+   Add-to-playlist button (audio/video cards only)
+   --------------------------------------------------------------------------- */
+.files-card-playlist {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--duration-fast), color var(--duration-fast);
+}
+.files-card:hover .files-card-playlist { opacity: 1; }
+.files-card-playlist:hover { color: #f472b6; }
+
+/* ---------------------------------------------------------------------------
+   Card Progress Bar (media-server rows)
+   A thin line along the bottom showing resume position. Only appears when
+   source_metadata.progress_pct > 0 so static files stay uncluttered.
+   --------------------------------------------------------------------------- */
+.files-card-progress {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 3px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border-radius: 0 0 inherit inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+.files-card-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+.files-grid.list-view .files-card-progress {
+  height: 2px;
+}
+
+/* Servers button — leans a bit warmer than the plain icon buttons so
+ * the entry point to "bring your own library" is discoverable without
+ * competing with Upload. */
+.files-media-btn svg { opacity: 0.85; }
+.files-media-btn:hover svg { opacity: 1; }
+
+/* Provider chip — tiny brand dot so Audiobookshelf reads as a distinct
+ * source at a glance in a long chip row. #f97316 is the ABS orange. */
+.files-chip-abs .files-chip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f97316;
+  box-shadow: 0 0 0 2px color-mix(in srgb, #f97316 24%, transparent);
+  flex-shrink: 0;
+}
+.files-chip-abs.active .files-chip-dot {
+  background: #f97316;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #f97316 32%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   Media-server detail (audiobooks today) — cover stays here; title, meta,
+   CTAs, and description now flow through the shared detail scaffolding
+   (`.files-detail-identity`, `.files-detail-meta-rows`, `.files-detail-primary`,
+   `.files-detail-section`). Only genuinely audiobook-specific pieces live in
+   this section now: cover treatment, progress bar, chapters, related strip,
+   author/narrator buttons, external source link pills.
+   --------------------------------------------------------------------------- */
+
+/* Hero cover — 240px square, heavy shadow. Sits inside `.files-detail-hero`
+ * and shares the card chassis with `.files-preview-card`, but dimensions
+ * and presence of a matching `is-missing` illustration are audiobook-specific. */
+.files-abs-cover {
+  width: min(240px, 80%);
+  aspect-ratio: 1 / 1;
+  height: auto;
+  max-width: 240px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: color-mix(in srgb, var(--accent) 60%, var(--text-muted));
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35),
+              0 2px 6px rgba(0, 0, 0, 0.2);
+}
+.files-abs-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.files-abs-cover.is-missing {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent) 22%, var(--surface)) 0%,
+    color-mix(in srgb, var(--accent) 6%, var(--surface)) 100%);
+  color: color-mix(in srgb, var(--accent) 60%, var(--text-muted));
+}
+.files-abs-cover.is-missing img { display: none; }
+
+/* Empty / loading state in the chapter list */
+.files-abs-chapter-empty {
+  padding: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  font-style: italic;
+}
+
+/* External source link pills (LibriVox / public-domain rows). Labels beat
+ * icons here — users need to know whether a link goes to Wikipedia vs the
+ * original project page before they click. */
+.files-abs-link {
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 35%, transparent);
+  text-decoration: none;
+  transition: border-color .15s, color .15s, background .15s;
+}
+.files-abs-link:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+/* "Playing this row right now" — subtle cover accent so the user knows
+ * which detail view corresponds to the mini-player. `_subscribeMediaPlayer
+ * ForPreview` toggles `.is-playing-this` on the whole detail panel when the
+ * file in view is actively playing. */
+.files-detail.is-playing-this .files-abs-cover {
+  box-shadow:
+    0 0 0 2px var(--accent),
+    0 4px 14px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   Clickable person (author / narrator) + inline "Also by" strip.
+   The meta line treats each person as a link-button: click to reveal a
+   horizontal strip of other books tagged with the same normalised name.
+   --------------------------------------------------------------------------- */
+
+.files-abs-person {
+  display: inline;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  font: inherit;
+  color: var(--text-secondary);
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  text-underline-offset: 3px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+.files-abs-person:hover {
+  color: color-mix(in srgb, var(--accent) 90%, var(--text-primary));
+  text-decoration-color: var(--accent);
+}
+.files-abs-person.is-active {
+  color: color-mix(in srgb, var(--accent) 95%, var(--text-primary));
+  text-decoration-color: var(--accent);
+  font-weight: 600;
+}
+
+.files-abs-related {
+  margin-top: var(--space-sm);
+  padding: 12px 0 8px;
+  border-top: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  animation: absRelatedReveal 0.25s ease;
+}
+.files-abs-related-header,
+.files-abs-related-strip {
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+@keyframes absRelatedReveal {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.files-abs-related-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.files-abs-related-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+.files-abs-related-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.15s, color 0.15s;
+}
+.files-abs-related-close:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+/* Horizontal scroll strip — covers stay small so many fit per row, but
+ * the card is still a comfortable tap target. */
+.files-abs-related-strip {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px 2px 10px;
+  scrollbar-width: thin;
+}
+.files-abs-related-strip::-webkit-scrollbar { height: 6px; }
+.files-abs-related-strip::-webkit-scrollbar-track { background: transparent; }
+.files-abs-related-strip::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-muted) 30%, transparent);
+  border-radius: 9999px;
+}
+
+.files-abs-related-card {
+  flex: 0 0 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.14s ease;
+}
+.files-abs-related-card:hover { transform: translateY(-2px); }
+.files-abs-related-card:hover .files-abs-related-cover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35),
+              0 0 0 2px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.files-abs-related-cover {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: 8px;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb, var(--accent) 22%, var(--surface)) 0%,
+      color-mix(in srgb, var(--accent) 6%, var(--surface)) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: color-mix(in srgb, var(--accent) 60%, var(--text-muted));
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.24);
+  transition: box-shadow 0.18s ease;
+}
+.files-abs-related-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.files-abs-related-progress {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 3px;
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.files-abs-related-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+.files-abs-related-title {
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--text-primary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.files-abs-related-empty {
+  padding: 14px 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Skeleton loader — five placeholder squares while the fetch is in
+ * flight. Prevents layout shift when results arrive. */
+.files-abs-related-skeleton {
+  display: flex;
+  gap: 10px;
+  padding: 4px 2px 10px;
+}
+.files-abs-related-skeleton > span {
+  flex: 0 0 96px;
+  width: 96px;
+  height: 96px;
+  border-radius: 8px;
+  background: linear-gradient(90deg,
+    var(--surface) 0%,
+    var(--surface-hover) 50%,
+    var(--surface) 100%);
+  background-size: 200% 100%;
+  animation: absSkeletonShine 1.4s linear infinite;
+}
+@keyframes absSkeletonShine {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* Chapters — compact list with index + title + timecode */
+/* Chapters — wraps `.files-detail-section` so the summary header + chevron
+ * style is inherited; only list-specific rules live here now. */
+.files-abs-chip {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  font-size: 10px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--text-muted) 18%, transparent);
+  color: var(--text-muted);
+}
+.files-abs-chapter-list {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 0;
+  max-height: 260px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+  border: 1px solid var(--border);
+}
+/* Chapter row: state-rail column (8px) + index (22px) + title/progress
+   body (flexible) + time meta (auto). Mirrors the comic chapter list
+   layout so the two surfaces share a scanning vocabulary — green=played,
+   accent=in-progress, neutral=unplayed. Each state is expressed through
+   the dot AND a row-level accent so the list reads at a glance even when
+   dense. */
+.files-abs-chapter {
+  display: grid;
+  grid-template-columns: 8px 22px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  padding: 9px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+  position: relative;
+}
+.files-abs-chapter:hover {
+  background: var(--surface-hover);
+}
+.files-abs-chapter.is-active {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: color-mix(in srgb, var(--accent) 90%, var(--text-primary));
+}
+/* State-dot rail — one 7px circle per row. Colour is the only visual
+   signal on unplayed chapters (muted ring); played rows fill solid green;
+   in-progress rows pulse an accent ring so the "now reading" row catches
+   the eye when the list is dense. */
+.files-abs-chapter-state {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  justify-self: center;
+  flex-shrink: 0;
+  background: transparent;
+  border: 1.5px solid color-mix(in srgb, var(--text-muted) 45%, transparent);
+  transition: background 160ms ease, border-color 160ms ease,
+              box-shadow 160ms ease;
+}
+.files-abs-chapter.state-played .files-abs-chapter-state {
+  background: #6da368;                  /* muted green, libraries not victory */
+  border-color: #6da368;
+}
+.files-abs-chapter.state-in-progress .files-abs-chapter-state {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.files-abs-chapter-idx {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10.5px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  letter-spacing: 0.02em;
+}
+.files-abs-chapter.is-active .files-abs-chapter-idx,
+.files-abs-chapter.state-played .files-abs-chapter-idx {
+  color: color-mix(in srgb, var(--text-primary) 70%, transparent);
+}
+.files-abs-chapter-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.files-abs-chapter-title {
+  /* Editorial serif — inherits the catalog typography from the comics
+     detail page. Same font family makes a mixed-media listing feel
+     catalogued by the same hand regardless of the underlying source. */
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 13.5px;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  line-height: 1.25;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.files-abs-chapter.state-played .files-abs-chapter-title {
+  color: color-mix(in srgb, var(--text-primary) 62%, transparent);
+}
+/* Progress bar inside the row body — only rendered for in-progress
+   chapters. Sits below the title so the serif reads first, the fill
+   below carries the "how far in" signal. */
+.files-abs-chapter-progress {
+  display: block;
+  height: 2px;
+  width: 100%;
+  max-width: 220px;
+  background: color-mix(in srgb, var(--text-muted) 18%, transparent);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.files-abs-chapter-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width 200ms ease;
+}
+.files-abs-chapter-time {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 10.5px;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------------
+   Tag Editor
+   --------------------------------------------------------------------------- */
+.files-detail-tags-editor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+.files-detail-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: var(--surface);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+}
+.files-tag-remove {
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 0 2px;
+  line-height: 1;
+}
+.files-tag-remove:hover { color: var(--error, #ef4444); }
+.files-tag-input {
+  flex: 1;
+  min-width: 80px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 11px;
+  font-family: inherit;
+  outline: none;
+  padding: 4px 0;
+}
+.files-tag-input::placeholder { color: var(--text-muted); }
+
+/* Autocomplete dropdown — anchored under the wrap that holds the input. */
+.files-tag-input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 80px;
+  display: flex;
+}
+.files-tag-input-wrap .files-tag-input { width: 100%; }
+.files-tag-suggest {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  z-index: 50;
+  background: var(--bg-elevated, var(--surface));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 6px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.files-tag-suggest[hidden] { display: none; }
+.files-tag-suggest-item {
+  text-align: left;
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  padding: 6px 8px;
+  font-size: 12px;
+  font-family: inherit;
+  border-radius: var(--radius-sm, 4px);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.files-tag-suggest-item:hover,
+.files-tag-suggest-item.active {
+  background: var(--surface);
+  color: var(--text-primary);
+}
+.files-tag-suggest-item.active {
+  outline: 1px solid var(--accent, var(--border));
+}
+
+/* Inline preview shown when a video format the browser can't play is
+   selected — replaces the silent broken <video> element. */
+.files-preview-unsupported-icon {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+.files-preview-unsupported-msg {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+/* ---------------------------------------------------------------------------
+   Content Preview
+   --------------------------------------------------------------------------- */
+.files-preview-img { width: 100%; height: auto; max-height: 45svh; object-fit: contain; background: #000; display: block; cursor: zoom-in; }
+.files-preview-audio { width: 100%; height: 36px; padding: 0 var(--space-md); }
+.files-preview-iframe {
+  width: 100%;
+  /* Generous aspect for the detail panel — users still skim iframes inline
+   * and Expand button sends them to the full-screen overlay for reading. */
+  height: clamp(280px, 52svh, 460px);
+  border: none;
+  background: var(--bg);
+  display: block;
+}
+.files-preview-markdown {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-primary);
+  max-height: 300px;
+}
+.files-preview-markdown > * { margin-top: 0; }
+.files-preview-markdown h1,
+.files-preview-markdown h2,
+.files-preview-markdown h3 { font-size: 13px; margin: 10px 0 6px; }
+.files-preview-markdown p { margin: 4px 0; }
+.files-preview-markdown pre {
+  margin: 6px 0;
+  padding: 6px 8px;
+  font-size: 10.5px;
+  overflow-x: auto;
+  background: var(--bg-elevated);
+  border-radius: 4px;
+}
+.files-preview-markdown code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 10.5px;
+}
+.files-preview-code {
+  margin: 0;
+  padding: var(--space-sm);
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  white-space: pre;
+  overflow: auto;
+  max-height: 300px;
+}
+.files-preview-code code {
+  font-family: ui-monospace, 'JetBrains Mono', SFMono-Regular, Consolas, monospace;
+}
+
+/* ---------------------------------------------------------------------------
+   Full-screen media preview (PDF / HTML / video) — reuses gallery shell
+   --------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------
+   Cloud-style full-screen preview (PDF / video / HTML / rendered / audio).
+   Minimal chrome: single top bar with title + actions, stage fills the rest.
+   Sizing is per-kind so each filetype shows in a "proper" ratio instead of
+   the one-size-fits-all 78vh rectangle.
+   --------------------------------------------------------------------------- */
+.files-preview-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-modal, 1000) + 30);
+  background: rgba(8, 8, 16, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-out);
+}
+.files-preview-overlay.visible { opacity: 1; }
+
+.files-preview-chrome {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 10px 16px;
+  background: rgba(0, 0, 0, 0.45);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.files-preview-chrome-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.files-preview-chrome-actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 4px;
+}
+.files-preview-chrome-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  transition: background 120ms, color 120ms;
+}
+.files-preview-chrome-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+.files-preview-chrome-btn.files-preview-close:hover {
+  background: rgba(255, 80, 80, 0.25);
+}
+
+.files-preview-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  overflow: hidden;
+}
+
+/* --- Per-kind sizing --------------------------------------------------- */
+
+/* PDF / HTML / rendered documents — maximise width for reading */
+.files-preview-overlay[data-kind="pdf"] .files-preview-stage,
+.files-preview-overlay[data-kind="html"] .files-preview-stage,
+.files-preview-overlay[data-kind="rendered"] .files-preview-stage {
+  padding: 0;
+}
+.files-preview-iframe-full {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #fff;
+}
+.files-preview-overlay[data-kind="rendered"] .files-preview-iframe-full {
+  /* Centered readable column for long-form content — docs/md/code sit in
+   * their own max-width container inside _preview_shell.wrap already. */
+  background: #0f0f1a;
+}
+
+/* Video — object-fit contain, centered */
+.files-preview-video-full {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  border-radius: var(--radius-md);
+  background: #000;
+  box-shadow: 0 24px 80px -20px rgba(0, 0, 0, 0.8);
+}
+
+/* Audio — centered mini-player with decorative badge */
+.files-preview-audio-full {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-xl) var(--space-lg);
+  background: color-mix(in srgb, var(--accent) 18%, rgba(20, 20, 40, 0.85));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: 0 24px 80px -20px rgba(0, 0, 0, 0.7);
+}
+.files-preview-audio-badge {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.8);
+}
+.files-preview-audio-full audio {
+  width: min(480px, 80vw);
+  max-width: 100%;
+}
+
+.files-preview-unsupported {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  color: rgba(255, 255, 255, 0.85);
+  padding: var(--space-lg);
+}
+
+@media (max-width: 600px) {
+  .files-preview-chrome { padding: 8px 10px; }
+  .files-preview-chrome-btn { width: 30px; height: 30px; }
+  .files-preview-stage { padding: var(--space-sm); }
+  .files-preview-audio-badge { width: 80px; height: 80px; }
+  .files-preview-audio-badge svg { width: 48px; height: 48px; }
+}
+
+@media (max-width: 768px) {
+  .files-preview-iframe { height: clamp(180px, 35svh, 280px); }
+}
+
+/* ---------------------------------------------------------------------------
+   Image preview overlay — matches the image-lightbox-modal visual language
+   --------------------------------------------------------------------------- */
+.files-gallery-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-modal, 1000) + 30);
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+  outline: none;
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-out);
+}
+.files-gallery-overlay.visible {
+  opacity: 1;
+}
+
+.files-gallery-close {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+.files-gallery-close:hover { background: rgba(255, 255, 255, 0.2); }
+
+.files-gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: background var(--duration-fast) var(--ease-out), border-color var(--duration-fast);
+}
+.files-gallery-nav:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+.files-gallery-nav:disabled { opacity: 0.25; cursor: default; }
+.files-gallery-prev { left: var(--space-md); }
+.files-gallery-next { right: var(--space-md); }
+
+.files-gallery-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.files-gallery-stage img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+  user-select: none;
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.6);
+}
+
+.files-gallery-meta {
+  flex: 0 0 auto;
+  margin-top: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: var(--text-xs);
+  text-align: center;
+  max-width: 90vw;
+  line-height: var(--line-height, 1.5);
+}
+.files-gallery-meta-name {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: #fff;
+  word-break: break-word;
+}
+.files-gallery-meta-sub {
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.files-gallery-meta-sub > span + span::before {
+  content: '\00B7';
+  margin-right: var(--space-sm);
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.files-gallery-actions {
+  flex: 0 0 auto;
+  margin-top: var(--space-md);
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 90vw;
+}
+.files-gallery-action {
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-radius: var(--radius-md);
+  font-size: var(--text-xs);
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background var(--duration-fast) var(--ease-out), border-color var(--duration-fast);
+}
+.files-gallery-action:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.files-gallery-action.danger { color: #ff8585; border-color: rgba(255, 100, 100, 0.3); }
+.files-gallery-action.danger:hover { background: rgba(255, 80, 80, 0.15); }
+.files-gallery-action svg { opacity: 0.85; }
+
+.files-gallery-counter {
+  position: absolute;
+  top: var(--space-md);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 12px;
+  background: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-full);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.4px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+@media (max-width: 600px) {
+  .files-gallery-overlay{ padding: var(--space-sm); }
+  .files-gallery-nav { width: 40px; height: 40px; }
+  .files-gallery-prev { left: 8px; }
+  .files-gallery-next { right: 8px; }
+  .files-gallery-actions { gap: 4px; }
+  .files-gallery-action { padding: 4px 10px; font-size: 11px; }
+  .files-gallery-close { top: 8px; right: 8px; width: 36px; height: 36px; }
+  .files-gallery-counter { top: 8px; font-size: 10px; padding: 3px 10px; }
+}
+
+/* Short-landscape viewports — give the stage more vertical room by
+ * tightening margins around it. */
+@media (max-height: 520px) {
+  .files-gallery-meta { margin-top: var(--space-xs); gap: 2px; }
+  .files-gallery-actions { margin-top: var(--space-xs); }
+  .files-gallery-meta-name { font-size: var(--text-xs); }
+  .files-gallery-meta-sub { display: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Reduced Motion
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .files-panel,
+  .files-card,
+  .files-detail,
+  .files-sort-dropdown,
+  .files-context-menu {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+
+  .files-card {
+    opacity: 1;
+    transform: none;
+  }
+
+  .files-load-sentinel::after {
+    animation: none;
+    border-top-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+}
+
+/* ==========================================================================
+   UNIFIED DETAIL PANEL — hero visual + identity + actions + collapsed meta.
+   Layered over the older detail rules; higher-specificity selectors where
+   the old rules still influence layout.
+   ========================================================================== */
+
+.files-detail {
+  padding: 0;  /* inner sections own their padding */
+}
+
+/* Top bar — close button, nothing else. Title lives in the identity block
+   under the hero, where it can breathe. */
+.files-detail-topbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--space-sm) var(--space-sm) 0;
+}
+
+/* Hero area — centered card, generous breathing room. Takes the visual
+   weight that used to be split between header title + tiny thumbnail. */
+.files-detail-hero {
+  display: flex;
+  justify-content: center;
+  padding: 4px var(--space-md) 0;
+}
+
+/* Preview card chassis — shared chrome across every kind. */
+.files-preview-card {
+  width: 100%;
+  max-width: 280px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.32),
+              0 2px 6px rgba(0, 0, 0, 0.18);
+  position: relative;
+  aspect-ratio: 1 / 1;  /* default — kind overrides below */
+}
+/* 3:4 portrait cards for documents/code/markdown */
+.files-preview-card-3-4 { aspect-ratio: 3 / 4; }
+
+/* Image — preserve native ratio within the max-width, cap height. */
+.files-preview-card-image {
+  aspect-ratio: auto;
+  max-width: 300px;
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}
+.files-preview-card-image .files-preview-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 360px;
+  object-fit: contain;
+  cursor: zoom-in;
+}
+
+/* Video — 16:9 inline player. */
+.files-preview-card-video {
+  aspect-ratio: 16 / 9;
+  max-width: 420px;
+  background: #000;
+}
+.files-preview-card-video-poster {
+  position: relative;
+  overflow: hidden;
+}
+.files-preview-video-poster,
+.files-preview-video-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.files-preview-video-poster {
+  object-fit: cover;
+}
+.files-preview-video-fallback {
+  background: radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 55%),
+              linear-gradient(135deg, rgba(14, 165, 233, 0.18), rgba(15, 23, 42, 0.96));
+  color: rgba(255, 255, 255, 0.78);
+}
+.files-preview-video-overlay {
+  position: absolute;
+  inset: auto 12px 12px 12px;
+  display: flex;
+  justify-content: center;
+}
+.files-preview-video-pill {
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(9, 9, 14, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Audio — gradient cover + waveform glyph + small controls. */
+.files-preview-card-audio {
+  aspect-ratio: 1 / 1;
+  max-width: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent) 36%, var(--surface)) 0%,
+    color-mix(in srgb, var(--accent) 12%, var(--surface)) 100%);
+  color: color-mix(in srgb, var(--accent) 80%, #fff);
+}
+.files-preview-audio-art {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.files-preview-card-audio .files-preview-audio {
+  width: 100%;
+  height: 34px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 0 4px;
+}
+
+/* Doc / HTML / markdown / EPUB / rendered — iframe preview card. */
+.files-preview-card-doc {
+  background: #fff;
+  max-width: 280px;
+}
+.files-preview-card-doc .files-preview-iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  pointer-events: none;   /* hero is a *preview*; primary CTA opens full */
+}
+.files-preview-card-doc .files-preview-markdown {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  padding: 14px 16px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: #1c1917;
+  pointer-events: none;
+}
+.files-preview-card-doc .files-preview-markdown h1,
+.files-preview-card-doc .files-preview-markdown h2 { font-size: 13px; margin: 0 0 6px; }
+.files-preview-card-doc .files-preview-markdown p { margin: 0 0 6px; }
+
+/* Code — monospace peek. */
+.files-preview-card-code {
+  background: #111216;
+  max-width: 280px;
+}
+.files-preview-card-code .files-preview-code {
+  margin: 0;
+  padding: 12px 14px;
+  font-size: 10px;
+  line-height: 1.4;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+}
+.files-preview-card-code code {
+  display: block;
+  white-space: pre;
+  color: #d4d4d4;
+}
+
+/* Unsupported video fallback */
+.files-preview-unsupported {
+  aspect-ratio: 16 / 9;
+  max-width: 360px;
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  text-align: center;
+  color: var(--text-muted);
+}
+.files-preview-unsupported-msg { font-size: 12px; }
+
+/* --- Identity block (title + chip row) --- */
+.files-detail-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: var(--space-md) var(--space-md) 0;
+  text-align: center;
+}
+.files-detail-identity .files-detail-title {
+  /* Overrides older 14px rule. Hero title should breathe. */
+  font-size: var(--text-lg, 17px);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  line-height: 1.25;
+  margin: 0;
+  max-width: 100%;
+  word-break: break-word;
+}
+.files-detail-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+/* Detail-panel chips. Scoped selector so the topbar filter `.files-chip`
+ * (interactive, pill-button) is unaffected — these are informational only. */
+.files-detail .files-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: color-mix(in srgb, var(--accent) 85%, var(--text-primary));
+  white-space: nowrap;
+  border: 0;
+  cursor: default;
+}
+.files-detail .files-chip-muted {
+  background: color-mix(in srgb, var(--border) 55%, transparent);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.files-detail .files-chip-finished {
+  background: color-mix(in srgb, #10b981 18%, transparent);
+  color: #10b981;
+}
+.files-detail .files-chip-resume {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: color-mix(in srgb, var(--accent) 95%, var(--text-primary));
+}
+/* Series-page chip variants. "Continuing" gets a calm green so users
+ * can scan-distinguish active from ended without reading the label.
+ * Rating chips use a bordered look — they're factual badges, not
+ * branded accents. Community rating leans amber to read as a star. */
+.files-detail .files-chip-active {
+  background: color-mix(in srgb, #10b981 14%, transparent);
+  color: #10b981;
+}
+.files-detail .files-chip-rating {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid color-mix(in srgb, var(--text-secondary) 35%, transparent);
+}
+.files-detail .files-chip-rating-community {
+  background: color-mix(in srgb, #f59e0b 14%, transparent);
+  color: #f59e0b;
+  font-weight: 600;
+}
+.files-detail .files-chip-network {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: color-mix(in srgb, var(--accent) 80%, var(--text-secondary));
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* --- Series hero metadata block --- */
+.files-series-hero {
+  margin-top: var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+.files-series-meta-chips {
+  margin-top: var(--space-xs);
+}
+.files-series-tagline {
+  margin: 4px 0 0;
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* --- Cast strip ---
+ * Responsive grid of actor tiles: circular headshot + name + character.
+ * auto-fill minmax adapts from tight 2-col on phones (120px tiles) to
+ * wide 4-5-col on desktop with no media queries needed. Static cards
+ * (no person_id) still render but don't announce as a button. */
+.files-cast-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--space-sm);
+  padding: var(--space-sm) 0 4px;
+}
+.files-cast-item {
+  background: color-mix(in srgb, var(--border) 22%, transparent);
+  border: 0;
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  cursor: pointer;
+  text-align: center;
+  transition: background 140ms ease, transform 140ms ease;
+  color: inherit;
+  font: inherit;
+}
+.files-cast-item:hover:not(.is-static):not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  transform: translateY(-1px);
+}
+.files-cast-item.is-static,
+.files-cast-item:disabled {
+  cursor: default;
+  opacity: 0.9;
+}
+.files-cast-img {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: color-mix(in srgb, var(--border) 55%, transparent);
+  flex-shrink: 0;
+}
+.files-cast-img.is-missing,
+.files-cast-img-empty {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--border) 55%, transparent),
+    color-mix(in srgb, var(--border) 30%, transparent));
+}
+.files-cast-text {
+  min-width: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.files-cast-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.25;
+}
+.files-cast-role {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.25;
+}
+@media (max-width: 600px) {
+  .files-cast-strip {
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    gap: 10px;
+  }
+  .files-cast-img { width: 60px; height: 60px; }
+  .files-cast-name { font-size: 12px; }
+  .files-cast-role { font-size: 11px; }
+}
+
+/* --- Backdrop hero (Series/Movie only) ---
+ * Replaces the square poster hero with a landscape backdrop when
+ * has_backdrop is true. The poster floats in the bottom-left corner
+ * so the user still gets both artworks — same pattern Jellyfin uses.
+ * Gracefully collapses to the plain poster via the onerror handler
+ * if the upstream backdrop 404s. */
+.files-detail-hero--backdrop {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  max-height: 380px;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 0;
+  background: color-mix(in srgb, var(--border) 20%, transparent);
+}
+.files-detail-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.82);
+}
+.files-detail-hero--backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--bg-primary) 70%, transparent) 0%,
+    transparent 45%
+  );
+  pointer-events: none;
+}
+.files-detail-backdrop-poster {
+  position: absolute;
+  left: 16px;
+  bottom: 14px;
+  width: 96px;
+  height: 144px;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  z-index: 1;
+}
+.files-detail-backdrop-poster > * {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+@media (max-width: 600px) {
+  .files-detail-hero--backdrop { max-height: 220px; }
+  .files-detail-backdrop-poster {
+    width: 68px;
+    height: 102px;
+    left: 12px;
+    bottom: 10px;
+  }
+}
+
+/* --- Person profile overlay ---
+ * Backdrop-dim + centered sheet on tablet/desktop, bottom sheet on
+ * mobile (90vh max so the user can pull it down visually). Matches
+ * the existing .files-preview-overlay pattern for z-index + transitions. */
+.files-person-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  opacity: 0;
+  transition: opacity 180ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  outline: 0;
+}
+.files-person-overlay.visible { opacity: 1; }
+.files-person-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.files-person-sheet {
+  position: relative;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  width: min(860px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 28px 28px 24px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.files-person-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--border) 30%, transparent);
+  border: 0;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 140ms ease, color 140ms ease;
+}
+.files-person-close:hover {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  color: var(--text-primary);
+}
+.files-person-loading,
+.files-person-empty {
+  padding: 48px 12px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.files-person-header {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.files-person-photo {
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: color-mix(in srgb, var(--border) 55%, transparent);
+  flex-shrink: 0;
+}
+.files-person-photo-empty {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--border) 55%, transparent),
+    color-mix(in srgb, var(--border) 30%, transparent));
+}
+.files-person-identity {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.files-person-name {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.15;
+}
+.files-person-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.files-person-bio {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  max-height: 9em;
+  overflow-y: auto;
+}
+.files-person-section-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-top: 4px;
+}
+.files-person-works {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+.files-person-work-cover {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  background: color-mix(in srgb, var(--border) 30%, transparent);
+  display: block;
+}
+.files-person-work-cover-empty {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--border) 55%, transparent),
+    color-mix(in srgb, var(--border) 30%, transparent));
+}
+.files-person-work-meta {
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.files-person-work-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.files-person-work-sub {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+.files-person-work-unavailable {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+@media (max-width: 720px) {
+  .files-person-overlay { padding: 0; align-items: flex-end; }
+  .files-person-sheet {
+    border-radius: 16px 16px 0 0;
+    max-height: 92vh;
+    padding: 22px 18px 20px;
+    width: 100%;
+  }
+  .files-person-header { gap: 14px; }
+  .files-person-photo { width: 96px; height: 96px; }
+  .files-person-name { font-size: 19px; }
+  .files-person-works {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+  }
+}
+
+/* --- Breadcrumb (Series → Season → Episode drill-down) ---
+ * Sits above the detail title so the user always knows where they are
+ * and can jump back up the chain without closing the panel. The trailing
+ * separator after the last link is intentional — it implies "and now
+ * you're at <title below>". */
+.files-detail-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+  min-height: 18px;
+}
+.files-detail-breadcrumb-link {
+  background: none;
+  border: 0;
+  padding: 2px 4px;
+  margin: 0;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: inherit;
+  border-radius: 4px;
+  transition: background 120ms ease, color 120ms ease;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.files-detail-breadcrumb-link:hover {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: color-mix(in srgb, var(--accent) 95%, var(--text-primary));
+}
+.files-detail-breadcrumb-sep {
+  color: var(--text-muted);
+  opacity: 0.6;
+  font-size: 13px;
+  user-select: none;
+}
+
+/* --- Primary CTA --- */
+.files-detail-primary {
+  padding: var(--space-md) var(--space-md) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.files-detail-primary .files-primary-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 22px;
+  border-radius: 999px;
+  font-size: var(--text-sm, 13px);
+  font-weight: 600;
+  min-width: 140px;
+  justify-content: center;
+}
+
+/* Secondary CTA — subordinate to the primary (Resume · Xm left). Shown
+   only in the resume state to offer "Start from the beginning"; mirrors
+   the comics reader's "Start from Ch. 1" affordance so users have a
+   first-class path to restart without hunting a timeline scrubber. */
+.files-primary-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  background: transparent;
+  border: none;
+  font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 999px;
+  transition: color 160ms ease, background 160ms ease;
+}
+.files-primary-secondary:hover {
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--text-muted) 10%, transparent);
+}
+.files-primary-secondary svg {
+  opacity: 0.7;
+}
+.files-primary-secondary:hover svg {
+  opacity: 1;
+}
+
+/* --- Secondary actions row (icons) — overrides the old column layout --- */
+.files-detail-actions {
+  flex-direction: row;
+  justify-content: center;
+  gap: 8px;
+  padding: var(--space-md);
+  margin-top: 0;
+  flex-wrap: wrap;
+}
+.files-detail-actions .files-icon-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+/* --- Collapsible sections (description, details) --- */
+.files-detail-section {
+  padding: 0 var(--space-md);
+  margin-top: var(--space-sm);
+}
+.files-detail-section > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 8px 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-top: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+.files-detail-section > summary::-webkit-details-marker { display: none; }
+.files-detail-section > summary::after {
+  content: '›';
+  font-size: 14px;
+  color: var(--text-muted);
+  transform: rotate(90deg);
+  transition: transform 0.15s ease;
+}
+.files-detail-section[open] > summary::after { transform: rotate(270deg); }
+.files-detail-section .files-detail-desc {
+  padding: 0 0 8px;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+.files-detail-section .files-detail-props {
+  border: 0;
+  padding: 4px 0 8px;
+}
+
+.files-video-child-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 2px 0 10px;
+}
+
+.files-video-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.files-video-child:hover {
+  border-color: color-mix(in srgb, var(--accent) 38%, transparent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  transform: translateY(-1px);
+}
+
+.files-video-child.is-active {
+  border-color: color-mix(in srgb, var(--accent) 48%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+}
+
+.files-video-child-main,
+.files-video-child-side {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.files-video-child-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.files-video-child-title {
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.files-video-child-meta,
+.files-video-child-go,
+.files-video-child-empty {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.files-video-child-empty {
+  padding: 4px 0 12px;
+}
+
+.files-video-playback {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 0 10px;
+}
+
+.files-video-track-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.files-video-track-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.files-video-track-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+
+
+.files-video-track-btn-main {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.files-video-track-btn-label {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.files-video-track-btn-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* --- Audiobook hero variant — larger cover, extra breathing room --- */
+.files-detail-hero-audiobook {
+  padding-top: 8px;
+  padding-bottom: 4px;
+}
+
+/* Audiobook + other media-server rows inherit the editorial typography
+   established by the comics detail page. The title sets in Fraunces
+   (display serif with an optical-size axis, tuned here for headline
+   sizes), the author/narrator meta rows pick up Instrument Sans via
+   .files-detail-meta-rows below. Applies only when the hero variant is
+   the audiobook layout so document/image detail titles stay on the
+   app's default sans. */
+.files-detail-hero-audiobook + .files-detail-identity .files-detail-title {
+  font-family: 'Fraunces', Georgia, serif;
+  /* font-variation-settings drives Fraunces' optical-size axis so the
+     title reads with display-grade contrast even at the detail panel's
+     ~19-22px type size. Without it the font snaps to text-optimised
+     glyphs and loses the editorial feel entirely. */
+  font-variation-settings: 'opsz' 96, 'wght' 500;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  font-size: clamp(21px, 2.6vw, 26px);
+  padding: 4px 14px 2px;
+  text-wrap: balance;
+}
+
+/* Meta rows sit under the title in Instrument Sans — matches the
+   comics series meta-row voice (same caps-keyed labels, same muted
+   secondary value). */
+.files-detail-hero-audiobook ~ .files-detail-meta-rows {
+  font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.005em;
+}
+.files-detail-hero-audiobook ~ .files-detail-meta-rows .files-detail-meta-key {
+  font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+}
+
+/* --- Rich key/value metadata rows (author, narrator, etc.) ----------
+ * Replaces the old `.files-abs-kv` block. Centered column layout for the
+ * default (audiobook hero) presentation — consistent with the centered
+ * identity block above. */
+.files-detail-meta-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px var(--space-md) 0;
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+.files-detail-meta-row {
+  display: inline;
+}
+.files-detail-meta-key {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-right: 4px;
+}
+
+/* --- Inline chip strips (genres, tags-as-pills) --- */
+.files-detail-inline-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px var(--space-md) 0;
+}
+
+/* --- Inline link pills (external source links — LibriVox, etc.) --- */
+.files-detail-inline-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px var(--space-md) 0;
+}
+
+/* --- Audiobook progress bar (resume visualization) ---
+ * Lives inside `.files-detail-identity` beneath the title. Narrow track,
+ * accent-colored fill, matches Audible/Spotify's resume UI. */
+.files-abs-progress {
+  width: min(220px, 100%);
+  margin: 4px auto 0;
+}
+.files-abs-progress-track {
+  height: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-muted) 18%, transparent);
+  overflow: hidden;
+}
+.files-abs-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+/* Sticky mobile footer is hidden by default — shown only inside the phone
+ * overlay media query below. On desktop the in-flow primary CTA + icon row
+ * already fulfill this role, so rendering the footer would be duplication. */
+.files-detail-footer { display: none; }
+
+/* ============================================================================
+   RESPONSIVE DETAIL PANEL — landscape phones, short viewports, sticky CTA.
+   Supersedes earlier mobile rules that assumed portrait + ≥600px height.
+   ============================================================================ */
+
+/* Landscape-phone + short-viewport detection. iPhone landscape (844×390) hit
+ * the 1024px drawer mode before — now it enters the overlay mode any time
+ * width ≤ 768 OR viewport is phone-tall (≤ 600px) within tablet width. */
+@media (max-width: 768px),
+       (max-height: 600px) and (max-width: 1024px) {
+  .files-detail {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-height: none;
+    border-left: none;
+    border-top: none;
+    transform: translateY(12px);
+    box-shadow: none;
+    background: var(--bg);
+    z-index: 6;
+
+    /* Scroll container mechanics: ensure overflow works on flex column.
+     * `min-height: 0` is required so the flex parent doesn't inherit the
+     * content-sized min-height that would suppress scrolling. */
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+
+    /* Reserve room at the bottom for the sticky action bar + safe-area so
+     * the last items in the scroll container aren't trapped behind it. */
+    padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+  }
+  .files-detail.hidden { transform: translateY(12px); }
+  .files-detail:not(.hidden) { transform: none; }
+
+  /* Children must not grow beyond content — `flex-shrink: 0` keeps each
+   * section at intrinsic height and lets the parent's overflow handle scroll. */
+  .files-detail > * {
+    flex-shrink: 0;
+  }
+
+  /* Sticky close header stays pinned as user scrolls through long content */
+  .files-detail-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    padding: max(env(safe-area-inset-top, 0px), 8px) 12px 8px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+  }
+  .files-detail-close { width: 36px; height: 36px; }
+
+  /* Hero breathing */
+  .files-detail-hero { padding: 8px 16px 0; }
+  .files-preview-card       { max-width: 320px; }
+  .files-preview-card-image { max-width: 360px; }
+  .files-preview-card-image .files-preview-img { max-height: 56vh; }
+  .files-preview-card-video { max-width: 100%; }
+  .files-preview-card-doc,
+  .files-preview-card-code  { max-width: 320px; }
+
+  .files-detail-identity { padding: var(--space-md) 20px 0; }
+  .files-detail-identity .files-detail-title {
+    font-size: var(--text-xl, 19px);
+  }
+
+  /* Primary CTA — in-flow copy (landscape / short-viewport layouts use the
+   * sticky footer CTA below instead of this one). */
+  .files-detail-primary .files-primary-cta {
+    min-width: 160px;
+    padding: 11px 26px;
+  }
+
+  .files-detail-actions {
+    padding: var(--space-md) 16px;
+    gap: 10px;
+  }
+  .files-detail-actions .files-icon-btn { width: 44px; height: 44px; }
+
+  .files-detail-tags-editor {
+    padding-bottom: var(--space-md);
+  }
+
+  .files-detail-section > summary    { padding: 12px 0; font-size: 12px; }
+  .files-detail-section .files-detail-props { padding: 8px 0 12px; }
+
+  /* --- Audiobook-specific sizing for phone form factors ------------------
+   * Cover scales with viewport height so the identity + CTA + meta all fit
+   * above the fold on shorter phones and mobile Safari's compressed viewport.
+   * Title/meta/actions use the shared detail scaffolding — no longer need
+   * per-audiobook overrides at this breakpoint. */
+  .files-abs-cover {
+    width: min(220px, 36svh, 72%);
+    max-width: min(220px, 36svh, 72%);
+  }
+  .files-detail-meta-rows { font-size: 11.5px; }
+}
+
+/* -------------------------------------------------------------------------
+ * LANDSCAPE PHONES — short viewport, wider than tall.
+ * Reflow the audiobook hero and generic hero into row layout so the cover
+ * sits left and the metadata + CTA right. Play is reachable without scroll.
+ * ----------------------------------------------------------------------- */
+@media (orientation: landscape) and (max-height: 500px) {
+  .files-detail {
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  }
+  .files-detail-topbar { padding-top: 4px; padding-bottom: 4px; }
+
+  /* Generic hero row layout */
+  .files-detail-hero {
+    padding: 4px 16px 0;
+  }
+  .files-preview-card,
+  .files-preview-card-image,
+  .files-preview-card-doc,
+  .files-preview-card-code,
+  .files-preview-card-video,
+  .files-preview-card-audio {
+    max-width: 200px;
+  }
+  .files-preview-card-image .files-preview-img { max-height: 40svh; }
+
+  .files-detail-identity {
+    padding: 8px 20px 0;
+    gap: 6px;
+  }
+  .files-detail-identity .files-detail-title { font-size: 16px; }
+  .files-detail-primary { padding: 8px 20px 0; }
+  .files-detail-actions { padding: 8px 16px; }
+
+  /* Audiobook hero at short landscape — smaller cover since the shared
+   * `.files-detail-hero`/`.files-detail-identity` stack is already tight. */
+  .files-abs-cover {
+    width: min(150px, 60svh);
+    max-width: min(150px, 60svh);
+  }
+  .files-detail-meta-rows { text-align: left; }
+
+  /* Collapsed sections don't need uppercase summary padding */
+  .files-detail-section > summary { padding: 8px 0; }
+  .files-abs-chapters { margin-top: 4px; }
+}
+
+/* -------------------------------------------------------------------------
+ * STICKY BOTTOM ACTION BAR on mobile overlays. Always-visible Play/Open CTA
+ * plus a secondary icon cluster. Content above scrolls behind it; the
+ * `padding-bottom` on `.files-detail` reserves the footprint.
+ * ----------------------------------------------------------------------- */
+@media (max-width: 768px),
+       (max-height: 600px) and (max-width: 1024px) {
+  .files-detail-footer {
+    display: flex;
+    /* Anchored to .files-detail (itself position:absolute) so the footer
+     * pins to the panel's bottom edge regardless of content height. Using
+     * position:sticky here fell back to the element's in-flow position
+     * whenever content was shorter than the scroll container — leaving
+     * the Play CTA hovering mid-screen on zip/html detail views that have
+     * little metadata beneath the hero. */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 4;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px
+             calc(10px + env(safe-area-inset-bottom, 0px));
+    background: color-mix(in srgb, var(--bg) 94%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  }
+  .files-detail-footer .files-footer-cta {
+    flex: 1;
+    max-width: 360px;
+    min-height: 44px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  /* When a sticky footer CTA is present, hide the in-flow primary CTA to
+   * avoid duplication — the footer version is the canonical one on mobile. */
+  .files-detail:has(.files-detail-footer) .files-detail-primary { display: none; }
+
+}
+
+/* Tag editor sits after the collapsed sections; tighten its padding. */
+.files-detail-tags-editor {
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+}
+
+/* ---------------------------------------------------------------------------
+   Read-along (Project Gutenberg plaintext paired with LibriVox audio)
+   --------------------------------------------------------------------------- */
+
+/* Control inside .files-detail-actions. Spans the full row with the
+   same width treatment as the icon buttons but picks up the primary
+   accent so the call-to-action reads as distinct from Download /
+   Reference / Summarize. */
+.files-readalong-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: var(--text-xs);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text);
+}
+.files-readalong-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg-subtle, var(--bg-elevated));
+}
+.files-readalong-wc {
+  margin-left: auto;
+  font-size: 11px;
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+}
+
+.files-readalong-pending {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 10px;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm, 6px);
+  background: transparent;
+}
+
+.files-readalong-spin,
+.read-along-spin {
+  animation: files-readalong-rot 1s linear infinite;
+}
+@keyframes files-readalong-rot {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ---------------------------------------------------------------------------
+   Read-along overlay — full-screen modal reader
+   --------------------------------------------------------------------------- */
+
+body.read-along-open { overflow: hidden; }
+
+.read-along-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9500;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.read-along-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(4px);
+}
+
+.read-along-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(780px, 100%);
+  margin: 0 auto;
+  background: var(--bg-elevated);
+  color: var(--text);
+  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.45);
+  --read-along-font-size: 19px;
+}
+
+.read-along-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+.read-along-title {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.read-along-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.read-along-fontbtn,
+.read-along-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  border-radius: var(--radius-sm, 6px);
+  font-size: 12px;
+  cursor: pointer;
+}
+.read-along-fontbtn:hover,
+.read-along-close:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.read-along-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-lg) var(--space-xl);
+}
+.read-along-scroll:focus { outline: none; }
+
+.read-along-body {
+  max-width: 68ch;
+  margin: 0 auto;
+  font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+  font-size: var(--read-along-font-size);
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.read-along-p {
+  margin: 0 0 1.1em;
+  text-align: left;
+  hyphens: auto;
+  word-wrap: break-word;
+}
+
+.read-along-loading,
+.read-along-pending,
+.read-along-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 80px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: var(--text-sm);
+}
+.read-along-loading { flex-direction: row; }
+.read-along-hint { font-size: 12px; opacity: 0.7; }
+.read-along-error { color: var(--danger, #c43); }
+
+@media (max-width: 720px) {
+  .read-along-header { padding: 10px 14px; }
+  .read-along-scroll { padding: 14px 18px; }
+  .read-along-panel { --read-along-font-size: 17px; }
+}
+
+
+/* Comic series details: cover-art fallback + chapter list grid. */
+.csd-cover-art-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+.files-grid-chapter-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+/* ==========================================================================
+   EPUB read-aloud toolbar — mounted by ui/scripts/epub-reader-controls.js
+   above the EPUB viewer in the files preview surface and studio.
+   ========================================================================== */
+
+.epub-reader-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--bg-elevated, #161625);
+  border: 1px solid var(--border, #2d2d45);
+  border-radius: var(--radius-sm, 8px);
+  font-size: var(--text-sm, 13px);
+}
+
+.erb-play {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent, #6c8aff);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm, 6px);
+  padding: 6px 12px;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.erb-play:hover { filter: brightness(1.1); }
+.erb-play:disabled { opacity: 0.6; cursor: default; }
+
+.erb-icon { line-height: 1; }
+.erb-label { white-space: nowrap; }
+
+.erb-voice,
+.erb-speed {
+  background: var(--bg, #0f0f1a);
+  color: var(--text, #ececf1);
+  border: 1px solid var(--border, #2d2d45);
+  border-radius: var(--radius-sm, 6px);
+  padding: 5px 8px;
+  font: inherit;
+}
+
+.erb-voice { flex: 1; min-width: 120px; }
+.erb-speed { flex: 0 0 auto; min-width: 70px; }

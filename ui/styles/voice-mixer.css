@@ -1,0 +1,184 @@
+/* Reusable voice-mixer widget — mounted by ui/scripts/voice-mixer.js
+   (used in Settings → Voice and the TTS Recording Studio). */
+
+.vm-root {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: var(--text-sm, 13px);
+}
+
+.vm-desc {
+  color: var(--text-muted, #a1a1b5);
+  font-size: var(--text-xs, 12px);
+}
+
+.vm-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vm-slot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vm-slot select {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg, #0f0f1a);
+  color: var(--text, #ececf1);
+  border: 1px solid var(--border, #2d2d45);
+  border-radius: var(--radius-sm, 6px);
+  padding: 5px 7px;
+  font: inherit;
+}
+
+.vm-slot input[type=range] {
+  flex: 1.4;
+  min-width: 60px;
+}
+
+.vm-pct {
+  width: 38px;
+  text-align: right;
+  color: var(--text-muted, #a1a1b5);
+  font-size: var(--text-xs, 12px);
+}
+
+.vm-rm {
+  background: none;
+  border: 1px solid var(--border, #2d2d45);
+  color: var(--text-muted, #a1a1b5);
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  padding: 2px 7px;
+  line-height: 1;
+  font: inherit;
+}
+
+.vm-rm:hover {
+  color: var(--danger, #f87171);
+  border-color: var(--danger, #f87171);
+}
+
+.vm-ratio-track {
+  display: flex;
+  height: 14px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: var(--bg, #0f0f1a);
+}
+
+.vm-ratio-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: #0b0b14;
+  overflow: hidden;
+  white-space: nowrap;
+  min-width: 0;
+  font-weight: 600;
+}
+
+.vm-add {
+  align-self: flex-start;
+  background: none;
+  border: 1px dashed var(--border, #2d2d45);
+  color: var(--text-muted, #a1a1b5);
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  padding: 5px 10px;
+  font: inherit;
+}
+
+.vm-add:hover {
+  color: var(--text, #ececf1);
+  border-style: solid;
+}
+
+.vm-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.vm-actions input[type=text] {
+  flex: 1;
+  min-width: 130px;
+  background: var(--bg, #0f0f1a);
+  color: var(--text, #ececf1);
+  border: 1px solid var(--border, #2d2d45);
+  border-radius: var(--radius-sm, 6px);
+  padding: 6px 8px;
+  font: inherit;
+}
+
+.vm-btn {
+  padding: 6px 12px;
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  font: inherit;
+  border: 1px solid var(--border, #2d2d45);
+  background: var(--bg, #0f0f1a);
+  color: var(--text, #ececf1);
+}
+
+.vm-btn:hover:not(:disabled) {
+  background: var(--accent-soft, rgba(108, 138, 255, .12));
+}
+
+.vm-btn-primary {
+  background: var(--accent, #6c8aff);
+  border-color: var(--accent, #6c8aff);
+  color: #fff;
+  font-weight: 600;
+}
+
+.vm-btn:disabled {
+  opacity: .6;
+  cursor: default;
+}
+
+.vm-saved {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vm-saved-label {
+  font-size: var(--text-xs, 12px);
+  color: var(--text-muted, #a1a1b5);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.vm-saved-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 6px;
+  border: 1px solid var(--border, #2d2d45);
+  border-radius: var(--radius-sm, 6px);
+}
+
+.vm-saved-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vm-saved-item .vm-mini {
+  font-size: 11px;
+  padding: 2px 7px;
+}
+
+.vm-mini-danger:hover {
+  color: var(--danger, #f87171);
+  border-color: var(--danger, #f87171);
+}

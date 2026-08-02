@@ -1,0 +1,202 @@
+{
+  "totalFound": 47,
+  "uniqueByContent": 39,
+  "duplicateClusters": 8,
+  "canonical": [
+    {
+      "path": "001_motion_pose.vrma",
+      "sizeKB": 508.9,
+      "hash": "e3b06f78b21d"
+    },
+    {
+      "path": "002_dogeza.vrma",
+      "sizeKB": 200.2,
+      "hash": "fdc0cdeca81c"
+    },
+    {
+      "path": "003_humidai.vrma",
+      "sizeKB": 77.4,
+      "hash": "62c3f543c038"
+    },
+    {
+      "path": "004_hello_1.vrma",
+      "sizeKB": 406.6,
+      "hash": "bde5b9d83745"
+    },
+    {
+      "path": "005_smartphone.vrma",
+      "sizeKB": 274.9,
+      "hash": "54a37ca48a1d"
+    },
+    {
+      "path": "006_drinkwater.vrma",
+      "sizeKB": 599.2,
+      "hash": "ba56122fecb5"
+    },
+    {
+      "path": "007_gekirei.vrma",
+      "sizeKB": 546.4,
+      "hash": "88123be97c20"
+    },
+    {
+      "path": "008_gatan.vrma",
+      "sizeKB": 300.1,
+      "hash": "ad2a5118837b"
+    },
+    {
+      "path": "CC0-run.vrma",
+      "sizeKB": 54.2,
+      "hash": "eb3045b9fba8"
+    },
+    {
+      "path": "CC0-slowrun.vrma",
+      "sizeKB": 47.7,
+      "hash": "54fff21bbbbb"
+    },
+    {
+      "path": "CC0-walk.vrma",
+      "sizeKB": 65.0,
+      "hash": "51c4158488a8"
+    },
+    {
+      "path": "Reading (Loop).vrma",
+      "sizeKB": 18785.3,
+      "hash": "5dd1596ba625"
+    },
+    {
+      "path": "airi_idle_loop.vrma",
+      "sizeKB": 154.0,
+      "hash": "ace95ba6dcc0"
+    },
+    {
+      "path": "dance_25.vrma",
+      "sizeKB": 771.9,
+      "hash": "b6f98e3d244e"
+    },
+    {
+      "path": "dance_28.vrma",
+      "sizeKB": 1885.8,
+      "hash": "493fcfec6815"
+    },
+    {
+      "path": "dance_kebab.vrma",
+      "sizeKB": 809.5,
+      "hash": "994860fa79f6"
+    },
+    {
+      "path": "external/sillytavern-pack/animation_nitral-fork/greeting2.vrma",
+      "sizeKB": 210.2,
+      "hash": "e66268ebbef6"
+    },
+    {
+      "path": "external/vrm-viewer/VRMA/Angry.vrma",
+      "sizeKB": 115.7,
+      "hash": "c86379b1f5c4"
+    },
+    {
+      "path": "external/vrm-viewer/VRMA/Blush.vrma",
+      "sizeKB": 115.7,
+      "hash": "9057f93fe8ad"
+    },
+    {
+      "path": "external/vrm-viewer/VRMA/Clapping.vrma",
+      "sizeKB": 115.7,
+      "hash": "a4165a9ddd02"
+    },
+    {
+      "path": "external/vrm-viewer/VRMA/Goodbye.vrma",
+      "sizeKB": 115.7,
+      "hash": "6a162b83a0b9"
+    },
+    {
+      "path": "external/vrm-viewer/VRMA/Jump.vrma",
+      "sizeKB": 115.7,
+      "hash": "844e47e6f9a1"
+    },
+    {
+      "path": "external/vrm-viewer/VRMA/LookAround.vrma",
+      "sizeKB": 115.7,
+      "hash": "cf5c51bf0784"
+    },
+    {
+      "path": "external/vrm-viewer/VRMA/Relax.vrma",
+      "sizeKB": 115.7,
+      "hash": "7de5b0a0e809"
+    },
+    {
+      "path": "external/vrm-viewer/VRMA/Sad.vrma",
+      "sizeKB": 115.7,
+      "hash": "0e2b2f4c1312"
+    },
+    {
+      "path": "external/vrm-viewer/VRMA/Sleepy.vrma",
+      "sizeKB": 115.7,
+      "hash": "42b6c8172123"
+    },
+    {
+      "path": "external/vrm-viewer/VRMA/Surprised.vrma",
+      "sizeKB": 115.7,
+      "hash": "04d867433f77"
+    },
+    {
+      "path": "external/vrm-viewer/VRMA/Thinking.vrma",
+      "sizeKB": 115.7,
+      "hash": "0c52edd6e97b"
+    },
+    {
+      "path": "pose_world_connected.vrma",
+      "sizeKB": 120.2,
+      "hash": "5f16ceb8f336"
+    },
+    {
+      "path": "pose_world_lovely.vrma",
+      "sizeKB": 120.2,
+      "hash": "35fcbfac99ed"
+    },
+    {
+      "path": "pose_world_smiles.vrma",
+      "sizeKB": 120.2,
+      "hash": "1097477ae0e3"
+    },
+    {
+      "path": "pose_world_sparkle.vrma",
+      "sizeKB": 120.2,
+      "hash": "207592610090"
+    },
+    {
+      "path": "vrma/VRMA_01.vrma",
+      "sizeKB": 1316.8,
+      "hash": "f45abc44800c"
+    },
+    {
+      "path": "vrma/VRMA_02.vrma",
+      "sizeKB": 834.3,
+      "hash": "6322bbe2df77"
+    },
+    {
+      "path": "vrma/VRMA_03.vrma",
+      "sizeKB": 1304.4,
+      "hash": "6f66b6b5c021"
+    },
+    {
+      "path": "vrma/VRMA_04.vrma",
+      "sizeKB": 1082.6,
+      "hash": "c40c1a7b0dbc"
+    },
+    {
+      "path": "vrma/VRMA_05.vrma",
+      "sizeKB": 617.5,
+      "hash": "cc508712ca4d"
+    },
+    {
+      "path": "vrma/VRMA_06.vrma",
+      "sizeKB": 506.2,
+      "hash": "a2c86633690e"
+    },
+    {
+      "path": "vrma/VRMA_07.vrma",
+      "sizeKB": 753.9,
+      "hash": "b0096525231e"
+    }
+  ]
+}

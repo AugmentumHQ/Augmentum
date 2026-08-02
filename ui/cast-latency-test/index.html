@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Cast input — latency spike</title>
+  <style>
+    :root {
+      --bg: #0a0a0c;
+      --panel: #15161b;
+      --panel-2: #1d1f26;
+      --border: #2a2c36;
+      --text: #e8e8ec;
+      --text-dim: #8a8d99;
+      --good: #6cd97f;
+      --warn: #ffce4f;
+      --bad: #ff6b6b;
+      --accent: #7aa2ff;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; min-height: 100vh; }
+    main { max-width: 720px; margin: 0 auto; padding: 16px; }
+    h1 { font-size: 16px; font-weight: 600; margin: 0 0 4px; letter-spacing: 0.2px; }
+    p.lede { color: var(--text-dim); margin: 0 0 16px; }
+    .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+    .row { display: flex; gap: 16px; align-items: baseline; flex-wrap: wrap; }
+    .row > div { min-width: 70px; }
+    .label { color: var(--text-dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .value { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 22px; }
+    .value-small { font-variant-numeric: tabular-nums; font-size: 14px; }
+    button {
+      background: var(--accent); color: #0a0a0c; border: 0; border-radius: 6px;
+      padding: 10px 18px; font-weight: 600; cursor: pointer; font-size: 14px;
+    }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    button.stop { background: var(--bad); color: white; }
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+    .pill.good { background: rgba(108, 217, 127, 0.15); color: var(--good); }
+    .pill.warn { background: rgba(255, 206, 79, 0.15); color: var(--warn); }
+    .pill.bad { background: rgba(255, 107, 107, 0.15); color: var(--bad); }
+    .pill.idle { background: rgba(138, 141, 153, 0.15); color: var(--text-dim); }
+    .hist { display: grid; grid-template-columns: 90px 1fr 60px; gap: 6px 12px; align-items: center; margin-top: 8px; }
+    .hist-bucket { font-size: 12px; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+    .hist-bar { background: var(--panel-2); height: 14px; border-radius: 3px; overflow: hidden; }
+    .hist-bar > div { height: 100%; background: var(--accent); transition: width 0.25s ease; }
+    .hist-count { font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; color: var(--text-dim); }
+    .controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .meta { color: var(--text-dim); font-size: 12px; }
+    code { background: var(--panel-2); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Cast input — latency spike</h1>
+  <p class="lede">
+    Measures WebSocket RTT for a 60&nbsp;Hz gamepad-poll stream over <code>/api/cast/input/ws?echo=1</code>.
+    Pass criterion: <strong>p99 &lt; 20&nbsp;ms</strong> on LAN. Higher means switch to WebTransport or Selkies-datachannel.
+  </p>
+
+  <div class="panel">
+    <div class="controls">
+      <button id="start-btn">Start</button>
+      <span id="status" class="pill idle">idle</span>
+      <span class="meta" id="gamepad-meta">Gamepad: detecting…</span>
+      <span class="meta" id="elapsed">00:00</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="row">
+      <div><div class="label">samples</div><div class="value" id="m-count">0</div></div>
+      <div><div class="label">p50</div><div class="value" id="m-p50">—</div></div>
+      <div><div class="label">p95</div><div class="value" id="m-p95">—</div></div>
+      <div><div class="label">p99</div><div class="value" id="m-p99">—</div></div>
+      <div><div class="label">max</div><div class="value" id="m-max">—</div></div>
+      <div><div class="label">jitter (p95-p50)</div><div class="value-small" id="m-jitter">—</div></div>
+    </div>
+    <div class="hist" id="hist"></div>
+  </div>
+
+  <div class="panel meta">
+    <strong style="color: var(--text);">How to read this:</strong>
+    The number that matters is <strong>p99</strong>. The endpoint to test against was deliberately the
+    same kind of WebSocket production input will use, so this spike's result is the production p99.
+    Run for at least 60 seconds; ideally 5 minutes on the same Wi-Fi the phone-controller would actually use.
+    Auto-stop at 10 minutes.
+  </div>
+</main>
+
+<script>
+'use strict';
+
+// ── Config ──────────────────────────────────────────────────────────
+const POLL_HZ = 60;
+const POLL_INTERVAL_MS = 1000 / POLL_HZ;
+const AUTO_STOP_MS = 10 * 60 * 1000;
+const RING_BUFFER = 4096;     // Rolling window for stats
+const HIST_BUCKETS_MS = [5, 10, 20, 35, 50, 75, 100, 200, 500];
+
+// ── State ───────────────────────────────────────────────────────────
+const state = {
+  ws: null,
+  running: false,
+  startedAt: 0,
+  pollTimer: null,
+  uiTimer: null,
+  seq: 0,
+  pending: new Map(),         // seq → t_send (await echo to compute RTT)
+  rtts: [],                   // rolling RTTs in ms
+  hist: new Array(HIST_BUCKETS_MS.length + 1).fill(0),
+  gamepadIndex: -1,
+};
+
+// ── DOM helpers ─────────────────────────────────────────────────────
+const el = (id) => document.getElementById(id);
+const startBtn = el('start-btn');
+const statusEl = el('status');
+const gamepadMeta = el('gamepad-meta');
+const elapsedEl = el('elapsed');
+
+function setStatus(text, cls) {
+  statusEl.textContent = text;
+  statusEl.className = `pill ${cls || 'idle'}`;
+}
+
+function setGamepadMeta() {
+  if (state.gamepadIndex >= 0) {
+    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    const pad = pads[state.gamepadIndex];
+    gamepadMeta.textContent = `Gamepad: ${pad?.id || 'connected'} (axes: ${pad?.axes?.length || 0}, buttons: ${pad?.buttons?.length || 0})`;
+  } else {
+    gamepadMeta.textContent = 'Gamepad: none detected — measuring with synthetic input (still valid for WS RTT)';
+  }
+}
+
+function format(ms) {
+  if (ms == null || !isFinite(ms)) return '—';
+  return `${ms.toFixed(1)} ms`;
+}
+
+function pad2(n) { return n < 10 ? `0${n}` : `${n}`; }
+
+function updateElapsed() {
+  if (!state.startedAt) { elapsedEl.textContent = '00:00'; return; }
+  const s = Math.floor((performance.now() - state.startedAt) / 1000);
+  elapsedEl.textContent = `${pad2(Math.floor(s / 60))}:${pad2(s % 60)}`;
+}
+
+// ── Stats ───────────────────────────────────────────────────────────
+function recordRtt(rtt) {
+  if (state.rtts.length >= RING_BUFFER) state.rtts.shift();
+  state.rtts.push(rtt);
+  let bucket = HIST_BUCKETS_MS.length;
+  for (let i = 0; i < HIST_BUCKETS_MS.length; i++) {
+    if (rtt <= HIST_BUCKETS_MS[i]) { bucket = i; break; }
+  }
+  state.hist[bucket]++;
+}
+
+function percentile(sorted, p) {
+  if (sorted.length === 0) return null;
+  const idx = Math.min(sorted.length - 1, Math.floor((p / 100) * sorted.length));
+  return sorted[idx];
+}
+
+function renderStats() {
+  if (state.rtts.length === 0) {
+    el('m-count').textContent = '0';
+    return;
+  }
+  const sorted = [...state.rtts].sort((a, b) => a - b);
+  const p50 = percentile(sorted, 50);
+  const p95 = percentile(sorted, 95);
+  const p99 = percentile(sorted, 99);
+  const max = sorted[sorted.length - 1];
+  el('m-count').textContent = `${state.rtts.length}`;
+  el('m-p50').textContent = format(p50);
+  el('m-p95').textContent = format(p95);
+  el('m-p99').textContent = format(p99);
+  el('m-max').textContent = format(max);
+  el('m-jitter').textContent = format(p95 - p50);
+
+  // Color the p99 by pass/fail criterion.
+  const p99El = el('m-p99');
+  p99El.style.color = p99 < 20 ? 'var(--good)' : p99 < 50 ? 'var(--warn)' : 'var(--bad)';
+}
+
+function renderHistogram() {
+  const total = state.hist.reduce((a, b) => a + b, 0);
+  if (total === 0) return;
+  const max = Math.max(...state.hist);
+  const labels = HIST_BUCKETS_MS.map((b, i) => {
+    const lo = i === 0 ? 0 : HIST_BUCKETS_MS[i - 1];
+    return `${lo}–${b} ms`;
+  });
+  labels.push(`> ${HIST_BUCKETS_MS[HIST_BUCKETS_MS.length - 1]} ms`);
+  const html = state.hist.map((count, i) => `
+    <div class="hist-bucket">${labels[i]}</div>
+    <div class="hist-bar"><div style="width: ${max > 0 ? (count / max * 100) : 0}%"></div></div>
+    <div class="hist-count">${count}</div>
+  `).join('');
+  el('hist').innerHTML = html;
+}
+
+// ── Gamepad polling ─────────────────────────────────────────────────
+function detectGamepad() {
+  if (!navigator.getGamepads) {
+    state.gamepadIndex = -1;
+    setGamepadMeta();
+    return;
+  }
+  const pads = navigator.getGamepads();
+  for (let i = 0; i < pads.length; i++) {
+    if (pads[i]) { state.gamepadIndex = i; setGamepadMeta(); return; }
+  }
+  state.gamepadIndex = -1;
+  setGamepadMeta();
+}
+
+window.addEventListener('gamepadconnected', detectGamepad);
+window.addEventListener('gamepaddisconnected', detectGamepad);
+detectGamepad();
+
+function buildEvent() {
+  if (state.gamepadIndex >= 0 && navigator.getGamepads) {
+    const pad = navigator.getGamepads()[state.gamepadIndex];
+    if (pad) {
+      // Compact event mirroring the production wire shape: axes are a
+      // packed float[] snapshot; buttons are the bitmask of currently
+      // pressed indices. Real production will send deltas only; the
+      // spike sends every poll regardless so we measure worst-case load.
+      const buttons = pad.buttons.reduce((acc, b, i) => b.pressed ? (acc | (1 << i)) : acc, 0);
+      return { type: 'gamepad_poll', axes: pad.axes, buttons, ts: pad.timestamp };
+    }
+  }
+  // Synthetic input — still exercises the WS RTT path.
+  return { type: 'synthetic', value: Math.random() };
+}
+
+// ── WebSocket lifecycle ─────────────────────────────────────────────
+function startSpike() {
+  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const url = `${proto}//${location.host}/api/cast/input/ws?echo=1`;
+  setStatus('connecting…', 'warn');
+  startBtn.disabled = true;
+  state.ws = new WebSocket(url);
+  state.ws.binaryType = 'arraybuffer';
+  state.ws.addEventListener('open', () => {
+    state.running = true;
+    state.startedAt = performance.now();
+    state.seq = 0;
+    state.pending.clear();
+    state.rtts = [];
+    state.hist.fill(0);
+    setStatus('measuring', 'good');
+    startBtn.textContent = 'Stop';
+    startBtn.classList.add('stop');
+    startBtn.disabled = false;
+    state.pollTimer = setInterval(pollAndSend, POLL_INTERVAL_MS);
+    state.uiTimer = setInterval(() => {
+      renderStats();
+      renderHistogram();
+      updateElapsed();
+      if (performance.now() - state.startedAt >= AUTO_STOP_MS) {
+        stopSpike('auto');
+      }
+    }, 250);
+  });
+  state.ws.addEventListener('message', onEcho);
+  state.ws.addEventListener('error', () => setStatus('ws error', 'bad'));
+  state.ws.addEventListener('close', (e) => {
+    stopSpike(e.wasClean ? 'closed' : 'dropped');
+  });
+}
+
+function pollAndSend() {
+  if (!state.running || state.ws?.readyState !== WebSocket.OPEN) return;
+  state.seq++;
+  const t_send = Date.now();
+  state.pending.set(state.seq, t_send);
+  // Bound the pending map so a flaky echo (or none) doesn't pin RAM.
+  if (state.pending.size > 1024) {
+    const oldest = state.pending.keys().next().value;
+    state.pending.delete(oldest);
+  }
+  try {
+    state.ws.send(JSON.stringify({
+      seq: state.seq,
+      t_send,
+      event: buildEvent(),
+    }));
+  } catch (err) {
+    setStatus('send error', 'bad');
+  }
+}
+
+function onEcho(ev) {
+  let frame;
+  try { frame = JSON.parse(ev.data); } catch { return; }
+  const t_recv_client = Date.now();
+  const t_send = state.pending.get(frame.seq);
+  if (t_send === undefined) return;
+  state.pending.delete(frame.seq);
+  const rtt = t_recv_client - t_send;
+  if (rtt >= 0 && rtt < 10_000) recordRtt(rtt);
+}
+
+function stopSpike(reason) {
+  state.running = false;
+  if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
+  if (state.uiTimer) { clearInterval(state.uiTimer); state.uiTimer = null; }
+  if (state.ws && state.ws.readyState !== WebSocket.CLOSED) {
+    try { state.ws.close(); } catch {}
+  }
+  state.ws = null;
+  renderStats();
+  renderHistogram();
+  updateElapsed();
+  startBtn.textContent = 'Start';
+  startBtn.classList.remove('stop');
+  startBtn.disabled = false;
+  setStatus(reason === 'auto' ? 'auto-stopped (10 min)' : reason || 'stopped', 'idle');
+}
+
+startBtn.addEventListener('click', () => {
+  if (state.running) stopSpike('user'); else startSpike();
+});
+</script>
+</body>
+</html>

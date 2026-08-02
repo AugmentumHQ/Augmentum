@@ -1,0 +1,5 @@
+# Renders the repo "Sponsor" button. Stripe-only for now — the GitHub
+# Sponsors org (AugmentumHQ) is not yet enrolled, so the `github:` key is
+# intentionally omitted (it would render a dead/unavailable button). Add
+# `github: [AugmentumHQ]` here once Sponsors is approved.
+custom: ["https://donate.stripe.com/dRm14pdwxcj5glcdQS0RG02"]

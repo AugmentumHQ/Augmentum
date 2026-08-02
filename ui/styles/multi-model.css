@@ -1,0 +1,303 @@
+/* ==========================================================================
+   Multi-Model Fan-out (passthrough compare)
+   Composer button + popover, transient compare cards, and the persistent
+   model chip on compare-born assistant bubbles.
+   ========================================================================== */
+
+/* --- composer button --------------------------------------------------- */
+
+.toolbar-multi-model-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+#multi-model-btn { position: relative; }
+
+#multi-model-btn.mm-armed {
+  color: var(--orb-passthrough, var(--accent));
+}
+
+.mm-btn-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: 7px;
+  background: var(--accent);
+  color: var(--bg-primary, #111);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* --- popover ------------------------------------------------------------ */
+
+.mm-popover {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  z-index: 60;
+  width: 280px;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--bg-secondary, #1c1c22);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mm-pop-header {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.mm-pop-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.mm-pop-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: var(--bg-tertiary, rgba(255, 255, 255, 0.04));
+}
+
+.mm-pop-model {
+  font-size: 12px;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mm-pop-primary {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+}
+
+.mm-pop-tag {
+  font-size: 10px;
+  color: var(--text-muted);
+  flex: none;
+}
+
+.mm-pop-remove {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.mm-pop-remove:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mm-pop-add {
+  border: 1px dashed var(--border, rgba(255, 255, 255, 0.15));
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  padding: 5px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.mm-pop-add:hover { color: var(--text-primary); border-color: var(--accent); }
+
+.mm-pop-hint {
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+/* --- compare container ---------------------------------------------------- */
+
+.mm-compare {
+  margin: 8px 0 12px;
+}
+
+.mm-compare-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--mm-cols, 2), minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 760px) {
+  .mm-compare-grid { grid-template-columns: 1fr; }
+}
+
+.mm-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 120px;
+  max-height: 480px;
+  border-radius: 10px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  background: var(--bg-secondary, rgba(255, 255, 255, 0.03));
+  overflow: hidden;
+}
+
+.mm-card.mm-kept {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.mm-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.06));
+  background: var(--bg-tertiary, rgba(255, 255, 255, 0.03));
+}
+
+.mm-card-model {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mm-card-status {
+  flex: none;
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+
+.mm-card-status[data-kind="error"] { color: var(--error, #e07070); }
+.mm-card-status[data-kind="warn"]  { color: var(--warning, #d9b04a); }
+.mm-card-status[data-kind="done"]  { color: var(--success, #6fbf85); }
+
+.mm-card-think {
+  padding: 4px 10px 0;
+  font-size: 10.5px;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.mm-card-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px 10px 0;
+}
+
+.mm-card-tools:empty { display: none; }
+
+.mm-tool-chip {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+}
+
+.mm-tool-chip.mm-tool-ok   { color: var(--success, #6fbf85); }
+.mm-tool-chip.mm-tool-fail { color: var(--error, #e07070); }
+
+.mm-card-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Once finalized the body holds rendered markdown — undo the streaming
+   pre-wrap so paragraphs/code blocks lay out normally. */
+.mm-card[data-state="done"] .mm-card-body,
+.mm-card[data-state="error"] .mm-card-body,
+.mm-card[data-state="warn"] .mm-card-body {
+  white-space: normal;
+}
+
+.mm-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  border-top: 1px solid var(--border, rgba(255, 255, 255, 0.06));
+}
+
+.mm-card-metrics {
+  font-size: 10px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mm-card-keep {
+  flex: none;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.15));
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  padding: 3px 9px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.mm-card-keep:not(:disabled):hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+.mm-card-keep:disabled { opacity: 0.4; cursor: default; }
+
+.mm-card.mm-kept .mm-card-keep {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.mm-compare-note {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* --- persistent model chip on compare-born bubbles ------------------------- */
+
+.mm-model-chip {
+  display: inline-block;
+  margin: 0 0 4px;
+  padding: 1px 8px;
+  border-radius: 9px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+}

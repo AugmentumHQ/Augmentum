@@ -1,0 +1,341 @@
+/* ==========================================================================
+   Session Canvas dock
+   A resizable right-docked panel that holds one artifact beside chat and
+   stays anchored while you keep chatting. The binding (which artifact) is
+   persisted server-side (canvas_routes.py); the dock width + open preference
+   are device-local UI chrome. This is the FOUNDATION surface — later rich-
+   content modes (live React preview, interactive charts, prose editing)
+   render into this dock rather than spawning their own.
+   ========================================================================== */
+
+:root { --canvas-width: 440px; }
+
+.canvas-dock {
+  position: fixed;
+  top: var(--header-height);
+  right: 0;
+  bottom: 0;
+  width: var(--canvas-width);
+  max-width: 96vw;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-elevated, var(--surface));
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-popover, -8px 0 24px rgba(0, 0, 0, 0.18));
+  z-index: var(--z-drawer, 40);
+  animation: canvas-dock-in var(--duration-normal, 200ms) var(--ease-out, ease);
+}
+
+.canvas-dock.hidden { display: none; }
+
+@keyframes canvas-dock-in {
+  from { transform: translateX(12px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+/* Desktop: reflow chat so the canvas sits BESIDE it, not over it. The center
+   grid columns (.main-area / .input-area, layout.css) gain right padding the
+   width of the dock. Mobile keeps the dock as a full-width overlay. */
+@media (min-width: 1024px) {
+  body.canvas-open .main-area,
+  body.canvas-open .input-area {
+    padding-right: var(--canvas-width);
+    transition: padding-right var(--duration-normal, 200ms) var(--ease-out, ease);
+  }
+}
+
+@media (max-width: 1023px) {
+  .canvas-dock { width: 100%; max-width: 100%; }
+}
+
+/* Resize handle (left edge) — desktop only. Mirrors the inspector handle. */
+.canvas-dock-resize {
+  position: absolute;
+  top: 0;
+  left: -3px;
+  width: 8px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 2;
+}
+.canvas-dock-resize::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  width: 3px;
+  height: 32px;
+  transform: translateY(-50%);
+  border-radius: 2px;
+  background: var(--border);
+  opacity: 0;
+  transition: opacity var(--duration-fast, 120ms) ease;
+}
+.canvas-dock-resize:hover::before { opacity: 0.85; }
+@media (max-width: 1023px) { .canvas-dock-resize { display: none; } }
+
+/* Header */
+.canvas-dock-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 6px 8px 6px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.canvas-dock-title {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Version stepper — segmented ◀ v2/3 ▶ pill; browses history read-only. */
+.canvas-dock-versions {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 1px;
+}
+.canvas-dock-versions.hidden { display: none; }
+.canvas-dock-vbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  border-radius: 999px;
+  transition: color var(--duration-fast, 120ms) ease,
+              background var(--duration-fast, 120ms) ease;
+}
+.canvas-dock-vbtn:hover:not(:disabled) { color: var(--text-primary); background: var(--surface-hover); }
+.canvas-dock-vbtn:disabled { opacity: 0.3; cursor: default; }
+.canvas-dock-vbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.canvas-dock-vbtn svg { width: 13px; height: 13px; }
+.canvas-dock-vlabel {
+  min-width: 34px;
+  text-align: center;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-tertiary);
+  padding: 0 2px;
+  white-space: nowrap;
+}
+/* Restore — accented so "bring this version back" reads as the primary
+   action while browsing an older snapshot. Hidden on the latest version. */
+.canvas-dock-restore { color: var(--accent); }
+.canvas-dock-restore.hidden { display: none; }
+/* Browsing an older version: tint the title so it's unmistakable the
+   preview isn't live. */
+.canvas-dock.viewing-history .canvas-dock-title { color: var(--accent); }
+
+/* What-changed chip — slides in atop the preview after an edit, then
+   auto-dismisses. Ownership-tone confirmation, not a blocking banner. */
+.canvas-dock-changed {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  z-index: 3;
+  max-width: calc(100% - 24px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary);
+  background: var(--bg-elevated, var(--surface));
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow-popover, 0 6px 18px rgba(0, 0, 0, 0.18));
+  transform: translateX(-50%);
+  animation: canvas-dock-chip-in var(--duration-normal, 200ms) var(--ease-out, ease);
+}
+.canvas-dock-changed.hidden { display: none; }
+.canvas-dock-changed .chip-dot {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success, #3fb950);
+}
+.canvas-dock-changed .chip-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@keyframes canvas-dock-chip-in {
+  from { opacity: 0; transform: translate(-50%, -6px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .canvas-dock-changed { animation: none; }
+}
+
+.canvas-dock-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm, 6px);
+  transition: color var(--duration-fast, 120ms) ease,
+              background var(--duration-fast, 120ms) ease;
+}
+.canvas-dock-btn:hover { color: var(--text-primary); background: var(--surface-hover); }
+.canvas-dock-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.canvas-dock-btn svg { width: 16px; height: 16px; }
+
+/* Body — preview host */
+.canvas-dock-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: var(--bg, #ffffff);
+}
+.canvas-dock-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  background: var(--bg, #ffffff);
+}
+.canvas-dock-iframe.hidden { display: none; }
+
+.canvas-dock-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: var(--text-sm, 0.875rem);
+}
+.canvas-dock-empty.hidden { display: none; }
+
+/* Loading overlay — shown while the preview iframe fetches; hidden on load.
+   Leads with progress (spinner), and after a delay offers a new-tab escape
+   hatch for slow/failed networks instead of a dead blank frame. */
+.canvas-dock-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+  background: var(--bg-elevated, var(--surface));
+  color: var(--text-tertiary);
+  font-size: var(--text-sm, 0.875rem);
+}
+.canvas-dock-loading.hidden { display: none; }
+.canvas-dock-spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid color-mix(in srgb, var(--text-tertiary) 30%, transparent);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: canvas-dock-spin 0.8s linear infinite;
+}
+.canvas-dock-slow.hidden { display: none; }
+.canvas-dock-slow-link { color: var(--accent); cursor: pointer; }
+@keyframes canvas-dock-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .canvas-dock-spinner { animation-duration: 2s; }
+}
+
+/* Edit composer — "Ask for a change" footer. Shown only for editable app
+   artifacts; patches the bound app in place (POST /api/canvas/{id}/edit). */
+.canvas-dock-composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  flex: 0 0 auto;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-elevated, var(--surface));
+}
+.canvas-dock-composer.hidden { display: none; }
+.canvas-dock-composer-input {
+  flex: 1;
+  min-width: 0;
+  resize: none;
+  max-height: 120px;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: var(--text-sm, 0.875rem);
+  line-height: 1.45;
+  color: var(--text-primary);
+  background: var(--bg, var(--surface));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 8px);
+  transition: border-color var(--duration-fast, 120ms) ease;
+}
+.canvas-dock-composer-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.canvas-dock-composer-input::placeholder { color: var(--text-tertiary); }
+.canvas-dock-composer-send {
+  position: relative;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  color: #fff;
+  background: var(--accent);
+  transition: background var(--duration-fast, 120ms) ease,
+              opacity var(--duration-fast, 120ms) ease;
+}
+.canvas-dock-composer-send:hover { background: color-mix(in srgb, var(--accent) 86%, #000); }
+.canvas-dock-composer-send:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.canvas-dock-composer-send:disabled { opacity: 0.6; cursor: default; }
+.canvas-dock-composer-icon { width: 16px; height: 16px; }
+.canvas-dock-composer-spin {
+  display: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid color-mix(in srgb, #fff 45%, transparent);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: canvas-dock-spin 0.8s linear infinite;
+}
+/* Busy state — swap the send glyph for a spinner while the edit applies. */
+.canvas-dock-composer.busy .canvas-dock-composer-icon { display: none; }
+.canvas-dock-composer.busy .canvas-dock-composer-spin { display: block; }
+@media (prefers-reduced-motion: reduce) {
+  .canvas-dock-composer-spin { animation-duration: 2s; }
+}
+
+/* Toolbar toggle — hidden until the active session has an artifact. */
+#canvas-toggle-btn.hidden { display: none; }
+#canvas-toggle-btn[aria-pressed="true"] {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}

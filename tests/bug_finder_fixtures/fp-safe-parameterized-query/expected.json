@@ -1,0 +1,8 @@
+{
+  "fixture_id": "fp-safe-parameterized-query",
+  "language": "python",
+  "kind": "fp_bait",
+  "expected_findings": [],
+  "max_extra_findings": 0,
+  "notes": "FP-bait. Pattern-matchers flag this because of the f-string near `execute`. A disproof-oriented verifier should attempt the obvious PoC (`column = ' OR 1=1`) and find it raises ValueError before reaching SQL. CONFIRMED finding here = false positive."
+}

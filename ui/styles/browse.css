@@ -1,0 +1,5764 @@
+/* ==========================================================================
+   Browse Tab — AI-Assisted Web Reader + Notes
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   Panel Shell
+   --------------------------------------------------------------------------- */
+.browse-panel {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-overlay);
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 767px) {
+  .browse-panel {
+    bottom: calc(var(--orb-bar-height) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+.browse-panel.hidden {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Header Bar
+   --------------------------------------------------------------------------- */
+.browse-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+  flex-shrink: 0;
+  min-height: 44px;
+}
+
+.browse-nav-group {
+  display: flex;
+  gap: 2px;
+}
+
+.browse-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast), transform var(--duration-fast);
+}
+
+.browse-nav-btn:hover:not(:disabled) {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.browse-nav-btn:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+.browse-nav-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.browse-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.browse-nav-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Tab switcher: Browse / Notes */
+.browse-tab-group {
+  display: flex;
+  gap: 2px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+}
+
+.browse-tab-btn {
+  padding: 4px 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast), box-shadow var(--duration-fast);
+}
+
+.browse-tab-btn.active {
+  background: var(--bg);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.browse-tab-btn:hover:not(.active) {
+  color: var(--text-primary);
+}
+
+.browse-tab-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.browse-search-bar {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 0 var(--space-sm) 0 var(--space-md);
+  height: 34px;
+  transition: border-color var(--duration-fast);
+  position: relative;
+}
+
+.browse-search-bar:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.browse-search-bar.notes-mode {
+  border-color: var(--mode-narrative, #9c27b0);
+}
+
+.browse-search-bar.notes-mode svg {
+  color: var(--mode-narrative, #9c27b0);
+}
+
+.browse-search-bar svg {
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.browse-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  outline: none;
+}
+
+.browse-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.browse-search-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: var(--accent-contrast, #fff);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity var(--duration-fast), transform var(--duration-fast);
+}
+
+.browse-search-submit:hover {
+  opacity: 0.85;
+}
+
+.browse-search-submit:active {
+  transform: scale(0.92);
+}
+
+.browse-search-submit:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.browse-search-submit:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.browse-search-submit svg {
+  width: 14px;
+  height: 14px;
+  color: inherit;
+}
+
+/* Search history dropdown.
+   The popover gets a subtle accent atmosphere (consistent with the
+   landing backlight pattern) plus a fade-in entrance — without
+   either, the dropdown reads as a system menu rather than a
+   considered interface. */
+.browse-search-history {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-secondary, var(--bg));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-overlay, 30);
+  max-height: 320px;
+  overflow-y: auto;
+  padding: var(--space-xs) 0;
+  overflow: hidden auto;
+}
+.browse-search-history.open {
+  display: block;
+  animation: browse-history-in 0.18s var(--ease-decelerate) both;
+}
+@keyframes browse-history-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .browse-search-history.open { animation: none; }
+}
+.browse-search-history::before {
+  content: '';
+  position: sticky;
+  top: 0;
+  display: block;
+  height: 0;
+  /* Atmospheric backlight bleeds from the top of the popover —
+     reads as "fresh signal arriving" without intruding on the
+     row content below. */
+  box-shadow: 0 0 80px 30px color-mix(in srgb, var(--accent) 6%, transparent);
+  pointer-events: none;
+}
+.browse-search-history-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px var(--space-md);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  transition: background var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+  position: relative;
+}
+.browse-search-history-item:hover {
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface-hover));
+}
+.browse-search-history-item:hover svg {
+  color: var(--accent);
+}
+.browse-search-history-item svg {
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+.browse-search-history-query {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.browse-search-history-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-full);
+  opacity: 0;
+  transition: opacity 0.1s, background 0.1s;
+  flex-shrink: 0;
+}
+.browse-search-history-item:hover .browse-search-history-remove {
+  opacity: 1;
+}
+.browse-search-history-remove:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+.browse-search-history-remove svg {
+  width: 12px;
+  height: 12px;
+}
+.browse-search-history-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px var(--space-md) 2px;
+  border-top: 1px solid var(--border);
+  margin-top: var(--space-xs);
+}
+.browse-search-history-clear {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+.browse-search-history-clear:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+}
+
+.browse-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast), transform var(--duration-fast);
+}
+
+.browse-close-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.browse-close-btn:active {
+  transform: scale(0.92);
+}
+
+.browse-close-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.browse-close-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------------------------------------------------------------------------
+   Body Layout
+   --------------------------------------------------------------------------- */
+.browse-body-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.browse-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  /* Anchor for floating scroll-jump buttons. */
+  position: relative;
+}
+
+.browse-content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-xl) var(--space-md);
+}
+
+/* ---------------------------------------------------------------------------
+   Scroll Jump (To Top / To Bottom)
+   --------------------------------------------------------------------------- */
+.browse-scroll-jump {
+  position: absolute;
+  right: var(--space-md);
+  /* Vertical-center placement so we never collide with the companion
+     summon pip (position:fixed; bottom:18px; right:18px; z-index max)
+     or the full companion presence dock anchored to bottom-right. The
+     two arrows sit stacked above and below the midline. */
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  z-index: 5;
+  /* Container itself never intercepts pointer events; only the visible
+     buttons do. Keeps mid-page text selection from hitting the bar
+     when both arrows are off. */
+  pointer-events: none;
+}
+
+.browse-scroll-jump-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity var(--duration-fast),
+    transform var(--duration-fast),
+    background var(--duration-fast),
+    color var(--duration-fast);
+  pointer-events: none;
+}
+
+.browse-scroll-jump-btn.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.browse-scroll-jump-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.browse-scroll-jump-btn:active {
+  transform: scale(0.92);
+}
+
+.browse-scroll-jump-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.browse-scroll-jump-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 767px) {
+  .browse-scroll-jump {
+    /* Tighter inset on narrow viewports — the article body already has
+       slim side padding so we don't want the buttons jutting into the
+       text column. */
+    right: var(--space-sm);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Search View
+   --------------------------------------------------------------------------- */
+.browse-search-view {
+  position: relative;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* Atmospheric backlight behind the landing — a single soft accent halo
+   placed slightly above center. Theme-aware via accent color-mix; sits
+   under the content (z-index:0) so it never intercepts clicks. The
+   ellipse axes keep it tall-on-mobile, wide-on-desktop without media
+   queries: the 60% width × 45% height is relative to the search view,
+   which itself reflows by viewport. */
+.browse-search-view::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 60% 45% at 50% 30%,
+    color-mix(in srgb, var(--accent) 7%, transparent) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.browse-search-view > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Landing page (interactive empty state).
+   Animation strategy: each major block animates independently with a
+   stepped delay (icon → title → subtitle → chips → data sections) so
+   the page assembles like a designed reveal rather than a single fade.
+   Dynamic sections (recents/bookmarks/packs) carry their own delay
+   so when they inject after async load they still arrive with grace
+   instead of popping. */
+.browse-landing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 24px 48px;
+  text-align: center;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+@keyframes browse-landing-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.browse-landing-icon,
+.browse-landing-title,
+.browse-landing-subtitle,
+.browse-landing-chips,
+.browse-landing-recents,
+.browse-landing-bookmarks,
+.browse-landing-packs {
+  animation: browse-landing-in 0.5s var(--ease-decelerate) both;
+}
+.browse-landing-icon       { animation-delay:  0ms; }
+.browse-landing-title      { animation-delay: 60ms; }
+.browse-landing-subtitle   { animation-delay: 110ms; }
+.browse-landing-chips      { animation-delay: 170ms; }
+.browse-landing-recents    { animation-delay: 230ms; }
+.browse-landing-bookmarks  { animation-delay: 290ms; }
+.browse-landing-packs      { animation-delay: 350ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .browse-landing-icon,
+  .browse-landing-title,
+  .browse-landing-subtitle,
+  .browse-landing-chips,
+  .browse-landing-recents,
+  .browse-landing-bookmarks,
+  .browse-landing-packs {
+    animation: none;
+  }
+}
+
+/* Icon: was opacity 0.2 + bare currentColor — read as "broken/dimmed".
+   Now a confident accent-tinted mark at higher opacity so it feels
+   intentional. Slightly thicker stroke holds up at the larger size
+   without going chunky. */
+.browse-landing-icon {
+  opacity: 0.55;
+  margin-bottom: 22px;
+  color: var(--accent);
+  transition: opacity var(--duration-normal) var(--ease-standard);
+}
+.browse-landing-icon svg { stroke-width: 1.25; }
+
+/* Editorial hero — Crimson Pro italic from Augmentum's existing
+   --font-editorial stack. Larger, primary-text colored, slight negative
+   tracking for display weight. Replaces the placeholder-feeling
+   text-secondary/text-lg combo. clamp() lets it scale gracefully on
+   narrow viewports without a separate breakpoint. */
+.browse-landing-title {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: clamp(28px, 4vw, 36px);
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: 0;
+  line-height: 1.12;
+  margin: 0 0 8px;
+}
+
+.browse-landing-subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin: 0 0 24px;
+  letter-spacing: 0;
+}
+
+.browse-landing-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.browse-landing-chip {
+  padding: 6px 14px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast),
+              color var(--duration-fast),
+              transform var(--duration-fast);
+}
+
+.browse-landing-chip:hover {
+  background: var(--accent-subtle, color-mix(in srgb, var(--accent) 10%, transparent));
+  border-color: var(--accent);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.browse-landing-chip:active { transform: scale(0.97); }
+
+.browse-landing-recents { width: 100%; max-width: 400px; }
+
+.browse-landing-recents-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.browse-landing-recents-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.browse-landing-recent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+  transition: background var(--duration-fast);
+}
+
+.browse-landing-recent:hover { background: var(--surface-hover); }
+.browse-landing-recent svg { opacity: 0.4; flex-shrink: 0; }
+.browse-landing-recent-query {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.browse-landing-recent-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-full);
+  opacity: 0;
+  transition: opacity 0.1s, background 0.1s;
+  flex-shrink: 0;
+  padding: 0;
+}
+.browse-landing-recent:hover .browse-landing-recent-remove,
+.browse-landing-recent:focus-within .browse-landing-recent-remove {
+  opacity: 1;
+}
+.browse-landing-recent-remove:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+.browse-landing-recent-remove svg {
+  width: 12px;
+  height: 12px;
+  opacity: 1;
+}
+.browse-landing-recents-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+.browse-landing-recents-clear {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+.browse-landing-recents-clear:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+}
+
+/* Category tabs */
+.browse-categories {
+  display: flex;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+/* Provider filter chips — one-click `site:` scoping. Sits directly
+   under the category row; scrolls horizontally on narrow screens. */
+.browse-providers {
+  display: flex;
+  gap: 6px;
+  margin-bottom: var(--space-lg);
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 2px; /* room for the scrollbar on overflow */
+}
+.browse-providers::-webkit-scrollbar {
+  height: 4px;
+}
+.browse-providers::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+.browse-provider-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 4px 10px 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard);
+  contain: layout style paint;
+}
+.browse-provider-chip:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-light);
+}
+.browse-provider-chip:active { transform: scale(0.96); }
+.browse-provider-chip.active {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  color: color-mix(in srgb, var(--accent) 90%, var(--text-primary));
+}
+.browse-provider-chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.browse-provider-favicon {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+.browse-provider-label {
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.browse-category-btn {
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast), transform var(--duration-fast);
+  font-family: inherit;
+}
+
+.browse-category-btn:hover {
+  background: var(--surface-hover);
+}
+
+.browse-category-btn:active {
+  transform: scale(0.95);
+}
+
+.browse-category-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.browse-category-btn.active {
+  background: var(--accent);
+  color: var(--accent-contrast, #fff);
+  border-color: var(--accent);
+}
+
+/* Video filter bar — Time / Duration / Sort. Renders only when the
+   active category is videos (or every result is from a video host).
+   Compact single-row toolbar above the result grid, matching the
+   restraint Google's video filter bar uses. */
+.browse-video-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: var(--space-md);
+  align-items: center;
+}
+.browse-vf {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  transition: background var(--duration-fast), border-color var(--duration-fast);
+}
+.browse-vf:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-light);
+}
+.browse-vf:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.browse-vf-icon {
+  font-size: 0.95em;
+  line-height: 1;
+  opacity: 0.85;
+}
+.browse-vf-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--text-xs);
+  cursor: pointer;
+  padding: 0 16px 0 0;
+  /* SVG caret as background — keeps the chip clean without an extra DOM node. */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M2 4 L5 7 L8 4' fill='none' stroke='currentColor' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0 center;
+}
+.browse-vf-select:focus { outline: none; }
+.browse-vf-select option {
+  /* Native option dropdowns inherit the system background, not the chip.
+     Force the surface colour so dark mode looks coherent. */
+  background: var(--surface);
+  color: var(--text-primary);
+}
+/* Non-default selection styles the whole chip as "active" — same accent
+   treatment as a selected provider chip so the user sees at a glance
+   which filters are narrowing the result set. */
+.browse-vf:has(.browse-vf-select option:checked:not([value=""])) {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  color: color-mix(in srgb, var(--accent) 90%, var(--text-primary));
+}
+
+/* View-count pill on video cards — sits inline with channel + date,
+   muted enough not to compete with the title. */
+.browse-result-views {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Results count */
+.browse-results-count {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+}
+
+/* Result list */
+.browse-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Standard result card (Google-style: source → title → snippet).
+   Adds a subtle left-edge accent gutter on hover — the editorial
+   equivalent of "this is the line my eye is on." Combined with a
+   1px translateX, it gives the list a confident reading rhythm
+   without raising the brightness budget. */
+.browse-result-card {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  position: relative;
+  transition: background var(--duration-fast),
+              box-shadow var(--duration-fast),
+              transform var(--duration-fast) var(--ease-standard);
+}
+
+.browse-result-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 12%; bottom: 12%;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 0;
+  transform: scaleY(0.6);
+  transform-origin: center;
+  transition: opacity var(--duration-fast) var(--ease-standard),
+              transform var(--duration-normal) var(--ease-decelerate);
+}
+
+.browse-result-card:hover {
+  background: var(--surface-hover);
+  box-shadow: var(--shadow-sm);
+  transform: translateX(1px);
+}
+
+.browse-result-card:hover::before {
+  opacity: 0.7;
+  transform: scaleY(1);
+}
+
+.browse-result-card:active {
+  background: color-mix(in srgb, var(--surface-hover) 80%, var(--accent));
+}
+
+.browse-result-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.browse-result-body {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Domain reputation indicator */
+.browse-reputation-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--text-muted);
+}
+
+.browse-reputation-dot[data-rep="excellent"] {
+  background: var(--success);
+}
+
+.browse-reputation-dot[data-rep="good"] {
+  background: var(--accent);
+}
+
+.browse-reputation-dot[data-rep="unknown"] {
+  background: var(--text-muted);
+  opacity: 0.4;
+}
+
+.browse-reputation-dot[data-rep="bad"] {
+  background: var(--error);
+  opacity: 0.6;
+}
+
+/* Source line: favicon + domain + date */
+.browse-result-source {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.browse-result-source .browse-favicon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.browse-result-date {
+  color: var(--text-muted);
+}
+
+.browse-result-date::before {
+  content: '\b7';
+  margin-right: 6px;
+}
+
+/* Title with keyword highlights.
+   Was accent-colored at weight 500 — every title shouting blue makes
+   the eye lose hierarchy across a 10-result page. Now text-primary
+   at weight 600: titles win by *typographic* prominence (heavier
+   weight + tighter tracking), not by color. Keyword highlights pick
+   up the accent color so query relevance stays scannable. */
+.browse-result-title {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+  margin-bottom: 4px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.browse-result-card:hover .browse-result-title {
+  color: var(--accent);
+}
+
+.browse-result-title mark {
+  background: transparent;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Snippet — Crimson Pro italic gives query results an editorial-
+   excerpt voice rather than utility-list snippets. Reads like a
+   pull-quote from each page, which is exactly what a result snippet
+   *is*. */
+.browse-result-snippet {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  letter-spacing: 0.005em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.browse-result-snippet mark {
+  background: transparent;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-style: normal;
+}
+
+/* Thumbnail (right side of card) */
+.browse-result-thumb {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  background: var(--surface);
+}
+
+/* Image results grid */
+.browse-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-sm);
+}
+
+.browse-result-image-card {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--surface);
+  transition: transform var(--duration-fast), box-shadow var(--duration-fast);
+}
+
+/* Cast-to-TV overlay on search result cards. Hover-reveals via the
+ * .cast-btn-hover-reveal contract from cast-button.css. Sits top-right
+ * so it doesn't fight the duration badge (bottom-right) on video cards
+ * or the title text (bottom band) on image cards. */
+/* Add-to-playlist overlay — sits left of the cast button on YouTube cards.
+ * Same hover-reveal contract as cast-btn-on-image. */
+.browse-result-playlist {
+  position: absolute;
+  top: 6px;
+  right: 44px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  cursor: pointer;
+}
+.browse-result-playlist:hover {
+  background: rgba(0, 0, 0, 0.85);
+  color: #f472b6;
+}
+
+/* Embed overlay variant — sits next to the existing "Open in Media
+ * Panel" button below the iframe, not over the player itself (the
+ * player needs full pointer-events for native controls). */
+.browse-embed-wrap .browse-embed-cast {
+  margin-top: 6px;
+  margin-left: 8px;
+}
+
+/* Placeholder shown in place of the embed iframe after a cast handoff —
+ * keeps the article layout from collapsing while telling the user the
+ * playback moved to the TV. */
+.browse-embed-casting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  padding: 24px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.browse-result-image-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.browse-result-image-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.browse-result-image-thumb {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  display: block;
+  background: var(--surface-hover);
+}
+
+.browse-result-image-info {
+  padding: var(--space-sm);
+}
+
+.browse-result-image-title {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 2px;
+}
+
+.browse-result-image-domain {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.browse-result-image-size {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* Video results grid — thumbnail-first cards with duration + channel.
+   Sized wider than the image grid so titles/metadata have room to breathe
+   without wrapping awkwardly; 16:9 thumb telegraphs "this is a video". */
+.browse-results-video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-md);
+}
+
+.browse-result-video-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--surface);
+  transition: transform var(--duration-fast), box-shadow var(--duration-fast);
+}
+
+.browse-result-video-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.browse-result-video-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.browse-result-video-thumb-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: var(--surface-hover);
+  overflow: hidden;
+}
+
+.browse-result-video-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.browse-result-video-card:hover .browse-result-video-thumb {
+  transform: scale(1.03);
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+.browse-result-video-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  padding-left: 3px;       /* optical centering of the ▶ glyph */
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--duration-fast), background var(--duration-fast);
+}
+
+.browse-result-video-card:hover .browse-result-video-play {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.browse-result-video-duration {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.3;
+}
+
+.browse-result-video-info {
+  padding: var(--space-sm) var(--space-sm) var(--space-md);
+}
+
+.browse-result-video-title {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.35;
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.browse-result-video-title mark {
+  background: transparent;
+  color: var(--accent-text, var(--accent));
+  font-weight: 700;
+}
+
+.browse-result-video-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  min-width: 0;
+}
+
+.browse-result-video-meta .browse-favicon {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.browse-result-video-meta > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+/* Load more button */
+.browse-load-more-btn {
+  display: block;
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  margin-top: var(--space-lg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--duration-fast);
+}
+
+.browse-load-more-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+.browse-load-more-btn:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.browse-load-more-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.browse-load-more-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* No results */
+.browse-no-results {
+  text-align: center;
+  padding: var(--space-2xl);
+  color: var(--text-muted);
+}
+
+.browse-no-results-hint {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: var(--space-xs);
+}
+
+/* ---------------------------------------------------------------------------
+   Reader View — Editorial Typography
+   --------------------------------------------------------------------------- */
+.browse-reader-view {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.browse-article-header {
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--border);
+}
+
+.browse-article-site {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-sm);
+}
+
+.browse-article-site img {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+.browse-article-source-badge {
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: var(--accent-subtle);
+  color: var(--accent-text);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.browse-article-source-badge[data-source="wayback"] {
+  background: var(--warning-subtle);
+  color: var(--warning);
+}
+
+.browse-article-source-badge[data-source="amp"],
+.browse-article-source-badge[data-source="rss"],
+.browse-article-source-badge[data-source="json-ld"] {
+  background: var(--success-subtle);
+  color: var(--success);
+}
+
+.browse-article-title {
+  font-family: var(--font-editorial);
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.browse-article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.browse-article-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.browse-article-meta svg {
+  width: 14px;
+  height: 14px;
+  color: color-mix(in srgb, var(--accent) 55%, var(--text-muted));
+  opacity: 0.85;
+}
+
+/* Article body — editorial feel. Size / family / line-height / width
+   are driven by user prefs via data-reader-* attributes (see
+   browse.js: _applyReaderPrefs). Defaults below are the "medium / serif
+   / normal / medium" preset. */
+.browse-article-body {
+  font-family: var(--font-editorial);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--text-primary);
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+  transition: font-size 180ms var(--ease-standard),
+              line-height 180ms var(--ease-standard),
+              max-width 180ms var(--ease-standard);
+}
+
+/* Size presets */
+.browse-article-body[data-reader-size="s"]  { font-size: 0.9375rem; }
+.browse-article-body[data-reader-size="m"]  { font-size: 1.0625rem; }
+.browse-article-body[data-reader-size="l"]  { font-size: 1.1875rem; }
+.browse-article-body[data-reader-size="xl"] { font-size: 1.3125rem; }
+
+/* Font family */
+.browse-article-body[data-reader-family="sans"]  { font-family: var(--font-sans), system-ui, sans-serif; }
+.browse-article-body[data-reader-family="serif"] { font-family: var(--font-editorial), Georgia, 'Crimson Pro', serif; }
+.browse-article-body[data-reader-family="mono"]  { font-family: var(--font-mono, ui-monospace, monospace); }
+.browse-article-body[data-reader-family="dyslexic"] {
+  /* OpenDyslexic, or a fallback that increases letter spacing + weight
+     for readers who don't have the vendored font installed. */
+  font-family: 'OpenDyslexic', 'Lexend', Verdana, sans-serif;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+}
+
+/* Line-height presets */
+.browse-article-body[data-reader-height="tight"]  { line-height: 1.45; }
+.browse-article-body[data-reader-height="normal"] { line-height: 1.65; }
+.browse-article-body[data-reader-height="airy"]   { line-height: 1.85; }
+
+/* Column-width presets */
+.browse-article-body[data-reader-width="narrow"] { max-width: 560px; }
+.browse-article-body[data-reader-width="medium"] { max-width: 720px; }
+.browse-article-body[data-reader-width="wide"]   { max-width: 920px; }
+
+/* Justified body text — ragged-right remains the default. */
+.browse-article-body[data-reader-justify="1"] {
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+
+/* Respect reduced-motion — disable the pref transitions so users who
+   asked for still layouts aren't bounced around by typography changes. */
+@media (prefers-reduced-motion: reduce) {
+  .browse-article-body {
+    transition: none !important;
+  }
+}
+
+/* --- Typography popover --- */
+.browse-typography-popover {
+  z-index: var(--z-overlay, 1000);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 280px;
+  max-width: 360px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+.browse-typo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+.browse-typo-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  width: 70px;
+}
+.browse-typo-group {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex: 1;
+}
+.browse-typo-opt {
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  font-family: inherit;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+}
+.browse-typo-opt:hover { background: var(--surface-hover); color: var(--text-primary); }
+.browse-typo-opt.active {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  color: color-mix(in srgb, var(--accent) 90%, var(--text-primary));
+}
+.browse-typo-opt:focus-visible,
+.browse-typo-reset-btn:focus-visible,
+.browse-typo-switch input:focus-visible + span {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Small iOS-style switch for justify on/off */
+.browse-typo-switch {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+}
+.browse-typo-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.browse-typo-switch span {
+  width: 36px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--border);
+  position: relative;
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+.browse-typo-switch span::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+.browse-typo-switch input:checked + span {
+  background: var(--accent);
+}
+.browse-typo-switch input:checked + span::after {
+  transform: translateX(16px);
+}
+
+.browse-typo-reset { justify-content: flex-end; padding-top: 4px; border-top: 1px solid var(--border-light); }
+.browse-typo-reset-btn {
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.browse-typo-reset-btn:hover { color: var(--text-primary); }
+
+/* --- Bookmarks: landing strip + full view --- */
+.browse-landing-bookmarks {
+  margin-top: var(--space-lg);
+}
+.browse-landing-bookmarks-seeall {
+  background: transparent;
+  border: 0;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: var(--text-xs);
+  padding: 2px 6px;
+  margin-left: 6px;
+}
+.browse-landing-bookmarks-seeall:hover { text-decoration: underline; }
+.browse-landing-bookmarks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+.browse-landing-bookmark {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: var(--text-xs);
+  text-align: left;
+  color: var(--text-primary);
+  transition: background var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+  overflow: hidden;
+}
+.browse-landing-bookmark:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-light);
+}
+.browse-landing-bookmark-favicon,
+.browse-landing-bookmark-favicon-placeholder {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+.browse-landing-bookmark-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------------------------------------------------------------------------
+   Knowledge Packs landing section + per-pack home view
+   --------------------------------------------------------------------------- */
+
+.browse-landing-packs {
+  margin-top: var(--space-lg);
+}
+
+.browse-landing-packs-count {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 500;
+  vertical-align: 1px;
+}
+
+.browse-landing-packs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+/* Failed-conversion cards — full-width above the regular pack grid so
+   the recovery affordance is impossible to miss. Warm warning palette
+   matches the message-pack-chip--warn rule we use in chat. */
+.browse-landing-pack-failed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin: var(--space-xs) 0 var(--space-sm);
+}
+
+.browse-landing-pack-failed-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(184, 134, 11, 0.3);
+  border-left: 3px solid var(--warning, #b8860b);
+  border-radius: var(--radius-md);
+  background: rgba(184, 134, 11, 0.06);
+}
+
+.browse-landing-pack-failed-icon {
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+  color: var(--warning, #b8860b);
+}
+
+.browse-landing-pack-failed-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.browse-landing-pack-failed-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.browse-landing-pack-failed-meta {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.browse-landing-pack-failed-meta em {
+  color: var(--warning, #b8860b);
+  font-style: normal;
+  font-weight: 500;
+}
+
+.browse-landing-pack-failed-error {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-family: var(--font-mono, monospace);
+  opacity: 0.8;
+}
+
+/* Action buttons (Resume + Discard) stacked vertically on the right edge
+   of the failed-conversion card. */
+.browse-landing-pack-failed-actions {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.browse-landing-pack-failed-discard,
+.browse-landing-pack-failed-resume {
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  transition: background var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+}
+
+.browse-landing-pack-failed-discard:hover:not([disabled]) {
+  background: var(--surface-hover);
+  border-color: var(--warning, #b8860b);
+}
+
+/* Resume is the recommended action when available — affirmative-green
+   styling so the user reads it as "the thing to click" rather than equal-
+   weight with Discard. Disabled state stays muted (transparent fill). */
+.browse-landing-pack-failed-resume:not([disabled]) {
+  background: rgba(76, 175, 80, 0.08);
+  border-color: rgba(76, 175, 80, 0.4);
+  color: var(--success, #4caf50);
+}
+
+.browse-landing-pack-failed-resume:hover:not([disabled]) {
+  background: rgba(76, 175, 80, 0.15);
+  border-color: var(--success, #4caf50);
+}
+
+.browse-landing-pack-failed-discard[disabled],
+.browse-landing-pack-failed-resume[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Batch-size override: small inline control under the meta line, only
+   rendered for resumable cards. Most worker failures are OOM and resuming
+   with the same batch size will fail the same way — letting the user dial
+   it down before retry is the difference between "useful Resume button"
+   and "useless Resume button on memory-tight hosts". */
+.browse-landing-pack-failed-batch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.browse-landing-pack-failed-batch label {
+  font-weight: 500;
+}
+
+.browse-landing-pack-failed-batch input {
+  width: 70px;
+  padding: 2px 6px;
+  background: var(--bg, #1a1a1d);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-family: var(--font-mono, monospace);
+}
+
+.browse-landing-pack-failed-batch input:disabled {
+  opacity: 0.5;
+}
+
+/* Inline progress bar shown after Resume is clicked. Sits below the meta
+   block; both action buttons stay visible (just disabled) so the user can
+   see the resume in flight without losing access to Discard if it stalls. */
+.browse-landing-pack-failed-progress {
+  margin-top: 8px;
+}
+
+.browse-landing-pack-failed-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(184, 134, 11, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.browse-landing-pack-failed-progress-fill {
+  height: 100%;
+  background: var(--success, #4caf50);
+  width: 0%;
+  transition: width var(--duration-normal, 200ms) var(--ease-standard);
+}
+
+.browse-landing-pack-failed-progress-label {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono, monospace);
+}
+
+/* Per-pack wrapper holds the card-button + opt-in Embed action as
+   siblings (nested <button> inside <button> would be invalid HTML).
+   Stacks vertically so the embed row sits below the card meta.       */
+/* Wrapper holds the card + an optional progress strip that flows beneath
+   when an embed job is active. Idle wrappers are flush with their card. */
+.browse-landing-pack-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.browse-landing-pack-wrapper .browse-landing-pack {
+  width: 100%;
+}
+
+/* Pack card — sibling of .browse-landing-bookmark in density and tone.
+   Border + radius match the bookmark grid; lift removed to keep the
+   landing surface visually still. Hover uses --border-light, like
+   bookmarks, not --accent — accents are reserved for active states. */
+.browse-landing-pack {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-primary);
+  overflow: hidden;
+  transition: background var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+}
+
+.browse-landing-pack:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-light, var(--border));
+}
+
+/* Active embed-row reflects up onto the card to merge them visually:
+   square the bottom corners so the strip reads as a continuation. */
+.browse-landing-pack-wrapper:has(.browse-landing-pack-embed-row:not([hidden])) .browse-landing-pack {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.browse-landing-pack-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.browse-landing-pack-main:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Type glyph — favicon scale (14px), muted by default, lifts to primary
+   when the card or its main button is active. The :has() rule ties the
+   glyph color to the whole-card hover so both move together. */
+.browse-landing-pack-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.browse-landing-pack:hover .browse-landing-pack-icon,
+.browse-landing-pack-main:focus-visible .browse-landing-pack-icon {
+  color: var(--text-primary);
+}
+
+/* Augpack glyph (filled dots) sits a touch tighter than the ZIM outline
+   glyph; nudge its visual weight down so both read at parity. */
+.browse-landing-pack[data-pack-type="augpack"] .browse-landing-pack-icon {
+  opacity: 0.85;
+}
+
+/* ZIM packs render their bundled illustration as the card glyph — let
+   the wrapper expand to accommodate at favicon footprint instead of the
+   monogram's 18px. */
+.browse-landing-pack[data-pack-type="zim"] .browse-landing-pack-icon {
+  width: 28px;
+  height: 28px;
+  margin-top: 0;
+}
+
+/* Pack favicon (ZIM illustration entry) — circle-clipped image with a
+   subtle border ring, fades in once libzim resolves the illustration.
+   Footprint sized by the parent ``.browse-landing-pack-icon`` wrapper
+   (landing card, 28px) or the ``.large`` modifier (active-pack header,
+   48px). The opacity transition smooths the load — without it the
+   image pops in jarringly after the parent card is already rendered. */
+.browse-pack-favicon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-light);
+  background: var(--surface);
+  display: block;
+  opacity: 0;
+  animation: zim-favicon-in var(--duration-normal) var(--ease-out) forwards;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.browse-pack-favicon.large {
+  width: 48px;
+  height: 48px;
+  border-width: 1.5px;
+  box-shadow: var(--shadow-sm);
+}
+
+.browse-landing-pack:hover .browse-pack-favicon {
+  transform: scale(1.05);
+}
+
+@keyframes zim-favicon-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Letter-pill fallback when libzim returns 404 (older ZIMs without an
+   illustration entry). Sized to mirror the missing favicon so swap
+   doesn't reflow the card. Uses the accent color at low saturation —
+   distinctive enough to register as identity, restrained enough not
+   to compete with the pack name beside it. */
+.browse-pack-favicon-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-light);
+  background: var(--accent-subtle);
+  color: var(--accent-text);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1;
+  user-select: none;
+  font-family: var(--font-sans);
+}
+
+.browse-pack-favicon-fallback.large {
+  width: 48px;
+  height: 48px;
+  border-width: 1.5px;
+  box-shadow: var(--shadow-sm);
+  font-size: 22px;
+}
+
+.browse-landing-pack-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.browse-landing-pack-name {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.005em;
+}
+
+.browse-landing-pack-desc {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Meta is a single editorial line: count · size. Middot is its own
+   span so we can soften it without restyling each meta segment. */
+.browse-landing-pack-meta {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+.browse-landing-pack-meta-sep {
+  margin: 0 4px;
+  opacity: 0.55;
+}
+
+/* Action tray sits flush right inside the card, no border, transparent
+   buttons. Square 26px hit-targets — smaller than the 30px we had
+   before, restoring density parity with the bookmark grid. */
+.browse-landing-pack-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 4px 4px 0;
+  flex-shrink: 0;
+}
+
+.browse-landing-pack-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm, 6px);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard),
+              opacity var(--duration-fast) var(--ease-standard);
+}
+
+.browse-landing-pack-action:hover:not([disabled]) {
+  background: var(--surface-hover);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+.browse-landing-pack-action:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.browse-landing-pack-action[disabled] {
+  cursor: progress;
+}
+
+/* Embed action — distinct hover tint pulled from --accent so the
+   "build a vector index" affordance reads as a different verb-class
+   than navigation actions, without resorting to a green CTA. */
+.browse-landing-pack-action.browse-landing-pack-embed:hover:not([disabled]) {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  color: var(--accent);
+}
+
+.browse-landing-pack-action.is-loading {
+  color: var(--accent);
+  animation: pack-embed-pulse 1.4s ease-in-out infinite;
+}
+
+.browse-landing-pack-action.is-error {
+  color: var(--danger, #d9534f);
+  border-color: color-mix(in srgb, var(--danger, #d9534f) 35%, transparent);
+}
+
+@keyframes pack-embed-pulse {
+  0%, 100% { opacity: 0.45; }
+  50%      { opacity: 1; }
+}
+
+/* Embed progress strip — a thin annotation that flows below the card
+   when (and only when) an embed job is active. Hidden by default; the
+   :has() rule above squares the card's bottom corners while it shows
+   so the two read as a single bound unit. */
+.browse-landing-pack-embed-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 10px 7px;
+  border: 1px solid var(--border);
+  border-top: 0;
+  border-bottom-left-radius: var(--radius-sm);
+  border-bottom-right-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+.browse-landing-pack-embed-row[hidden] { display: none; }
+
+.browse-landing-pack-embed-progress-bar {
+  width: 100%;
+  height: 2px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.browse-landing-pack-embed-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  border-radius: 1px;
+  transition: width var(--duration-normal, 200ms) var(--ease-standard);
+}
+
+.browse-landing-pack-embed-progress-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.browse-landing-pack-embed-error {
+  font-size: 11px;
+  color: var(--danger, #d9534f);
+  line-height: 1.35;
+}
+
+.browse-pack-note {
+  padding: 10px 14px;
+  margin: var(--space-xs) 0 var(--space-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Augpack chunk results — readable but not clickable (no standalone
+   view yet). Keeps the visual rhythm of clickable results without
+   suggesting interactivity. */
+/* Per-pack home view (replaces searchView contents when a pack is opened) */
+
+.browse-pack-view {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: var(--space-md) 0;
+}
+
+.browse-pack-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.browse-pack-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.browse-pack-back:hover {
+  background: var(--surface-hover);
+}
+
+.browse-pack-title-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* Pack-view header icon slot. Holds either the ZIM illustration img
+   (48px circle via .browse-pack-favicon.large) or the legacy emoji
+   glyph for augpacks. Sized to the favicon footprint so the layout
+   doesn't pop when illustrations resolve. */
+.browse-pack-icon {
+  font-size: 28px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.browse-pack-title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.browse-pack-desc {
+  margin: 2px 0 0;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.browse-pack-search {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: stretch;
+  margin-bottom: var(--space-lg);
+}
+
+/* Wraps the input + typeahead dropdown so the dropdown can absolute-
+   anchor to the input's box (and not overlap the Home button next to
+   it). The wrapper takes the flex slot the input used to hold. */
+.browse-pack-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.browse-pack-search-input {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.browse-pack-search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* Typeahead dropdown — absolute-anchored to the wrapper so its width
+   tracks the input's. z-index above the results list below; max-height
+   caps so it never blows past the visible panel on small screens. */
+.browse-pack-suggest {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  max-height: 320px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+
+.browse-pack-suggest[hidden] { display: none; }
+
+.browse-pack-suggest-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.browse-pack-suggest-item:hover,
+.browse-pack-suggest-item:focus-visible {
+  background: var(--surface-hover);
+  outline: none;
+}
+
+.browse-pack-suggest-title {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.browse-pack-suggest-path {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  letter-spacing: 0.01em;
+}
+
+.browse-pack-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color var(--duration-fast) var(--ease-standard),
+              background var(--duration-fast) var(--ease-standard);
+}
+
+.browse-pack-home:hover {
+  border-color: var(--accent);
+  background: var(--surface-hover);
+}
+
+.browse-pack-home:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* Random article button — sibling of Home. Same shape so they read as
+   a coordinated pair; the dice icon and "Random" label differentiate
+   the action. Click triggers a brief scale-press for tactility, then
+   the icon rotates while the route resolves. */
+.browse-pack-random {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color var(--duration-fast) var(--ease-standard),
+              background var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-bounce);
+}
+.browse-pack-random:hover {
+  border-color: var(--accent);
+  background: var(--surface-hover);
+}
+.browse-pack-random:active {
+  transform: scale(0.95);
+}
+.browse-pack-random:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--focus-glow);
+}
+.browse-pack-random .browse-pack-random-icon {
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+.browse-pack-random.is-loading {
+  pointer-events: none;
+}
+.browse-pack-random.is-loading .browse-pack-random-icon {
+  animation: pack-random-spin 0.8s var(--ease-standard) infinite;
+}
+@keyframes pack-random-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.browse-pack-results {
+  min-height: 200px;
+}
+
+.browse-pack-recents {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: var(--space-xs);
+}
+
+.browse-pack-recent {
+  text-align: left;
+  background: transparent;
+  border: 0;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.browse-pack-recent:hover {
+  background: var(--surface-hover);
+}
+
+.browse-pack-recent-title {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.browse-pack-empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.browse-pack-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: var(--space-xs);
+}
+
+.browse-pack-result {
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+}
+
+.browse-pack-result:hover:not([disabled]) {
+  background: var(--surface-hover);
+  border-color: var(--accent);
+}
+
+.browse-pack-result[disabled] {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.browse-pack-result-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.browse-pack-result-title {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+}
+
+.browse-pack-result-section {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.browse-pack-result-preview {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Full bookmarks view */
+.browse-bookmarks-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: 0 0 var(--space-md);
+  margin-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.browse-bookmarks-title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+.browse-bookmarks-count {
+  color: var(--text-muted);
+  font-weight: 400;
+  font-size: var(--text-sm);
+  margin-left: 6px;
+}
+.browse-bookmarks-controls {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+}
+.browse-bookmarks-search {
+  min-width: 160px;
+  max-width: 260px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  outline: none;
+}
+.browse-bookmarks-search:focus {
+  border-color: var(--accent);
+}
+.browse-bookmarks-export,
+.browse-bookmarks-close {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+.browse-bookmarks-close {
+  padding: 5px 8px;
+  font-size: var(--text-base);
+}
+.browse-bookmarks-export:hover,
+.browse-bookmarks-close:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.browse-bookmarks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-md);
+}
+.browse-bookmark-card {
+  padding: var(--space-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  contain: layout style paint;
+}
+.browse-bookmark-card:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-light);
+  transform: translateY(-1px);
+}
+.browse-bookmark-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+.browse-bookmark-favicon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+.browse-bookmark-host {
+  font-family: var(--font-mono, monospace);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.browse-bookmark-age {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+.browse-bookmark-remove {
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 4px;
+  line-height: 1;
+  opacity: 0.5;
+  transition: opacity var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+}
+.browse-bookmark-remove:hover {
+  opacity: 1;
+  color: var(--error, #ef4444);
+}
+.browse-bookmark-title {
+  margin: 0;
+  font-size: var(--text-base);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-primary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.browse-bookmark-snippet {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.browse-bookmarks-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: var(--space-xl) var(--space-md);
+  font-size: var(--text-sm);
+}
+
+/* --- Read-aloud + bookmark button visual state --- */
+.browse-action-pill[data-article-action="read-aloud"].playing {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.browse-action-pill[data-article-action="bookmark"].saved .browse-bookmark-icon {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+.browse-action-pill[data-article-action="bookmark"]:focus-visible,
+.browse-action-pill[data-article-action="read-aloud"]:focus-visible,
+.browse-action-pill[data-article-action="typography"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.browse-article-body p {
+  margin-bottom: 1.5em;
+}
+
+.browse-article-body h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 2em 0 0.75em;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.browse-article-body h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 1.75em 0 0.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.3;
+}
+
+.browse-article-body h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1.5em 0 0.5em;
+  line-height: 1.35;
+}
+
+.browse-article-body h4,
+.browse-article-body h5,
+.browse-article-body h6 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 1.25em 0 0.5em;
+}
+
+.browse-article-body a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+  cursor: pointer;
+}
+
+.browse-article-body a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.browse-article-body blockquote {
+  border-left: 3px solid var(--accent);
+  margin: 1.5em 0;
+  padding: 0.75em 1.25em;
+  font-style: italic;
+  color: var(--text-secondary);
+  background: var(--surface);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.browse-article-body ul,
+.browse-article-body ol {
+  margin: 1em 0;
+  padding-left: 1.5em;
+}
+
+.browse-article-body li {
+  margin-bottom: 0.5em;
+}
+
+.browse-article-body img {
+  max-width: 100%;
+  max-height: 600px;
+  height: auto;
+  border-radius: var(--radius-md);
+  margin: 1.5em auto;
+  display: block;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+  object-fit: contain;
+}
+
+.browse-article-body img:hover {
+  transform: scale(1.01);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+/* Embedded videos (YouTube, Vimeo) — from original article iframes */
+.browse-article-body iframe[src*="youtube"],
+.browse-article-body iframe[src*="vimeo"] {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 480px;
+  border: none;
+  border-radius: var(--radius-md);
+  margin: 1.5em 0;
+  display: block;
+}
+
+/* --- Platform-specific embed overrides --- */
+
+/* TikTok — portrait 9:16, centered */
+
+/* Twitter/X — variable height, no fixed aspect ratio */
+/* Twitch clips — 16:9 but slightly taller controls */
+/* YouTube links converted to embeds */
+
+
+/* "Open on <site>" link under every platform embed — the one reliable
+   fallback when a cross-origin iframe is blocked by X-Frame-Options or a
+   CSP frame-ancestors directive (both render as a silent blank iframe,
+   so there's no JS-detectable failure to hook into). */
+/* Direct-media renderers (URLs pointing at a raw .mp4/.mp3/.pdf/image).
+   Kept visually consistent with yt-article-embed so users don't perceive a
+   tier difference between "real platform page" and "raw media URL". */
+.browse-direct-media video,
+/* --- File Type Renderers (PDF, image, code, audio, download) --- */
+
+/* Shared action row */
+
+/* PDF */
+
+
+/* Image */
+
+
+/* Code / Text */
+
+
+/* Video (native HTML5) */
+
+
+/* Audio */
+
+
+/* Download (non-renderable files) */
+
+
+
+
+
+/* Browse-tab YouTube related videos (uses <details> for native toggle) */
+
+
+
+
+
+/* "Ask about this video" button on embedded videos */
+.browse-video-ask {
+  margin: var(--space-sm, 8px) 0 var(--space-md, 12px);
+}
+
+.browse-video-ask-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs, 4px);
+  font-size: var(--text-sm, 13px);
+  opacity: 0.8;
+  transition: opacity var(--duration-fast, 100ms);
+}
+
+.browse-video-ask-btn:hover {
+  opacity: 1;
+}
+
+/* YouTube transcript in browse reader */
+
+
+
+/* Hide broken images gracefully */
+.browse-article-body img[src=""],
+.browse-article-body img:not([src]) {
+  display: none;
+}
+
+/* Inline SVGs from articles */
+.browse-article-body svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1em auto;
+}
+
+.browse-article-body svg:not([width]) {
+  width: 100%;
+  max-height: 400px;
+}
+
+/* Spotify embeds */
+.browse-article-body iframe[src*="spotify.com"] {
+  width: 100%;
+  height: 152px;
+  border: none;
+  border-radius: var(--radius-md);
+  margin: 1em 0;
+}
+
+/* SoundCloud embeds */
+.browse-article-body iframe[src*="soundcloud.com"] {
+  width: 100%;
+  height: 166px;
+  border: none;
+  border-radius: var(--radius-md);
+  margin: 1em 0;
+}
+
+/* Codepen / Codesandbox / Stackblitz / JSFiddle */
+.browse-article-body iframe[src*="codepen.io"],
+.browse-article-body iframe[src*="codesandbox.io"],
+.browse-article-body iframe[src*="stackblitz.com"],
+.browse-article-body iframe[src*="jsfiddle.net"] {
+  width: 100%;
+  height: 400px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin: 1em 0;
+}
+
+/* GitHub Gists */
+.browse-article-body iframe[src*="gist.github.com"] {
+  width: 100%;
+  min-height: 200px;
+  border: none;
+  margin: 1em 0;
+}
+
+/* Google Docs / Slides embeds */
+.browse-article-body iframe[src*="docs.google.com"],
+.browse-article-body iframe[src*="slides.google.com"] {
+  width: 100%;
+  height: 500px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin: 1em 0;
+}
+
+/* Giphy */
+.browse-article-body iframe[src*="giphy.com"] {
+  max-width: 480px;
+  border: none;
+  border-radius: var(--radius-md);
+  margin: 1em auto;
+  display: block;
+}
+
+/* Bilibili */
+.browse-article-body iframe[src*="bilibili.com"] {
+  width: 100%;
+  aspect-ratio: 16/9;
+  max-height: 480px;
+  border: none;
+  border-radius: var(--radius-md);
+  margin: 1em 0;
+}
+
+/* Peertube (federated — match path pattern) */
+.browse-article-body iframe[src*="/videos/embed/"] {
+  width: 100%;
+  aspect-ratio: 16/9;
+  max-height: 480px;
+  border: none;
+  border-radius: var(--radius-md);
+  margin: 1em 0;
+}
+
+/* Rumble */
+.browse-article-body iframe[src*="rumble.com/embed"] {
+  width: 100%;
+  aspect-ratio: 16/9;
+  max-height: 480px;
+  border: none;
+  border-radius: var(--radius-md);
+  margin: 1em 0;
+}
+
+/* Odysee / LBRY */
+.browse-article-body iframe[src*="odysee.com"] {
+  width: 100%;
+  aspect-ratio: 16/9;
+  max-height: 480px;
+  border: none;
+  border-radius: var(--radius-md);
+  margin: 1em 0;
+}
+
+/* Kick */
+.browse-article-body iframe[src*="player.kick.com"] {
+  width: 100%;
+  aspect-ratio: 16/9;
+  max-height: 480px;
+  border: none;
+  border-radius: var(--radius-md);
+  margin: 1em 0;
+}
+
+/* Nebula */
+.browse-article-body iframe[src*="embed.nebula.tv"] {
+  width: 100%;
+  aspect-ratio: 16/9;
+  max-height: 480px;
+  border: none;
+  border-radius: var(--radius-md);
+  margin: 1em 0;
+}
+
+/* Archive.org — often 4:3 historical footage */
+.browse-article-body iframe[src*="archive.org/embed"] {
+  width: 100%;
+  aspect-ratio: 4/3;
+  max-height: 540px;
+  border: none;
+  border-radius: var(--radius-md);
+  margin: 1em 0;
+  background: #000;
+}
+
+/* Spotify episodes (video podcasts) — taller than tracks */
+.browse-article-body iframe[src*="spotify.com/embed/episode"] {
+  height: 352px;
+}
+
+/* Generic iframe fallback — nothing overflows the reader column */
+.browse-article-body iframe {
+  max-width: 100%;
+}
+
+/* Figure captions from trafilatura */
+.browse-article-body figure {
+  margin: 1.5em 0;
+  text-align: center;
+}
+
+.browse-article-body figcaption {
+  margin-top: var(--space-xs);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.browse-article-body pre {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  overflow-x: auto;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin: 1.5em 0;
+}
+
+.browse-article-body code {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.9em;
+  background: var(--surface);
+  padding: 0.15em 0.35em;
+  border-radius: var(--radius-sm);
+}
+
+.browse-article-body pre code {
+  background: none;
+  padding: 0;
+}
+
+/* --- Schema Cards (Product, Recipe, Event, Business, Job) --- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- Tables --- */
+.browse-article-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 0.95em;
+  overflow-x: auto;
+  display: block;
+  max-width: 100%;
+}
+
+.browse-article-body th,
+.browse-article-body td {
+  border: 1px solid var(--border);
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  vertical-align: top;
+}
+
+.browse-article-body th {
+  background: var(--surface);
+  font-weight: 600;
+  border-bottom-width: 2px;
+}
+
+.browse-article-body tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--surface-hover, var(--surface)) 40%, transparent);
+}
+
+.browse-article-body caption {
+  caption-side: top;
+  font-size: 0.9em;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+  text-align: left;
+  font-style: italic;
+}
+
+.browse-article-body hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2em 0;
+}
+
+/* --- Definition Lists (Wikipedia infoboxes, glossaries) --- */
+.browse-article-body dl {
+  margin: 1em 0;
+}
+
+.browse-article-body dt {
+  font-weight: 600;
+  margin-top: 0.75em;
+  color: var(--text-primary);
+}
+
+.browse-article-body dd {
+  margin-left: 1.5em;
+  margin-bottom: 0.5em;
+  color: var(--text-secondary);
+}
+
+/* --- Semantic Inline Elements --- */
+.browse-article-body abbr[title] {
+  border-bottom: 1px dotted var(--text-muted);
+  cursor: help;
+  text-decoration: none;
+}
+
+.browse-article-body mark {
+  background: color-mix(in srgb, var(--accent) 25%, transparent);
+  color: inherit;
+  padding: 1px 3px;
+  border-radius: 2px;
+}
+
+.browse-article-body s,
+.browse-article-body del {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.browse-article-body ins {
+  text-decoration: underline;
+  text-decoration-color: var(--success, #4ade80);
+}
+
+.browse-article-body kbd {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.88em;
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface);
+  box-shadow: 0 1px 0 var(--border);
+}
+
+.browse-article-body cite {
+  font-style: italic;
+}
+
+.browse-article-body var {
+  font-family: var(--font-mono, monospace);
+  font-style: italic;
+}
+
+.browse-article-body sup,
+.browse-article-body sub {
+  font-size: 0.75em;
+  line-height: 0;
+}
+
+.browse-article-body sup a {
+  text-decoration: none;
+  color: var(--accent);
+}
+
+/* --- Wikipedia-specific --- */
+.browse-article-body .infobox {
+  float: right;
+  max-width: 320px;
+  margin: 0 0 1em 1.5em;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  font-size: 0.9em;
+}
+
+.browse-article-body .infobox th,
+.browse-article-body .infobox td {
+  padding: var(--space-xs) var(--space-sm);
+  border-color: var(--border-light, var(--border));
+}
+
+.browse-article-body .reflist {
+  font-size: 0.85em;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 600px) {
+  .browse-article-body .infobox {
+    float: none;
+    max-width: 100%;
+    margin: 1em 0;
+  }
+
+  .browse-article-body table {
+    font-size: 0.85em;
+  }
+}
+
+/* Article toolbar (AI tools + save actions, below header) */
+.browse-article-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  justify-content: space-between;
+  padding: var(--space-sm) 0 var(--space-lg);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-lg);
+}
+
+.browse-article-toolbar-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.browse-action-pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast), transform var(--duration-fast), opacity var(--duration-fast);
+  text-decoration: none;
+}
+
+.browse-action-pill:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+.browse-action-pill:active {
+  transform: scale(0.95);
+}
+
+.browse-action-pill:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.browse-action-pill:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.browse-action-pill svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ---------------------------------------------------------------------------
+   Loading & Error States
+   --------------------------------------------------------------------------- */
+.browse-loading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-xl) 0;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.browse-skeleton {
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface-hover) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: browse-shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+.browse-skeleton-title {
+  height: 2.5rem;
+  width: 80%;
+}
+
+.browse-skeleton-meta {
+  height: 1rem;
+  width: 40%;
+}
+
+.browse-skeleton-line {
+  height: 1rem;
+  width: 100%;
+}
+
+.browse-skeleton-line:nth-child(odd) {
+  width: 95%;
+}
+
+@keyframes browse-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Knowledge-pack ZIM article iframe — fills the reader area while
+   leaving room for AI answer blocks (Ask bar) to flow naturally below.
+   Iframe content is sandboxed (no JS, same-origin only) so we don't
+   need a scroll shim — it inherits the reader's overflow naturally.
+
+   The ``is-zim`` class is toggled on the content-area + reader-view by
+   _renderZimArticle so the layout swaps to "iframe with fixed tall
+   reading height + scroll-flow for everything below." Without it, the
+   iframe inherits .browse-reader-view's 760px max-width cap and stays
+   a small centered box.
+
+   Why a fixed height instead of flex: 1: when AI answer blocks stream
+   into the page, they push DOWN below the iframe and the user scrolls
+   the content-area to read them. With flex: 1 the iframe was forced to
+   shrink to make room for the AI block, eventually overtaking the
+   readable article. Fixed height means the iframe stays a comfortable
+   reading area and AI answers append below. The ~75vh keeps the iframe
+   the dominant visual anchor while leaving room to glimpse the start of
+   any AI block as it streams in.
+
+   Resetting on the regular browseFetch path is important — without it,
+   navigating from a ZIM article back to a web search would leave the
+   reader view stuck in full-bleed mode. */
+.browse-content-area.is-zim {
+  padding: 0;
+  /* Default block layout (overflow-y: auto inherited from base rule)
+     so the page scrolls when AI blocks accumulate below the iframe. */
+}
+
+.browse-reader-view.is-zim {
+  max-width: none;
+  margin: 0;
+}
+
+.browse-zim-wrapper {
+  width: 100%;
+  /* 75vh keeps the iframe tall enough to read comfortably while
+     leaving 25vh of viewport visible for the start of AI blocks below.
+     Users see the answer arriving without losing the article. */
+  height: 75vh;
+  display: flex;
+  flex-direction: column;
+  /* Anchor for the floating reader-mode toggle pill. */
+  position: relative;
+}
+
+/* Chrome strip in the iframe wrapper top-right — holds the reader-mode
+   pill and the pack-info button. Single absolute-positioned container
+   so its children flow horizontally without each needing its own
+   ``right:`` offset (which was brittle when we added the second button). */
+.browse-zim-chrome {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Reader-mode escape hatch — small pill in the iframe's top-right
+   that flips the per-browser setting between themed reader CSS and
+   raw site presentation. Always visible (not on hover) because users
+   need to find it without knowing it exists. Subtle enough to ignore
+   while reading. */
+.browse-zim-reader-toggle {
+  font-size: 0.75rem;
+  line-height: 1;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface, #222226);
+  color: var(--text-muted, #9a9aa3);
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+/* Pack-info icon button — paired with the reader pill. Square chip
+   instead of pill to differentiate. Click opens the metadata side
+   panel. The info icon is borrowed from the existing browse-pack-icon
+   set so the visual language stays consistent. */
+.browse-zim-meta-toggle {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--surface, #222226);
+  color: var(--text-muted, #9a9aa3);
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard),
+              background var(--duration-fast) var(--ease-standard);
+}
+.browse-zim-meta-toggle:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+.browse-zim-meta-toggle[aria-expanded="true"] {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+/* Metadata side panel — right-rail overlay over the iframe. Slides in
+   from the right on desktop, bottom sheet on mobile. Doesn't shrink
+   the iframe — sits on top so the article remains full-width
+   underneath. backdrop-blur keeps the article slightly visible behind
+   for "still reading" continuity, matching the rest of Augmentum's
+   overlay patterns (becca-presence, modal). */
+.browse-zim-meta-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(360px, 92vw);
+  z-index: 3;
+  padding: var(--space-lg) var(--space-md) var(--space-lg);
+  overflow-y: auto;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  transform: translateX(100%);
+  transition: transform var(--duration-normal) var(--ease-standard),
+              opacity var(--duration-fast) var(--ease-standard);
+  opacity: 0;
+}
+.browse-zim-meta-panel.is-open {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* Header: large favicon + name + language badge */
+.browse-zim-meta-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+.browse-zim-meta-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.browse-zim-meta-name {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.25;
+  word-break: break-word;
+}
+.browse-zim-meta-lang {
+  align-self: flex-start;
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: var(--accent-subtle);
+  color: var(--accent-text);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.browse-zim-meta-desc {
+  margin: 0 0 var(--space-md);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-light);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--line-height);
+}
+
+/* Attribution block — definition list, two-column on wide enough panels. */
+.browse-zim-meta-attr {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: var(--space-md);
+  row-gap: var(--space-xs);
+  margin: 0 0 var(--space-md);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-light);
+  font-size: var(--text-sm);
+}
+.browse-zim-meta-attr dt {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.browse-zim-meta-attr dd {
+  margin: 0;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+.browse-zim-meta-section {
+  margin-bottom: var(--space-md);
+}
+.browse-zim-meta-section:last-child {
+  margin-bottom: 0;
+}
+.browse-zim-meta-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-xs);
+}
+
+.browse-zim-meta-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.browse-zim-meta-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: var(--surface-hover);
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  line-height: 1.3;
+}
+
+.browse-zim-meta-counter {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--line-height);
+}
+
+/* Skeleton + error states */
+.browse-zim-meta-loading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.browse-zim-meta-skeleton {
+  height: 14px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--surface-hover) 0%,
+    var(--surface) 50%,
+    var(--surface-hover) 100%
+  );
+  background-size: 200% 100%;
+  animation: zim-meta-skeleton 1.4s ease-in-out infinite;
+}
+.browse-zim-meta-skeleton.short { width: 60%; }
+@keyframes zim-meta-skeleton {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.browse-zim-meta-error {
+  padding: var(--space-md);
+  border-radius: var(--radius-sm);
+  background: var(--error-subtle);
+  color: var(--error);
+  font-size: var(--text-sm);
+}
+
+/* Mobile: bottom sheet rather than right slide-out. Easier reach on
+   touch, matches Augmentum's mobile sheet pattern. */
+@media (max-width: 640px) {
+  .browse-zim-meta-panel {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: auto;
+    max-height: 70vh;
+    border-left: 0;
+    border-top: 1px solid var(--border);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    transform: translateY(100%);
+  }
+  .browse-zim-meta-panel.is-open {
+    transform: translateY(0);
+  }
+}
+.browse-zim-reader-toggle:hover {
+  color: var(--text, #e8e8ec);
+  border-color: var(--accent, #6c8aff);
+}
+/* When raw mode is on, mark the pill so it's visually distinct from
+   reader mode — accent border + accent text. Reinforces that the user
+   has opted out of the default presentation. */
+.browse-zim-reader-toggle[data-reader-on="0"] {
+  color: var(--accent, #6c8aff);
+  border-color: var(--accent, #6c8aff);
+}
+
+.browse-zim-frame {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  background: var(--bg, #1a1a1d);
+}
+
+/* AI blocks already exist (.browse-note-ai-blocks); when in ZIM mode
+   add a top border so the transition from iframe to answer feels
+   intentional, not accidental. */
+.browse-content-area.is-zim .browse-note-ai-blocks:not(:empty) {
+  border-top: 1px solid var(--border);
+  margin-top: 0;
+  padding-top: var(--space-lg);
+}
+
+/* Professional error states */
+.browse-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 24px;
+  max-width: 400px;
+  margin: 40px auto;
+  animation: browse-landing-in 0.3s var(--ease-decelerate) both;
+}
+
+.browse-error-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.browse-error-icon--warning {
+  background: color-mix(in srgb, var(--color-amber) 12%, transparent);
+  color: var(--color-amber);
+}
+
+.browse-error-icon--error {
+  background: color-mix(in srgb, var(--error, #ef4444) 12%, transparent);
+  color: var(--error, #ef4444);
+}
+
+.browse-error-title {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 6px;
+}
+
+.browse-error-message {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+.browse-error-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.browse-error-retry {
+  padding: 8px 20px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: var(--accent-contrast, #fff);
+  border: none;
+  font-size: var(--text-sm);
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity var(--duration-fast), transform var(--duration-fast);
+}
+
+.browse-error-retry:hover { opacity: 0.88; }
+.browse-error-retry:active { transform: scale(0.97); }
+
+.browse-error-original {
+  padding: 8px 20px;
+  border-radius: var(--radius-full);
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--duration-fast), border-color var(--duration-fast);
+}
+
+.browse-error-original:hover {
+  background: var(--surface-hover);
+  border-color: var(--accent);
+}
+
+
+/* ---------------------------------------------------------------------------
+   Notes View
+   --------------------------------------------------------------------------- */
+.browse-notes-view {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  --browse-notes-list-width: 312px;
+  --notes-sidebar-bg: color-mix(in srgb, var(--bg-elevated) 90%, var(--bg));
+  --notes-sidebar-rule: color-mix(in srgb, var(--border) 78%, transparent);
+}
+
+.browse-notes-view.hidden {
+  display: none;
+}
+
+/* Notes list sidebar — expands to full width when no note is open */
+.browse-notes-list {
+  width: var(--browse-notes-list-width);
+  border-right: 1px solid var(--notes-sidebar-rule);
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--accent) 4%, transparent) 0%,
+      transparent 180px),
+    var(--notes-sidebar-bg);
+  flex-shrink: 0;
+  overflow: hidden;
+  transition:
+    width 180ms var(--ease-standard),
+    opacity 160ms var(--ease-standard),
+    transform 180ms var(--ease-standard),
+    border-color 160ms var(--ease-standard);
+}
+
+.browse-notes-history-toggle {
+  display: none;
+  position: absolute;
+  top: 9px;
+  left: calc(var(--browse-notes-list-width) - 14px);
+  z-index: 18;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
+  color: var(--text-muted);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  cursor: pointer;
+  transition:
+    left 180ms var(--ease-standard),
+    top 180ms var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard);
+}
+
+.browse-notes-history-toggle svg {
+  width: 15px;
+  height: 15px;
+  transition: transform 180ms var(--ease-standard);
+}
+
+.browse-notes-history-toggle:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
+  background: var(--bg-elevated);
+}
+
+.browse-notes-history-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.browse-notes-view:not(.note-open) .browse-notes-list {
+  width: 100%;
+  border-right: none;
+}
+
+.browse-notes-view:not(.note-open) .browse-notes-editor-area {
+  display: none;
+}
+
+.browse-notes-list-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 14px 14px 12px;
+  border-bottom: 1px solid var(--notes-sidebar-rule);
+  flex-shrink: 0;
+  min-height: 54px;
+  box-sizing: border-box;
+}
+
+.browse-notes-list-title {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+  flex: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  font-size: 0.6875rem;
+}
+
+.browse-new-note-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity var(--duration-fast), transform var(--duration-fast) var(--ease-bounce);
+}
+
+.browse-new-note-btn:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  transform: scale(1.06);
+}
+
+.browse-new-note-btn:active {
+  transform: scale(0.94);
+}
+
+.browse-new-note-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.browse-notes-items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.browse-note-item {
+  position: relative;
+  padding: 10px 12px;
+  padding-right: 64px;   /* room for the pin + delete item actions */
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard),
+              box-shadow var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard);
+  margin-bottom: 4px;
+}
+
+.browse-note-item:hover {
+  background: color-mix(in srgb, var(--surface-hover) 78%, transparent);
+  border-color: color-mix(in srgb, var(--border) 58%, transparent);
+}
+
+.browse-note-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.browse-note-item:active {
+  transform: scale(0.99);
+}
+
+/* Active note: 3px inset accent bar carries the "you are here"
+   signal on its own. Previous version layered a 14→7% gradient
+   backlight on top, which doubled the affordance and added noise
+   in long lists. A single flat 6% tint backs the row so it still
+   reads as selected without competing with the bar. */
+.browse-note-item.active {
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 20%, transparent);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.browse-note-item.active .browse-note-item-title {
+  color: var(--text-primary);
+}
+.browse-note-item.active .browse-note-item-tag {
+  color: var(--accent);
+  opacity: 1;
+}
+
+.browse-note-item-delete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--duration-fast), color var(--duration-fast), background var(--duration-fast);
+}
+
+.browse-note-item:hover .browse-note-item-delete {
+  opacity: 1;
+}
+
+.browse-note-item-delete:hover {
+  color: var(--error);
+  background: var(--surface-hover);
+}
+
+.browse-note-item-delete svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Pin toggle — sits left of delete. Hidden until hover like delete, but
+   stays visible (and accent-tinted) when the note is pinned so there's a
+   persistent unpin affordance + at-a-glance pinned marker. */
+.browse-note-item-pin {
+  position: absolute;
+  top: 8px;
+  right: 36px;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard),
+              background var(--duration-fast) var(--ease-standard);
+}
+.browse-note-item:hover .browse-note-item-pin { opacity: 1; }
+.browse-note-item-pin:hover {
+  color: var(--accent);
+  background: var(--surface-hover);
+}
+.browse-note-item-pin.active {
+  opacity: 1;
+  color: var(--accent);
+}
+.browse-note-item-pin svg {
+  width: 13px;
+  height: 13px;
+}
+
+.browse-note-item-title {
+  font-size: var(--text-sm);
+  font-weight: 650;
+  color: var(--text-primary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 4px;
+  letter-spacing: 0;
+}
+
+.browse-note-item-preview {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 8px;
+  font-family: var(--font-sans);
+}
+
+.browse-note-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.browse-note-item-source {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.browse-note-item-source img {
+  width: 10px;
+  height: 10px;
+  border-radius: 1px;
+}
+
+.browse-note-item-time {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.browse-note-item-tag {
+  font-size: 10px;
+  color: color-mix(in srgb, var(--accent-text) 72%, var(--text-muted));
+  opacity: 1;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+/* Date-grouped section labels — were 10px muted at 65% opacity which
+   read as ghosted scaffolding. Now 11px with accent-tinted color and
+   wider tracking so they feel like editorial section heads instead
+   of utility separators. */
+.browse-notes-group-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  color: color-mix(in srgb, var(--accent) 50%, var(--text-muted));
+  padding: 18px 12px 7px;
+  user-select: none;
+}
+.browse-notes-group-label:first-child { padding-top: var(--space-sm); }
+
+/* Empty-state — polished, editorial.
+   Shared between the list (no notes / no matches) and the editor (no
+   note open). Content reveals with the same staggered choreography as
+   the browse landing so the panel feels like one designed system. */
+.browse-notes-empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 56px var(--space-md) var(--space-xl);
+  text-align: center; gap: 8px;
+}
+
+/* Icon: previously opacity 0.18 / muted-gray read as broken. Now
+   accent-tinted at higher opacity so it feels intentional, not
+   placeholder-y. Same upgrade as the browse-landing-icon. */
+.browse-notes-empty-icon {
+  color: var(--accent);
+  opacity: 0.55;
+  margin-bottom: 12px;
+  transition: opacity var(--duration-normal) var(--ease-standard);
+}
+
+/* Editorial hero — Crimson Pro italic, larger, primary text. The
+   existing serif italic was already a nice touch; the bump in size
+   and color tier turns it into a real hero rather than a label. */
+.browse-notes-empty-title {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: clamp(22px, 2.6vw, 30px);
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: 0;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.browse-notes-empty-sub {
+  font-size: 13px; color: var(--text-muted);
+  line-height: 1.55; max-width: 260px;
+  font-family: var(--font-editorial); font-style: italic;
+  letter-spacing: 0;
+}
+
+.browse-notes-empty-cta {
+  margin-top: 14px;
+  padding: 6px 16px; font-size: 12px;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: var(--radius-full);
+  cursor: pointer; font-family: inherit;
+  transition: opacity var(--duration-fast), transform var(--duration-fast);
+}
+.browse-notes-empty-cta:hover { opacity: 0.9; transform: translateY(-1px); }
+.browse-notes-empty-cta:active { transform: translateY(0); }
+.browse-notes-empty-text {
+  font-size: 12px; color: var(--text-muted);
+  font-style: italic; padding: var(--space-lg);
+}
+
+/* Per-child stagger for both empty-state surfaces. Mirrors the browse-
+   landing pattern: icon → title → sub → CTA. Reduced-motion users get
+   no animation. */
+.browse-notes-empty-state > * {
+  animation: notes-empty-in 0.5s var(--ease-decelerate) both;
+}
+.browse-notes-empty-icon  { animation-delay:   0ms; }
+.browse-notes-empty-title { animation-delay:  60ms; }
+.browse-notes-empty-sub   { animation-delay: 110ms; }
+.browse-notes-empty-cta   { animation-delay: 170ms; }
+.browse-notes-empty-text  { animation-delay:  60ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .browse-notes-empty-state > * {
+    animation: none;
+  }
+}
+
+/* Notes editor area — the writing canvas */
+.browse-notes-editor-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* The editor-side empty-state container fills the writing canvas
+   when no note is open. We attach the atmospheric backlight here
+   (not on the parent .browse-notes-editor-area) so the gradient
+   only renders while the empty state is visible — when a note is
+   open, the parent's `.hidden` toggle hides this whole subtree
+   including the ::before halo. */
+.browse-notes-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  gap: var(--space-lg);
+  padding: var(--space-2xl) var(--space-xl);
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+}
+
+.browse-notes-empty::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 55% 40% at 50% 32%,
+    color-mix(in srgb, var(--accent) 6%, transparent) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+.browse-notes-empty > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes notes-empty-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Larger CTA spec for the editor-side empty state. The list-side
+   empty state uses the compact 6px/12px shape from the earlier
+   .browse-notes-empty-cta rule; this block overrides it where the
+   surface is bigger and a more confident CTA reads better. */
+.browse-notes-empty-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 10px 24px;
+  background: var(--accent);
+  color: var(--accent-contrast, #fff);
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity var(--duration-fast), transform var(--duration-fast), box-shadow var(--duration-fast);
+  margin-top: var(--space-md);
+}
+
+.browse-notes-empty-cta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.browse-notes-empty-cta:hover {
+  opacity: 0.88;
+  transform: scale(1.02);
+}
+
+.browse-notes-empty-cta:active {
+  transform: scale(0.97);
+}
+
+.browse-notes-empty-cta svg {
+  width: 16px;
+  height: 16px;
+  opacity: 1;
+  stroke-width: 2;
+}
+
+
+
+/* Note editor header (title + tags + source + actions) */
+
+/* Back button: hidden on desktop, shown on mobile */
+
+
+
+
+
+
+
+
+
+
+/* Disabled state for async operations */
+
+/* Tags (inline in header) */
+
+.browse-note-tag {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--accent-subtle);
+  color: var(--accent-text);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: default;
+}
+
+.browse-note-tag-remove {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity var(--duration-fast);
+}
+
+.browse-note-tag-remove:hover {
+  opacity: 1;
+}
+
+.browse-note-tag-remove svg {
+  width: 10px;
+  height: 10px;
+}
+
+
+
+
+/* Source attribution (inline in header) */
+
+
+/* Note scroll container (editor + AI blocks + ask bar scroll together) */
+
+/* (.browse-ai-fab + .browse-ai-fab-wrap + .browse-ai-popover rules
+   removed 2026-04-24. See browse.js for the replacement ask-bar AI
+   tools button.) */
+
+/* Milkdown editor container — fills all available space for a real writing surface */
+
+/* Milkdown theme overrides — editorial writing surface */
+.browse-note-editor .milkdown,
+.browse-note-editor .ProseMirror,
+/* The actual contenteditable surface — fill all remaining space */
+.browse-note-editor .milkdown .editor,
+/* Milkdown wrapper fills its parent */
+.browse-note-editor .milkdown,
+/* First paragraph after a heading — no extra top margin */
+.browse-note-editor .milkdown h1 + p,
+.browse-note-editor .milkdown h2 + p,
+.browse-note-editor .milkdown ul,
+/* Selected image in ProseMirror */
+.browse-note-editor .milkdown img.ProseMirror-selectednode,
+/* Image action toolbar (appears on click) */
+.note-img-toolbar {
+  display: flex;
+  gap: 4px;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 5;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  animation: popover-in 0.12s var(--ease-standard);
+}
+
+.note-img-tb-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.1s, color 0.1s;
+}
+
+.note-img-tb-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.note-img-tb-btn[data-action="delete"]:hover {
+  color: var(--error);
+}
+
+.browse-note-editor .milkdown th,
+/* Text selection color */
+.browse-note-editor .milkdown ::selection,
+/* Placeholder when editor is empty */
+.browse-note-editor .ProseMirror p.is-editor-empty:first-child::before,
+/* Milkdown toolbar overrides */
+/* ---------------------------------------------------------------------------
+   AI Tool Popover (floating menu from AI button)
+   --------------------------------------------------------------------------- */
+
+/* Flipped variant: opens upward when no room below */
+
+/* Custom scrollbar for webkit browsers */
+
+@keyframes popover-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popover-in-up {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+
+
+.browse-ai-popover-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px var(--space-md);
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background 0.1s;
+}
+
+.browse-ai-popover-item:hover {
+  background: var(--surface-hover);
+}
+
+.browse-ai-popover-item svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.browse-ai-popover-item:hover svg {
+  color: var(--accent);
+}
+
+.browse-ai-popover-item div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+
+
+/* ---------------------------------------------------------------------------
+   Inline AI Blocks — appear naturally within the note flow
+   --------------------------------------------------------------------------- */
+.browse-note-ai-blocks {
+  padding: 0 var(--space-xl);
+}
+
+.browse-note-ai-blocks:empty {
+  display: none;
+}
+
+.browse-ai-block {
+  max-width: 760px;
+  margin: var(--space-lg) auto;
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--accent) 4%, var(--bg));
+  padding: var(--space-md) var(--space-lg);
+  animation: ai-block-in 0.3s var(--ease-out);
+  position: relative;
+}
+
+@keyframes ai-block-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.browse-ai-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.browse-ai-block-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.browse-ai-block-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.browse-ai-block-btn {
+  padding: 2px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--duration-fast);
+}
+
+.browse-ai-block-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.browse-ai-block-btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast, #fff);
+}
+
+.browse-ai-block-btn.primary:hover {
+  opacity: 0.85;
+}
+
+.browse-ai-block-btn.remove:hover {
+  color: var(--error);
+  border-color: var(--error);
+}
+
+.browse-ai-block-content {
+  font-family: var(--font-editorial);
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-primary);
+}
+
+.browse-ai-block-content p { margin-bottom: 0.6em; }
+.browse-ai-block-content ul, .browse-ai-block-content ol { margin: 0.5em 0; padding-left: 1.25em; }
+.browse-ai-block-content li { margin-bottom: 0.25em; }
+.browse-ai-block-content strong { font-weight: 600; }
+.browse-ai-block-content code {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.875em;
+  background: var(--surface);
+  padding: 0.1em 0.3em;
+  border-radius: 2px;
+}
+
+.browse-ai-block-streaming .browse-ai-block-content::after {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 14px;
+  background: var(--accent);
+  margin-left: 2px;
+  animation: browse-blink 0.8s step-end infinite;
+  vertical-align: text-bottom;
+}
+
+/* ---------------------------------------------------------------------------
+   Persistent Ask Bar (bottom of note scroll)
+   --------------------------------------------------------------------------- */
+.browse-note-ask-bar {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-xl) var(--space-lg);
+  max-width: calc(760px + var(--space-xl) * 2);
+  margin: auto auto 0;
+  width: 100%;
+  flex-shrink: 0;
+  border-top: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+
+.browse-note-ask-input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 10px var(--space-md);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s var(--ease-standard), background 0.2s var(--ease-standard),
+              box-shadow 0.2s var(--ease-standard);
+}
+
+.browse-note-ask-input:focus {
+  border-color: var(--accent);
+  background: var(--bg);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.browse-note-ask-input::placeholder {
+  color: var(--text-muted);
+}
+
+.browse-note-ask-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: var(--radius-lg);
+  background: var(--accent);
+  color: var(--accent-contrast, #fff);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity var(--duration-fast), transform var(--duration-fast) var(--ease-bounce);
+}
+
+.browse-note-ask-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.browse-note-ask-btn:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.browse-note-ask-btn:hover {
+  opacity: 0.88;
+  transform: scale(1.04);
+}
+
+.browse-note-ask-btn:active {
+  transform: scale(0.96);
+}
+
+.browse-note-ask-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* ---------------------------------------------------------------------------
+   Note editor loading state
+   Editorial tone to match the rest of the notes surface: a subtle
+   fountain-pen mark over a shimmer underline, serif title, italic
+   microcopy. Uses the same tokens + shimmer keyframe as the notes
+   skeleton so the whole surface feels authored by one hand.
+   --------------------------------------------------------------------------- */
+.browse-note-editor-loading {
+  /* Stretch to fill the editor canvas so the loader's dark surface
+     fully replaces whatever bg was there (including Crepe's white
+     .milkdown flash on mount). */
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-2xl) var(--space-xl);
+  text-align: center;
+  /* Always-dark editorial panel — stays legible across all themes
+     (dark/light/midnight/sepia). Subtle inner sheen so it reads as
+     a surface, not a void. */
+  background:
+    radial-gradient(ellipse at top, rgba(108, 138, 255, 0.06), transparent 60%),
+    #0f1016;
+  color: #d4d4dc;
+  animation: notes-empty-in 0.4s var(--ease-out);
+  z-index: 2;
+}
+
+.browse-notes-editor-area { position: relative; }   /* anchor the absolute loader */
+
+.browse-note-editor-loading-art {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  color: #8b8fa8;   /* hand-tuned for the dark loader panel */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.browse-note-editor-loading-art svg {
+  width: 48px;
+  height: 48px;
+  opacity: 0.7;
+  animation: browse-note-loading-pulse 2.4s ease-in-out infinite;
+}
+
+/* Drawn "ink line" under the nib — shimmer shares the skeleton idiom
+   (linear-gradient moving across the surface-hover band). */
+.browse-note-editor-loading-ink {
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  transform: translateX(-50%);
+  width: 72px;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 20%,
+    rgba(108, 138, 255, 0.7) 50%,
+    rgba(255, 255, 255, 0.08) 80%,
+    transparent 100%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.8s ease infinite;
+}
+
+.browse-note-editor-loading-title {
+  font-family: var(--font-editorial);
+  font-size: 1.0625rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.browse-note-editor-loading-sub {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+  color: #8b8fa8;
+  line-height: 1.6;
+  max-width: 260px;
+}
+
+@keyframes browse-note-loading-pulse {
+  0%, 100% { opacity: 0.35; transform: translateY(0); }
+  50%      { opacity: 0.7;  transform: translateY(-1px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .browse-note-editor-loading,
+  .browse-note-editor-loading-art svg,
+  .browse-note-editor-loading-ink {
+    animation: none;
+  }
+  .browse-note-editor-loading-art svg { opacity: 0.5; }
+}
+
+/* ---------------------------------------------------------------------------
+   EasyMDE editorial skin (theme-aware)
+   EasyMDE ships a fixed light default; we dress it to match the notes
+   surface via the theme variables (--bg-elevated panel, --text-* body,
+   --accent for links/cursor/selection) so it follows dark/light/midnight/
+   sepia instead of forcing a dark panel. Scoped to .note-editor-body so it
+   doesn't leak into other surfaces that may embed EasyMDE later.
+   --------------------------------------------------------------------------- */
+.note-editor-body .EasyMDEContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-elevated);
+  border-radius: 0;
+}
+
+
+/* Toolbar */
+.note-editor-body .editor-toolbar button {
+  color: var(--text-secondary) !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  border-radius: 6px !important;
+  width: 30px; height: 30px;
+  transition: background 120ms ease, color 120ms ease;
+}
+.note-editor-body .editor-toolbar button:hover {
+  background: var(--surface-hover) !important;
+  color: var(--text-primary) !important;
+  border-color: transparent !important;
+}
+.note-editor-body .editor-toolbar button.active,
+.note-editor-body .editor-toolbar button:active {
+  background: var(--accent-subtle) !important;
+  color: var(--text-primary) !important;
+  border-color: transparent !important;
+}
+.note-editor-body .editor-toolbar i.separator {
+  border-left: 1px solid var(--border);
+  border-right: none;
+  margin: 0 4px;
+}
+
+/* CodeMirror editor surface */
+.note-editor-body .EasyMDEContainer .CodeMirror {
+  flex: 1;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 0;
+  padding: 28px 40px;
+  font-family: var(--font-editorial), 'Crimson Pro', Georgia, serif;
+  font-size: 1.0625rem;
+  line-height: 1.85;
+  letter-spacing: 0.006em;
+}
+.note-editor-body .CodeMirror-scroll { padding: 0; }
+.note-editor-body .CodeMirror-cursor {
+  border-left: 1.5px solid var(--accent, #6c8aff);
+}
+.note-editor-body .CodeMirror-selected { background: rgba(108, 138, 255, 0.18) !important; }
+.note-editor-body .CodeMirror-focused .CodeMirror-selected { background: rgba(108, 138, 255, 0.25) !important; }
+
+/* CodeMirror-placeholder + empty hint */
+.note-editor-body .CodeMirror-placeholder,
+.note-editor-body .CodeMirror pre.CodeMirror-placeholder {
+  color: var(--text-muted) !important;
+  font-style: italic;
+}
+
+/* Markdown token coloring — tuned for editorial feel, not syntax-heavy */
+.note-editor-body .cm-s-easymde .cm-header,
+.note-editor-body .cm-s-easymde .cm-header-1,
+.note-editor-body .cm-s-easymde .cm-header-2,
+.note-editor-body .cm-s-easymde .cm-header-3 {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-family: var(--font-editorial), 'Crimson Pro', Georgia, serif;
+  letter-spacing: -0.01em;
+}
+.note-editor-body .cm-s-easymde .cm-header-1 { font-size: 1.75rem; line-height: 1.25; }
+.note-editor-body .cm-s-easymde .cm-header-2 { font-size: 1.4rem;  line-height: 1.3; }
+.note-editor-body .cm-s-easymde .cm-header-3 { font-size: 1.2rem;  line-height: 1.35; }
+.note-editor-body .cm-s-easymde .cm-strong   { color: var(--text-primary); font-weight: 700; }
+.note-editor-body .cm-s-easymde .cm-em       { color: var(--text-secondary); font-style: italic; }
+.note-editor-body .cm-s-easymde .cm-quote    { color: var(--text-secondary); font-style: italic; }
+.note-editor-body .cm-s-easymde .cm-link,
+.note-editor-body .cm-s-easymde .cm-url      { color: var(--accent, #6c8aff); }
+.note-editor-body .cm-s-easymde .cm-formatting,
+.note-editor-body .cm-s-easymde .cm-formatting-header,
+.note-editor-body .cm-s-easymde .cm-formatting-quote,
+.note-editor-body .cm-s-easymde .cm-formatting-list,
+.note-editor-body .cm-s-easymde .cm-formatting-link,
+.note-editor-body .cm-s-easymde .cm-formatting-image {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+.note-editor-body .cm-s-easymde .cm-comment,
+.note-editor-body .cm-s-easymde .cm-string,
+.note-editor-body .cm-s-easymde .cm-tag { color: var(--text-secondary); }
+.note-editor-body .cm-s-easymde .CodeMirror-linebackground.highlightedLine {
+  background: transparent;
+}
+
+/* Fenced code blocks inside the source view */
+.note-editor-body .cm-s-easymde .cm-formatting-code,
+.note-editor-body .cm-s-easymde .cm-formatting-code-block,
+.note-editor-body .cm-s-easymde .cm-comment.cm-formatting-code-block {
+  color: var(--text-muted);
+  background: transparent;
+}
+
+/* Gutter / line numbers off by default — keep the page clean */
+.note-editor-body .CodeMirror-gutters { display: none; }
+
+/* Preview pane (side-by-side + full preview) */
+.note-editor-body .editor-preview h1,
+.note-editor-body .editor-preview-side h1,
+.note-editor-body .editor-preview h2,
+.note-editor-body .editor-preview-side h2,
+.note-editor-body .editor-preview h3,
+.note-editor-body .editor-preview-side h3 {
+  color: var(--text-primary);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.note-editor-body .editor-preview a,
+.note-editor-body .editor-preview-side a {
+  color: var(--accent, #6c8aff);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(108, 138, 255, 0.3);
+}
+.note-editor-body .editor-preview a:hover,
+.note-editor-body .editor-preview-side a:hover {
+  border-bottom-color: var(--accent, #6c8aff);
+}
+.note-editor-body .editor-preview blockquote,
+.note-editor-body .editor-preview-side blockquote {
+  border-left: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  color: var(--text-secondary);
+  font-style: italic;
+  padding: 4px 0 4px 18px;
+  margin: 14px 0;
+}
+.note-editor-body .editor-preview code,
+.note-editor-body .editor-preview-side code {
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: 'Space Mono', 'Fira Code', Menlo, monospace;
+  font-size: 0.9em;
+}
+.note-editor-body .editor-preview pre,
+.note-editor-body .editor-preview-side pre {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 6px;
+  padding: 14px 16px;
+  overflow-x: auto;
+}
+
+/* Status bar (we disable .status in config, but guard anyway) */
+
+/* Fullscreen mode — dark backdrop */
+.note-editor-body .EasyMDEContainer.fullscreen {
+  background: #0f1016;
+}
+.note-editor-body .EasyMDEContainer .CodeMirror-fullscreen{
+  background: #0f1016;
+}
+
+/* --- Save Indicator --- */
+
+/* --- Skeleton Loaders --- */
+.browse-note-skeleton {
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: 2px;
+}
+
+.browse-note-skeleton-line {
+  height: 12px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg,
+    var(--surface-hover) 25%,
+    color-mix(in srgb, var(--surface-hover) 60%, transparent) 50%,
+    var(--surface-hover) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease infinite;
+}
+
+.browse-note-skeleton-line:first-child {
+  width: 70%;
+  margin-bottom: var(--space-xs);
+}
+
+.browse-note-skeleton-line:nth-child(2) {
+  width: 90%;
+  height: 10px;
+  margin-bottom: var(--space-xs);
+}
+
+.browse-note-skeleton-line:nth-child(3) {
+  width: 50%;
+  height: 8px;
+}
+
+/* --- Popover Focus & Keyboard --- */
+.browse-ai-popover-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
+}
+
+
+/* ---------------------------------------------------------------------------
+   Responsive
+   --------------------------------------------------------------------------- */
+
+/* Tablet */
+@media (max-width: 1023px) {
+  .browse-notes-list {
+    width: 280px;
+  }
+}
+
+/* Portrait tablets / narrow windows (768–834px, e.g. iPad portrait): a
+   280px list + the ~820px editor can't both fit without squeezing the
+   note to ~420px, and the list-collapse toggle only exists in split mode.
+   So behave like phones in this band — show the list OR the editor, not
+   both. The always-present ← back button (#note-whisper-back) returns to
+   the list, and the global :not(.note-open) rule already restores the
+   full-width list when the note is closed. */
+@media (min-width: 768px) and (max-width: 834px) {
+  .browse-notes-view.note-open .browse-notes-list { display: none; }
+  .browse-notes-view.note-open .browse-notes-editor-area { flex: 1; }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .browse-header {
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+  }
+
+  .browse-search-bar {
+    order: 10; /* push to second row */
+    flex-basis: 100%;
+    min-width: 0;
+  }
+
+  .browse-body {
+    flex-direction: column;
+  }
+
+  .browse-content-area {
+    padding: var(--space-md) var(--space-sm);
+  }
+
+  .browse-article-title {
+    font-size: 1.75rem;
+  }
+
+  /* Keep nav visible on mobile — essential for going back */
+  .browse-nav-group {
+    display: flex;
+  }
+
+  /* Back-to-list button in notes editor */
+  
+  .browse-search-submit {
+    width: 36px;
+    height: 36px;
+  }
+
+  /* Notes: full-screen list OR editor on mobile (not both) */
+  .browse-notes-view {
+    flex-direction: column;
+  }
+
+  .browse-notes-list {
+    width: 100%;
+    flex: 1;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    max-height: none;
+  }
+
+  /* When a note is open on mobile, hide the list */
+  .browse-notes-view.note-open .browse-notes-list {
+    display: none;
+  }
+
+  .browse-notes-view.note-open .browse-notes-editor-area {
+    flex: 1;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .browse-article-title {
+    font-size: 1.75rem;
+  }
+
+  .browse-result-thumb {
+    width: 80px;
+    height: 54px;
+  }
+}
+
+/* Small phones */
+@media (max-width: 380px) {
+  .browse-article-title {
+    font-size: 1.4rem;
+  }
+
+  .browse-article-body {
+    font-size: 1rem;
+  }
+
+  .browse-tab-btn {
+    padding: 4px 8px;
+    font-size: 0.65rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Split-Screen Mode (desktop >1200px)
+   --------------------------------------------------------------------------- */
+
+/* Split button — visible at all widths. At >=1201px it gives side-by-
+   side layout; below that the same toggle stacks browse-on-top /
+   notes-on-bottom (container falls back to default column flex),
+   which is still useful so we don't hide the toggle there. */
+.browse-split-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color var(--duration-fast), border-color var(--duration-fast);
+}
+
+.browse-split-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+.browse-split-mode .browse-split-btn {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Hide on the narrowest mobile to save header room; stacking on a
+   phone screen is rarely useful and the orb already gives fast
+   browse/notes switching. */
+@media (max-width: 767px) {
+  .browse-split-btn {
+    display: none;
+  }
+}
+
+@media (min-width: 1201px) {
+  .browse-split-mode .browse-body-container {
+    flex-direction: row;
+    gap: 1px;
+  }
+
+  /* Top-level split panes share the row. Do NOT force flex-direction
+     here — .browse-notes-view must keep its internal row layout
+     (list sidebar + editor area); overriding to column stacks them
+     and pushes the editor below the viewport. */
+  .browse-split-mode .browse-body-container > .browse-body,
+  .browse-split-mode .browse-body-container > .browse-notes-view {
+    flex: 1;
+    min-width: 0;
+    display: flex !important;
+  }
+
+  .browse-split-mode .browse-body-container > .browse-notes-view.hidden {
+    display: flex !important; /* Override hidden in split mode */
+  }
+
+  /* Visual divider between panels */
+  .browse-split-mode #browse-body-notes {
+    border-left: 1px solid var(--border);
+  }
+
+  .browse-split-mode #browse-body-notes.note-open .browse-notes-history-toggle {
+    display: flex;
+  }
+
+  .browse-split-mode #browse-body-notes.notes-history-collapsed .browse-notes-list {
+    width: 0;
+    min-width: 0;
+    border-right-color: transparent;
+    opacity: 0;
+    transform: translateX(-18px);
+    pointer-events: none;
+  }
+
+  .browse-split-mode #browse-body-notes.notes-history-collapsed .browse-notes-history-toggle {
+    left: 8px;
+    top: 38px;
+  }
+
+  .browse-split-mode #browse-body-notes.notes-history-collapsed .browse-notes-history-toggle svg {
+    transform: rotate(180deg);
+  }
+
+  /* In split mode the tab group is a pane-focus switcher — it
+     reassigns which pane the shared search bar drives. Keep it
+     clickable; the `.active` class already accents the current pane. */
+  .browse-split-mode .browse-tab-group {
+    opacity: 0.85;
+  }
+  .browse-split-mode .browse-tab-btn.active {
+    /* Emphasize which pane owns the shared search bar */
+    box-shadow: inset 0 -2px 0 var(--accent);
+  }
+}
+
+/* ==========================================================================
+   Unsupported-site card
+   Shown when the backend short-circuits a hostile domain (Amazon,
+   Facebook, LinkedIn, Google Maps, etc.) — presents a clear "can't read
+   this here, open in your browser?" option instead of silence or a
+   generic timeout error.
+   ========================================================================== */
+
+.browse-unsupported {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px var(--space-lg);
+  gap: var(--space-md);
+  min-height: 60vh;
+}
+
+.browse-unsupported-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  border: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+.browse-unsupported-icon img {
+  border-radius: 8px;
+}
+
+.browse-unsupported-title {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.browse-unsupported-host {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 0;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.02em;
+}
+
+.browse-unsupported-reason {
+  max-width: 520px;
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.browse-unsupported-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.browse-unsupported-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: var(--accent);
+  color: var(--accent-contrast, #fff);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: var(--text-sm);
+  transition: background var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard),
+              box-shadow var(--duration-fast) var(--ease-standard);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.browse-unsupported-cta:hover {
+  background: color-mix(in srgb, var(--accent) 92%, white);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+.browse-unsupported-cta:active {
+  transform: translateY(0);
+}
+
+.browse-unsupported-hint {
+  max-width: 460px;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  margin: var(--space-md) 0 0;
+  font-style: italic;
+}
+
+/* ==========================================================================
+   Page tabs (browser-style tabs inside the browse panel)
+   Hidden when only one tab is open so the chrome only appears when it
+   carries information. Strip injected at the top of #browse-body-browse
+   by initBrowse(); buttons wired in _renderPageTabStrip.
+   ========================================================================== */
+
+.browse-page-tab-strip {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  padding: 4px 6px 0;
+  background: var(--bg-secondary, var(--bg-elevated));
+  border-bottom: 1px solid var(--border-light);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  flex-shrink: 0;
+  min-height: 34px;
+}
+.browse-page-tab-strip.hidden { display: none; }
+
+.browse-page-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px 4px 10px;
+  border-radius: 6px 6px 0 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  max-width: 200px;
+  min-width: 80px;
+  white-space: nowrap;
+  user-select: none;
+  position: relative;
+  transition: background var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+  /* Perf: isolate layout/paint per tab — matches the .list-item pattern. */
+  contain: layout style paint;
+  /* Newly-mounted tabs slide in from the right with a slight scale —
+     existing tabs remain still because the keyframe runs only on the
+     element's first paint. Cheap continuity for multi-tab Browse. */
+  animation: browse-page-tab-in 0.22s var(--ease-decelerate) both;
+}
+@keyframes browse-page-tab-in {
+  from { opacity: 0; transform: translateX(8px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .browse-page-tab { animation: none; }
+}
+.browse-page-tab:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+}
+.browse-page-tab.active {
+  background: var(--bg-primary, var(--bg));
+  color: var(--text-primary);
+  box-shadow: inset 0 1px 0 var(--accent);
+}
+[data-theme="light"] .browse-page-tab:hover { background: rgba(0, 0, 0, 0.04); }
+
+.browse-page-tab-favicon,
+.browse-page-tab-favicon-placeholder {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--text-muted);
+  object-fit: contain;
+}
+
+.browse-page-tab-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1;
+}
+
+.browse-page-tab-close {
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-standard),
+              background var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+  flex-shrink: 0;
+}
+.browse-page-tab:hover .browse-page-tab-close,
+.browse-page-tab.active .browse-page-tab-close {
+  opacity: 0.7;
+}
+.browse-page-tab-close:hover {
+  opacity: 1 !important;
+  background: color-mix(in srgb, var(--error, #ef4444) 15%, transparent);
+  color: var(--error, #ef4444);
+}
+
+.browse-page-tab-new {
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  width: 28px;
+  height: 28px;
+  min-height: 28px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  align-self: center;
+  margin-left: 4px;
+  transition: background var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+  flex-shrink: 0;
+}
+.browse-page-tab-new:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+}
+[data-theme="light"] .browse-page-tab-new:hover { background: rgba(0, 0, 0, 0.05); }
+
+/* Always-visible close on mobile — no hover state to reveal it. */
+@media (max-width: 767px) {
+  .browse-page-tab {
+    min-width: 100px;
+    padding: 4px 6px 4px 8px;
+    font-size: 11px;
+  }
+  .browse-page-tab-close {
+    opacity: 0.5;
+    min-width: 20px;
+    min-height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* ==========================================================================
+   Reddit Renderer — styling for the .json intercept output
+   See augmentum/proxy/browse_routes.py:_render_reddit_post / _listing
+   ========================================================================== */
+
+
+.reddit-post-header {
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reddit-sub-line,
+.reddit-post-meta,
+.reddit-listing-meta,
+.reddit-comment-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  align-items: center;
+}
+
+
+
+
+
+
+
+.reddit-post-body p,
+.reddit-post-body blockquote,
+
+
+
+
+/* Subreddit listing cards */
+/* ==========================================================================
+   Hacker News / GitHub / Stack Exchange intercept renderers.
+   All three reuse the same "forum / reference article" pattern: a
+   header row of metadata followed by a body, optionally followed by a
+   divided comments section. Keeping the styles together so the look
+   stays consistent across intercepts.
+   ========================================================================== */
+
+/* --- Hacker News --- */
+
+.hn-post-header{
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hn-sub-line,
+.hn-post-meta,
+.hn-comment-meta,
+.gh-meta,
+.se-meta,
+.se-answer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  align-items: center;
+}
+
+.hn-age, .se-age { font-size: var(--text-xs); color: var(--text-muted); }
+
+
+
+.hn-more-replies {
+  padding: 6px 0 6px 16px;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* --- GitHub --- */
+.gh-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.gh-readme-raw {
+  font-family: var(--font-mono, monospace);
+  font-size: var(--text-xs);
+  white-space: pre-wrap;
+  padding: var(--space-md);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+}
+
+/* --- Hugging Face: models / datasets / spaces / blob --- */
+.hf-chips,
+.hf-tags,
+.hf-blob-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+.hf-kind-chip {
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 10px;
+}
+
+.hf-dl,
+.hf-tag{
+  padding: 2px 8px;
+  background: var(--surface);
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+}
+.hf-tag {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: color-mix(in srgb, var(--accent) 85%, var(--text-primary));
+  font-family: var(--font-mono, monospace);
+}
+.hf-gated-banner {
+  padding: 10px 12px;
+  background: color-mix(in srgb, #eab308 15%, transparent);
+  color: color-mix(in srgb, #eab308 90%, var(--text-primary));
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+}
+
+/* File list at the bottom of model/dataset/space pages */
+.hf-files {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-light);
+}
+/* HF blob (file view) — shares layout with GitHub blob */
+.hf-blob-path-sub {
+  font-family: var(--font-mono, monospace);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: 4px;
+  word-break: break-all;
+}
+/* --- GitHub blob / Gist --- */
+.gh-blob-path-sub {
+  font-family: var(--font-mono, monospace);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: 4px;
+  word-break: break-all;
+}
+.gh-blob-meta,
+.gist-meta,
+.gist-file-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+.gist-file-header {
+  padding: 6px 10px;
+  background: var(--bg-secondary, var(--bg-elevated));
+  border: 1px solid var(--border);
+  border-bottom: 0;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  margin-top: 0;
+}
+
+/* --- Copy button on every code block in the article view --- */
+.browse-code-copy-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-standard),
+              background var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+  backdrop-filter: blur(4px);
+}
+pre:hover .browse-code-copy-btn { opacity: 0.9; }
+.browse-code-copy-btn:hover {
+  background: var(--surface);
+  color: var(--text-primary);
+  opacity: 1;
+}
+.browse-code-copy-btn.copied {
+  color: #22c55e;
+  border-color: color-mix(in srgb, #22c55e 40%, transparent);
+  opacity: 1;
+}
+@media (max-width: 767px) {
+  .browse-code-copy-btn { opacity: 0.6; }
+}
+
+/* --- Table of contents side panel --- */
+/* TOC popover — anchored under the "Contents" toolbar button.
+   Renders as a floating panel rather than an in-flow sidebar so it
+   never steals width from the article body. */
+.browse-toc-popover {
+  position: fixed;
+  z-index: 1000;
+  width: 280px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100dvh - 140px);
+  overflow-y: auto;
+  padding: 12px 14px;
+  background: var(--bg-secondary, var(--bg-elevated));
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md, 0 8px 24px rgba(0, 0, 0, 0.15));
+  font-size: var(--text-xs);
+}
+.browse-toc-header {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.browse-toc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.browse-toc-item {
+  text-decoration: none;
+  color: var(--text-secondary);
+  padding: 4px 0 4px 8px;
+  line-height: 1.4;
+  border-left: 2px solid transparent;
+  transition: color var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+}
+.browse-toc-item:hover {
+  color: var(--text-primary);
+  border-left-color: var(--accent);
+}
+/* Flash the heading when user jumps to it from the TOC */
+.browse-toc-flash {
+  animation: browse-toc-flash-anim 1.4s ease-out;
+}
+@keyframes browse-toc-flash-anim {
+  0%   { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+  100% { background: transparent; }
+}
+
+/* --- Stack Exchange --- */
+.se-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.se-tag {
+  padding: 2px 8px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--accent-text, var(--accent));
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+}
+/* --- Jupyter notebook (.ipynb) --- */
+.nb-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-md);
+}
+.nb-cell {
+  border-radius: var(--radius-sm);
+}
+.nb-code {
+  flex: 1;
+  margin: 0;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--surface-2, var(--surface));
+  border-left: 3px solid var(--accent, var(--border));
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.nb-out-img,
+/* --- RSS / Atom feed listings --- */
+/* --- Discourse topic view --- */
+.browse-discourse-post-date,
+
+/* --- Provenance, not silos: companion-created notes ------------------- */
+/* Chip in the notes list header narrows to her notes; the badge marks
+   them inline even when the filter is off. */
+.browse-notes-origin-chip {
+  margin-left: auto;
+  padding: 2px 9px;
+  font-size: 10.5px;
+  line-height: 1.6;
+  border: 1px solid var(--notes-sidebar-rule, var(--border));
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+.browse-notes-origin-chip:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+.browse-notes-origin-chip.active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.browse-note-origin-badge {
+  color: var(--accent);
+  opacity: 0.85;
+}

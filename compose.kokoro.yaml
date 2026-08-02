@@ -1,0 +1,43 @@
+# Kokoro-FastAPI — OpenAI-compatible TTS with voice mixing
+# Balanced quality + speed, runs well on CPU.
+# WebUI: http://localhost:6300/web
+# Voice mixer: combine voices with weighted blending
+# Docs: https://github.com/remsky/Kokoro-FastAPI
+
+services:
+  augmentum:
+    volumes:
+      - kokoro_voices:/data/kokoro_voices
+
+  kokoro:
+    image: ghcr.io/remsky/kokoro-fastapi-cpu:latest
+    ports:
+      - "6300:8880"
+    volumes:
+      - kokoro_voices:/app/api/voices
+    environment:
+      PYTHONPATH: "/app:/app/api"
+      ALLOW_LOCAL_VOICE_SAVING: "true"
+      ONNX_NUM_THREADS: "4"
+      ONNX_INTER_OP_THREADS: "2"
+      ONNX_EXECUTION_MODE: "parallel"
+      ONNX_OPTIMIZATION_LEVEL: "all"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://0.0.0.0:8880/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      options:
+        max-size: "50m"
+        max-file: "3"
+    # Host-RAM backstop. CPU-only image, so the 82M ONNX model and every
+    # activation live in host RAM — but it's a small model and the ONNX
+    # thread pools above are capped at 4/2. Unverified estimate; 4g is well
+    # clear. Raise it if you run many parallel synthesis requests or bump
+    # ONNX_NUM_THREADS substantially.
+    mem_limit: ${AUGMENTUM_KOKORO_MEM_LIMIT:-4g}
+
+volumes:
+  kokoro_voices:

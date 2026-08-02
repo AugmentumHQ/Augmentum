@@ -1,0 +1,52 @@
+# CPU-only llama-server build. Sibling of Dockerfile.llama-server (GPU/CUDA).
+# Used as a build stage by the CPU variant of Dockerfile via COPY --from.
+#
+# Why a separate image:
+#   The GPU build pulls in nvidia/cuda devel + base layers (~3 GB). CPU users
+#   don't need any of that — a slim ubuntu base + the same llama.cpp source
+#   compiled without -DGGML_CUDA gives a working engine binary at ~80 MB
+#   instead of the GPU image's ~3 GB.
+#
+# The pinned llama.cpp version is shared with the GPU build (LLAMA_SERVER_VERSION
+# at repo root). One bump rebuilds both.
+#
+# Manual invocation:
+#   docker build -t augmentum-llama-server-cpu \
+#     --build-arg LLAMA_CPP_VERSION=b8733 -f Dockerfile.llama-server-cpu .
+
+# Base image pinned to digest — see Dockerfile header for the rotation
+# procedure (scripts/upgrade_base_images.sh).
+FROM ubuntu:22.04@sha256:4f838adc7181d9039ac795a7d0aba05a9bd9ecd480d294483169c5def983b64d AS builder
+
+ARG LLAMA_CPP_VERSION=b9181
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        git cmake build-essential curl libcurl4-openssl-dev libgomp1 && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN git clone --branch ${LLAMA_CPP_VERSION} --depth 1 \
+      https://github.com/ggml-org/llama.cpp.git /build/llama.cpp
+
+WORKDIR /build/llama.cpp
+# GGML_NATIVE=OFF builds a generic x86_64 binary so the published image
+# runs on any host — runtime CPU capability detection picks the best path
+# (AVX, AVX2, AVX-512, etc.) per instance.
+RUN cmake -B build \
+      -DGGML_CUDA=OFF \
+      -DGGML_NATIVE=OFF \
+      -DLLAMA_CURL=ON \
+      -DCMAKE_BUILD_TYPE=Release \
+    && cmake --build build --target llama-server -j$(nproc)
+
+# Final stage — minimal runtime, just the binary + libgomp (OpenMP runtime
+# llama.cpp links against for threading). Same digest pin as builder stage.
+FROM ubuntu:22.04@sha256:4f838adc7181d9039ac795a7d0aba05a9bd9ecd480d294483169c5def983b64d
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libgomp1 libcurl4 ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /build/llama.cpp/build/bin/llama-server /usr/local/bin/llama-server
+COPY --from=builder /build/llama.cpp/build/bin/*.so /usr/local/lib/
+RUN ldconfig

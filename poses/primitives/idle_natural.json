@@ -1,0 +1,24 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "idle_natural",
+  "tags": ["idle", "neutral", "standing"],
+  "description": "Baseline natural standing pose — both arms tweened to the snapshotted natural-pose state. The canonical via waypoint: routing through this primitive guides arms back to their arms-at-sides rest before reaching the next target.",
+  "family": "idle_standing",
+
+  "anchors": {
+    "leftHand":  { "type": "rest" },
+    "rightHand": { "type": "rest" }
+  },
+
+  "body": {
+    "head":  { "pitch": 0, "yaw": 0, "roll": 0 },
+    "spine": { "forwardLean": 0 }
+  },
+
+  "provenance": {
+    "source": "manual",
+    "curatedBy": "maintainer",
+    "createdAt": "2026-05-14",
+    "notes": "rest anchors trigger the PoseTransitionChannel to tween both arm chains toward the natural-pose snapshot captured at channel construction. This makes idle_natural a meaningful via waypoint — routing through it guides arms BACK to neutral before reaching the next target, naturally avoiding through-body slerp paths."
+  }
+}

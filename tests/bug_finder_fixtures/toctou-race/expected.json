@@ -1,0 +1,18 @@
+{
+  "fixture_id": "toctou-race",
+  "language": "python",
+  "kind": "true_positive",
+  "expected_findings": [
+    {
+      "signature": "race",
+      "file": "bug.py",
+      "line_start": 8,
+      "line_end": 16,
+      "min_severity": "medium",
+      "min_status": "confirmed",
+      "must_build_poc": false
+    }
+  ],
+  "max_extra_findings": 1,
+  "notes": "TOCTOU: check-then-act race condition. PoC is racy and OS-dependent — `must_build_poc=false`, the finding suffices. A strong detector should still describe the attacker action precisely (symlink swap in the window)."
+}

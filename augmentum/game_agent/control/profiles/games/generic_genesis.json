@@ -1,0 +1,43 @@
+{
+  "schema": "control.game.v1",
+  "id": "generic_genesis",
+  "description": "Generic Sega Genesis / Mega Drive game profile (3-button pad). A is the leftmost face button, B middle, C right. RetroPad convention treats C as the primary 'A-equivalent' so confirm binds to face_east.",
+  "applies_to_controllers": ["genesis"],
+  "applies_to_log_schema": "genesis_vision.v1",
+  "actions": {
+    "confirm": {
+      "binding": "face_east",
+      "hint": "Press C. Primary action in most Genesis games (jump in Sonic, attack in Streets of Rage), advance menus."
+    },
+    "cancel": {
+      "binding": "face_south",
+      "hint": "Press B. Secondary action (special move in Streets of Rage, spin-dash in Sonic 2+), cancel menus."
+    },
+    "special": {
+      "binding": "face_west",
+      "hint": "Press A. Tertiary action: weapon cycle, sub-attack, defensive move."
+    },
+    "menu": {
+      "binding": "start",
+      "hint": "Press Start. Open the pause menu, start the game from the title screen."
+    },
+    "nav_up": {
+      "binding": "dpad_up",
+      "hint": "Walk / move up. In menus: cursor up."
+    },
+    "nav_down": {
+      "binding": "dpad_down",
+      "hint": "Walk / move down. In menus: cursor down."
+    },
+    "nav_left": {
+      "binding": "dpad_left",
+      "hint": "Walk / move left. In menus: cursor left."
+    },
+    "nav_right": {
+      "binding": "dpad_right",
+      "hint": "Walk / move right. In menus: cursor right."
+    }
+  },
+  "hardware_passthrough": [],
+  "notes": "3-button pad only — the 6-button Genesis controller's X/Y/Z buttons are not covered by this profile. A 6-button variant would extend with face_north + shoulder slots."
+}

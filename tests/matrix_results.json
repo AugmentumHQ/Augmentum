@@ -1,0 +1,1144 @@
+{
+  "runs": [
+    {
+      "timestamp": "2026-03-24T19:43:22",
+      "model": "qwen3.5-35b-a3b-uncensored-hauhaucs-aggressive",
+      "build_id": "calc-simple",
+      "description": "simple calculator with add subtract multiply divide",
+      "scaffold": "form",
+      "success": true,
+      "error": "",
+      "file_count": 3,
+      "total_lines": 445,
+      "total_chars": 10962,
+      "score": 7.5,
+      "llm_calls": 5,
+      "build_time_s": 59.2,
+      "passes": [
+        "deliver",
+        "generate",
+        "improve",
+        "plan",
+        "validate",
+        "verify"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [
+        {
+          "path": "index.html",
+          "role": "entry",
+          "lines": 63
+        },
+        {
+          "path": "styles.css",
+          "role": "style",
+          "lines": 220
+        },
+        {
+          "path": "app.js",
+          "role": "script",
+          "lines": 162
+        }
+      ],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-03-24T19:45:00",
+      "model": "qwen3.5-35b-a3b-uncensored-hauhaucs-aggressive",
+      "build_id": "snake-game",
+      "description": "snake game with arrow key controls, growing snake, random food, score counter, game over on wall or self collision, restart button",
+      "scaffold": "game",
+      "success": true,
+      "error": "",
+      "file_count": 3,
+      "total_lines": 465,
+      "total_chars": 11854,
+      "score": 7.5,
+      "llm_calls": 5,
+      "build_time_s": 97.9,
+      "passes": [
+        "deliver",
+        "generate",
+        "improve",
+        "plan",
+        "validate",
+        "verify"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [
+        {
+          "path": "index.html",
+          "role": "entry",
+          "lines": 38
+        },
+        {
+          "path": "styles.css",
+          "role": "style",
+          "lines": 192
+        },
+        {
+          "path": "game.js",
+          "role": "script",
+          "lines": 235
+        }
+      ],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-03-24T19:51:13",
+      "model": "qwen3.5-35b-a3b-uncensored-hauhaucs-aggressive",
+      "build_id": "landing-page",
+      "description": "landing page with hero section, 3 feature cards, testimonial carousel, and contact form. Modern design with scroll animations.",
+      "scaffold": "static",
+      "success": true,
+      "error": "",
+      "file_count": 2,
+      "total_lines": 352,
+      "total_chars": 10637,
+      "score": 7.0,
+      "llm_calls": 14,
+      "build_time_s": 373.2,
+      "passes": [
+        "deliver",
+        "generate",
+        "improve",
+        "plan",
+        "validate",
+        "verify"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [
+        {
+          "path": "index.html",
+          "role": "entry",
+          "lines": 133
+        },
+        {
+          "path": "styles.css",
+          "role": "style",
+          "lines": 219
+        }
+      ],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-03-24T20:08:00",
+      "model": "nvidia/nemotron-3-nano-4b",
+      "build_id": "calc-simple",
+      "description": "simple calculator with add subtract multiply divide",
+      "scaffold": "form",
+      "success": true,
+      "error": "",
+      "file_count": 4,
+      "total_lines": 288,
+      "total_chars": 7372,
+      "score": 6.8,
+      "llm_calls": 8,
+      "build_time_s": 97.1,
+      "passes": [
+        "deliver",
+        "generate",
+        "improve",
+        "plan",
+        "validate",
+        "verify"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [
+        {
+          "path": "index.html",
+          "role": "entry",
+          "lines": 93
+        },
+        {
+          "path": "styles.css",
+          "role": "style",
+          "lines": 72
+        },
+        {
+          "path": "app.js",
+          "role": "script",
+          "lines": 58
+        },
+        {
+          "path": "/app.js",
+          "role": "script",
+          "lines": 65
+        }
+      ],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-03-24T20:08:33",
+      "model": "gemma-3-4b-it",
+      "build_id": "calc-simple",
+      "description": "simple calculator with add subtract multiply divide",
+      "scaffold": "form",
+      "success": true,
+      "error": "",
+      "file_count": 5,
+      "total_lines": 215,
+      "total_chars": 6052,
+      "score": 6.0,
+      "llm_calls": 7,
+      "build_time_s": 32.6,
+      "passes": [
+        "deliver",
+        "generate",
+        "improve",
+        "plan",
+        "validate",
+        "verify"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [
+        {
+          "path": "index.html",
+          "role": "entry",
+          "lines": 26
+        },
+        {
+          "path": "styles.css",
+          "role": "style",
+          "lines": 77
+        },
+        {
+          "path": "app.js",
+          "role": "script",
+          "lines": 36
+        },
+        {
+          "path": "calculator.js",
+          "role": "module",
+          "lines": 46
+        },
+        {
+          "path": "data.js",
+          "role": "data",
+          "lines": 30
+        }
+      ],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-03-24T20:09:30",
+      "model": "nvidia/nemotron-3-nano-4b",
+      "build_id": "todo-crud",
+      "description": "todo list with add, delete, mark complete, and localStorage persistence",
+      "scaffold": "form",
+      "success": true,
+      "error": "",
+      "file_count": 3,
+      "total_lines": 328,
+      "total_chars": 7596,
+      "score": 0.0,
+      "llm_calls": 6,
+      "build_time_s": 57.3,
+      "passes": [
+        "deliver",
+        "generate",
+        "improve",
+        "plan",
+        "validate",
+        "verify"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [
+        {
+          "path": "index.html",
+          "role": "entry",
+          "lines": 93
+        },
+        {
+          "path": "styles.css",
+          "role": "style",
+          "lines": 103
+        },
+        {
+          "path": "app.js",
+          "role": "script",
+          "lines": 132
+        }
+      ],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-03-24T20:10:17",
+      "model": "gemma-3-4b-it",
+      "build_id": "todo-crud",
+      "description": "todo list with add, delete, mark complete, and localStorage persistence",
+      "scaffold": "form",
+      "success": true,
+      "error": "",
+      "file_count": 5,
+      "total_lines": 302,
+      "total_chars": 7605,
+      "score": 6.5,
+      "llm_calls": 8,
+      "build_time_s": 47.2,
+      "passes": [
+        "deliver",
+        "generate",
+        "improve",
+        "plan",
+        "validate",
+        "verify"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [
+        {
+          "path": "index.html",
+          "role": "entry",
+          "lines": 19
+        },
+        {
+          "path": "styles.css",
+          "role": "style",
+          "lines": 95
+        },
+        {
+          "path": "app.js",
+          "role": "script",
+          "lines": 82
+        },
+        {
+          "path": "todo.js",
+          "role": "script",
+          "lines": 81
+        },
+        {
+          "path": "data/todoData.js",
+          "role": "module",
+          "lines": 25
+        }
+      ],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-03-24T20:11:13",
+      "model": "nvidia/nemotron-3-nano-4b",
+      "build_id": "snake-game",
+      "description": "snake game with arrow key controls, growing snake, random food, score counter, game over on wall or self collision, restart button",
+      "scaffold": "game",
+      "success": true,
+      "error": "",
+      "file_count": 3,
+      "total_lines": 193,
+      "total_chars": 5496,
+      "score": 6.0,
+      "llm_calls": 6,
+      "build_time_s": 55.8,
+      "passes": [
+        "deliver",
+        "generate",
+        "improve",
+        "plan",
+        "validate",
+        "verify"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [
+        {
+          "path": "index.html",
+          "role": "entry",
+          "lines": 31
+        },
+        {
+          "path": "styles.css",
+          "role": "style",
+          "lines": 15
+        },
+        {
+          "path": "game.js",
+          "role": "script",
+          "lines": 147
+        }
+      ],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-03-24T20:12:40",
+      "model": "gemma-3-4b-it",
+      "build_id": "snake-game",
+      "description": "snake game with arrow key controls, growing snake, random food, score counter, game over on wall or self collision, restart button",
+      "scaffold": "game",
+      "success": true,
+      "error": "",
+      "file_count": 5,
+      "total_lines": 226,
+      "total_chars": 8755,
+      "score": 6.0,
+      "llm_calls": 9,
+      "build_time_s": 87.0,
+      "passes": [
+        "deliver",
+        "generate",
+        "improve",
+        "plan",
+        "validate",
+        "verify"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [
+        {
+          "path": "index.html",
+          "role": "entry",
+          "lines": 13
+        },
+        {
+          "path": "styles.css",
+          "role": "style",
+          "lines": 47
+        },
+        {
+          "path": "app.js",
+          "role": "script",
+          "lines": 60
+        },
+        {
+          "path": "snake.js",
+          "role": "module",
+          "lines": 59
+        },
+        {
+          "path": "food.js",
+          "role": "module",
+          "lines": 47
+        }
+      ],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-03-24T22:45:44",
+      "model": "nvidia/nemotron-3-nano-4b",
+      "build_id": "calc-simple",
+      "description": "simple calculator with add subtract multiply divide",
+      "scaffold": "form",
+      "success": true,
+      "error": "",
+      "file_count": 3,
+      "total_lines": 194,
+      "total_chars": 5114,
+      "score": 7.5,
+      "llm_calls": 6,
+      "build_time_s": 72.0,
+      "passes": [
+        "deliver",
+        "generate",
+        "improve",
+        "plan",
+        "polish",
+        "validate",
+        "verify"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [
+        {
+          "path": "index.html",
+          "role": "entry",
+          "lines": 41
+        },
+        {
+          "path": "styles.css",
+          "role": "style",
+          "lines": 85
+        },
+        {
+          "path": "app.js",
+          "role": "script",
+          "lines": 68
+        }
+      ],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-03-24T22:46:42",
+      "model": "gemma-3-4b-it",
+      "build_id": "calc-simple",
+      "description": "simple calculator with add subtract multiply divide",
+      "scaffold": "form",
+      "success": true,
+      "error": "",
+      "file_count": 5,
+      "total_lines": 198,
+      "total_chars": 8195,
+      "score": 6.0,
+      "llm_calls": 8,
+      "build_time_s": 58.4,
+      "passes": [
+        "deliver",
+        "generate",
+        "improve",
+        "plan",
+        "polish",
+        "validate",
+        "verify"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [
+        {
+          "path": "index.html",
+          "role": "entry",
+          "lines": 37
+        },
+        {
+          "path": "styles.css",
+          "role": "style",
+          "lines": 43
+        },
+        {
+          "path": "app.js",
+          "role": "script",
+          "lines": 84
+        },
+        {
+          "path": "data.js",
+          "role": "module",
+          "lines": 23
+        },
+        {
+          "path": "utils.js",
+          "role": "module",
+          "lines": 11
+        }
+      ],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-03-24T22:48:24",
+      "model": "nvidia/nemotron-3-nano-4b",
+      "build_id": "todo-crud",
+      "description": "todo list with add, delete, mark complete, and localStorage persistence",
+      "scaffold": "form",
+      "success": true,
+      "error": "",
+      "file_count": 3,
+      "total_lines": 288,
+      "total_chars": 8877,
+      "score": 8.0,
+      "llm_calls": 7,
+      "build_time_s": 101.3,
+      "passes": [
+        "deliver",
+        "generate",
+        "improve",
+        "plan",
+        "polish",
+        "validate",
+        "verify"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [
+        {
+          "path": "index.html",
+          "role": "entry",
+          "lines": 53
+        },
+        {
+          "path": "styles.css",
+          "role": "style",
+          "lines": 96
+        },
+        {
+          "path": "app.js",
+          "role": "script",
+          "lines": 139
+        }
+      ],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-03-24T22:49:45",
+      "model": "gemma-3-4b-it",
+      "build_id": "todo-crud",
+      "description": "todo list with add, delete, mark complete, and localStorage persistence",
+      "scaffold": "form",
+      "success": true,
+      "error": "",
+      "file_count": 5,
+      "total_lines": 200,
+      "total_chars": 7248,
+      "score": 5.0,
+      "llm_calls": 10,
+      "build_time_s": 81.7,
+      "passes": [
+        "deliver",
+        "generate",
+        "improve",
+        "plan",
+        "polish",
+        "validate",
+        "verify"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [
+        {
+          "path": "index.html",
+          "role": "entry",
+          "lines": 19
+        },
+        {
+          "path": "styles.css",
+          "role": "style",
+          "lines": 45
+        },
+        {
+          "path": "app.js",
+          "role": "script",
+          "lines": 47
+        },
+        {
+          "path": "todo.js",
+          "role": "script",
+          "lines": 44
+        },
+        {
+          "path": "data/todos.js",
+          "role": "module",
+          "lines": 45
+        }
+      ],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-03-24T22:51:35",
+      "model": "nvidia/nemotron-3-nano-4b",
+      "build_id": "snake-game",
+      "description": "snake game with arrow key controls, growing snake, random food, score counter, game over on wall or self collision, restart button",
+      "scaffold": "game",
+      "success": true,
+      "error": "",
+      "file_count": 4,
+      "total_lines": 354,
+      "total_chars": 9018,
+      "score": 5.0,
+      "llm_calls": 8,
+      "build_time_s": 109.2,
+      "passes": [
+        "deliver",
+        "generate",
+        "improve",
+        "plan",
+        "polish",
+        "validate",
+        "verify"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [
+        {
+          "path": "index.html",
+          "role": "entry",
+          "lines": 15
+        },
+        {
+          "path": "styles.css",
+          "role": "style",
+          "lines": 49
+        },
+        {
+          "path": "game.js",
+          "role": "script",
+          "lines": 147
+        },
+        {
+          "path": "app.js",
+          "role": "module",
+          "lines": 143
+        }
+      ],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-03-24T22:52:46",
+      "model": "gemma-3-4b-it",
+      "build_id": "snake-game",
+      "description": "snake game with arrow key controls, growing snake, random food, score counter, game over on wall or self collision, restart button",
+      "scaffold": "game",
+      "success": true,
+      "error": "",
+      "file_count": 5,
+      "total_lines": 211,
+      "total_chars": 7968,
+      "score": 6.0,
+      "llm_calls": 8,
+      "build_time_s": 71.7,
+      "passes": [
+        "deliver",
+        "generate",
+        "improve",
+        "plan",
+        "polish",
+        "validate",
+        "verify"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [
+        {
+          "path": "index.html",
+          "role": "entry",
+          "lines": 18
+        },
+        {
+          "path": "styles.css",
+          "role": "style",
+          "lines": 43
+        },
+        {
+          "path": "app.js",
+          "role": "script",
+          "lines": 102
+        },
+        {
+          "path": "snake.js",
+          "role": "module",
+          "lines": 20
+        },
+        {
+          "path": "food.js",
+          "role": "module",
+          "lines": 28
+        }
+      ],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-07-06T18:55:25",
+      "model": "deepseek-v4-flash",
+      "build_id": "calc-simple",
+      "description": "simple calculator with add subtract multiply divide",
+      "scaffold": "form",
+      "success": false,
+      "error": "Build failed: HTTP Error 400: Bad Request",
+      "file_count": 0,
+      "total_lines": 0,
+      "total_chars": 0,
+      "score": 0,
+      "llm_calls": 2,
+      "build_time_s": 3.3,
+      "passes": [
+        "plan"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-07-06T18:55:26",
+      "model": "deepseek-v4-flash",
+      "build_id": "todo-crud",
+      "description": "todo list with add, delete, mark complete, and localStorage persistence",
+      "scaffold": "form",
+      "success": false,
+      "error": "Build failed: HTTP Error 400: Bad Request",
+      "file_count": 0,
+      "total_lines": 0,
+      "total_chars": 0,
+      "score": 0,
+      "llm_calls": 2,
+      "build_time_s": 1.1,
+      "passes": [
+        "plan"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-07-06T18:55:27",
+      "model": "deepseek-v4-flash",
+      "build_id": "quiz-app",
+      "description": "quiz app with 5 multiple choice questions, score counter, and results page",
+      "scaffold": "form",
+      "success": false,
+      "error": "Build failed: HTTP Error 400: Bad Request",
+      "file_count": 0,
+      "total_lines": 0,
+      "total_chars": 0,
+      "score": 0,
+      "llm_calls": 2,
+      "build_time_s": 0.9,
+      "passes": [
+        "plan"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-07-06T18:55:29",
+      "model": "deepseek-v4-flash",
+      "build_id": "weather-dash",
+      "description": "weather dashboard showing current temperature, 5-day forecast line chart, and humidity gauge. Use Chart.js. Blue theme.",
+      "scaffold": "dashboard",
+      "success": false,
+      "error": "Build failed: HTTP Error 400: Bad Request",
+      "file_count": 0,
+      "total_lines": 0,
+      "total_chars": 0,
+      "score": 0,
+      "llm_calls": 2,
+      "build_time_s": 1.6,
+      "passes": [
+        "plan"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-07-06T18:55:30",
+      "model": "deepseek-v4-flash",
+      "build_id": "analytics-dash",
+      "description": "analytics dashboard with 3 chart sections: line chart for monthly revenue, bar chart for product sales, pie chart for traffic sources. Sidebar with date range filter. Dark theme.",
+      "scaffold": "dashboard",
+      "success": false,
+      "error": "Build failed: HTTP Error 400: Bad Request",
+      "file_count": 0,
+      "total_lines": 0,
+      "total_chars": 0,
+      "score": 0,
+      "llm_calls": 2,
+      "build_time_s": 1.5,
+      "passes": [
+        "plan"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-07-06T18:55:32",
+      "model": "deepseek-v4-flash",
+      "build_id": "snake-game",
+      "description": "snake game with arrow key controls, growing snake, random food, score counter, game over on wall or self collision, restart button",
+      "scaffold": "game",
+      "success": false,
+      "error": "Build failed: HTTP Error 400: Bad Request",
+      "file_count": 0,
+      "total_lines": 0,
+      "total_chars": 0,
+      "score": 0,
+      "llm_calls": 2,
+      "build_time_s": 1.2,
+      "passes": [
+        "plan"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-07-06T18:55:33",
+      "model": "deepseek-v4-flash",
+      "build_id": "shooter-game",
+      "description": "space shooter with player ship (arrow keys to move, spacebar to shoot), enemy waves from top, particle explosions, score, lives, and game over screen",
+      "scaffold": "game",
+      "success": false,
+      "error": "Build failed: HTTP Error 400: Bad Request",
+      "file_count": 0,
+      "total_lines": 0,
+      "total_chars": 0,
+      "score": 0,
+      "llm_calls": 2,
+      "build_time_s": 1.8,
+      "passes": [
+        "plan"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-07-06T18:55:35",
+      "model": "deepseek-v4-flash",
+      "build_id": "landing-page",
+      "description": "landing page with hero section, 3 feature cards, testimonial carousel, and contact form. Modern design with scroll animations.",
+      "scaffold": "static",
+      "success": false,
+      "error": "Build failed: HTTP Error 400: Bad Request",
+      "file_count": 0,
+      "total_lines": 0,
+      "total_chars": 0,
+      "score": 0,
+      "llm_calls": 2,
+      "build_time_s": 1.5,
+      "passes": [
+        "plan"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-07-06T18:55:36",
+      "model": "deepseek-v4-flash",
+      "build_id": "pomodoro-timer",
+      "description": "pomodoro timer with 25min work / 5min break cycles, start pause reset buttons, session counter, and notification sound",
+      "scaffold": "static",
+      "success": false,
+      "error": "Build failed: HTTP Error 400: Bad Request",
+      "file_count": 0,
+      "total_lines": 0,
+      "total_chars": 0,
+      "score": 0,
+      "llm_calls": 2,
+      "build_time_s": 1.1,
+      "passes": [
+        "plan"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-07-06T18:55:38",
+      "model": "deepseek-v4-flash",
+      "build_id": "kanban-board",
+      "description": "project management kanban board with 3 columns (To Do, In Progress, Done), drag and drop cards between columns, add new cards with title and priority, localStorage persistence",
+      "scaffold": "form",
+      "success": false,
+      "error": "Build failed: HTTP Error 400: Bad Request",
+      "file_count": 0,
+      "total_lines": 0,
+      "total_chars": 0,
+      "score": 0,
+      "llm_calls": 2,
+      "build_time_s": 1.7,
+      "passes": [
+        "plan"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    },
+    {
+      "timestamp": "2026-07-06T18:56:06",
+      "model": "deepseek-v4-flash",
+      "build_id": "kanban-board",
+      "description": "project management kanban board with 3 columns (To Do, In Progress, Done), drag and drop cards between columns, add new cards with title and priority, localStorage persistence",
+      "scaffold": "form",
+      "success": false,
+      "error": "Build failed: HTTP Error 400: Bad Request",
+      "file_count": 0,
+      "total_lines": 0,
+      "total_chars": 0,
+      "score": 0,
+      "llm_calls": 2,
+      "build_time_s": 1.4,
+      "passes": [
+        "plan"
+      ],
+      "scaffold_enforcement": false,
+      "gap_analysis": false,
+      "interceptor_fixes": 0,
+      "validate_errors": 0,
+      "verify_errors": 0,
+      "verify_rollback": false,
+      "verify_clean": false,
+      "files": [],
+      "has_duplicate_classes": false,
+      "has_empty_files": false,
+      "has_bad_paths": false
+    }
+  ]
+}

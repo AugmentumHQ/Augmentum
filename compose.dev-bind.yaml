@@ -1,0 +1,32 @@
+# Node overlay — PULL the prebuilt augmentum image from the Home Main's LAN
+# registry AND keep the source bind mounts so code changes hot-apply on a plain
+# restart. This is the "pull, don't compile" alternative to compose.dev.yaml:
+# it preserves the dev-bind overlay (./augmentum, ./ui) but DROPS the local
+# `build:` directive, so a node NEVER runs the ~30-50min llama-server compile.
+# The llama-server binary is already baked into the pulled app image.
+#
+# Use on a NODE (not the main). In the node's .augmentum.conf list:
+#   compose.yaml compose.dev-bind.yaml        (+ any capability overlays)
+# (i.e. swap compose.dev.yaml -> compose.dev-bind.yaml). In the node's .env:
+#   AUGMENTUM_REGISTRY=<main-host>:5000
+#   AUGMENTUM_VARIANT=cpu        # or gpu, to match what the main published
+# One-time per node: add "<main-host>:5000" to /etc/docker/daemon.json
+# insecure-registries and restart dockerd. Publish images on the main FIRST
+# with scripts/publish-images.sh, or the pull 404s and (if compose.dev.yaml is
+# also present) falls back to the local compile.
+#
+# If AUGMENTUM_REGISTRY is unset this gracefully falls back to the GHCR image
+# tag (same as compose.yaml), so the overlay is safe to leave in place.
+services:
+  augmentum:
+    image: ${AUGMENTUM_REGISTRY:-ghcr.io}/augmentumhq/augmentum:${AUGMENTUM_VARIANT:-cpu}-latest
+    volumes:
+      # Mirror compose.dev.yaml's mounts so the self-edit "apply to live" path
+      # and plain code edits both take effect on restart without a rebuild.
+      - ./ui:/app/ui
+      - ./augmentum:/app/augmentum
+      - ./.augmentum:/app/.augmentum:ro
+      - ./.claude/skills:/app/.claude/skills:ro
+      - ./tests:/app/tests:ro
+    cap_add:
+      - SYS_PTRACE

@@ -1,0 +1,98 @@
+name: cli_calculator
+tier: project
+description: |
+  Build a small Python CLI from scratch. Empty workspace; agent must
+  produce both implementation and tests. Decomposed plan + multi-step
+  act. Asserts on shape (entrypoint exists, tests exist) rather than
+  exact content — multiple implementations are valid.
+
+workspace:
+  files: {}
+
+user_message: |
+  Build a tiny CLI calculator in this empty workspace. Requirements:
+    - calc.py with a main() entrypoint that reads "<num1> <op> <num2>"
+      from argv (e.g. "calc.py 3 + 4" prints "7").
+    - Supports +, -, *, / with appropriate error handling.
+    - test_calc.py with at least 4 tests covering each operator.
+    - Tests pass under `python -m pytest test_calc.py`.
+
+backend: scripted
+responses:
+  - tool_calls:
+      - name: file_write
+        input:
+          file_path: calc.py
+          content: |
+            import sys
+
+
+            OPS = {
+                "+": lambda a, b: a + b,
+                "-": lambda a, b: a - b,
+                "*": lambda a, b: a * b,
+                "/": lambda a, b: a / b,
+            }
+
+
+            def evaluate(expression: list[str]) -> float:
+                if len(expression) != 3:
+                    raise ValueError("expected: <num1> <op> <num2>")
+                a, op, b = expression
+                if op not in OPS:
+                    raise ValueError(f"unknown op {op!r}")
+                if op == "/" and float(b) == 0:
+                    raise ZeroDivisionError("division by zero")
+                return OPS[op](float(a), float(b))
+
+
+            def main(argv: list[str]) -> int:
+                try:
+                    result = evaluate(argv[1:])
+                except (ValueError, ZeroDivisionError) as e:
+                    print(f"error: {e}", file=sys.stderr)
+                    return 1
+                print(result if result != int(result) else int(result))
+                return 0
+
+
+            if __name__ == "__main__":
+                sys.exit(main(sys.argv))
+  - tool_calls:
+      - name: file_write
+        input:
+          file_path: test_calc.py
+          content: |
+            import pytest
+
+            from calc import evaluate
+
+
+            def test_add():       assert evaluate(["3", "+", "4"]) == 7
+            def test_sub():       assert evaluate(["10", "-", "6"]) == 4
+            def test_mul():       assert evaluate(["3", "*", "5"]) == 15
+            def test_div():       assert evaluate(["8", "/", "2"]) == 4
+            def test_div_zero():
+                with pytest.raises(ZeroDivisionError):
+                    evaluate(["1", "/", "0"])
+            def test_unknown_op():
+                with pytest.raises(ValueError):
+                    evaluate(["1", "?", "2"])
+  - content: "Built calc.py + test_calc.py covering all four operators plus error cases."
+
+assertions:
+  - property: file_contains
+    path: calc.py
+    text: "def main"
+  - property: file_contains
+    path: test_calc.py
+    text: "def test_"
+  - property: tools_used_includes
+    names: [file_write]
+  - property: max_iterations
+    n: 60
+  - property: max_tokens
+    n: 50000
+  - property: tier_classified_as
+    expected: project
+  - property: verification_gate_passed

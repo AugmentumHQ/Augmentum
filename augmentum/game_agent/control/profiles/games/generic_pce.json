@@ -1,0 +1,43 @@
+{
+  "schema": "control.game.v1",
+  "id": "generic_pce",
+  "description": "Generic PC Engine / TurboGrafx-16 game profile. Two face buttons: I (right, primary) and II (left, secondary). I is the dominant button across most PCE titles (jump in platformers, shoot in shmups) so confirm binds to face_south (I).",
+  "applies_to_controllers": ["pce"],
+  "applies_to_log_schema": "pce_vision.v1",
+  "actions": {
+    "confirm": {
+      "binding": "face_south",
+      "hint": "Press I (right hand). Primary action in most PCE games — jump, shoot, attack, advance dialog."
+    },
+    "cancel": {
+      "binding": "face_east",
+      "hint": "Press II (left hand). Secondary action — special attack, hold-action, defensive move."
+    },
+    "menu": {
+      "binding": "start",
+      "hint": "Press Run. Pause the game, return to title screen."
+    },
+    "back": {
+      "binding": "select",
+      "hint": "Press Select. Game-specific: switch weapon / power-up in shmups, secondary menu in RPGs."
+    },
+    "nav_up": {
+      "binding": "dpad_up",
+      "hint": "Walk / fly / move up. In menus: cursor up."
+    },
+    "nav_down": {
+      "binding": "dpad_down",
+      "hint": "Walk / move down. In menus: cursor down."
+    },
+    "nav_left": {
+      "binding": "dpad_left",
+      "hint": "Walk / move left. In menus: cursor left."
+    },
+    "nav_right": {
+      "binding": "dpad_right",
+      "hint": "Walk / move right. In menus: cursor right."
+    }
+  },
+  "hardware_passthrough": [],
+  "notes": "PC Engine's I button is the primary action (right-hand thumb) — this is opposite to the Nintendo convention but matches Sony Japan and Sega. The agent's universal verb 'confirm' still maps to the right intent."
+}

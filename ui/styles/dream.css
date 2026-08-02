@@ -1,0 +1,250 @@
+/* Dream Journal — intimate, reflective styling */
+
+.dream-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-secondary);
+}
+
+.dream-hint {
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+/* Portrait Card */
+.dream-portrait {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.dream-portrait-section {
+  margin-bottom: 1rem;
+}
+
+.dream-portrait-section:last-of-type {
+  margin-bottom: 0.5rem;
+}
+
+.dream-portrait-section h4 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  margin: 0 0 0.4rem 0;
+}
+
+.dream-portrait-section p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.dream-portrait-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+/* Status Bar */
+.dream-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Date Separators */
+.dream-date-separator {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  padding: 0.75rem 0 0.25rem;
+  border-bottom: 1px solid var(--border-subtle, var(--border));
+  margin-bottom: 0.5rem;
+}
+
+/* Journal Entries */
+.dream-entry {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  background: var(--bg-secondary);
+  border: 1px solid transparent;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.dream-entry:hover {
+  border-color: var(--border);
+}
+
+.dream-entry-pinned {
+  border-left: 3px solid var(--accent, #7c6f9f);
+}
+
+.dream-entry-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.dream-entry-type {
+  font-size: 0.9rem;
+}
+
+.dream-entry-date {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.dream-pin-badge {
+  font-size: 0.7rem;
+  margin-left: auto;
+}
+
+.dream-entry-content {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--text-primary);
+  font-style: italic;
+}
+
+.dream-entry-actions {
+  display: flex;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.dream-entry:hover .dream-entry-actions {
+  opacity: 1;
+}
+
+/* Buttons */
+.dream-btn {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-tertiary, var(--bg-secondary));
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.dream-btn:hover {
+  background: var(--bg-hover, var(--bg-secondary));
+}
+
+.dream-btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.dream-btn-danger {
+  color: var(--error-color, #e74c3c);
+  border-color: var(--error-color, #e74c3c);
+}
+
+.dream-btn-danger:hover {
+  background: var(--error-color, #e74c3c);
+  color: white;
+}
+
+.dream-btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem;
+  font-size: 0.85rem;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+
+.dream-btn-icon:hover {
+  opacity: 1;
+}
+
+/* Checkpoints */
+.dream-checkpoint-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.dream-checkpoint-date {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+/* Recent cycles list — dream.js::renderCycles. Compact row of status icon +
+   trigger reason + relative time + summary stats + optional error snippet. */
+
+.dream-cycle-empty {
+  padding: var(--space-sm);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.dream-cycle-row {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto auto;
+  gap: var(--space-sm);
+  align-items: center;
+  padding: var(--space-xs) var(--space-sm);
+  border-bottom: 1px solid var(--border-subtle, var(--border));
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.dream-cycle-row:hover {
+  background: var(--accent-soft, rgba(108, 138, 255, .08));
+}
+
+.dream-cycle-status {
+  text-align: center;
+}
+
+.dream-cycle-reason {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dream-cycle-date {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.dream-cycle-stats {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.dream-cycle-err {
+  grid-column: 2 / -1;
+  font-size: var(--text-xs);
+  color: var(--danger, #f87171);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

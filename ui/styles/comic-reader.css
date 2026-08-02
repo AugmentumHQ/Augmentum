@@ -1,0 +1,1534 @@
+/*
+ * Comic reader overlay — Phase 1 MVP.
+ *
+ * Design tenets (see reader plan §Design tenets):
+ *   1. Usable in minute 1 — first page visible <200ms after mount.
+ *   2. Never fight the library — chrome gets out of the way on read.
+ *   3. Premium feel comes from silky transitions + stable layout, not
+ *      decoration. Plain, dark, focused.
+ *
+ * Color: intentionally darker than --bg-primary so the reader feels
+ * distinct from the app surface behind it. Near-black (#0a0a0a) not
+ * pure black — reduces OLED smear on page transitions.
+ */
+
+:root {
+  --comic-reader-bg: #0a0a0a;
+  --comic-reader-chrome-bg: rgba(12, 12, 14, 0.78);
+  --comic-reader-chrome-border: rgba(255, 255, 255, 0.08);
+  --comic-reader-text: #e9e9ec;
+  --comic-reader-text-dim: rgba(233, 233, 236, 0.62);
+  --comic-reader-btn-hover: rgba(255, 255, 255, 0.08);
+  --comic-reader-btn-active: rgba(255, 255, 255, 0.14);
+  --comic-reader-accent: var(--accent-primary, #818cf8);
+  --comic-reader-progress-track: rgba(255, 255, 255, 0.08);
+  --comic-reader-progress-fill: var(--comic-reader-accent);
+  --comic-reader-ease: cubic-bezier(0.2, 0, 0, 1);
+  --comic-reader-duration: 180ms;
+}
+
+/* Lock page scroll while the reader is open — ensures swipes and
+ * arrow-keys only drive the reader, not the underlying files panel. */
+body.comic-reader-open {
+  overflow: hidden;
+}
+
+.comic-reader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  /* Pin to the DYNAMIC visual viewport, not whatever wider layout
+     viewport an app-wide horizontal overflow may have created. On mobile
+     a single overflowing element elsewhere in the app widens the layout
+     viewport, and a `position: fixed; inset: 0` box then sizes to THAT —
+     rendering the page off-centre by a device-dependent fraction (the
+     reported "half off on iPhone, a quarter on Pixel"). dvw/dvh + a hard
+     overflow clip keep the reader locked to the screen the device is
+     actually showing. */
+  width: 100vw;
+  width: 100dvw;
+  height: 100vh;
+  height: 100dvh;
+  max-width: 100vw;
+  overflow: hidden;
+  background: var(--comic-reader-bg);
+  color: var(--comic-reader-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  /* THE fix for the off-centre page (2026-06-13). Without an explicit
+     column the grid gets one implicit `auto` track, and `auto` tracks
+     size to MAX-CONTENT — the chrome bar's full no-wrap title + 8 buttons
+     measure ~913px, dragging the whole column (stage included) out to
+     913px inside a 402px overlay. The page is then `width:100%` of that
+     913px stage and centred within IT, so a phone shows a 402px slice of
+     913px-wide content → "manga half off, worse on smaller screens, fine
+     on the wide ZFold." minmax(0,1fr) pins the column to the overlay
+     width and lets the title truncate (it already has the ellipsis) and
+     the toolbar fit, instead of the track ballooning to fit them. */
+  grid-template-columns: minmax(0, 1fr);
+  opacity: 0;
+  transition: opacity var(--comic-reader-duration) var(--comic-reader-ease);
+  outline: none;
+}
+.comic-reader-overlay.visible {
+  opacity: 1;
+}
+.comic-reader-overlay.comic-reader-reduced-motion,
+.comic-reader-overlay.comic-reader-reduced-motion * {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* --- Stage ----------------------------------------------------------- */
+
+.comic-reader-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  min-height: 0;          /* lets the flex child honor the grid row */
+  cursor: default;
+  /* pan-y leaves vertical scroll (fit-width / original / webtoon) to the
+     browser while reserving horizontal gestures + pinch for our pointer
+     handler. Without this, a two-finger pinch would trigger the browser's
+     native page zoom and never reach our listeners. */
+  touch-action: pan-y;
+}
+.comic-reader-img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  background: transparent;
+  transition: opacity var(--comic-reader-duration) var(--comic-reader-ease);
+}
+.comic-reader-overlay.is-loading .comic-reader-img {
+  opacity: 0.15;
+}
+.comic-reader-overlay.chrome-hidden .comic-reader-stage {
+  cursor: none;
+}
+
+/* Zoomed: transform grows the image past its max-width box, so we flip
+   the stage's overflow so nothing clips the scaled-up page. The grab
+   cursor signals that a drag pans rather than flips. */
+.comic-reader-overlay.is-zoomed .comic-reader-stage {
+  overflow: visible;
+  cursor: grab;
+  touch-action: none;             /* disable browser pinch/pan; we drive both */
+}
+.comic-reader-overlay.is-zoomed .comic-reader-img,
+.comic-reader-overlay.is-zoomed .comic-reader-dual {
+  will-change: transform;
+  transition: transform 180ms var(--comic-reader-ease);
+}
+
+/* Loading spinner — sits on the stage, fades in only while loading. */
+.comic-reader-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--comic-reader-duration) var(--comic-reader-ease);
+}
+.comic-reader-overlay.is-loading .comic-reader-loading {
+  opacity: 1;
+}
+.comic-reader-spinner {
+  width: 34px;
+  height: 34px;
+  border: 2.5px solid rgba(255, 255, 255, 0.14);
+  border-top-color: var(--comic-reader-accent);
+  border-radius: 50%;
+  animation: comic-reader-spin 0.9s linear infinite;
+}
+@keyframes comic-reader-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error — sits on the stage, only visible when [hidden] is dropped. */
+.comic-reader-error {
+  position: absolute;
+  inset: auto 0 auto 0;
+  max-width: 420px;
+  margin: auto;
+  padding: 18px 20px;
+  background: rgba(20, 12, 12, 0.9);
+  border: 1px solid rgba(255, 120, 120, 0.22);
+  border-radius: 10px;
+  text-align: center;
+}
+.comic-reader-error-msg {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--comic-reader-text);
+  line-height: 1.5;
+}
+.comic-reader-error[hidden] {
+  display: none;
+}
+
+/* --- Chrome ---------------------------------------------------------- */
+
+.comic-reader-chrome {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--comic-reader-chrome-bg);
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  border-style: solid;
+  border-color: var(--comic-reader-chrome-border);
+  border-width: 0;
+  transition: opacity var(--comic-reader-duration) var(--comic-reader-ease),
+              transform var(--comic-reader-duration) var(--comic-reader-ease);
+}
+.comic-reader-chrome-top {
+  border-bottom-width: 1px;
+  grid-row: 1;
+  /* Keep the bar (and its fit/direction buttons) clear of the status bar
+     / punch-hole and, in landscape, the side notch — env() resolves to 0
+     where there's no inset, so this is a no-op on devices that don't need
+     it. The base .comic-reader-chrome padding stays as the floor. */
+  padding-top: max(10px, env(safe-area-inset-top));
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+.comic-reader-chrome-bottom {
+  border-top-width: 1px;
+  grid-row: 3;
+  /* The fit-mode / page controls live here — keep them above the Android
+     gesture bar / home indicator so they're never the part that's cut
+     off (the reported "buttons hidden until landscape"). */
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+.comic-reader-overlay.chrome-hidden .comic-reader-chrome-top {
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+}
+.comic-reader-overlay.chrome-hidden .comic-reader-chrome-bottom {
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+}
+
+/* Title block */
+.comic-reader-titles {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  line-height: 1.2;
+}
+/* Title-as-button: the title block doubles as the open-trigger for the
+   left-side nav drawer. Strips native button defaults so it renders
+   identically to the static .comic-reader-titles div, and adds an
+   affordance (subtle hover background, chevron glyph) so the
+   interactivity is discoverable without taking new chrome real estate. */
+.comic-reader-titles.comic-reader-titles-btn {
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background var(--comic-reader-duration) var(--comic-reader-ease);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+.comic-reader-titles.comic-reader-titles-btn:hover {
+  background: var(--comic-reader-btn-hover);
+}
+.comic-reader-titles.comic-reader-titles-btn:focus-visible {
+  outline: 2px solid var(--comic-reader-accent);
+  outline-offset: 2px;
+}
+.comic-reader-titles-chevron {
+  display: block;
+  margin-top: 2px;
+  opacity: 0.5;
+  transition: transform 240ms var(--comic-reader-ease),
+              opacity 240ms var(--comic-reader-ease);
+}
+.comic-reader-overlay.nav-drawer-open .comic-reader-titles-chevron {
+  transform: rotate(180deg);
+  opacity: 0.85;
+}
+.comic-reader-titles.comic-reader-titles-btn:hover .comic-reader-titles-chevron {
+  opacity: 0.85;
+}
+.comic-reader-title {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.comic-reader-subtitle {
+  font-size: 11px;
+  color: var(--comic-reader-text-dim);
+  letter-spacing: 0.02em;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Buttons */
+.comic-reader-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--comic-reader-text);
+  cursor: pointer;
+  transition: background var(--comic-reader-duration) var(--comic-reader-ease);
+  flex-shrink: 0;
+}
+.comic-reader-btn:hover { background: var(--comic-reader-btn-hover); }
+.comic-reader-btn:active { background: var(--comic-reader-btn-active); }
+.comic-reader-btn:focus-visible {
+  outline: 2px solid var(--comic-reader-accent);
+  outline-offset: 2px;
+}
+.comic-reader-btn svg { display: block; }
+
+
+/* Narration voice picker — expands from the Listen button. Per-line voice
+   swap (male / female / narrator) chosen before synthesis starts. */
+.comic-reader-voice-panel {
+  position: fixed;
+  z-index: 30;
+  min-width: 240px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 12px;
+  background: var(--comic-reader-bg, #1c1c22);
+  color: var(--comic-reader-text, #ececf1);
+  border: 1px solid var(--comic-reader-btn-hover, rgba(255, 255, 255, .12));
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .45);
+  animation: comic-reader-voice-in var(--comic-reader-duration, .18s) var(--comic-reader-ease, ease);
+}
+@keyframes comic-reader-voice-in {
+  from { opacity: 0; transform: translateY(-6px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.comic-reader-voice-title {
+  font-weight: 600;
+  font-size: 13px;
+  opacity: .8;
+  margin-bottom: 2px;
+}
+.comic-reader-voice-loading { font-size: 13px; opacity: .7; padding: 4px 0; }
+.comic-reader-voice-castbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.comic-reader-voice-castbar select {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 8px;
+  border-radius: 7px;
+  background: var(--comic-reader-btn-hover, rgba(255, 255, 255, .08));
+  color: inherit;
+  border: 1px solid transparent;
+  font: inherit;
+  cursor: pointer;
+}
+.comic-reader-voice-new,
+.comic-reader-voice-del {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 7px;
+  background: var(--comic-reader-btn-hover, rgba(255, 255, 255, .08));
+  color: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.comic-reader-voice-new:hover,
+.comic-reader-voice-del:hover { background: var(--comic-reader-btn-active, rgba(255, 255, 255, .16)); }
+.comic-reader-voice-del[disabled] { opacity: .35; cursor: default; }
+.comic-reader-voice-name {
+  padding: 6px 8px;
+  border-radius: 7px;
+  background: var(--comic-reader-btn-hover, rgba(255, 255, 255, .08));
+  color: inherit;
+  border: 1px solid transparent;
+  font: inherit;
+}
+.comic-reader-voice-name:focus-visible {
+  outline: 2px solid var(--comic-reader-accent);
+  outline-offset: 1px;
+}
+.comic-reader-voice-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+}
+.comic-reader-voice-row > span { flex-shrink: 0; opacity: .85; }
+.comic-reader-voice-row select {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 8px;
+  border-radius: 7px;
+  background: var(--comic-reader-btn-hover, rgba(255, 255, 255, .08));
+  color: inherit;
+  border: 1px solid transparent;
+  font: inherit;
+  cursor: pointer;
+}
+.comic-reader-voice-row select:focus-visible {
+  outline: 2px solid var(--comic-reader-accent);
+  outline-offset: 1px;
+}
+.comic-reader-voice-go {
+  margin-top: 4px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--comic-reader-accent, #6c8aff);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.comic-reader-voice-go:hover { filter: brightness(1.08); }
+
+
+/* Bottom chrome — progress block is flex:1 so buttons park at the edges. */
+.comic-reader-progress {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.comic-reader-page-counter {
+  font-family: ui-monospace, SFMono-Regular, 'Cascadia Code', 'Fira Code', Menlo, monospace;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--comic-reader-text);
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  gap: 6px;
+}
+.comic-reader-page-sep {
+  color: var(--comic-reader-text-dim);
+}
+.comic-reader-progress-bar {
+  position: relative;
+  width: min(420px, 100%);
+  height: 14px;                /* hit target; visible bar sits inside */
+  display: flex;
+  align-items: center;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+  /* Stop native scroll/pinch while the user drags the scrubber — the
+     pointer events here drive nav directly. */
+  touch-action: none;
+}
+.comic-reader-progress-bar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  transform: translateY(-50%);
+  background: var(--comic-reader-progress-track);
+  border-radius: 2px;
+  transition: height var(--comic-reader-duration) var(--comic-reader-ease);
+}
+.comic-reader-progress-bar:hover::before,
+.comic-reader-progress-bar.scrubbing::before,
+.comic-reader-progress-bar:focus-visible::before {
+  height: 5px;
+}
+.comic-reader-progress-fill {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 3px;
+  width: 0;
+  transform: translateY(-50%);
+  background: var(--comic-reader-progress-fill);
+  border-radius: 2px;
+  transition: width var(--comic-reader-duration) var(--comic-reader-ease),
+              height var(--comic-reader-duration) var(--comic-reader-ease);
+  pointer-events: none;
+}
+.comic-reader-progress-bar:hover .comic-reader-progress-fill,
+.comic-reader-progress-bar.scrubbing .comic-reader-progress-fill,
+.comic-reader-progress-bar:focus-visible .comic-reader-progress-fill {
+  height: 5px;
+}
+/* Scrubber knob — appears on hover / scrub / focus, rides the fill end */
+.comic-reader-scrubber-handle {
+  position: absolute;
+  top: 50%;
+  left: 0;                     /* JS drives this via progress-fill width */
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--comic-reader-accent);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 140ms var(--comic-reader-ease);
+  pointer-events: none;
+}
+.comic-reader-progress-bar:hover .comic-reader-scrubber-handle,
+.comic-reader-progress-bar.scrubbing .comic-reader-scrubber-handle,
+.comic-reader-progress-bar:focus-visible .comic-reader-scrubber-handle {
+  transform: translate(-50%, -50%) scale(1);
+}
+.comic-reader-progress-bar.scrubbing {
+  cursor: grabbing;
+}
+/* JS updates --scrubber-handle-pct on move; ride the end of the fill. */
+.comic-reader-progress-bar .comic-reader-scrubber-handle {
+  left: var(--scrubber-handle-pct, 0%);
+}
+
+/* Scrubber thumbnail preview — floating card above the bar during drag.
+   Positioned absolutely by JS; sized so portrait manga pages look natural. */
+.comic-reader-scrubber-preview {
+  position: fixed;
+  z-index: 10020;
+  width: 168px;
+  padding: 8px;
+  background: rgba(12, 12, 14, 0.92);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  border: 1px solid var(--comic-reader-chrome-border);
+  border-radius: 10px;
+  box-shadow: 0 18px 38px -12px rgba(0, 0, 0, 0.6),
+              0 2px 6px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  animation: comic-reader-scrubber-pop 120ms var(--comic-reader-ease);
+}
+.comic-reader-scrubber-preview[hidden] { display: none; }
+.comic-reader-scrubber-preview-frame {
+  position: relative;
+  width: 100%;
+  height: 210px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.comic-reader-scrubber-preview-img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.comic-reader-scrubber-preview-label {
+  text-align: center;
+  margin-top: 6px;
+  font-family: ui-monospace, SFMono-Regular, 'Cascadia Code', 'Fira Code', Menlo, monospace;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--comic-reader-text);
+  letter-spacing: 0.04em;
+}
+.comic-reader-scrubber-preview-sep {
+  color: var(--comic-reader-text-dim);
+  margin: 0 3px;
+}
+@keyframes comic-reader-scrubber-pop {
+  from { opacity: 0; transform: translateY(4px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* --- Text-label buttons (mode / fit / dir) -------------------------- */
+/* These buttons carry a text label rather than an icon. Width auto-fits
+   the longest label ("Webtoon" / "Fit width" / "Original") so switching
+   label text doesn't shift the layout. */
+
+.comic-reader-top-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.comic-reader-mode-toggle,
+.comic-reader-fit-toggle,
+.comic-reader-dir-toggle {
+  width: auto;
+  padding: 0 10px;
+  min-width: 64px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--comic-reader-text-dim);
+}
+.comic-reader-mode-toggle:hover,
+.comic-reader-fit-toggle:hover,
+.comic-reader-dir-toggle:hover {
+  color: var(--comic-reader-text);
+}
+.comic-reader-mode-label,
+.comic-reader-fit-label,
+.comic-reader-dir-label { line-height: 1; }
+
+/* Disabled chapter-nav buttons — keep them visible (user sees there ARE
+   no more chapters) but obviously non-actionable. */
+.comic-reader-btn[disabled],
+.comic-reader-btn[disabled]:hover {
+  opacity: 0.28;
+  cursor: default;
+  background: transparent;
+}
+
+/* Chapter position label under the progress bar — "Chapter 12 of 45". */
+.comic-reader-chapter-position {
+  font-size: 10px;
+  color: var(--comic-reader-text-dim);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* --- Fit modes ------------------------------------------------------- */
+
+/* fit-page (default): image scales to fill whichever dimension fits
+   first (object-fit: contain).
+
+   Sizing the IMG element to the full stage box (width: 100%; height:
+   100%) and using object-fit: contain to fit the bitmap *inside* that
+   box is the canonical pattern — and bulletproof. The previous approach
+   (max-width/height: 100% with width/height: auto) sized the IMG box to
+   the natural image aspect, which made object-fit a no-op and produced
+   half-clipped renders when the source image's intrinsic dimensions
+   didn't agree with the parent's sizing context (most reliably seen on
+   tall single-strip "page" images delivered by some Suwayomi sources). */
+.comic-reader-overlay.fit-page .comic-reader-stage {
+  overflow: hidden;
+}
+.comic-reader-overlay.fit-page .comic-reader-img {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+/* fit-width: image width matches viewport; stage scrolls vertically. */
+.comic-reader-overlay.fit-width .comic-reader-stage {
+  overflow-y: auto;
+  overflow-x: hidden;
+  align-items: flex-start;
+}
+.comic-reader-overlay.fit-width .comic-reader-img {
+  max-width: none;
+  max-height: none;
+  width: 100%;
+  height: auto;
+  object-fit: initial;
+}
+
+/* original: native image resolution, stage scrolls in both axes. */
+.comic-reader-overlay.original .comic-reader-stage {
+  overflow: auto;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.comic-reader-overlay.original .comic-reader-img {
+  max-width: none;
+  max-height: none;
+  width: auto;
+  height: auto;
+  object-fit: initial;
+}
+
+/* --- Paged vs Webtoon modes ---------------------------------------- */
+
+/* In paged mode the webtoon container is dormant (empty + display: none
+   so its scroll area doesn't compete with the single-img stage). */
+.comic-reader-overlay.mode-paged .comic-reader-webtoon { display: none; }
+.comic-reader-overlay.mode-webtoon .comic-reader-img  { display: none; }
+
+/* Webtoon: vertical scroll of stacked full-width pages. Common for
+   Korean manhwa / Chinese manhua where chapters are a single long
+   continuous strip rather than page spreads. */
+.comic-reader-overlay.mode-webtoon .comic-reader-stage {
+  display: block;         /* override flex from default stage */
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #000;       /* darker than stage bg — seamless between pages */
+}
+.comic-reader-webtoon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.comic-reader-webtoon-page {
+  display: block;
+  width: 100%;
+  max-width: min(900px, 100vw);  /* cap width on ultrawide monitors */
+  height: auto;
+  background: transparent;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+/* Failed page in a webtoon strip. The element keeps its placeholder
+   width/height so the strip layout doesn't collapse around the gap
+   (which would shove every subsequent page upward and confuse the
+   IntersectionObserver). The dashed outline + dim background tell the
+   user the slot is intentionally broken; the alt text — rendered by
+   the browser inside an img with no src — explains what to do. Click
+   is wired in JS to re-fire the load. */
+.comic-reader-webtoon-page.comic-reader-webtoon-page-failed {
+  /* width is already 100% via the rule above; lock the height so
+     adjacent pages don't reflow each time another failure renders. */
+  aspect-ratio: 2 / 3;
+  height: auto;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--comic-reader-text-dim, rgba(255, 255, 255, 0.6));
+  font-size: 13px;
+  text-align: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+.comic-reader-webtoon-page.comic-reader-webtoon-page-failed:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.32);
+}
+/* Webtoon in fit-width OR original override the max-width cap so users
+   who explicitly want the wider surface get it. */
+.comic-reader-overlay.mode-webtoon.fit-width .comic-reader-webtoon-page {
+  max-width: 100%;
+}
+.comic-reader-overlay.mode-webtoon.original .comic-reader-webtoon-page {
+  max-width: none;
+  width: auto;
+}
+
+/* End-of-chapter sentinel — sits below the last page in the strip. Has
+   enough vertical room that the user must intentionally scroll past the
+   chapter to reveal it; once it's mostly on-screen the IntersectionObserver
+   fires the next-chapter transition. The "final" variant (last chapter of
+   a series) drops the chevron + animation since there is nothing to
+   continue into. */
+.comic-reader-webtoon-end-sentinel {
+  width: 100%;
+  max-width: min(900px, 100vw);
+  min-height: 55vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 56px 24px 80px;
+  color: var(--comic-reader-text-dim);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-align: center;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.35) 65%, rgba(0, 0, 0, 0.55) 100%);
+}
+.comic-reader-webtoon-end-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--comic-reader-chrome-border);
+  animation: comic-reader-end-arrow 1.6s var(--comic-reader-ease) infinite;
+}
+.comic-reader-webtoon-end-message {
+  opacity: 0.75;
+  font-weight: 500;
+  max-width: 360px;
+  line-height: 1.4;
+}
+.comic-reader-webtoon-end-final .comic-reader-webtoon-end-message {
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 11px;
+  opacity: 0.55;
+}
+@keyframes comic-reader-end-arrow {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50%      { transform: translateY(4px); opacity: 1; }
+}
+.comic-reader-overlay.comic-reader-reduced-motion .comic-reader-webtoon-end-arrow {
+  animation: none;
+}
+
+/* --- Persistent progress bar --------------------------------------- */
+
+/* Thin bar along the BOTTOM of the overlay that stays visible even when
+   the chrome auto-hides. Gives sense-of-progress without the full
+   counter + nav buttons. 2px tall — subtle but readable against the
+   reader's near-black background. */
+.comic-reader-progress-persistent {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity var(--comic-reader-duration) var(--comic-reader-ease);
+}
+.comic-reader-progress-persistent-fill {
+  height: 100%;
+  width: 0;
+  background: var(--comic-reader-accent);
+  transition: width var(--comic-reader-duration) var(--comic-reader-ease);
+}
+/* When chrome is visible the bottom chrome has its own progress bar
+   inside — dim the persistent one so the two don't compete visually. */
+.comic-reader-overlay:not(.chrome-hidden) .comic-reader-progress-persistent {
+  opacity: 0.35;
+}
+.comic-reader-overlay.chrome-hidden .comic-reader-progress-persistent {
+  opacity: 1;
+}
+
+/* --- Responsive ------------------------------------------------------ */
+
+@media (max-width: 640px) {
+  .comic-reader-chrome { padding: 8px 10px; gap: 6px; }
+  .comic-reader-btn { width: 36px; height: 36px; }
+  .comic-reader-title { font-size: 13px; }
+  .comic-reader-subtitle { font-size: 10px; }
+  .comic-reader-page-counter { font-size: 12px; }
+  .comic-reader-progress-bar { width: min(260px, 100%); }
+  .comic-reader-mode-toggle,
+  .comic-reader-fit-toggle,
+  .comic-reader-dir-toggle {
+    min-width: 48px;
+    padding: 0 6px;
+    font-size: 10px;
+  }
+  .comic-reader-chapter-position { display: none; }    /* tight rows on mobile */
+}
+
+/* --- High contrast mode --------------------------------------------- */
+
+@media (prefers-contrast: more) {
+  .comic-reader-chrome {
+    background: rgba(0, 0, 0, 0.95);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  .comic-reader-btn:focus-visible {
+    outline-width: 3px;
+  }
+}
+
+/* =========================================================================
+   BACKGROUND MODES — dark / black / sepia / paper
+   Applied as .bg-* class on the reader overlay. Drives the canvas color
+   behind the page images. Sepia is warm (nighttime reading); Paper is
+   the light-on-dark reversal for users who read bright material on low-
+   ambient environments. Black is for OLED screens + manga reading.
+   =========================================================================*/
+.comic-reader-overlay.bg-dark  { background: #0a0a0a; }
+.comic-reader-overlay.bg-black { background: #000; }
+.comic-reader-overlay.bg-sepia {
+  background: #2a231a;         /* warm dark, not full sepia — reduces eye-strain */
+  color: #e8dcc8;
+}
+.comic-reader-overlay.bg-paper {
+  background: #e8e4da;
+  color: #1a1814;
+}
+.comic-reader-overlay.bg-paper .comic-reader-chrome {
+  background: rgba(255, 252, 245, 0.85);
+  color: #1a1814;
+}
+.comic-reader-overlay.bg-paper .comic-reader-title,
+.comic-reader-overlay.bg-paper .comic-reader-subtitle {
+  color: #1a1814;
+}
+
+.comic-reader-overlay.bg-paper .comic-reader-progress-persistent {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+/* =========================================================================
+   DUAL-PAGE / SPREAD MODE
+   Two pages side-by-side. In LTR, DOM order is [left, right]. In RTL,
+   we visually reverse via flex-direction so the "next" page (lower
+   number) ends up on the right side of the screen (matches physical
+   right-to-left page turning).
+   =========================================================================*/
+.comic-reader-overlay.mode-paged   .comic-reader-dual,
+.comic-reader-overlay.mode-webtoon .comic-reader-dual { display: none; }
+.comic-reader-overlay.mode-dual    .comic-reader-img,
+.comic-reader-overlay.mode-dual    .comic-reader-webtoon { display: none; }
+
+.comic-reader-overlay.mode-dual .comic-reader-stage {
+  /* override paged-mode stage display */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.comic-reader-dual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;                    /* tiny seam between pages — feels like binding */
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+}
+.comic-reader-overlay.mode-dual.dir-rtl .comic-reader-dual {
+  flex-direction: row-reverse; /* RTL swaps which page is on the right */
+}
+.comic-reader-dual-img {
+  /* Same rationale as .fit-page .comic-reader-img above — size the IMG
+     box to its slot (50% of stage width, 100% height) and let
+     object-fit: contain handle the bitmap fit. */
+  width: 50%;
+  height: 100%;
+  max-width: 50%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  user-select: none;
+  -webkit-user-drag: none;
+  background: rgba(255, 255, 255, 0.02);
+}
+.comic-reader-dual-img.empty-slot {
+  visibility: hidden;
+  max-width: 50%;              /* keep the slot so the other page stays centered */
+}
+/* Failed slot: distinct from empty-slot (which is intentional — page 1's
+   right side, or the final odd page). Dashed outline + cursor: pointer
+   so the user sees an actionable affordance instead of an ambiguous
+   blank, and the ``title`` attribute on the element surfaces the retry
+   hint as a tooltip. The other slot stays untouched so partial loads
+   remain readable. */
+.comic-reader-dual-img.failed-slot {
+  visibility: visible;
+  width: 50%;
+  max-width: 50%;
+  min-height: 60%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.comic-reader-overlay.mode-dual.is-loading .comic-reader-dual-img {
+  opacity: 0.35;
+  transition: opacity var(--comic-reader-duration) var(--comic-reader-ease);
+}
+
+/* Dual-page fit-width/original: expand beyond 50% cap, stage scrolls. */
+.comic-reader-overlay.mode-dual.fit-width .comic-reader-dual,
+.comic-reader-overlay.mode-dual.original  .comic-reader-dual {
+  overflow: auto;
+  align-items: flex-start;
+}
+.comic-reader-overlay.mode-dual.fit-width .comic-reader-dual-img {
+  max-width: 50%;
+  max-height: none;
+  width: 50%;
+  height: auto;
+}
+
+/* =========================================================================
+   NAVIGATION DRAWER — left-side slide-in panel mirroring the settings
+   drawer's geometry and animation. Owns library / chapter list / series
+   info / go-to / mark-as-read controls. Mutually exclusive with the
+   settings drawer (only one open at a time). Sections inside are empty
+   on initial scaffold and populated by subsequent steps.
+   =========================================================================*/
+.comic-reader-nav-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(420px, 92vw);
+  background: rgba(12, 12, 14, 0.98);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border-right: 1px solid var(--comic-reader-chrome-border);
+  z-index: 10010;
+  transform: translateX(-100%);
+  transition: transform 240ms var(--comic-reader-ease);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 18px 22px 80px;
+  color: var(--comic-reader-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+.comic-reader-overlay.nav-drawer-open .comic-reader-nav-drawer {
+  transform: translateX(0);
+}
+.comic-reader-nav-drawer[aria-hidden="true"] { pointer-events: none; }
+
+.comic-reader-nav-drawer-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  z-index: 10005;
+  pointer-events: none;
+  transition: background 240ms var(--comic-reader-ease);
+}
+.comic-reader-overlay.nav-drawer-open .comic-reader-nav-drawer-scrim {
+  background: rgba(0, 0, 0, 0.42);
+  pointer-events: auto;
+}
+
+.comic-reader-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--comic-reader-chrome-border);
+  margin-bottom: 8px;
+  position: sticky;
+  top: -18px;                /* clings to the drawer's padded top edge */
+  background: rgba(12, 12, 14, 0.98);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  margin: -18px -22px 8px;
+  padding: 18px 22px 12px;
+  z-index: 1;
+}
+.comic-reader-nav-header h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.comic-reader-nav-close {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+}
+
+/* Section containers — empty in scaffold, populated by Phase 1 steps.
+   The :empty selector keeps the drawer body from rendering ghost gaps
+   for sections that haven't been filled in yet. */
+.comic-reader-nav-series:empty,
+.comic-reader-nav-goto:empty,
+.comic-reader-nav-chapters:empty {
+  display: none;
+}
+
+/* =========================================================================
+   SETTINGS DRAWER — right-side slide-in panel with a scrim behind.
+   Opens via the gear icon in chrome, the S key, or ? (which also jumps
+   to the shortcuts section). Groups every reader option into one
+   discoverable surface.
+   =========================================================================*/
+.comic-reader-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(420px, 92vw);
+  background: rgba(12, 12, 14, 0.98);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border-left: 1px solid var(--comic-reader-chrome-border);
+  z-index: 10010;
+  transform: translateX(100%);
+  transition: transform 240ms var(--comic-reader-ease);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 18px 22px 80px;
+  color: var(--comic-reader-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+.comic-reader-overlay.drawer-open .comic-reader-drawer {
+  transform: translateX(0);
+}
+.comic-reader-drawer[aria-hidden="true"] { pointer-events: none; }
+.comic-reader-overlay.drawer-open .comic-reader-drawer[aria-hidden="true"] {
+  /* Just after close, aria-hidden flips but the transform still shows —
+     keep it click-through during the slide-out animation. */
+}
+
+.comic-reader-drawer-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  z-index: 10005;
+  pointer-events: none;
+  transition: background 240ms var(--comic-reader-ease);
+}
+.comic-reader-overlay.drawer-open .comic-reader-drawer-scrim {
+  background: rgba(0, 0, 0, 0.42);
+  pointer-events: auto;
+}
+
+.comic-reader-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--comic-reader-chrome-border);
+  margin-bottom: 8px;
+}
+.comic-reader-drawer-header h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.comic-reader-drawer-close {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+}
+.comic-reader-drawer-note {
+  margin: 10px 0 20px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--comic-reader-text-dim);
+}
+
+.comic-reader-drawer-section {
+  padding: 18px 0 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.comic-reader-drawer-section:first-of-type {
+  padding-top: 8px;
+  border-top: none;
+}
+.comic-reader-drawer-section h3 {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--comic-reader-text-dim);
+  margin: 0 0 12px;
+}
+.comic-reader-drawer-hint {
+  margin: 10px 2px 0;
+  font-size: 11.5px;
+  color: var(--comic-reader-text-dim);
+  line-height: 1.55;
+}
+
+/* Segmented control — radio-group vibe, one active. */
+.comic-reader-drawer-segment {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.32);
+}
+
+/* Base segment button — inactive state. Without this rule the buttons
+   fell back to browser-default <button> chrome (light grey, default
+   font, square corners) which read as broken next to the styled
+   .active state. */
+.comic-reader-drawer-seg {
+  flex: 1;
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--comic-reader-text-dim);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 160ms var(--comic-reader-ease);
+}
+.comic-reader-drawer-seg:hover:not([disabled]) {
+  color: var(--comic-reader-text);
+  background: var(--comic-reader-btn-hover);
+}
+.comic-reader-drawer-seg.active {
+  color: var(--comic-reader-text);
+  background: var(--comic-reader-btn-active);
+  box-shadow: 0 0 0 1px var(--comic-reader-accent) inset;
+}
+.comic-reader-drawer-seg[disabled] {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Toggle pill — single-option boolean preference (e.g. Trim borders).
+   Looks like a segmented control but the pill on the right slides to
+   signal on/off, so screen real estate stays tight. */
+.comic-reader-drawer-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: var(--comic-reader-text);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 160ms var(--comic-reader-ease);
+}
+.comic-reader-drawer-toggle:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.02);
+}
+.comic-reader-drawer-toggle.on .comic-reader-drawer-toggle-pill {
+  background: var(--comic-reader-accent);
+}
+.comic-reader-drawer-toggle.on .comic-reader-drawer-toggle-knob {
+  transform: translateX(14px);
+}
+.comic-reader-drawer-toggle-label {
+  flex: 1;
+  text-align: left;
+}
+.comic-reader-drawer-toggle-pill {
+  position: relative;
+  width: 32px;
+  height: 18px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 160ms var(--comic-reader-ease);
+  flex-shrink: 0;
+}
+.comic-reader-drawer-toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform 160ms var(--comic-reader-ease);
+}
+/* Background swatches — color chip + label. Active swatch gets a
+   vermillion ring around it (matches detail-page accent). */
+.comic-reader-drawer-swatches {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.comic-reader-drawer-swatch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: var(--comic-reader-text);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 160ms var(--comic-reader-ease);
+}
+.comic-reader-drawer-swatch:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.02);
+}
+.comic-reader-drawer-swatch.active {
+  border-color: var(--comic-reader-accent);
+  box-shadow: 0 0 0 1px var(--comic-reader-accent) inset,
+              0 4px 14px -4px color-mix(in srgb, var(--comic-reader-accent) 45%, transparent);
+}
+.comic-reader-drawer-swatch span {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+}
+.bg-swatch-dark  span { background: #0a0a0a; }
+.bg-swatch-black span { background: #000; }
+.bg-swatch-sepia span { background: #2a231a; }
+.bg-swatch-paper span { background: #e8e4da; border-color: rgba(0, 0, 0, 0.2); }
+
+/* Keyboard-shortcut reference inside the drawer */
+.comic-reader-drawer-shortcuts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px 14px;
+  margin: 0;
+  font-size: 12px;
+}
+.comic-reader-drawer-shortcuts dt {
+  color: var(--comic-reader-text-dim);
+  white-space: nowrap;
+}
+.comic-reader-drawer-shortcuts dd {
+  margin: 0;
+  color: var(--comic-reader-text);
+}
+.comic-reader-drawer-shortcuts kbd {
+  display: inline-block;
+  min-width: 20px;
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom-color: rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
+  font-family: ui-monospace, 'SFMono-Regular', 'Cascadia Code', 'Fira Code', Menlo, monospace;
+  font-size: 10.5px;
+  color: var(--comic-reader-text);
+  text-align: center;
+  margin-right: 2px;
+}
+
+/* Chrome button for the settings gear — same sizing as the other icon
+   buttons in the top toolbar */
+.comic-reader-settings-toggle {
+  /* width/height inherited from .comic-reader-btn */
+}
+
+
+/* LTR direction (paired with .dir-rtl which already exists). */
+.dir-ltr { direction: ltr; }
+
+
+/* ── Reader-driven narration bar (narration-bar.js) ──────────────────────
+   Docks into the reader; the user turns pages, the bar plays that page's
+   audio. Deliberately narrow — it must not cover the art or the chrome. */
+.comic-narration-bar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: max(14px, env(safe-area-inset-bottom, 0px));
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(760px, calc(100% - 28px));
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: rgba(12, 14, 20, 0.86);
+  backdrop-filter: blur(10px);
+  color: #f2f4f8;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  font-size: 0.9rem;
+}
+.comic-narration-bar-mid {
+  flex: 1 1 auto;
+  min-width: 0;   /* lets the caption ellipsize instead of stretching the bar */
+}
+.comic-narration-bar-caption {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+.comic-narration-bar-caption[data-kind="narration"] { font-style: italic; opacity: 0.92; }
+.comic-narration-bar-caption[data-kind="sfx"] { letter-spacing: 0.04em; opacity: 0.8; }
+.comic-narration-bar-status {
+  font-size: 0.76rem;
+  opacity: 0.68;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.comic-narration-bar-play,
+.comic-narration-bar-close {
+  flex: 0 0 auto;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
+  cursor: pointer;
+}
+.comic-narration-bar-play { width: 38px; height: 38px; font-size: 15px; }
+.comic-narration-bar-close { width: 30px; height: 30px; font-size: 13px; }
+.comic-narration-bar-play:hover,
+.comic-narration-bar-close:hover { background: rgba(255, 255, 255, 0.18); }
+.comic-narration-bar-auto {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.76rem;
+  opacity: 0.8;
+  cursor: pointer;
+  user-select: none;
+}
+.comic-narration-bar-audio { display: none; }
+@media (max-width: 560px) {
+  /* Phone: the label is the first thing to go, the transport is not. */
+  .comic-narration-bar-auto span { display: none; }
+}
+
+/* ── Voiced motion-comic player (narration-player.js) ────────────────────
+   Pan-and-scan over the page image, synced to the narration audio. Written
+   for a CAST receiver, where audio legitimately drives the camera because
+   nobody is holding the device. Currently mounted by nothing — the in-app
+   reader moved to the bar above on 2026-07-25; kept because it is the only
+   implementation of the cast-shaped model. */
+.comic-narration-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  background: #07080c;
+}
+.comic-narration-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+.comic-narration-close:hover { background: rgba(0, 0, 0, 0.8); }
+.comic-narration-host { flex: 1 1 auto; min-height: 0; }
+
+.augmentum-comic-narration-root {
+  position: relative;   /* anchors the floating "synthesizing…" pill */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+/* Vertical scroll container — the player gently scrolls this as narration
+   plays. The whole page is visible at fit-width (no zoom), so the art reads
+   normally. */
+.augmentum-comic-narration-stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  background: #000;
+  scroll-behavior: auto;   /* the player owns the smoothing (velocity-clamped) */
+}
+.augmentum-comic-narration-pagewrap {
+  position: relative;   /* containing block for the highlight */
+  width: 100%;
+}
+.augmentum-comic-narration-page {
+  display: block;
+  width: 100%;
+  height: auto;         /* fit-width; a tall page overflows → scrollable */
+}
+/* Subtle marker on the spoken bubble — NO full-screen dim (that hid the art).
+   Only position (opacity) transitions; the view moves by scrolling, so the box
+   itself shouldn't also tween its coordinates. */
+.augmentum-comic-narration-highlight {
+  position: absolute;
+  border: 2px solid rgba(255, 214, 102, 0.85);
+  border-radius: 8px;
+  box-shadow: 0 0 0 2px rgba(255, 214, 102, 0.18),
+              0 2px 10px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+.augmentum-comic-narration-caption {
+  flex: 0 0 auto;
+  padding: 12px 18px;
+  text-align: center;
+  font-size: 1.05rem;
+  line-height: 1.4;
+  color: #f3f4f6;
+  background: rgba(0, 0, 0, 0.55);
+  min-height: 1.4em;
+}
+.augmentum-comic-narration-caption[data-kind="narration"] { font-style: italic; opacity: 0.92; }
+.augmentum-comic-narration-caption[data-kind="sfx"] { letter-spacing: 0.04em; opacity: 0.8; }
+/* The <audio> element is the clock only — native controls are hidden because
+   they'd scrub within a single page's clip, not the chained streaming track. */
+.augmentum-comic-narration-audio { display: none; }
+
+/* Transport bar: play/pause + page counter. */
+.augmentum-comic-narration-bar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 16px;
+  background: #07080c;
+  color: #cbd5e1;
+}
+.augmentum-comic-narration-play {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f3f4f6;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.augmentum-comic-narration-play:hover { background: rgba(255, 255, 255, 0.14); }
+.augmentum-comic-narration-counter { font-size: 0.9rem; opacity: 0.85; }
+
+/* "Synthesizing next page…" hold, shown when playback catches up to synth.
+   Child of the root, floated over the reading area so it stays put while the
+   page scrolls beneath it. */
+.augmentum-comic-narration-buffering {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%);
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #e5e7eb;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.comic-reader-listen.is-busy { opacity: 0.6; pointer-events: none; }

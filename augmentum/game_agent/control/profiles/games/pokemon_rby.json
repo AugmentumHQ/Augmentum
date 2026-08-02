@@ -1,0 +1,39 @@
+{
+  "schema": "control.game.v1",
+  "id": "pokemon_rby",
+  "description": "Pokémon Red / Blue / Yellow (Gen-1, GB / GBC). 8-button controller, simpler menu structure than Gen-3.",
+  "applies_to_controllers": ["gambatte"],
+  "applies_to_log_schema": "pokemon_rby.v1",
+  "actions": {
+    "confirm": {
+      "binding": "face_east",
+      "hint": "Advance dialog one box. Talk to NPC. Pick up item. Confirm a menu choice. Same conceptual role as in any Pokémon game."
+    },
+    "cancel": {
+      "binding": "face_south",
+      "hint": "Cancel / back out / close menu. (No running in Gen-1 -- the running shoes don't exist yet.)"
+    },
+    "menu": {
+      "binding": "start",
+      "hint": "Open the main menu: Pokédex, Pokémon, Item, Save, Option, Exit. (Player profile is in the Trainer Card sub-menu.) Only available in the overworld."
+    },
+    "nav_up": {
+      "binding": "dpad_up",
+      "hint": "Walk one tile north. First press while facing another direction just turns you to face north."
+    },
+    "nav_down": {
+      "binding": "dpad_down",
+      "hint": "Walk one tile south. First press just turns you to face south."
+    },
+    "nav_left": {
+      "binding": "dpad_left",
+      "hint": "Walk one tile west. First press just turns you to face west."
+    },
+    "nav_right": {
+      "binding": "dpad_right",
+      "hint": "Walk one tile east. First press just turns you to face east."
+    }
+  },
+  "hardware_passthrough": ["select"],
+  "notes": "Select is largely unused in Gen-1 (a few sub-menus accept it). Exposed as passthrough so it's available without competing with a universal verb."
+}

@@ -1,0 +1,36 @@
+# Speaches — OpenAI-compatible STT (faster-whisper) + TTS (Kokoro/Piper)
+# Used for bundled speech-to-text. Model preloaded via env var.
+# WebUI: http://localhost:6200
+# Docs: https://github.com/speaches-ai/speaches
+
+services:
+  speaches:
+    image: ghcr.io/speaches-ai/speaches:latest-cpu
+    ports:
+      - "6200:8000"
+    volumes:
+      - speaches_cache:/home/ubuntu/.cache/huggingface/hub
+    environment:
+      ENABLE_UI: "true"
+      WHISPER__COMPUTE_TYPE: "int8"
+      WHISPER__TTL: "-1"
+      PRELOAD_MODELS: '["${AUGMENTUM_STT_MODEL:-Systran/faster-whisper-small.en}"]'
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://0.0.0.0:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      options:
+        max-size: "50m"
+        max-file: "3"
+    # Host-RAM backstop. CPU image, and WHISPER__TTL=-1 means the preloaded
+    # model stays resident forever — so whatever AUGMENTUM_STT_MODEL names is
+    # a permanent host-RAM cost, not a transient one. The int8 small.en
+    # default is modest; the headroom here is for operators who point that var
+    # at large-v3. Unverified estimate — this service isn't running.
+    mem_limit: ${AUGMENTUM_SPEACHES_MEM_LIMIT:-8g}
+
+volumes:
+  speaches_cache:

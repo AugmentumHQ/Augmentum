@@ -1,0 +1,283 @@
+# compose.calling.yaml — shared WebRTC TURN/signaling substrate.
+#
+# Owns the coturn relay shared by:
+#   * Connect mode    — user-to-user voice / video calls + text threads
+#                       (augmentum/calling/, augmentum/connect/ — Phase 1)
+#   * Game-stream     — browser ↔ container low-latency stream
+#                       (augmentum/game_stream/, compose.game-stream.yaml)
+#
+# This overlay was extracted from compose.game-stream.yaml so the relay
+# isn't duplicated when both subsystems are enabled. game-stream's
+# coturn block is gone; if you want game streaming you must enable
+# this overlay too. The .augmentum.conf shipped in the repo includes
+# it ahead of compose.game-stream.yaml so the dependency is satisfied.
+#
+# Credential model: HMAC-SHA1 ephemeral via ``--use-auth-secret``.
+# The proxy mints ``<expiry>:<identity-hint>`` usernames signed with
+# ``AUGMENTUM_TURN_SECRET`` and hands them to browsers/peers per
+# session. coturn validates without per-user state. See
+# ``augmentum/calling/turn_credentials.py`` for the helper both
+# Connect and game-stream call into.
+#
+# Why this beats the old static ``augmentum:augmentumstream`` pair:
+# leaked creds had unbounded blast radius; HMAC creds expire (24h
+# default) and can carry a per-session identity tail that coturn
+# logs but doesn't trust, so the relay log is greppable for "which
+# user used which allocation" without anyone trusting the metadata.
+#
+# Production deployments MUST override ``AUGMENTUM_TURN_SECRET`` in
+# ``.env``. The default below is intentionally a placeholder so the
+# dogfood loop works out of the box.
+
+services:
+  augmentum:
+    environment:
+      # Hostname the BROWSER will use to reach the bundled TURN relay.
+      # Same-host: leave as `localhost`. LAN viewers: host's LAN IP.
+      # Tailscale: host's 100.x address (and include it in
+      # AUGMENTUM_TLS_EXTRA_SANS).
+      - AUGMENTUM_TURN_HOST=${AUGMENTUM_TURN_HOST:-localhost}
+      - AUGMENTUM_TURN_PORT=${AUGMENTUM_TURN_PORT:-3478}
+      # Shared HMAC secret. The proxy reads this to mint per-session
+      # ephemeral credentials; coturn (below) reads the same value to
+      # validate them. They MUST agree, so they read the same env var.
+      - AUGMENTUM_TURN_SECRET=${AUGMENTUM_TURN_SECRET:-augmentum-turn-dev-secret-change-in-env}
+      # LiveKit media plane (Connect SFU). The browser connects to
+      # ${LIVEKIT_URL} for signaling; the proxy mints room-scoped
+      # JWTs using the API key/secret pair. Production deployments
+      # MUST override LIVEKIT_API_KEY + LIVEKIT_API_SECRET in .env.
+      # See augmentum/connect/livekit_tokens.py + spec
+      # docs/superpowers/specs/2026-06-06-livekit-media-plane-design.md.
+      - LIVEKIT_URL=${LIVEKIT_URL:-ws://localhost:7880}
+      - LIVEKIT_API_KEY=${LIVEKIT_API_KEY:-devkey}
+      - LIVEKIT_API_SECRET=${LIVEKIT_API_SECRET:-augmentum-livekit-dev-secret-change-in-env}
+      # HTTP base for the reachability probe. Optional — derived
+      # from LIVEKIT_URL when absent. Override when LiveKit's HTTP
+      # health port differs from its signaling port (rare).
+      - LIVEKIT_HEALTH_URL=${LIVEKIT_HEALTH_URL:-http://livekit:7880}
+
+  # ── Shared TURN relay ──────────────────────────────────────────
+  # WebRTC NAT traversal between a Docker-bridged container (game-
+  # stream agsp) and a browser on the same host (or a different LAN
+  # device) is unreliable across Docker Desktop, hairpinning NAT,
+  # mDNS-obfuscated host candidates, and ICE timeouts. Public free
+  # TURN services (openrelay etc.) are flaky / dead. A bundled
+  # coturn solves all of it: both peers can always reach the relay,
+  # ICE finds a working pair via the relay candidate, and the
+  # stream just connects.
+  #
+  # Connect mode rides on the same relay — voice/video between two
+  # users on different hosts goes peer-to-peer when both endpoints
+  # have public ICE candidates, and falls back to relayed media
+  # through this coturn when one or both peers are behind symmetric
+  # NAT. Phase 1 Connect serves same-host and fabric-peer pairs, so
+  # at least one end usually has reachable host candidates.
+  #
+  # Cost: ~30ms latency + ~5MB RAM + the bandwidth round-trip.
+  coturn:
+    # 4.12.0 brings binary 4.12.x. The previous `4.6` tag shipped binary
+    # 4.6.3 — well behind the IPv4-mapped-IPv6 ACL bypass fixes (GHSA-
+    # j8mm-mpf8-gvjg) and the web-admin auth bypass (CVE-2024-44762
+    # class). Keep this current; bump when 4.13+ ships.
+    image: coturn/coturn:4.12.0
+    restart: unless-stopped
+    # Bridge net + explicit port mapping. Host net is the cleaner
+    # config but Docker Desktop on Windows/Mac doesn't forward a
+    # host-net container's bound ports to the host (the container
+    # binds the Linux VM's network, not the host's), so coturn is
+    # unreachable from the browser. Bridge + port-publish is the
+    # working pattern. The relay port range is 50 ports — five
+    # concurrent game-stream sessions PLUS ~20 concurrent Connect
+    # calls (each uses 2 relay ports: RTP+RTCP). Bandwidth cap
+    # (below) is the real ceiling.
+    #
+    # Range choice (2026-06-10): 41152-41201, deliberately BELOW
+    # 49152. Windows' UDP dynamic/ephemeral range is 49152-65535, so
+    # the RFC-conventional 49152+ relay range collides with whatever
+    # random socket the OS handed out since the last boot (a svchost
+    # ephemeral socket on 49163 killed `start.bat` with "ports are
+    # not available"), and with winnat/Hyper-V auto-reserved blocks
+    # that move on every reboot. Ports below 49152 are never handed
+    # out as ephemeral. Same rationale for LiveKit's 42100-42200
+    # below. Avoid 41641 (Tailscale WireGuard).
+    ports:
+      # Signaling / STUN binding port (TCP + UDP).
+      - "${AUGMENTUM_BIND_HOST:-127.0.0.1}:${AUGMENTUM_TURN_PORT:-3478}:3478/udp"
+      - "${AUGMENTUM_BIND_HOST:-127.0.0.1}:${AUGMENTUM_TURN_PORT:-3478}:3478/tcp"
+      # Relay port range (1:1 mapped — coturn advertises the allocated
+      # port in ICE candidates, so host:container must match).
+      - "${AUGMENTUM_BIND_HOST:-127.0.0.1}:41152-41201:41152-41201/udp"
+    command:
+      - "-n"
+      - "--listening-port=3478"
+      - "--listening-ip=0.0.0.0"
+      - "--fingerprint"
+      # HMAC ephemeral credential mode. The proxy hands browsers
+      # short-lived <expiry>:<hint> usernames signed with this
+      # secret; coturn validates without any per-user database.
+      - "--use-auth-secret"
+      - "--static-auth-secret=${AUGMENTUM_TURN_SECRET:-augmentum-turn-dev-secret-change-in-env}"
+      - "--realm=augmentum"
+      - "--no-tls"
+      - "--no-dtls"
+      - "--no-multicast-peers"
+      # NOTE: --no-cli, --no-loopback-peers, --no-stun-backward-compatibility
+      # were removed 2026-06-02 — coturn/coturn:4.12.0 only ships the
+      # positive opt-in counterparts (--cli, --allow-loopback-peers,
+      # --stun-backward-compatibility). Each of those is OFF by default
+      # in 4.12.0, so dropping the (nonexistent) negated forms preserves
+      # the original security posture. Without this fix coturn dumped
+      # --help and exited, breaking calling/game-stream relay entirely.
+      # ── SSRF / open-relay defenses ──────────────────────────────
+      # Augmentum is a personal/home deployment, so TURN must relay
+      # between peers on the same LAN (and the same host for
+      # dogfood). The original deny list blocked every RFC1918
+      # range; we keep the most dangerous targets blocked (link-
+      # local 169.254, the IPv4-mapped IPv6 alias from
+      # GHSA-j8mm-mpf8-gvjg, multicast, docs ranges) but ALLOW:
+      #   * 127.0.0.0/8 — same-host calls via `--allow-loopback-peers`
+      #   * 10.0.0.0/8, 172.16/12, 192.168/16 — home LAN peers
+      # Trade-off: anyone with a valid HMAC TURN credential could
+      # relay UDP to peers on the host LAN. Acceptable for a
+      # personal instance; do NOT expose this coturn publicly
+      # without restoring the deny rules. See
+      # https://www.enablesecurity.com/blog/coturn-security-
+      # configuration-guide/ for the rationale on the rest.
+      - "--no-tcp-relay"
+      # Loopback (127/8) is allowed via this flag; without it, the
+      # same-machine 2-account dogfood test fails when Chrome's
+      # mDNS host-candidate obfuscation forces ICE through TURN.
+      - "--allow-loopback-peers"
+      - "--denied-peer-ip=0.0.0.0-0.255.255.255"
+      - "--denied-peer-ip=100.64.0.0-100.127.255.255"
+      - "--denied-peer-ip=169.254.0.0-169.254.255.255"
+      - "--denied-peer-ip=192.0.0.0-192.0.0.255"
+      - "--denied-peer-ip=192.0.2.0-192.0.2.255"
+      - "--denied-peer-ip=198.18.0.0-198.19.255.255"
+      - "--denied-peer-ip=198.51.100.0-198.51.100.255"
+      - "--denied-peer-ip=203.0.113.0-203.0.113.255"
+      - "--denied-peer-ip=240.0.0.0-255.255.255.255"
+      - "--denied-peer-ip=64:ff9b::-64:ff9b::ffff:ffff"
+      - "--denied-peer-ip=::ffff:0.0.0.0-::ffff:255.255.255.255"
+      - "--denied-peer-ip=100::-100::ffff:ffff:ffff:ffff"
+      - "--denied-peer-ip=fc00::-fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
+      - "--denied-peer-ip=fe80::-febf:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
+      # Force nonce re-derivation every 10 min — coturn upstream
+      # recommended default; limits the window in which a leaked
+      # nonce is replayable.
+      - "--stale-nonce=600"
+      # ICE mobility extension (RFC 8016). Harmless for desktop
+      # clients; meaningfully reduces media interruption when a
+      # mobile peer switches between WiFi and cellular mid-call.
+      - "--mobility"
+      # Disable NAT-behavior discovery STUN extension (RFC 5780).
+      # Full-ICE clients don't need it; leaving it on lets the
+      # server be used in UDP amplification reconnaissance.
+      - "--no-rfc5780"
+      # --no-stun-backward-compatibility removed — see comment near
+      # --no-cli above. Default in 4.12.0 is already OFF.
+      # ── Port range ──────────────────────────────────────────────
+      # Below Windows' ephemeral range — see the ports: comment above.
+      - "--min-port=41152"
+      - "--max-port=41201"
+      # Per-session bandwidth cap (~4 Mbps). Generous enough for
+      # 720p video; clamps the worst case for runaway sessions.
+      - "--max-bps=4000000"
+      # Aggregate cap across all relayed sessions (~40 Mbps). Stops
+      # one container from saturating the LAN if it gets stuck in
+      # a retry loop.
+      - "--bps-capacity=40000000"
+      # Per-user (== per-allocation-username) concurrent allocation
+      # cap. With HMAC ephemeral creds the "user" is the
+      # <expiry>:<hint> tuple, so this effectively caps how many
+      # parallel allocations one session can hold.
+      - "--user-quota=4"
+      # Server-wide concurrent allocation cap. 30 ~= enough for a
+      # busy home setup with multiple game streams + calls active
+      # without letting a misbehaving client exhaust the relay.
+      - "--total-quota=30"
+      # external-ip tells coturn what address to advertise in
+      # ALLOCATE responses. Without it, coturn advertises the
+      # container's bridge IP (172.x.x.x) which the browser can't
+      # reach. Set AUGMENTUM_TURN_HOST in .env to your reachable
+      # address: LAN IP for home-only, Tailscale 100.x for tailnet
+      # access, or 127.0.0.1 for same-host-only.
+      - "--external-ip=${AUGMENTUM_TURN_HOST:-127.0.0.1}"
+      - "--simple-log"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "2"
+    # Host-RAM backstop. coturn is a pure UDP packet relay — no models, no
+    # media decode; the ~5MB-idle figure above plus per-allocation buffers
+    # bounded by --total-quota=30 keeps this tiny. Unverified estimate (the
+    # relay wasn't running when this was set), but generous by ~100x. Raise
+    # only if you lift --total-quota / --bps-capacity substantially.
+    mem_limit: ${AUGMENTUM_COTURN_MEM_LIMIT:-512m}
+
+  # ── LiveKit media plane (Connect SFU) ──────────────────────────
+  # Default media plane for Connect calls — replaces the hand-rolled
+  # P2P WebRTC path for everything except the explicit fallback case
+  # (LiveKit down OR user has call_media_preference="p2p"). See spec
+  # docs/superpowers/specs/2026-06-06-livekit-media-plane-design.md
+  # for the full architectural shape.
+  #
+  # Apache 2.0 license; no copyleft contamination. Single-node mode
+  # (no Redis) — sized for a personal/home deployment. If/when fabric
+  # grows to many paired instances the cluster mode story changes,
+  # but that's out of scope for v1.
+  #
+  # TURN: LiveKit shares the bundled coturn above via its livekit.yaml
+  # config rather than running its own — so symmetric-NAT fallback
+  # for LiveKit calls is the same relay the P2P plane uses.
+  #
+  # Resource: ~150MB RAM idle, scales with active publishers. The
+  # 42100-42200 UDP port range is the WebRTC media range — distinct
+  # from coturn's 41152-41201 so a packet capture can tell which
+  # plane carried which call. Both ranges live below 49152 to stay
+  # out of Windows' UDP ephemeral range (see coturn ports: comment).
+  livekit:
+    image: livekit/livekit-server:v1.7
+    restart: unless-stopped
+    # Bridge net + explicit port mapping. Same justification as
+    # coturn above (Docker Desktop on Win/Mac doesn't forward
+    # host-net containers to the host).
+    ports:
+      # HTTP / WebSocket signaling. The browser hits this on
+      # LIVEKIT_URL after fetching its JWT from
+      # /api/connect/calls/<call_id>/livekit_token.
+      - "${AUGMENTUM_BIND_HOST:-127.0.0.1}:7880:7880"
+      # TCP fallback for environments that block UDP.
+      - "${AUGMENTUM_BIND_HOST:-127.0.0.1}:7881:7881/tcp"
+      # WebRTC media (UDP). Distinct from coturn's range so it's
+      # obvious from a tcpdump which plane carried the bytes. Must
+      # match rtc.port_range_start/end in livekit.yaml (1:1 mapping —
+      # LiveKit advertises the allocated port in ICE candidates).
+      - "${AUGMENTUM_BIND_HOST:-127.0.0.1}:42100-42200:42100-42200/udp"
+    volumes:
+      - ./livekit.yaml:/etc/livekit.yaml:ro
+    command: ["--config", "/etc/livekit.yaml"]
+    environment:
+      # The same key/secret pair the proxy uses to mint JWTs. Both
+      # must agree or token validation fails. Compose passes through
+      # whatever the operator sets in .env (with dev defaults).
+      #
+      # FORMAT NOTE: LiveKit's `keys` field parser requires literal
+      # ``<key>: <secret>`` with a space after the colon. Without the
+      # space, the server logs "Could not parse keys, it needs to be
+      # exactly, 'key: secret', including the space" and starts with
+      # no keys — every JWT validation 401s.
+      #
+      # The entry MUST be quoted: the colon-space in the value would
+      # otherwise be interpreted as a YAML map ("unexpected type
+      # map[string]interface {}") and break compose parsing.
+      - "LIVEKIT_KEYS=${LIVEKIT_API_KEY:-devkey}: ${LIVEKIT_API_SECRET:-augmentum-livekit-dev-secret-change-in-env}"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "2"
+    # Host-RAM backstop. Single-node SFU, no Redis: the ~150MB idle noted
+    # above plus per-publisher track buffers. Unverified estimate — 2g is
+    # ~13x idle so a handful of concurrent Connect calls fit. Raise it if a
+    # deployment carries many simultaneous publishers or high-bitrate video.
+    mem_limit: ${AUGMENTUM_LIVEKIT_MEM_LIMIT:-2g}

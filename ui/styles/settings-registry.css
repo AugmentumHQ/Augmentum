@@ -1,0 +1,109 @@
+/* Declarative action substrate — registry-driven settings UI (Phase 2). */
+
+.settings-registry-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-height: 100%;
+  min-height: 320px;
+}
+
+.settings-registry-loading {
+  padding: var(--space-lg);
+  color: var(--text-tertiary);
+  font-style: italic;
+  text-align: center;
+}
+
+.settings-registry-error {
+  padding: var(--space-md);
+  color: var(--text-error, #ff6464);
+  background: rgba(255, 100, 100, 0.06);
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  border-radius: var(--radius-sm);
+}
+
+/* ---- toolbar ---- */
+
+.settings-registry-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: var(--space-xs) 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.settings-registry-search {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-registry-advanced-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  white-space: nowrap;
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.settings-registry-count {
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- list ---- */
+
+.settings-registry-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.settings-registry-section {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated, var(--surface));
+  overflow: hidden;
+}
+
+.settings-registry-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  background: var(--surface-recessed, transparent);
+  user-select: none;
+}
+
+.sr-section-name {
+  font-family: var(--font-mono, monospace);
+  color: var(--text-primary);
+}
+
+.sr-section-count {
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.settings-registry-section-body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Per-control row/badge/bool styles moved to settings-controls.css (shared
+ * with the curated tabs, Phase 0 convergence). This file now holds only the
+ * registry-specific list chrome above. */

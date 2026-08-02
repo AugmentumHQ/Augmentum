@@ -1,0 +1,19 @@
+{
+  "schema": "control.controller.v1",
+  "id": "gambatte",
+  "description": "Game Boy / Game Boy Color controller as exposed by libretro / gambatte. 8 buttons: d-pad, two face buttons, Start/Select. No shoulders.",
+  "wire": {
+    "kind": "libretro_joypad",
+    "port": 0
+  },
+  "buttons": {
+    "face_east":    { "wire_code": 8, "label": "A" },
+    "face_south":   { "wire_code": 0, "label": "B" },
+    "dpad_up":      { "wire_code": 4, "label": "Up" },
+    "dpad_down":    { "wire_code": 5, "label": "Down" },
+    "dpad_left":    { "wire_code": 6, "label": "Left" },
+    "dpad_right":   { "wire_code": 7, "label": "Right" },
+    "start":        { "wire_code": 3, "label": "Start" },
+    "select":       { "wire_code": 2, "label": "Select" }
+  }
+}

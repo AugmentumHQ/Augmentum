@@ -1,0 +1,123 @@
+# compose.game-stream.yaml — Augmentum Game Streaming Platform overlay.
+#
+# Usage (after appending compose.game-stream.yaml to .augmentum.conf):
+#   start.bat                            # routine start
+#   start.bat build                      # rebuild + start
+#
+# What this overlay adds:
+#   1. Builds the two game-stream Docker images so they're available
+#      when the runtime spawns containers via aiodocker.
+#   2. Flips game streaming on at the env-var layer so the proxy sees
+#      it as the default-on starting point (DB setting still wins;
+#      this just gives a sane bootstrap).
+#   3. Reserves a named volume for per-user world data so worlds
+#      survive container recycling.
+#
+# What this overlay does NOT do:
+#   - Spawn streaming containers itself. Those are launched on demand
+#     by GameStreamRuntime via DockerContainerAdapter, which talks to
+#     the existing docker-proxy. See augmentum/game_stream/runtime.py.
+#   - Configure GPU passthrough on streaming containers. NVENC is
+#     opportunistic: if the host has nvidia-container-toolkit + the
+#     augmentum service has GPU access (compose.gpu.yaml), the
+#     streaming containers can be granted GPU at start time via
+#     DockerContainerAdapter. Without it, they fall back to VAAPI/x264.
+
+services:
+  augmentum:
+    environment:
+      - AUGMENTUM_GAME_STREAM_ENABLED=${AUGMENTUM_GAME_STREAM_ENABLED:-true}
+      # TURN relay env (AUGMENTUM_TURN_HOST/PORT/SECRET) lives in
+      # compose.calling.yaml — the relay itself is shared with
+      # Connect mode. The proxy mints per-session ephemeral creds
+      # via augmentum/calling/turn_credentials.py and forwards them
+      # into the streamed container at session start.
+    # NOTE: game_stream_worlds + game_stream_emulator_saves moved to the
+    # CORE compose.yaml (2026-07-25). The streaming images are installable
+    # in-app as add-ons, and an in-app install can't append this overlay to
+    # .augmentum.conf -- leaving the save volumes here meant an add-on
+    # install produced working streaming with nowhere to persist memory
+    # cards, save states or NAND. This overlay now only BUILDS.
+
+  # ── TURN relay ─────────────────────────────────────────────────
+  # Moved to compose.calling.yaml. The relay is shared with Connect
+  # mode (user-to-user voice/video calls), so it lives in its own
+  # overlay and both subsystems consume it. compose.calling.yaml
+  # MUST appear ahead of this file in .augmentum.conf.
+
+  # ── Build helpers (don't run, just declare) ─────────────────────
+  # Listed under the ``build-only`` profile so plain `docker compose up`
+  # ignores them; `docker compose --profile build-only build` builds
+  # them without trying to start them.
+  game-stream-base:
+    profiles: [build-only]
+    image: augmentum-game-stream-base:latest
+    build:
+      context: .
+      dockerfile: services/game-stream/Dockerfile.base
+    # Marker keeps compose happy when listing services; the container
+    # never actually runs.
+    command: ["true"]
+    restart: "no"
+    # Host-RAM backstop. NOTE: this bounds the build-only marker container
+    # (`true`, exits immediately) — NOT the streaming containers, which
+    # GameStreamRuntime spawns via aiodocker and must be budgeted there
+    # (augmentum/game_stream/runtime.py). Nominal; nothing here consumes it.
+    mem_limit: ${AUGMENTUM_GAME_STREAM_BASE_MEM_LIMIT:-2g}
+
+  game-stream-luanti:
+    profiles: [build-only]
+    image: augmentum-game-stream-luanti:latest
+    build:
+      context: .
+      dockerfile: services/game-stream/Dockerfile.luanti
+    command: ["true"]
+    restart: "no"
+    # Marker container only (see game-stream-base note) — the real Luanti
+    # server + encoder footprint is bounded at spawn time by the runtime.
+    mem_limit: ${AUGMENTUM_GAME_STREAM_LUANTI_MEM_LIMIT:-4g}
+    depends_on:
+      - game-stream-base
+
+  # Multi-emulator container: Dolphin today, PCSX2/RPCS3/Citra TODO.
+  # One image, one entrypoint, dispatched by the AUGMENTUM_EMULATOR
+  # env var the title-runtime layer sets at session-start. See
+  # services/game-stream/Dockerfile.emulator-streamed for the rationale
+  # and growth plan.
+  game-stream-emulator-streamed:
+    profiles: [build-only]
+    image: augmentum-game-stream-emulator-streamed:latest
+    build:
+      context: .
+      dockerfile: services/game-stream/Dockerfile.emulator-streamed
+    command: ["true"]
+    restart: "no"
+    # Marker container only (see game-stream-base note). Emulators (Dolphin,
+    # PCSX2, RPCS3) are the RAM-hungriest streamed workload — RPCS3 in
+    # particular — so the real number belongs on the spawned container.
+    mem_limit: ${AUGMENTUM_GAME_STREAM_EMULATOR_STREAMED_MEM_LIMIT:-8g}
+    depends_on:
+      - game-stream-base
+
+  # Generic browser-stream image: headless Chrome kiosk + Selkies.
+  # Spawned per active cast to render arbitrary Augmentum web
+  # surfaces (VRM, notebook, comic reader, etc.) and stream them to
+  # the receiver. URL is passed as AUGMENTUM_TARGET_URL at start.
+  stream-browser:
+    profiles: [build-only]
+    image: augmentum-stream-browser:latest
+    build:
+      context: .
+      dockerfile: services/game-stream/Dockerfile.browser
+    command: ["true"]
+    restart: "no"
+    # Marker container only (see game-stream-base note). The spawned kiosk
+    # runs headless Chrome with software WebGL on heavy surfaces (VRM), which
+    # is the sizing case for the real per-cast container.
+    mem_limit: ${AUGMENTUM_STREAM_BROWSER_MEM_LIMIT:-4g}
+    depends_on:
+      - game-stream-base
+
+# Volumes intentionally absent: game_stream_worlds and
+# game_stream_emulator_saves are declared in the core compose.yaml so
+# they exist for in-app add-on installs too. See the note above.

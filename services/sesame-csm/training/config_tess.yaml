@@ -1,0 +1,53 @@
+# Second voice (p003) — isolated dirs so it can prep/train alongside p089
+# without clobbering its data. Transcribes on CPU to leave the GPU for the
+# p089 fine-tune running in parallel.
+
+voice_name: tess
+base_model: sesame/csm-1b
+speaker_id: 0
+
+source:
+  type: ears
+  ears_root: ./data/ears
+  ears_speaker: p003         # female, 26-35, black/African-American, native AmEng
+  csv_path: ""
+  audio_root: ""
+
+emotion:
+  enabled: true
+  tag_format: "({emotion}) "
+  remap: {}
+  keep: []
+
+transcribe:
+  backend: faster-whisper
+  model: base
+  language: en
+  device: cpu                # CPU so it doesn't contend with the p089 GPU training
+
+sample_rate: 24000
+mono: true
+segment:
+  enabled: true
+  max_seconds: 12
+  min_seconds: 1.0
+  silence_split: true
+
+out_dir: ./data/tess         # isolated from ./data/becca (p089)
+
+train:
+  output_dir: ./out/tess-lora
+  lora_r: 32
+  lora_alpha: 64
+  lora_dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+  learning_rate: 2.0e-5
+  num_epochs: 4
+  per_device_batch_size: 2
+  grad_accum: 4
+  bf16: false                 # fp32 load avoids CSM audio-embed dtype clash; 3090 has the VRAM
+  gradient_checkpointing: false  # CSM writes embeds in-place; checkpointing+require_grads clashes
+  warmup_ratio: 0.03
+  logging_steps: 10
+  save_steps: 200
+  seed: 3407

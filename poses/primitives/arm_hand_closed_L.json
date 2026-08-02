@@ -1,0 +1,31 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "arm_hand_closed_L",
+  "tags": [
+    "single-arm",
+    "L",
+    "passive",
+    "rest"
+  ],
+  "description": "Single-arm primitive: left arm in 'hand_closed_L' pose. Lands at region 'thigh_L' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+  "family": "per_arm",
+  "anchors": {
+    "leftHand": {
+      "type": "region-contact",
+      "region": "thigh_L",
+      "tolerance": 0.04,
+      "fingerStyle": "hand_closed_L"
+    },
+    "rightHand": {
+      "type": "free-space"
+    }
+  },
+  "body": {},
+  "provenance": {
+    "source": "auto-generated",
+    "generator": "scripts/generate_per_arm_primitives.py",
+    "wrapsAffordance": "hand_closed_L",
+    "consensusRegion": "thigh_L",
+    "createdAt": "2026-05-14"
+  }
+}

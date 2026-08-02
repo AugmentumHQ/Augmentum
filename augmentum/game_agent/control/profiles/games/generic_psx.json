@@ -1,0 +1,51 @@
+{
+  "schema": "control.game.v1",
+  "id": "generic_psx",
+  "description": "Generic Sony PlayStation game profile (Western convention). X is confirm (face_south), Circle is cancel (face_east), Square is special (face_west), Triangle is item (face_north). Japanese PSX titles invert confirm/cancel; ship a region-specific profile when shipping a Japanese title.",
+  "applies_to_controllers": ["psx"],
+  "applies_to_log_schema": "psx_vision.v1",
+  "actions": {
+    "confirm": {
+      "binding": "face_south",
+      "hint": "Press X (Cross). Advance dialog, confirm menu choice, jump in platformers. Western convention; Japanese games may invert this."
+    },
+    "cancel": {
+      "binding": "face_east",
+      "hint": "Press Circle. Cancel menu, run away in JRPGs, secondary attack."
+    },
+    "special": {
+      "binding": "face_west",
+      "hint": "Press Square. Game-specific: secondary attack, sub-weapon, item use."
+    },
+    "use_item": {
+      "binding": "face_north",
+      "hint": "Press Triangle. Game-specific: inventory hotkey, special action, vehicle exit."
+    },
+    "menu": {
+      "binding": "start",
+      "hint": "Press Start. Open the pause / inventory menu, start the game from the title screen."
+    },
+    "back": {
+      "binding": "select",
+      "hint": "Press Select. Game-specific: map / secondary menu / character cycle."
+    },
+    "nav_up": {
+      "binding": "dpad_up",
+      "hint": "Move up. Most PSX games also accept the left analog stick for this — the agent only emits d-pad in v1."
+    },
+    "nav_down": {
+      "binding": "dpad_down",
+      "hint": "Move down. D-pad only in v1; analog stick not yet wired."
+    },
+    "nav_left": {
+      "binding": "dpad_left",
+      "hint": "Move left. D-pad only in v1."
+    },
+    "nav_right": {
+      "binding": "dpad_right",
+      "hint": "Move right. D-pad only in v1."
+    }
+  },
+  "hardware_passthrough": ["shoulder_l", "shoulder_r", "trigger_l", "trigger_r", "stick_l_press", "stick_r_press"],
+  "notes": "All four shoulders/triggers and both stick clicks are passthrough. PSX action games rely on them heavily (camera, weapon cycle, defense); per-game profiles should bind the most-used ones to specific universal actions. Analog sticks are not represented — they need an analog wire channel that v1 doesn't have."
+}

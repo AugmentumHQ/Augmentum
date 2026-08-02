@@ -1,0 +1,6 @@
+Contact: mailto:augmentumhq@gmail.com
+Contact: https://github.com/AugmentumHQ/Augmentum/security/advisories/new
+Expires: 2027-01-01T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://github.com/AugmentumHQ/Augmentum/blob/main/.well-known/security.txt
+Policy: https://github.com/AugmentumHQ/Augmentum/blob/main/SECURITY.md

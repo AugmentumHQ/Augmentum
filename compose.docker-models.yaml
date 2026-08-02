@@ -1,0 +1,14 @@
+# Docker Model Runner — uses Docker Desktop's built-in LLM inference.
+# No additional service needed — DMR runs natively in Docker Desktop 4.40+.
+# Enable with: docker desktop enable model-runner --tcp 12434
+#
+# Pull models with: docker model pull ai/qwen2.5-coder
+# Or from within Augmentum's model manager (uses Ollama-compatible API).
+
+services:
+  augmentum:
+    environment:
+      - AUGMENTUM_OLLAMA_BASE_URL=http://model-runner.docker.internal
+      - AUGMENTUM_DEFAULT_BACKEND=ollama
+    extra_hosts:
+      - "model-runner.docker.internal:host-gateway"

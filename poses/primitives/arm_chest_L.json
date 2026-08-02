@@ -1,0 +1,31 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "arm_chest_L",
+  "tags": [
+    "single-arm",
+    "L",
+    "chest",
+    "emphasis"
+  ],
+  "description": "Single-arm primitive: left arm in 'chest_L' pose. Lands at region 'side_R' across the bundled roster. Other arm left as free-space for composition with another primitive.",
+  "family": "per_arm",
+  "anchors": {
+    "leftHand": {
+      "type": "region-contact",
+      "region": "side_R",
+      "tolerance": 0.04,
+      "fingerStyle": "chest_L"
+    },
+    "rightHand": {
+      "type": "free-space"
+    }
+  },
+  "body": {},
+  "provenance": {
+    "source": "auto-generated",
+    "generator": "scripts/generate_per_arm_primitives.py",
+    "wrapsAffordance": "chest_L",
+    "consensusRegion": "side_R",
+    "createdAt": "2026-05-14"
+  }
+}

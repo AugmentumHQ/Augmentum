@@ -1,0 +1,54 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Tests
+tests/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+
+# Data and caches
+data/
+*.db
+*.sqlite
+.pytest_cache/
+.ruff_cache/
+
+# Docs
+augmentum.md
+memory/
+
+# Docker
+compose.yaml
+docker-compose.override.yml
+.dockerignore
+
+# Environment
+.env
+.env.example
+
+# OS
+.DS_Store
+Thumbs.db

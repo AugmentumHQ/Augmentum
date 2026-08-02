@@ -1,0 +1,339 @@
+/*
+ * emulator-stage.css — chrome for the in-app emulator player surface.
+ *
+ * Reference apps for the visual language: OpenEmu (top bar with system
+ * badge + title left, icon row right), RetroArch's Quick Menu (slot
+ * grid), Steam in-game overlay (icon button hover state).
+ */
+
+.emulator-stage-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  font: 13px/1.4 "Source Sans 3", "Inter", system-ui, -apple-system, sans-serif;
+  color: var(--app-text, #ddd);
+
+  /* Unified gametime tokens. Both the chrome bar and the agent panel
+     read these so a single source-of-truth keeps the surface coherent.
+     Hue choice: a warm-cool blue that sits between Augmentum's chat
+     cyans and the agentic warm tones — reads "active, alert" without
+     screaming. */
+  --gametime-accent: #6ea2ef;
+  --gametime-accent-bright: #8db8f4;
+  --gametime-accent-dim: rgba(110, 162, 239, 0.28);
+  --gametime-accent-soft: rgba(110, 162, 239, 0.14);
+  --gametime-accent-faint: rgba(110, 162, 239, 0.06);
+
+  --gametime-success: #4ad07a;
+  --gametime-warn:    #d0b94a;
+  --gametime-error:   #d04a4a;
+
+  --gametime-surface:        #151517;
+  --gametime-surface-raised: #1c1c1f;
+  --gametime-surface-hover:  #232328;
+  --gametime-rule:           rgba(255, 255, 255, 0.07);
+  --gametime-rule-strong:    rgba(255, 255, 255, 0.12);
+
+  --gametime-ink:        #e7e9ee;
+  --gametime-ink-soft:   rgba(231, 233, 238, 0.78);
+  --gametime-ink-faint:  rgba(231, 233, 238, 0.5);
+  --gametime-ink-whisper: rgba(231, 233, 238, 0.32);
+}
+
+/* The bar fades on idle in fullscreen so it doesn't burn into OLED
+   panels and stays out of the way during play. */
+.emulator-stage-bar {
+  flex: 0 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  background: linear-gradient(to bottom, #161616, #0e0e0e);
+  border-bottom: 1px solid #222;
+  gap: 12px;
+  user-select: none;
+}
+
+.emulator-stage-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.emulator-stage-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.emulator-stage-system-badge {
+  background: #2a2a2a;
+  color: #c8c8c8;
+  border: 1px solid #333;
+  border-radius: 3px;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  padding: 2px 7px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.emulator-stage-title {
+  color: #eee;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 320px;
+}
+
+/* Icon button -- 32px square, ghost on idle, subtle on hover. */
+.emulator-stage-iconbtn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #b0b0b0;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+.emulator-stage-iconbtn:hover {
+  background: #232323;
+  color: #fff;
+  border-color: #333;
+}
+
+.emulator-stage-iconbtn:active {
+  background: #2a2a2a;
+}
+
+.emulator-stage-iconbtn:focus-visible {
+  outline: 2px solid var(--gametime-accent);
+  outline-offset: 1px;
+}
+
+.emulator-stage-close-btn:hover {
+  background: #5a1f1f;
+  color: #fff;
+  border-color: #7a2a2a;
+}
+
+/* Game viewport */
+.emulator-stage-slot {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  background: #000;
+}
+
+.emulator-stage-slot iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/* Pause overlay -- centered icon + label over a dim layer. */
+.emulator-stage-paused-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.emulator-stage-paused-icon {
+  width: 80px;
+  height: 80px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+}
+
+.emulator-stage-paused-icon svg {
+  width: 36px;
+  height: 36px;
+}
+
+.emulator-stage-paused-label {
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+}
+
+/* Popovers -- anchored beneath the trigger button. */
+.emulator-stage-popover {
+  position: fixed;
+  background: #151515;
+  border: 1px solid #2c2c2c;
+  border-radius: 6px;
+  padding: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+  z-index: 9100;
+  min-width: 180px;
+  user-select: none;
+}
+
+.emulator-stage-popover-label {
+  color: #888;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 8px;
+  padding: 0 2px;
+}
+
+/* Save/Load slot grid -- 3x3 of numbered cells. */
+.emulator-stage-slot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 36px);
+  gap: 4px;
+}
+
+.emulator-stage-slot-cell {
+  width: 36px;
+  height: 36px;
+  background: #1f1f1f;
+  border: 1px solid #2c2c2c;
+  color: #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font: 600 13px/1 system-ui, sans-serif;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s ease, border-color 0.1s ease;
+}
+
+.emulator-stage-slot-cell:hover {
+  background: #2a2a2a;
+  border-color: var(--gametime-accent);
+}
+
+.emulator-stage-slot-cell.is-active {
+  border-color: var(--gametime-accent);
+  color: var(--gametime-accent);
+}
+
+/* Volume slider */
+.emulator-stage-volume-slider {
+  width: 160px;
+  margin: 4px 4px 0 4px;
+  accent-color: var(--gametime-accent);
+}
+
+
+/* Settings popover -- wider than the slot/volume popovers because
+ * each row carries a label + control. Keeps the same dark chrome. */
+.emulator-stage-popover-settings {
+  min-width: 220px;
+}
+
+.emulator-stage-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 2px;
+}
+.emulator-stage-setting-label {
+  color: #c8c8c8;
+  font-size: 12px;
+}
+.emulator-stage-setting-select {
+  background: #1a1a1a;
+  color: #e7e9ee;
+  border: 1px solid #2c2c2c;
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  min-width: 80px;
+}
+.emulator-stage-setting-select:focus-visible {
+  outline: 2px solid var(--gametime-accent);
+  outline-offset: 1px;
+}
+
+.emulator-stage-setting-sep {
+  margin: 8px -2px 2px;
+  border-top: 1px solid var(--gametime-rule);
+}
+
+.emulator-stage-setting-btn {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  background: var(--gametime-surface-raised);
+  color: var(--gametime-ink);
+  border: 1px solid var(--gametime-rule-strong);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.1s ease, border-color 0.1s ease, color 0.1s ease;
+}
+.emulator-stage-setting-btn:hover {
+  background: var(--gametime-surface-hover);
+  border-color: var(--gametime-accent);
+}
+.emulator-stage-setting-btn:focus-visible {
+  outline: 2px solid var(--gametime-accent);
+  outline-offset: 1px;
+}
+/* Secondary variant: lower-emphasis "escape hatch" — just text + a
+ * hairline border. Reads as "this is the more rarely-used path." */
+.emulator-stage-setting-btn.is-secondary {
+  background: transparent;
+  color: var(--gametime-ink-soft);
+  border-color: var(--gametime-rule);
+}
+.emulator-stage-setting-btn.is-secondary:hover {
+  color: var(--gametime-ink);
+  border-color: var(--gametime-rule-strong);
+}
+
+.emulator-stage-setting-hint {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #888;
+  font-style: italic;
+  line-height: 1.4;
+  padding: 0 2px;
+}
+
+
+/* On phone, popovers can overflow off-screen since we anchor against
+ * the right edge. Constrain max-width and let the right-edge math in
+ * _popover() take care of the rest. */
+@media (max-width: 540px) {
+  .emulator-stage-popover {
+    max-width: calc(100vw - 24px);
+    right: 12px !important;
+  }
+  .emulator-stage-popover-settings { min-width: 0; width: calc(100vw - 24px); }
+}

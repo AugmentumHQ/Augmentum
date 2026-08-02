@@ -1,0 +1,77 @@
+# LiveKit server config — Connect media plane.
+#
+# Owned by compose.calling.yaml::livekit. The proxy
+# (augmentum/connect/livekit_tokens.py) mints JWTs that this server
+# validates against the keys block below.
+#
+# Single-node mode — no Redis. Sized for personal/home deployment.
+# Cluster mode (Redis + multi-node) is out of scope until fabric
+# scales beyond a handful of paired instances. See spec
+# docs/superpowers/specs/2026-06-06-livekit-media-plane-design.md.
+#
+# Keys: read from LIVEKIT_KEYS env var (set by compose). Format is
+# ``<key>:<secret>`` — must match LIVEKIT_API_KEY / LIVEKIT_API_SECRET
+# that the proxy reads. Tokens minted with one and validated by the
+# other will fail with "invalid api key", which is what you want.
+
+# WebSocket signaling port. Browser hits this on LIVEKIT_URL.
+port: 7880
+
+# Listen on all interfaces inside the container; the host's
+# AUGMENTUM_BIND_HOST gates external exposure via the port mapping
+# in compose.calling.yaml.
+bind_addresses:
+  - ""
+
+log_level: info
+
+rtc:
+  # TCP fallback for environments that block UDP (locked-down
+  # corporate networks, some symmetric NATs that lose UDP state).
+  tcp_port: 7881
+  # WebRTC media port range. Distinct from coturn's 41152-41201 so
+  # tcpdump can tell the two media planes apart on the same host.
+  # Both ranges sit BELOW 49152 — Windows hands out 49152-65535 as
+  # ephemeral UDP sockets, so a published range inside it collides
+  # with random OS sockets / winnat reservations on a per-boot dice
+  # roll (2026-06-10: a svchost socket on 49163 aborted start.bat).
+  # Must match the published range in compose.calling.yaml::livekit.
+  port_range_start: 42100
+  port_range_end: 42200
+  # Resolve the advertised IP from the request's local addr +
+  # AUGMENTUM_TURN_HOST when behind NAT. Set true so the client
+  # gets a reachable candidate even when the container's bridge IP
+  # would be unreachable from the browser.
+  use_external_ip: true
+  # External TURN integration — point LiveKit at the bundled
+  # coturn rather than running a second TURN server. The
+  # credentials are the static dev pair for local dogfood; the
+  # ephemeral-HMAC mode that the proxy mints for the P2P plane
+  # isn't usable here (LiveKit needs long-lived static creds for
+  # its own SFU-to-TURN allocations).
+  #
+  # Production NOTE: when the operator rotates AUGMENTUM_TURN_SECRET,
+  # they should mint a long-lived static pair from the same coturn
+  # and set them here. Out-of-scope for v1 dogfood.
+  turn_servers:
+    - host: coturn
+      port: 3478
+      protocol: udp
+      username: livekit-sfu
+      credential: augmentum-livekit-sfu-static-cred-change-in-env
+
+# Disable the bundled TURN server — we use coturn (see above).
+turn:
+  enabled: false
+
+# Room defaults. Connect calls are 1:1 by default; bumped here so
+# the spec's group-call phase (Phase 3) just works without a
+# config change.
+room:
+  auto_create: true
+  empty_timeout: 60
+  max_participants: 8
+
+# Keys loaded from LIVEKIT_KEYS env var. See the comment at the
+# top of the file — must match what the proxy mints with.
+key_file: ""

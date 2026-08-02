@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Artifact Session Edit Harness</title>
+  <link rel="stylesheet" href="styles/variables.css">
+  <link rel="stylesheet" href="styles/themes.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/agentic.css">
+  <link rel="stylesheet" href="styles/studio.css">
+  <style>
+    :root { --header-height: 0px; }
+    html, body { margin: 0; min-height: 100%; background: var(--bg); }
+    body { font-family: var(--font-sans); }
+    .studio-harness-doc {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      color: var(--text-primary);
+    }
+    .studio-harness-doc h1,
+    .studio-harness-doc h2,
+    .studio-harness-doc p,
+    .studio-harness-doc ul {
+      margin: 0;
+    }
+    .studio-harness-doc h1 { font-size: 2rem; }
+    .studio-harness-doc h2 { font-size: 1.15rem; margin-top: 0.5rem; }
+    .studio-harness-doc ul { padding-left: 1.2rem; line-height: 1.7; }
+    .studio-harness-preview-card {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 20px;
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      color: #1f2937;
+    }
+    .studio-harness-preview-bar {
+      display: flex;
+      gap: 8px;
+    }
+    .studio-harness-preview-pill {
+      width: 76px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(31, 41, 55, 0.1);
+    }
+    .studio-harness-preview-slide {
+      flex: 1;
+      border-radius: 16px;
+      background:
+        linear-gradient(140deg, rgba(67, 97, 238, 0.12), rgba(255,255,255,0) 45%),
+        linear-gradient(180deg, #f8fafc, #ffffff);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .studio-harness-preview-slide h2 {
+      margin: 0;
+      font-size: 28px;
+      color: #0f172a;
+    }
+    .studio-harness-preview-slide p {
+      margin: 0;
+      line-height: 1.65;
+      color: #334155;
+    }
+    .studio-harness-chart {
+      height: 120px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      align-items: end;
+    }
+    .studio-harness-bar {
+      border-radius: 12px 12px 6px 6px;
+      background: linear-gradient(180deg, #60a5fa, #2563eb);
+    }
+  </style>
+</head>
+<body>
+  <div class="studio-overlay" style="top:0;">
+    <div class="studio-header">
+      <button class="studio-icon-btn" title="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <span class="studio-artifact-name dirty">Q3 Operating Narrative<span class="studio-dirty-dot"></span></span>
+      <span class="studio-format-badge" data-format="docx">DOCX</span>
+      <div class="studio-toolbar"></div>
+      <div class="studio-header-actions">
+        <button class="studio-preview-btn active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span>Preview</span>
+        </button>
+        <span class="studio-save-status is-dirty">Unsaved</span>
+        <button class="studio-save-btn">Save</button>
+      </div>
+    </div>
+
+    <div class="studio-body" id="studio-body" data-session-pane="artifact">
+      <div class="studio-session-layout">
+        <div class="studio-session-tabs">
+          <button type="button" class="studio-session-tab active" data-pane="artifact">Artifact</button>
+          <button type="button" class="studio-session-tab has-live" data-pane="build">Build</button>
+        </div>
+
+        <div class="studio-session-main has-preview">
+          <div class="studio-doc-editor with-preview">
+            <aside class="studio-outline-panel" style="display:flex" aria-hidden="false">
+              <div class="studio-outline-header">
+                <span>Outline</span>
+              </div>
+              <nav class="studio-outline-list">
+                <a class="studio-outline-item" data-level="1">Executive Summary</a>
+                <a class="studio-outline-item" data-level="2">What Changed</a>
+                <a class="studio-outline-item" data-level="2">Operational Risks</a>
+                <a class="studio-outline-item" data-level="2">Next Actions</a>
+              </nav>
+            </aside>
+            <div class="studio-doc-page">
+              <div class="studio-harness-doc">
+                <h1>Q3 Operating Narrative</h1>
+                <p>The team stabilized margin erosion in the enterprise segment, but renewals are now constrained by onboarding capacity rather than demand. The revised narrative needs to make that bottleneck explicit.</p>
+                <h2>What Changed</h2>
+                <ul>
+                  <li>Expansion revenue outpaced forecast by 14% after pricing cleanup.</li>
+                  <li>New-logo growth slowed in August while implementation backlog increased.</li>
+                  <li>Customer health improved where rollout time stayed under 21 days.</li>
+                </ul>
+                <h2>Next Actions</h2>
+                <p>Add a board-facing section connecting implementation throughput, renewal quality, and the hiring plan for customer success operations.</p>
+              </div>
+            </div>
+            <div class="studio-ai-blocks">
+              <div class="studio-ai-block">
+                <div class="studio-ai-block-header">
+                  <span class="studio-ai-block-label">AI Suggested Revision</span>
+                  <div class="studio-ai-block-actions">
+                    <button>Insert</button>
+                    <button>Copy</button>
+                  </div>
+                </div>
+                <div class="studio-ai-block-content">“Onboarding capacity, not market demand, is now the limiting factor in enterprise growth. Our Q4 operating plan prioritizes throughput improvements because rollout speed is directly correlated with retention quality.”</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="studio-preview-pane">
+            <div class="studio-preview-header">
+              <span>Preview</span>
+            </div>
+            <div class="studio-preview-iframe">
+              <div class="studio-harness-preview-card">
+                <div class="studio-harness-preview-bar">
+                  <div class="studio-harness-preview-pill"></div>
+                  <div class="studio-harness-preview-pill" style="width:120px"></div>
+                </div>
+                <div class="studio-harness-preview-slide">
+                  <div>
+                    <h2>Onboarding Throughput Is The Constraint</h2>
+                    <p>Renewal strength is holding where rollout time stays below three weeks. The draft now frames capacity expansion as the core Q4 operating lever instead of treating it as a support note.</p>
+                  </div>
+                  <div class="studio-harness-chart">
+                    <div class="studio-harness-bar" style="height:52%"></div>
+                    <div class="studio-harness-bar" style="height:66%"></div>
+                    <div class="studio-harness-bar" style="height:74%"></div>
+                    <div class="studio-harness-bar" style="height:88%"></div>
+                    <div class="studio-harness-bar" style="height:96%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="studio-session-panel">
+          <div class="studio-session-scroll">
+            <section class="studio-session-hero is-live">
+              <div class="studio-session-kicker">Live Build Session</div>
+              <div class="studio-session-title">Q3 Operating Narrative</div>
+              <div class="studio-session-subtitle">3/4 · Draft Report · 78%</div>
+              <div class="studio-session-chips">
+                <span class="studio-session-chip">DOCX</span>
+                <span class="studio-session-chip is-live">Building</span>
+                <span class="studio-session-chip">3/4 steps</span>
+              </div>
+              <div class="studio-session-actions">
+                <button type="button" class="studio-session-action">Overview</button>
+                <button type="button" class="studio-session-action">Ask AI</button>
+              </div>
+            </section>
+
+            <section class="studio-session-section">
+              <div class="studio-session-section-head">
+                <h3>Build Timeline</h3>
+                <span>Board report flow</span>
+              </div>
+              <div class="studio-session-steps">
+                <details class="studio-session-step complete">
+                  <summary>
+                    <span class="studio-session-step-index">01</span>
+                    <span class="studio-session-step-copy">
+                      <span class="studio-session-step-label">Gather Metrics</span>
+                      <span class="studio-session-step-meta">Complete · 3.0s</span>
+                    </span>
+                  </summary>
+                  <pre class="studio-session-step-output">Pulled ARR, expansion, implementation backlog, rollout duration, and renewal quality into a single operating packet.</pre>
+                </details>
+                <details class="studio-session-step complete">
+                  <summary>
+                    <span class="studio-session-step-index">02</span>
+                    <span class="studio-session-step-copy">
+                      <span class="studio-session-step-label">Outline Narrative</span>
+                      <span class="studio-session-step-meta">Complete · 2.6s</span>
+                    </span>
+                  </summary>
+                  <pre class="studio-session-step-output">Set up executive summary, supporting evidence, risk framing, and a final action section for the board packet.</pre>
+                </details>
+                <details class="studio-session-step running" open>
+                  <summary>
+                    <span class="studio-session-step-index">03</span>
+                    <span class="studio-session-step-copy">
+                      <span class="studio-session-step-label">Draft Report</span>
+                      <span class="studio-session-step-meta">Running · 11.4s</span>
+                    </span>
+                  </summary>
+                  <pre class="studio-session-step-output">Reframing the middle section around onboarding throughput, then tightening the financial implications and staffing recommendation language.</pre>
+                </details>
+                <details class="studio-session-step">
+                  <summary>
+                    <span class="studio-session-step-index">04</span>
+                    <span class="studio-session-step-copy">
+                      <span class="studio-session-step-label">Create Document</span>
+                      <span class="studio-session-step-meta">Pending</span>
+                    </span>
+                  </summary>
+                </details>
+              </div>
+            </section>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <div class="studio-ask-bar">
+      <input type="text" value="Tighten the executive summary and make the bottleneck argument sharper.">
+      <button title="Send">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const pane = params.get('pane') === 'build' ? 'build' : 'artifact';
+    const body = document.getElementById('studio-body');
+    body.dataset.sessionPane = pane;
+    document.querySelectorAll('.studio-session-tab').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.pane === pane);
+    });
+  </script>
+</body>
+</html>

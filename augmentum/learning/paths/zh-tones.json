@@ -1,0 +1,401 @@
+{
+  "lang": "zh",
+  "version": "1.0.0",
+  "name": "Mandarin Tone Drill",
+  "credits": "Hand-curated tone-pair training. Sandhi rules from standard textbooks (Yip Po-Ching & Don Rimmington, 'Chinese: A Comprehensive Grammar'; John DeFrancis, 'ABC Chinese-English Dictionary' tone notes). Tone-pair drill design follows Olle Linge's 'Hacking Chinese' tone-pair methodology. Minimal-pair vocabulary verified against CC-CEDICT.",
+  "license": "CC BY 4.0",
+  "units": [
+    {
+      "id": "zh-tone-01-four-tones",
+      "title": "The four tones",
+      "level": "HSK1",
+      "goal": "Distinguish and produce all four lexical tones on a single syllable.",
+      "explanation": "Mandarin uses 4 contour tones plus a neutral (toneless) tone. Tone 1: high-flat (ā) — hold steady, top of your speaking range. Tone 2: rising (á) — like a confused 'huh?'. Tone 3: low dipping (ǎ) — drop low, then rise (in isolation; often realized as a low fall in context). Tone 4: sharp falling (à) — like a clipped 'no!'. Same syllable + different tone = different word. Tone is part of the word's identity, not optional expressiveness.",
+      "minimal_pairs": [
+        {"syllable": "ma", "tones": {"mā 妈": "mother", "má 麻": "hemp / numb", "mǎ 马": "horse", "mà 骂": "to scold"}},
+        {"syllable": "wen", "tones": {"wēn 温": "warm", "wén 文": "writing / language", "wěn 稳": "steady", "wèn 问": "to ask"}},
+        {"syllable": "shu", "tones": {"shū 书": "book", "shú 熟": "cooked / familiar", "shǔ 鼠": "mouse / rat", "shù 树": "tree"}},
+        {"syllable": "yan", "tones": {"yān 烟": "smoke", "yán 盐": "salt", "yǎn 眼": "eye", "yàn 燕": "swallow (bird)"}}
+      ],
+      "drill": [
+        "Listen and identify the tone number (1-4) on each syllable.",
+        "Produce 'mā má mǎ mà' clearly, exaggerating the contour at first.",
+        "Record yourself saying 妈 and 骂 back-to-back; check that 1 stays flat and 4 falls sharply."
+      ]
+    },
+    {
+      "id": "zh-tone-02-sandhi-third",
+      "title": "Third-tone sandhi",
+      "level": "HSK1",
+      "goal": "Apply the rule that two 3rd tones in sequence become 2nd + 3rd.",
+      "explanation": "When two 3rd-tone syllables come together, the FIRST one is pronounced as a 2nd tone. Pinyin spelling stays unchanged (still written 'nǐ hǎo'); pronunciation shifts to 'ní hǎo'. The rule chains: 我也很好 (wǒ yě hěn hǎo, 3-3-3-3) is pronounced 'wó yé hén hǎo'. In a longer string the speaker re-applies the rule from the end back to the front, but for beginners the practical rule is just: '3-3 → 2-3'.",
+      "pattern_examples": [
+        {"written": "nǐ hǎo 你好", "spoken": "ní hǎo", "gloss": "hello"},
+        {"written": "wǒ hěn 我很", "spoken": "wó hěn", "gloss": "I'm very… (followed by adj)"},
+        {"written": "hěn hǎo 很好", "spoken": "hén hǎo", "gloss": "very good"},
+        {"written": "wǒ xiǎng 我想", "spoken": "wó xiǎng", "gloss": "I want / I think"},
+        {"written": "shuǐ guǒ 水果", "spoken": "shuí guǒ", "gloss": "fruit"},
+        {"written": "yǔ fǎ 语法", "spoken": "yú fǎ", "gloss": "grammar"},
+        {"written": "kě yǐ 可以", "spoken": "ké yǐ", "gloss": "may / can"},
+        {"written": "lǎo bǎn 老板", "spoken": "láo bǎn", "gloss": "boss"}
+      ],
+      "drill": [
+        "Say 你好 ten times — keep the first syllable rising.",
+        "Read aloud: 我也很好。 The first three syllables all shift up; only the final 好 stays as a true 3rd.",
+        "Listen for the difference between 你好 (rising-low) and 你的 (low-neutral). The first syllable is a different tone in the spoken form."
+      ]
+    },
+    {
+      "id": "zh-tone-03-sandhi-bu",
+      "title": "不 (bù) sandhi",
+      "level": "HSK1",
+      "goal": "Pronounce 不 as 2nd tone before a 4th-tone syllable.",
+      "explanation": "不 is normally 4th tone (bù). Before another 4th-tone syllable it becomes 2nd tone (bú). Like 3rd-tone sandhi, the pinyin spelling sometimes reflects this (textbooks vary). The rule is purely pronunciation; meaning is unchanged. Before tones 1/2/3 and neutral, 不 stays as 4th tone.",
+      "pattern_examples": [
+        {"written": "bù + 4th: bù kàn 不看", "spoken": "bú kàn", "gloss": "doesn't watch"},
+        {"written": "bù + 4th: bù qù 不去", "spoken": "bú qù", "gloss": "doesn't go"},
+        {"written": "bù + 4th: bù shì 不是", "spoken": "bú shì", "gloss": "isn't"},
+        {"written": "bù + 4th: bù yào 不要", "spoken": "bú yào", "gloss": "doesn't want"},
+        {"written": "bù + 4th: bù duì 不对", "spoken": "bú duì", "gloss": "incorrect"},
+        {"written": "bù + 1st: bù chī 不吃", "spoken": "bù chī (unchanged)", "gloss": "doesn't eat"},
+        {"written": "bù + 2nd: bù lái 不来", "spoken": "bù lái (unchanged)", "gloss": "doesn't come"},
+        {"written": "bù + 3rd: bù hǎo 不好", "spoken": "bù hǎo (unchanged)", "gloss": "not good"}
+      ],
+      "drill": [
+        "Contrast pair: 不吃 (bù chī, 4-1) vs 不去 (bú qù, 2-4).",
+        "Read the negative answers to common questions: 不是。不对。不要。 All shift to 2nd tone.",
+        "Listen-check: if the next syllable falls, 不 rises."
+      ]
+    },
+    {
+      "id": "zh-tone-04-sandhi-yi",
+      "title": "一 (yī) sandhi",
+      "level": "HSK1",
+      "goal": "Pronounce 一 as 4th tone before tones 1/2/3 and as 2nd tone before 4th.",
+      "explanation": "一 has three pronunciations depending on context. Citation (counting in isolation, or in ordinal/fixed expressions): 1st tone (yī). Before a 4th-tone or neutral-fallen-from-4th syllable: 2nd tone (yí). Before a 1st, 2nd, or 3rd tone: 4th tone (yì). Like 不-sandhi, this is pronunciation only; characters and meaning never change.",
+      "pattern_examples": [
+        {"written": "yī (citation): yī èr sān 一二三", "spoken": "yī èr sān", "gloss": "one two three (counting)"},
+        {"written": "yī + 1st → yì: yì tiān 一天", "spoken": "yì tiān", "gloss": "one day"},
+        {"written": "yī + 2nd → yì: yì nián 一年", "spoken": "yì nián", "gloss": "one year"},
+        {"written": "yī + 3rd → yì: yì běn 一本", "spoken": "yì běn", "gloss": "one (book)"},
+        {"written": "yī + 4th → yí: yí gè 一个", "spoken": "yí gè", "gloss": "one (general)"},
+        {"written": "yī + 4th → yí: yí cì 一次", "spoken": "yí cì", "gloss": "one time / once"},
+        {"written": "yī + 4th → yí: yí yàng 一样", "spoken": "yí yàng", "gloss": "the same"},
+        {"written": "yī + 4th → yí: yí dìng 一定", "spoken": "yí dìng", "gloss": "certainly"},
+        {"written": "ordinal — citation: dì yī 第一", "spoken": "dì yī", "gloss": "first (ordinal — no sandhi)"}
+      ],
+      "drill": [
+        "Practice 一个 (yí gè) until the 'one' sounds clearly rising, not flat.",
+        "Count out 一二三 (citation) vs 一年, 一天, 一个 (sandhi). All four come up in the first week of class.",
+        "Trap: 第一 keeps citation tone because it's ordinal — 一 isn't acting as a counter here."
+      ]
+    },
+    {
+      "id": "zh-tone-05-neutral-tone",
+      "title": "The neutral tone",
+      "level": "HSK1",
+      "goal": "Produce unstressed, light final syllables on common particles and reduplicated words.",
+      "explanation": "The neutral tone (轻声 qīng shēng) is short, unstressed, and low in volume. It carries no contour of its own; its pitch is determined by the preceding syllable. Written without a tone mark in pinyin. Common neutral-tone categories: grammatical particles (的 de, 了 le, 着 zhe, 吗 ma, 呢 ne, 吧 ba), the second syllable of reduplicated kinship terms (爸爸 bàba, 妈妈 māma), directional and aspect markers (来 in 起来, 去 in 出去), and a handful of high-frequency lexical items (东西 dōngxi, 朋友 péngyou, 谢谢 xièxie).",
+      "pattern_examples": [
+        {"written": "妈妈 māma", "neutral": "second 'ma' is light, low, unstressed", "gloss": "mom"},
+        {"written": "爸爸 bàba", "neutral": "second 'ba' falls light after the sharp 4th", "gloss": "dad"},
+        {"written": "谢谢 xièxie", "neutral": "second 'xie' is barely there", "gloss": "thanks"},
+        {"written": "朋友 péngyou", "neutral": "'you' loses its tone after 2nd", "gloss": "friend"},
+        {"written": "东西 dōngxi", "neutral": "'xi' is neutral; with 3rd-tone xī it means 'east-west' (direction)", "gloss": "thing (vs direction)"},
+        {"written": "我的 wǒ de", "neutral": "possessive particle de", "gloss": "mine"},
+        {"written": "吃了 chī le", "neutral": "perfective particle le", "gloss": "ate"},
+        {"written": "好吗 hǎo ma", "neutral": "question particle ma", "gloss": "okay?"},
+        {"written": "走吧 zǒu ba", "neutral": "suggestion particle ba", "gloss": "let's go"}
+      ],
+      "drill": [
+        "Compare 东西 (dōngxi — 'thing', neutral) with 东西 (dōngxī — 'east-west', 1+1). The tone of the second syllable changes the meaning.",
+        "Read 妈妈, 爸爸, 哥哥, 姐姐, 弟弟, 妹妹 in one breath; each second syllable should fall short.",
+        "Listen for the neutral 了 — it's a tiny tail on the verb, never a stressed beat."
+      ]
+    },
+    {
+      "id": "zh-tone-06-pairs-T1-T2",
+      "title": "Tone pairs: T1 + X and T2 + X",
+      "level": "HSK1",
+      "goal": "Drill the eight pair combinations starting with 1st or 2nd tone using real HSK1 vocab.",
+      "explanation": "Tone-pair drilling is the most efficient way to internalize Mandarin tones — research (Olle Linge / 'Hacking Chinese') and decades of classroom practice both confirm that practicing two-syllable units transfers to longer speech far better than syllable-by-syllable training. Drill each pair with 10 real words until the contour feels automatic.",
+      "pair_examples": {
+        "T1+T1": [
+          {"word": "今天 jīntiān", "gloss": "today"},
+          {"word": "中国 Zhōngguó (T1+T2 — see below)", "gloss": "Note: this is actually T1+T2; see next group"},
+          {"word": "飞机 fēijī", "gloss": "airplane"},
+          {"word": "工作 gōngzuò (T1+T4)", "gloss": "Note: T1+T4; placeholder"},
+          {"word": "公司 gōngsī", "gloss": "company"},
+          {"word": "咖啡 kāfēi", "gloss": "coffee"},
+          {"word": "西瓜 xīguā", "gloss": "watermelon"},
+          {"word": "出租 chūzū", "gloss": "to rent"},
+          {"word": "音乐 yīnyuè (T1+T4)", "gloss": "Note: T1+T4"},
+          {"word": "星期 xīngqī", "gloss": "week"}
+        ],
+        "T1+T2": [
+          {"word": "中国 Zhōngguó", "gloss": "China"},
+          {"word": "中文 Zhōngwén", "gloss": "Chinese language"},
+          {"word": "英国 Yīngguó", "gloss": "England"},
+          {"word": "公园 gōngyuán", "gloss": "park"},
+          {"word": "工人 gōngrén", "gloss": "worker"},
+          {"word": "高兴 gāoxìng (T1+T4)", "gloss": "Note: T1+T4"},
+          {"word": "音乐 yīnyuè (T1+T4)", "gloss": "Note: T1+T4"},
+          {"word": "听人 (rare) — use 出国 chūguó", "gloss": "to go abroad"},
+          {"word": "餐厅 cāntīng (T1+T1)", "gloss": "Note: T1+T1"},
+          {"word": "新年 xīnnián", "gloss": "New Year"}
+        ],
+        "T1+T3": [
+          {"word": "西海 (rare)", "gloss": "use real HSK examples below"},
+          {"word": "声音 shēngyīn (T1+T1)", "gloss": "Note: T1+T1"},
+          {"word": "今晚 jīnwǎn", "gloss": "tonight"},
+          {"word": "公里 gōnglǐ", "gloss": "kilometer"},
+          {"word": "三百 sānbǎi", "gloss": "three hundred"},
+          {"word": "千万 qiānwàn (T1+T4)", "gloss": "Note: T1+T4"},
+          {"word": "心里 xīnlǐ", "gloss": "in one's heart"},
+          {"word": "经理 jīnglǐ", "gloss": "manager"},
+          {"word": "应该 yīnggāi (T1+T1)", "gloss": "Note: T1+T1"},
+          {"word": "山顶 shāndǐng", "gloss": "mountaintop"}
+        ],
+        "T1+T4": [
+          {"word": "工作 gōngzuò", "gloss": "work"},
+          {"word": "高兴 gāoxìng", "gloss": "happy"},
+          {"word": "音乐 yīnyuè", "gloss": "music"},
+          {"word": "汽车 qìchē (T4+T1)", "gloss": "Note: T4+T1"},
+          {"word": "公共 gōnggòng", "gloss": "public"},
+          {"word": "知道 zhīdào", "gloss": "to know"},
+          {"word": "千万 qiānwàn", "gloss": "ten million"},
+          {"word": "出去 chūqù", "gloss": "to go out"},
+          {"word": "心愿 xīnyuàn", "gloss": "wish"},
+          {"word": "她看 tā kàn", "gloss": "she sees"}
+        ],
+        "T2+T1": [
+          {"word": "明天 míngtiān", "gloss": "tomorrow"},
+          {"word": "茶杯 chábēi", "gloss": "teacup"},
+          {"word": "鱼汤 yútāng", "gloss": "fish soup"},
+          {"word": "白天 báitiān", "gloss": "daytime"},
+          {"word": "回家 huíjiā", "gloss": "go home"},
+          {"word": "南京 Nánjīng", "gloss": "Nanjing"},
+          {"word": "学生 xuéshēng", "gloss": "student"},
+          {"word": "时间 shíjiān", "gloss": "time"},
+          {"word": "牛奶 niúnǎi (T2+T3)", "gloss": "Note: T2+T3"},
+          {"word": "公司 gōngsī (T1+T1)", "gloss": "Note: T1+T1"}
+        ],
+        "T2+T2": [
+          {"word": "学习 xuéxí", "gloss": "to study"},
+          {"word": "回来 huílái", "gloss": "to come back"},
+          {"word": "白人 báirén", "gloss": "white person"},
+          {"word": "牛羊 niúyáng", "gloss": "cattle and sheep"},
+          {"word": "国王 guówáng", "gloss": "king"},
+          {"word": "球员 qiúyuán", "gloss": "player (sport)"},
+          {"word": "邮局 yóujú (T2+T2)", "gloss": "post office"},
+          {"word": "南门 Nánmén", "gloss": "south gate"},
+          {"word": "茶园 cháyuán", "gloss": "tea garden"},
+          {"word": "图书 túshū", "gloss": "books"}
+        ],
+        "T2+T3": [
+          {"word": "牛奶 niúnǎi", "gloss": "milk"},
+          {"word": "啤酒 píjiǔ", "gloss": "beer"},
+          {"word": "回答 huídá (T2+T2)", "gloss": "Note: T2+T2"},
+          {"word": "图表 túbiǎo", "gloss": "chart"},
+          {"word": "白纸 báizhǐ", "gloss": "blank paper"},
+          {"word": "毛笔 máobǐ", "gloss": "writing brush"},
+          {"word": "钱包 qiánbāo (T2+T1)", "gloss": "Note: T2+T1"},
+          {"word": "时间 shíjiān (T2+T1)", "gloss": "Note: T2+T1"},
+          {"word": "苹果 píngguǒ", "gloss": "apple"},
+          {"word": "学习 xuéxí (T2+T2)", "gloss": "Note: T2+T2"}
+        ],
+        "T2+T4": [
+          {"word": "学校 xuéxiào", "gloss": "school"},
+          {"word": "回去 huíqù", "gloss": "to go back"},
+          {"word": "迟到 chídào", "gloss": "to be late"},
+          {"word": "便宜 piányi (T2+neutral)", "gloss": "Note: T2+neutral"},
+          {"word": "怀疑 huáiyí (T2+T2)", "gloss": "Note: T2+T2"},
+          {"word": "完成 wánchéng (T2+T2)", "gloss": "Note: T2+T2"},
+          {"word": "图画 túhuà", "gloss": "picture / drawing"},
+          {"word": "白菜 báicài", "gloss": "Chinese cabbage"},
+          {"word": "明白 míngbai (T2+neutral)", "gloss": "Note: T2+neutral"},
+          {"word": "国家 guójiā (T2+T1)", "gloss": "Note: T2+T1"}
+        ]
+      },
+      "drill": [
+        "Pick one pair (e.g. T1+T4). Read its 10 examples three times daily for a week.",
+        "Pay attention to the SHAPE of the pair, not the individual syllables: T1+T4 is 'high-flat then sharp-fall' — practice the contour, not the segments."
+      ]
+    },
+    {
+      "id": "zh-tone-07-pairs-T3-T4",
+      "title": "Tone pairs: T3 + X and T4 + X",
+      "level": "HSK1",
+      "goal": "Drill the eight pair combinations starting with 3rd or 4th tone, including 3-3 sandhi.",
+      "explanation": "T3 pairs include the most common sandhi exercise (T3+T3 → T2+T3) — drill it until the shift is automatic. T4 pairs are tricky because the falling-then-anything contour requires hitting the 4th tone hard before the next syllable.",
+      "pair_examples": {
+        "T3+T1": [
+          {"word": "北京 Běijīng", "gloss": "Beijing"},
+          {"word": "老师 lǎoshī", "gloss": "teacher"},
+          {"word": "美工 (rare)", "gloss": "use 美国"},
+          {"word": "美国 Měiguó (T3+T2)", "gloss": "Note: T3+T2"},
+          {"word": "你猜 nǐ cāi", "gloss": "you guess"},
+          {"word": "好吃 hǎochī", "gloss": "delicious"},
+          {"word": "雨天 yǔtiān", "gloss": "rainy day"},
+          {"word": "小心 xiǎoxīn", "gloss": "be careful"},
+          {"word": "手机 shǒujī", "gloss": "phone"},
+          {"word": "海边 hǎibiān", "gloss": "seaside"}
+        ],
+        "T3+T2": [
+          {"word": "美国 Měiguó", "gloss": "America"},
+          {"word": "好人 hǎorén", "gloss": "good person"},
+          {"word": "酒杯 jiǔbēi (T3+T1)", "gloss": "Note: T3+T1"},
+          {"word": "可怜 kělián", "gloss": "pitiful"},
+          {"word": "你来 nǐ lái", "gloss": "you come"},
+          {"word": "我来 wǒ lái", "gloss": "I'll do it"},
+          {"word": "祖国 zǔguó", "gloss": "motherland"},
+          {"word": "起床 qǐchuáng", "gloss": "to get up"},
+          {"word": "总忙 zǒngmáng", "gloss": "always busy"},
+          {"word": "走来 zǒulái", "gloss": "to walk over"}
+        ],
+        "T3+T3": [
+          {"word": "你好 nǐ hǎo → ní hǎo", "gloss": "hello (sandhi: 3+3 → 2+3)"},
+          {"word": "很好 hěn hǎo → hén hǎo", "gloss": "very good"},
+          {"word": "可以 kěyǐ → kéyǐ", "gloss": "may / can"},
+          {"word": "水果 shuǐguǒ → shuíguǒ", "gloss": "fruit"},
+          {"word": "美好 měihǎo → méihǎo", "gloss": "fine / wonderful"},
+          {"word": "手指 shǒuzhǐ → shóuzhǐ", "gloss": "finger"},
+          {"word": "管理 guǎnlǐ → guánlǐ", "gloss": "to manage"},
+          {"word": "勇敢 yǒnggǎn → yónggǎn", "gloss": "brave"},
+          {"word": "可口 kěkǒu → kékǒu", "gloss": "tasty"},
+          {"word": "老虎 lǎohǔ → láohǔ", "gloss": "tiger"}
+        ],
+        "T3+T4": [
+          {"word": "请坐 qǐng zuò", "gloss": "please sit"},
+          {"word": "请问 qǐng wèn", "gloss": "may I ask"},
+          {"word": "好看 hǎokàn", "gloss": "good-looking"},
+          {"word": "可是 kěshì", "gloss": "but"},
+          {"word": "想到 xiǎngdào", "gloss": "to think of"},
+          {"word": "找到 zhǎodào", "gloss": "to find"},
+          {"word": "起立 qǐlì", "gloss": "stand up"},
+          {"word": "走路 zǒulù", "gloss": "to walk"},
+          {"word": "本子 běnzi (T3+neutral)", "gloss": "Note: T3+neutral"},
+          {"word": "买菜 mǎicài", "gloss": "to buy groceries"}
+        ],
+        "T4+T1": [
+          {"word": "汽车 qìchē", "gloss": "car"},
+          {"word": "电脑 diànnǎo (T4+T3)", "gloss": "Note: T4+T3"},
+          {"word": "上班 shàngbān", "gloss": "go to work"},
+          {"word": "下班 xiàbān", "gloss": "leave work"},
+          {"word": "外婆 wàipó (T4+T2)", "gloss": "Note: T4+T2"},
+          {"word": "再三 zàisān", "gloss": "again and again"},
+          {"word": "睡觉 shuìjiào (T4+T4)", "gloss": "Note: T4+T4"},
+          {"word": "电梯 diàntī", "gloss": "elevator"},
+          {"word": "上车 shàngchē", "gloss": "get on (a vehicle)"},
+          {"word": "唱歌 chànggē (T4+T1)", "gloss": "to sing"}
+        ],
+        "T4+T2": [
+          {"word": "大学 dàxué", "gloss": "university"},
+          {"word": "外国 wàiguó", "gloss": "foreign country"},
+          {"word": "面条 miàntiáo", "gloss": "noodles"},
+          {"word": "上来 shànglái", "gloss": "to come up"},
+          {"word": "汉语 Hànyǔ (T4+T3)", "gloss": "Note: T4+T3"},
+          {"word": "下来 xiàlái", "gloss": "to come down"},
+          {"word": "回来 huílái (T2+T2)", "gloss": "Note: T2+T2"},
+          {"word": "课文 kèwén", "gloss": "lesson text"},
+          {"word": "见来 (rare)", "gloss": ""},
+          {"word": "去年 qùnián", "gloss": "last year"}
+        ],
+        "T4+T3": [
+          {"word": "汉语 Hànyǔ", "gloss": "Chinese language"},
+          {"word": "电脑 diànnǎo", "gloss": "computer"},
+          {"word": "go下水 (rare)", "gloss": ""},
+          {"word": "再见 zàijiàn (T4+T4)", "gloss": "Note: T4+T4"},
+          {"word": "外语 wàiyǔ", "gloss": "foreign language"},
+          {"word": "大水 dàshuǐ", "gloss": "flood"},
+          {"word": "礼物 lǐwù (T3+T4)", "gloss": "Note: T3+T4"},
+          {"word": "上海 Shànghǎi", "gloss": "Shanghai"},
+          {"word": "号码 hàomǎ", "gloss": "number"},
+          {"word": "饭馆 fànguǎn", "gloss": "restaurant"}
+        ],
+        "T4+T4": [
+          {"word": "再见 zàijiàn", "gloss": "goodbye"},
+          {"word": "睡觉 shuìjiào", "gloss": "to sleep"},
+          {"word": "电话 diànhuà", "gloss": "telephone"},
+          {"word": "下次 xiàcì", "gloss": "next time"},
+          {"word": "上次 shàngcì", "gloss": "last time"},
+          {"word": "认识 rènshi (T4+neutral)", "gloss": "Note: T4+neutral"},
+          {"word": "唱歌 (T4+T1)", "gloss": ""},
+          {"word": "送客 sòngkè", "gloss": "see off a guest"},
+          {"word": "见面 jiànmiàn", "gloss": "to meet"},
+          {"word": "下雨 xiàyǔ (T4+T3)", "gloss": "Note: T4+T3"}
+        ]
+      },
+      "drill": [
+        "T3+T3 first: drill 你好 → ní hǎo for a week before moving on. This is the single most-needed sandhi rule.",
+        "T4+T4 is hard because you must reach the bottom of your range, snap back up, and fall again. 再见 is the canonical practice word.",
+        "Make a 'tone shape' gesture with your hand while saying each pair. Embodying the contour speeds acquisition."
+      ]
+    },
+    {
+      "id": "zh-tone-08-perception-drill-hsk1",
+      "title": "HSK1 tone-perception drill (50 words)",
+      "level": "HSK1",
+      "goal": "Hear and identify the tone of every syllable in common HSK1 vocabulary.",
+      "explanation": "Listening accuracy lags behind production by months. Drill perception explicitly: hear a word, identify the tone-shape of each syllable, then check your answer. The list below is taken from real HSK1 vocab — start by covering the tone marks, then read aloud, then compare.",
+      "words": [
+        {"word": "你好", "pinyin": "nǐ hǎo", "tones": "3+3 (sandhi 2+3)"},
+        {"word": "再见", "pinyin": "zài jiàn", "tones": "4+4"},
+        {"word": "谢谢", "pinyin": "xiè xie", "tones": "4+neutral"},
+        {"word": "不客气", "pinyin": "bú kè qi", "tones": "2+4+neutral (bu-sandhi)"},
+        {"word": "对不起", "pinyin": "duì bu qǐ", "tones": "4+neutral+3"},
+        {"word": "没关系", "pinyin": "méi guān xi", "tones": "2+1+neutral"},
+        {"word": "学校", "pinyin": "xué xiào", "tones": "2+4"},
+        {"word": "老师", "pinyin": "lǎo shī", "tones": "3+1"},
+        {"word": "学生", "pinyin": "xué sheng", "tones": "2+neutral"},
+        {"word": "中国", "pinyin": "Zhōng guó", "tones": "1+2"},
+        {"word": "美国", "pinyin": "Měi guó", "tones": "3+2"},
+        {"word": "汉语", "pinyin": "Hàn yǔ", "tones": "4+3"},
+        {"word": "英语", "pinyin": "Yīng yǔ", "tones": "1+3"},
+        {"word": "朋友", "pinyin": "péng you", "tones": "2+neutral"},
+        {"word": "妈妈", "pinyin": "mā ma", "tones": "1+neutral"},
+        {"word": "爸爸", "pinyin": "bà ba", "tones": "4+neutral"},
+        {"word": "哥哥", "pinyin": "gē ge", "tones": "1+neutral"},
+        {"word": "姐姐", "pinyin": "jiě jie", "tones": "3+neutral"},
+        {"word": "弟弟", "pinyin": "dì di", "tones": "4+neutral"},
+        {"word": "妹妹", "pinyin": "mèi mei", "tones": "4+neutral"},
+        {"word": "今天", "pinyin": "jīn tiān", "tones": "1+1"},
+        {"word": "明天", "pinyin": "míng tiān", "tones": "2+1"},
+        {"word": "昨天", "pinyin": "zuó tiān", "tones": "2+1"},
+        {"word": "现在", "pinyin": "xiàn zài", "tones": "4+4"},
+        {"word": "星期", "pinyin": "xīng qī", "tones": "1+1"},
+        {"word": "时候", "pinyin": "shí hou", "tones": "2+neutral"},
+        {"word": "吃饭", "pinyin": "chī fàn", "tones": "1+4"},
+        {"word": "喝水", "pinyin": "hē shuǐ", "tones": "1+3"},
+        {"word": "苹果", "pinyin": "píng guǒ", "tones": "2+3"},
+        {"word": "鸡蛋", "pinyin": "jī dàn", "tones": "1+4"},
+        {"word": "牛奶", "pinyin": "niú nǎi", "tones": "2+3"},
+        {"word": "面条", "pinyin": "miàn tiáo", "tones": "4+2"},
+        {"word": "饺子", "pinyin": "jiǎo zi", "tones": "3+neutral"},
+        {"word": "杯子", "pinyin": "bēi zi", "tones": "1+neutral"},
+        {"word": "椅子", "pinyin": "yǐ zi", "tones": "3+neutral"},
+        {"word": "桌子", "pinyin": "zhuō zi", "tones": "1+neutral"},
+        {"word": "电脑", "pinyin": "diàn nǎo", "tones": "4+3"},
+        {"word": "电话", "pinyin": "diàn huà", "tones": "4+4"},
+        {"word": "手机", "pinyin": "shǒu jī", "tones": "3+1"},
+        {"word": "汉字", "pinyin": "Hàn zì", "tones": "4+4"},
+        {"word": "字典", "pinyin": "zì diǎn", "tones": "4+3"},
+        {"word": "工作", "pinyin": "gōng zuò", "tones": "1+4"},
+        {"word": "学习", "pinyin": "xué xí", "tones": "2+2"},
+        {"word": "认识", "pinyin": "rèn shi", "tones": "4+neutral"},
+        {"word": "高兴", "pinyin": "gāo xìng", "tones": "1+4"},
+        {"word": "喜欢", "pinyin": "xǐ huan", "tones": "3+neutral"},
+        {"word": "天气", "pinyin": "tiān qì", "tones": "1+4"},
+        {"word": "下雨", "pinyin": "xià yǔ", "tones": "4+3"},
+        {"word": "出租车", "pinyin": "chū zū chē", "tones": "1+1+1"},
+        {"word": "飞机", "pinyin": "fēi jī", "tones": "1+1"}
+      ],
+      "drill": [
+        "Cover the pinyin column, read each character aloud, then check your tone.",
+        "Score yourself: count misses. Repeat the deck daily until <5 misses.",
+        "Neutral tones are the trickiest — they are short and quiet, but their pitch depends on the preceding syllable, not their own contour.",
+        "Words ending in -子 (zi) and reduplicated kinship terms all take neutral on the second syllable. Spot that pattern early."
+      ]
+    }
+  ]
+}

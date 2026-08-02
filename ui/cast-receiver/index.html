@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Augmentum Receiver</title>
+  <link rel="stylesheet" href="cast-receiver.css">
+</head>
+<body>
+  <main id="stage">
+    <!-- Slots are pre-built containers. Surfaces mount into them.
+         Empty slots stay invisible (CSS :empty rule). -->
+    <div class="cr-slot" data-cr-slot="main"></div>
+    <div class="cr-slot" data-cr-slot="pip"></div>
+    <div class="cr-slot" data-cr-slot="overlay"></div>
+    <div class="cr-slot" data-cr-slot="ticker"></div>
+    <div class="cr-slot" data-cr-slot="companion"></div>
+    <!-- Couch co-op player roster strip. Sits at the very bottom and
+         renders P1..P4 chips when an active session has guests
+         attached. Hidden when no players are claimed. -->
+    <div class="cr-players-strip" data-cr-players-strip hidden></div>
+    <!-- Pair / placeholder layer — shown before WS is open, hidden
+         once a surface is mounted in main. -->
+    <div class="cr-shell" data-cr-shell>
+      <div class="cr-shell-inner" data-cr-shell-inner>
+        <div id="placeholder">Connecting…</div>
+      </div>
+    </div>
+  </main>
+  <div id="status" aria-hidden="true"></div>
+  <script type="module" src="cast-receiver.js"></script>
+</body>
+</html>

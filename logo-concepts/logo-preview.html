@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Augmentum · Logo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: #0a0a12;
+    color: #c4c4d4;
+    font: 14px/1.5 -apple-system, 'Segoe UI', system-ui, sans-serif;
+  }
+
+  /* --- canonical orb palette (mirrored from ui/styles/orb-nav.css) --- */
+  :root {
+    --orb-passthrough: #4caf50; --orb-passthrough-hi: #8cef8c;
+    --orb-analytical:  #2196f3; --orb-analytical-hi:  #7ec8ff;
+    --orb-narrative:   #9c27b0; --orb-narrative-hi:   #d07ce8;
+    --orb-agentic:     #ff9800; --orb-agentic-hi:     #ffcc66;
+    --orb-coder:       #06b6d4; --orb-coder-hi:       #5ee8f0;
+    --orb-browse:      #e91e63; --orb-browse-hi:      #ff7eae;
+    --orb-notes:       #ffc107; --orb-notes-hi:       #ffe57f;
+    --orb-foryou:      #8bc34a; --orb-foryou-hi:      #b6f07e;
+  }
+
+  /* --- brand header (real placement, follows active orb) --- */
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.85rem 1.25rem;
+    background: #111118;
+    border-bottom: 1px solid #24242f;
+    /* the one line that wires the logo to the current orb */
+    color: var(--orb-active-color, var(--orb-passthrough));
+  }
+  .brand .mark { width: 24px; height: 24px; display: block; }
+  .brand .wordmark {
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: #ececf1;
+  }
+
+  /* --- layout --- */
+  main { padding: 3rem 2rem; max-width: 980px; margin: 0 auto; }
+  section + section { margin-top: 2.5rem; }
+  h2 {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #6b6b80;
+    margin-bottom: 1rem;
+  }
+
+  .panel {
+    background: #111118;
+    border: 1px solid #24242f;
+    border-radius: 10px;
+    padding: 1.75rem;
+  }
+
+  /* --- sizes row --- */
+  .sizes {
+    display: flex;
+    align-items: flex-end;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+    color: var(--orb-passthrough);
+  }
+  .size {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.55rem;
+  }
+  .size svg { display: block; }
+  .size small { color: #6b6b80; font-size: 0.7rem; }
+
+  /* --- orb palette tiles (4×2) --- */
+  .orbs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.9rem;
+  }
+  .orb-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 1.5rem 0.9rem;
+    background: #14141c;
+    border: 1px solid #24242f;
+    border-radius: 8px;
+    transition: border-color 0.2s ease;
+  }
+  .orb-tile:hover {
+    border-color: color-mix(in srgb, currentColor 40%, #24242f);
+  }
+  .orb-tile svg { width: 52px; height: 52px; display: block; }
+  .orb-tile .label {
+    font-size: 0.76rem;
+    color: #a1a1b5;
+    font-weight: 500;
+  }
+  .orb-tile .hex {
+    font: 500 0.66rem ui-monospace, 'SF Mono', Consolas, monospace;
+    color: #6b6b80;
+    letter-spacing: 0.02em;
+  }
+
+  .orb-passthrough { color: var(--orb-passthrough); }
+  .orb-analytical  { color: var(--orb-analytical); }
+  .orb-narrative   { color: var(--orb-narrative); }
+  .orb-agentic     { color: var(--orb-agentic); }
+  .orb-coder       { color: var(--orb-coder); }
+  .orb-browse      { color: var(--orb-browse); }
+  .orb-notes       { color: var(--orb-notes); }
+  .orb-foryou      { color: var(--orb-foryou); }
+
+  /* --- theme backgrounds (uses passthrough as default active color) --- */
+  .bg-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.9rem;
+  }
+  .bg-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.75rem 0.75rem 1.25rem;
+    border-radius: 8px;
+  }
+  .bg-tile svg { width: 48px; height: 48px; display: block; }
+  .bg-tile .label { font-size: 0.7rem; color: #6b6b80; }
+  .bg-dark     { background: #111118; color: var(--orb-passthrough); }
+  .bg-light    { background: #f5f5f4; color: var(--orb-analytical); }
+  .bg-light .label { color: #6b6b80; }
+  .bg-midnight { background: #05050a; color: var(--orb-narrative-hi); }
+  .bg-sepia    { background: #ede6d3; color: var(--orb-agentic); }
+  .bg-sepia .label { color: #8b7a5a; }
+
+  /* --- wiring snippet panel --- */
+  .wire {
+    padding: 1.25rem 1.5rem;
+    background: #0d0d14;
+    border: 1px solid #23232e;
+    border-radius: 8px;
+    font: 500 0.78rem ui-monospace, 'SF Mono', Consolas, monospace;
+    color: #a1a1b5;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+  .wire .k { color: #7ec8ff; }
+  .wire .v { color: #c0d0ff; }
+  .wire .c { color: #6b6b80; }
+</style>
+</head>
+<body>
+
+<!-- header showing the real-world placement -->
+<div class="brand">
+  <svg class="mark" viewBox="0 0 200 200"><use href="#augmentum-mark"/></svg>
+  <span class="wordmark">Augmentum</span>
+</div>
+
+<!-- hidden definition — single source of truth for the mark -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="leafBloom" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.1"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <style>
+      .leaf {
+        opacity: 0.82;
+        animation: leafBreathe 6s ease-in-out infinite;
+      }
+      .leaf:nth-of-type(1) { animation-delay: 0s; }
+      .leaf:nth-of-type(2) { animation-delay: 1.5s; }
+      .leaf:nth-of-type(3) { animation-delay: 3s; }
+      .leaf:nth-of-type(4) { animation-delay: 4.5s; }
+      @keyframes leafBreathe {
+        0%, 100% { opacity: 0.78; }
+        50%      { opacity: 1; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .leaf { animation: none; opacity: 0.92; }
+      }
+    </style>
+  </defs>
+  <symbol id="augmentum-mark" viewBox="0 0 200 200">
+    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M100 168 L100 124" stroke-width="3"/>
+      <path d="M100 124 L72 96"   stroke-width="2.2"/>
+      <path d="M100 124 L128 96"  stroke-width="2.2"/>
+      <path d="M72 96 L52 60"     stroke-width="1.6"/>
+      <path d="M72 96 L84 60"     stroke-width="1.6"/>
+      <path d="M128 96 L116 60"   stroke-width="1.6"/>
+      <path d="M128 96 L148 60"   stroke-width="1.6"/>
+    </g>
+    <g fill="currentColor" filter="url(#leafBloom)">
+      <circle class="leaf" cx="52"  cy="60" r="2.2"/>
+      <circle class="leaf" cx="84"  cy="60" r="2.2"/>
+      <circle class="leaf" cx="116" cy="60" r="2.2"/>
+      <circle class="leaf" cx="148" cy="60" r="2.2"/>
+    </g>
+    <circle cx="100" cy="168" r="2.8" fill="currentColor"/>
+  </symbol>
+</svg>
+
+<main>
+
+  <section>
+    <h2>Sizes</h2>
+    <div class="panel sizes">
+      <div class="size"><svg width="16"  height="16"  viewBox="0 0 200 200"><use href="#augmentum-mark"/></svg><small>16 · favicon</small></div>
+      <div class="size"><svg width="24"  height="24"  viewBox="0 0 200 200"><use href="#augmentum-mark"/></svg><small>24 · header</small></div>
+      <div class="size"><svg width="48"  height="48"  viewBox="0 0 200 200"><use href="#augmentum-mark"/></svg><small>48 · prominent</small></div>
+      <div class="size"><svg width="96"  height="96"  viewBox="0 0 200 200"><use href="#augmentum-mark"/></svg><small>96 · splash</small></div>
+      <div class="size"><svg width="160" height="160" viewBox="0 0 200 200"><use href="#augmentum-mark"/></svg><small>160 · display</small></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Orb palette — all 8 modes &amp; surfaces</h2>
+    <div class="orbs">
+      <div class="orb-tile orb-passthrough"><svg viewBox="0 0 200 200"><use href="#augmentum-mark"/></svg><span class="label">Passthrough</span><span class="hex">#4caf50</span></div>
+      <div class="orb-tile orb-analytical"><svg viewBox="0 0 200 200"><use href="#augmentum-mark"/></svg><span class="label">Analytical</span><span class="hex">#2196f3</span></div>
+      <div class="orb-tile orb-narrative"><svg viewBox="0 0 200 200"><use href="#augmentum-mark"/></svg><span class="label">Narrative</span><span class="hex">#9c27b0</span></div>
+      <div class="orb-tile orb-agentic"><svg viewBox="0 0 200 200"><use href="#augmentum-mark"/></svg><span class="label">Agentic</span><span class="hex">#ff9800</span></div>
+      <div class="orb-tile orb-coder"><svg viewBox="0 0 200 200"><use href="#augmentum-mark"/></svg><span class="label">Coder</span><span class="hex">#06b6d4</span></div>
+      <div class="orb-tile orb-browse"><svg viewBox="0 0 200 200"><use href="#augmentum-mark"/></svg><span class="label">Browse</span><span class="hex">#e91e63</span></div>
+      <div class="orb-tile orb-notes"><svg viewBox="0 0 200 200"><use href="#augmentum-mark"/></svg><span class="label">Notes</span><span class="hex">#ffc107</span></div>
+      <div class="orb-tile orb-foryou"><svg viewBox="0 0 200 200"><use href="#augmentum-mark"/></svg><span class="label">For You</span><span class="hex">#8bc34a</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Theme backgrounds</h2>
+    <div class="bg-row">
+      <div class="bg-tile bg-dark"><svg viewBox="0 0 200 200"><use href="#augmentum-mark"/></svg><span class="label">Dark</span></div>
+      <div class="bg-tile bg-light"><svg viewBox="0 0 200 200"><use href="#augmentum-mark"/></svg><span class="label">Light</span></div>
+      <div class="bg-tile bg-midnight"><svg viewBox="0 0 200 200"><use href="#augmentum-mark"/></svg><span class="label">Midnight</span></div>
+      <div class="bg-tile bg-sepia"><svg viewBox="0 0 200 200"><use href="#augmentum-mark"/></svg><span class="label">Sepia</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Wiring (one line)</h2>
+    <div class="wire">
+<span class="c">/* the logo follows whichever orb is active */</span>
+<span class="k">.header-mark</span> {
+  <span class="k">width</span>: <span class="v">22px</span>;
+  <span class="k">height</span>: <span class="v">22px</span>;
+  <span class="k">color</span>: <span class="v">var(--orb-active-color, var(--orb-passthrough))</span>;
+  <span class="k">transition</span>: <span class="v">color 0.5s var(--orb-spring)</span>;
+}
+    </div>
+  </section>
+
+</main>
+
+</body>
+</html>

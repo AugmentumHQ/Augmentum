@@ -1,0 +1,396 @@
+/* cast-home — TV idle landing.
+ *
+ * Designed for 10-foot viewing. Type sizes assume a couch-distance
+ * eye. No interaction surface — the TV is non-input today. The phone
+ * is the navigator.
+ *
+ * Palette inherits the warm-dark editorial register from cast-stage
+ * so the cast surfaces feel like one family rather than five styles
+ * stapled together.
+ */
+
+:root {
+  --paper:        #15110c;  /* warm near-black */
+  --paper-deep:   #1d1812;
+  --ink:          #ede2cb;  /* warm cream */
+  --ink-soft:     #b8aa92;
+  --ink-mute:     #877a66;
+  --accent:       #d9a14e;  /* amber phosphor */
+  --accent-glow:  rgba(217, 161, 78, 0.45);
+
+  /* Orb-mode palette — mirrors styles/orb-nav.css so the cast brand
+   * glyph uses the same Narrative/Analytical/Passthrough colors as
+   * the desktop UI's header logo. Kept literal rather than @import
+   * because cast-home is served stand-alone and shouldn't pull the
+   * full styles/* tree just for three colors. */
+  --orb-passthrough:    #4caf50;
+  --orb-passthrough-hi: #8cef8c;
+  --orb-passthrough-lo: #2d7a30;
+  --orb-analytical:     #2196f3;
+  --orb-analytical-hi:  #7ec8ff;
+  --orb-analytical-lo:  #1565a0;
+  --orb-narrative:      #9c27b0;
+  --orb-narrative-hi:   #d07ce8;
+  --orb-narrative-lo:   #6a1b7a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%;
+  /* min-height instead of fixed height so the page can grow with rail
+   * content. The phone-side "TV remote" trackpad sends scroll patches
+   * that translate to window.scrollBy here, so the body has to be a
+   * real scrollable container (overflow: hidden would silently eat
+   * those scrolls). */
+  min-height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* Hide the scrollbar — TV is non-input today, the only scroller is
+   * the phone trackpad. A visible scrollbar would just be noise. */
+  scrollbar-width: none;
+  font-family: "Fraunces", "Newsreader", Georgia, serif;
+  font-feature-settings: "ss01", "ss03";
+  -webkit-font-smoothing: antialiased;
+}
+html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
+
+/* Background layers — always-on gradient base, soft cycling backdrop,
+ * and a dark scrim that keeps text legible regardless of art. */
+.bg-base {
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(217, 161, 78, 0.18), transparent 60%),
+    radial-gradient(ellipse at 70% 80%, rgba(120, 70, 40, 0.12), transparent 55%),
+    var(--paper);
+  z-index: 0;
+}
+.bg-cycle {
+  position: fixed; inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 1.8s ease-in-out, background-image 1.8s ease-in-out;
+  z-index: 1;
+  filter: saturate(0.7) brightness(0.55);
+}
+.bg-cycle.on { opacity: 1; }
+.bg-scrim {
+  position: fixed; inset: 0;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(21, 17, 12, 0.78) 0%,
+      rgba(21, 17, 12, 0.55) 35%,
+      rgba(21, 17, 12, 0.85) 100%
+    );
+  z-index: 2;
+}
+
+/* Layout */
+.home {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  /* Grow with content so the phone trackpad has scroll travel. dvh
+   * stays correct when iOS Safari hides the URL bar; vh is the
+   * pre-dvh fallback. */
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 5vh 6vw 4vh;
+  display: flex;
+  flex-direction: column;
+  gap: 5vh;
+}
+
+/* Masthead */
+.masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.brand {
+  display: flex;
+  /* center, not baseline — the glyph is an SVG, not a text character,
+   * so baseline alignment dropped it below the cap-height of the
+   * brand text. center keeps the orbit visually balanced with the
+   * letterforms next to it. */
+  align-items: center;
+  gap: 0.6em;
+  font-size: 2vw;
+}
+/* Animated orbiting-orbs glyph next to "Augmentum" — same SVG shape
+ * as the main app's header-logo-glyph, scaled up for 10-foot TV view.
+ * 3vw lands at ~57px on a 1080p screen, ~85px on 4K — readable as a
+ * brand but doesn't dominate the masthead. */
+.brand-glyph {
+  width: 3vw;
+  height: 3vw;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 18px var(--accent-glow));
+}
+.brand-glyph .aug-logo-ring {
+  animation: cast-logo-ring-glow 3.5s ease-in-out infinite;
+}
+.brand-glyph .aug-logo-core {
+  animation: cast-logo-core-breathe 4s ease-in-out infinite;
+}
+@keyframes cast-logo-ring-glow {
+  0%, 100% { opacity: 0.7; }
+  50%      { opacity: 1; }
+}
+@keyframes cast-logo-core-breathe {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.18); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-glyph .aug-logo-orb { display: none; }
+  .brand-glyph .aug-logo-ring,
+  .brand-glyph .aug-logo-core { animation: none; }
+}
+.brand-name {
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-size: 0.6em;
+}
+.clock {
+  text-align: right;
+}
+.clock-time {
+  font-size: 5.5vw;
+  font-weight: 300;
+  font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 0;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--ink);
+}
+.clock-date {
+  margin-top: 0.5em;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 1vw;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+/* Rails */
+.rail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6vh;
+}
+.rail-head {
+  display: flex;
+  align-items: baseline;
+  gap: 1ch;
+}
+.rail-numeral {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  color: var(--accent);
+  font-size: 0.9vw;
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 14px var(--accent-glow);
+}
+.rail-title {
+  font-size: 1.6vw;
+  font-weight: 400;
+  color: var(--ink);
+  font-variation-settings: "opsz" 80, "SOFT" 50;
+  letter-spacing: 0.005em;
+}
+.rail-strip {
+  display: flex;
+  gap: 2vw;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 1vh;
+  /* no scrollbar on TV */
+  scrollbar-width: none;
+}
+.rail-strip::-webkit-scrollbar { display: none; }
+
+/* Tiles */
+.tile {
+  flex: 0 0 auto;
+  width: 18vw;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8vh;
+}
+.tile-art {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  background: linear-gradient(135deg, var(--paper-deep), #2a2218);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 30px 60px -20px rgba(0, 0, 0, 0.6);
+}
+.tile-art img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.tile-art-placeholder {
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-mute);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.7vw;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.tile-progress {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.5);
+}
+.tile-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+.tile-title {
+  font-size: 1.05vw;
+  font-weight: 500;
+  color: var(--ink);
+  font-variation-settings: "opsz" 30;
+  letter-spacing: 0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tile-sub {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.7vw;
+  color: var(--ink-mute);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Aspect for video items: 16:9 instead of poster */
+.tile-art.landscape {
+  aspect-ratio: 16 / 9;
+}
+
+/* Continue rail mixes kinds — force the poster shape so the strip
+   reads as one consistent shelf. See cast-control.css for the full
+   rationale. Same crop tradeoff: landscape thumbs get sides cropped
+   via object-fit:cover. */
+.rail[data-cs-rail="resume"] .tile-art,
+.rail[data-cs-rail="resume"] .tile-art.landscape {
+  aspect-ratio: 2 / 3;
+}
+
+/* ── Follow mode ──────────────────────────────────────────────────
+ *
+ * When the controller is in "Follow on TV" mode, the cast-home swaps
+ * its default rails for a focused "you're browsing X" view that
+ * mirrors the phone's current section / series. Editorial register:
+ * big calm typography, generous grid, no animations. The TV is
+ * presence furniture; it shouldn't compete with the phone for the
+ * room's attention. */
+.follow[hidden] { display: none; }
+.follow {
+  display: flex;
+  flex-direction: column;
+  gap: 3vh;
+}
+.follow-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4vh;
+}
+.follow-overline {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.9vw;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-shadow: 0 0 12px var(--accent-glow);
+}
+.follow-title {
+  font-size: 4vw;
+  font-weight: 300;
+  font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 0;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  line-height: 1.05;
+}
+.follow-sub {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.9vw;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.follow-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13vw, 1fr));
+  gap: 2.2vh 1.6vw;
+}
+.follow-grid-episodes {
+  grid-template-columns: repeat(auto-fill, minmax(18vw, 1fr));
+}
+.follow-season {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6vh;
+  margin-top: 1.2vh;
+}
+.follow-season-head {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 1.1vw;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-shadow: 0 0 8px var(--accent-glow);
+  padding-bottom: 0.6vh;
+  border-bottom: 1px solid rgba(237, 226, 203, 0.1);
+}
+.follow-loading {
+  padding: 6vh 0;
+  text-align: center;
+  font-style: italic;
+  color: var(--ink-mute);
+  font-size: 1.4vw;
+}
+
+
+/* Colophon */
+.colophon {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.85vw;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.colophon-status::before {
+  content: "● ";
+  color: var(--accent);
+  font-size: 1.4em;
+  vertical-align: middle;
+  margin-right: 0.4ch;
+  text-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* Font face declarations — these match what the main UI uses so the
+ * font is already cached when the cast-home surface loads. */
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1&family=JetBrains+Mono:wght@300..600&display=swap");

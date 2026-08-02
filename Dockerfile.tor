@@ -1,0 +1,9 @@
+# Minimal Tor SOCKS proxy sidecar for SearXNG egress anonymization.
+FROM alpine:3.20
+RUN apk add --no-cache tor curl && mkdir -p /var/lib/tor && chown -R tor:tor /var/lib/tor
+COPY config/tor/torrc /etc/tor/torrc
+USER tor
+EXPOSE 9050
+HEALTHCHECK --interval=30s --timeout=15s --start-period=90s --retries=3 \
+  CMD curl -sf --socks5-hostname localhost:9050 https://check.torproject.org/api/ip || exit 1
+CMD ["tor", "-f", "/etc/tor/torrc"]

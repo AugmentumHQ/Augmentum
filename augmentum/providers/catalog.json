@@ -1,0 +1,362 @@
+[
+  {
+    "id": "chatterbox-tts",
+    "name": "Chatterbox",
+    "description": "High-quality TTS with voice cloning. 23+ languages, expressive speech.",
+    "category": "tts",
+    "image": "travisvn/chatterbox-tts-api:1.0.1",
+    "internal_port": 4123,
+    "host_port": 6400,
+    "env": {
+      "PORT": "4123",
+      "HOST": "0.0.0.0",
+      "DEVICE": "auto",
+      "USE_MULTILINGUAL_MODEL": "true",
+      "CORS_ORIGINS": "*",
+      "VOICE_LIBRARY_DIR": "/voices",
+      "MODEL_CACHE_DIR": "/cache"
+    },
+    "volumes": {
+      "chatterbox_models": "/cache",
+      "augmentum_voices": "/voices"
+    },
+    "health_check": {
+      "test": [
+        "CMD",
+        "curl",
+        "--fail",
+        "http://0.0.0.0:4123/health"
+      ],
+      "interval_s": 30,
+      "timeout_s": 10,
+      "retries": 5,
+      "start_period_s": 300
+    },
+    "gpu": {
+      "required": false,
+      "vram_mb": 4096,
+      "driver": "nvidia"
+    },
+    "api_type": "chatterbox_tts",
+    "health_endpoint": "/health",
+    "features": [
+      "voice_cloning",
+      "multilingual",
+      "expressive"
+    ],
+    "augmentum_env": {
+      "AUGMENTUM_TTS_CHATTERBOX_URL": "http://{container_name}:{internal_port}"
+    }
+  },
+  {
+    "id": "speaches-stt",
+    "name": "Speaches",
+    "description": "Multilingual STT (99 languages) via faster-whisper. OpenAI-compatible API.",
+    "category": "stt",
+    "image": "ghcr.io/speaches-ai/speaches:0.8.3-cpu",
+    "internal_port": 8000,
+    "host_port": 6200,
+    "env": {
+      "ENABLE_UI": "true",
+      "WHISPER__COMPUTE_TYPE": "int8",
+      "WHISPER__TTL": "-1",
+      "PRELOAD_MODELS": "[\"Systran/faster-whisper-small.en\"]"
+    },
+    "volumes": {
+      "speaches_cache": "/home/ubuntu/.cache/huggingface/hub"
+    },
+    "health_check": {
+      "test": [
+        "CMD",
+        "curl",
+        "--fail",
+        "http://0.0.0.0:8000/health"
+      ],
+      "interval_s": 30,
+      "timeout_s": 10,
+      "retries": 3,
+      "start_period_s": 60
+    },
+    "gpu": {
+      "required": false,
+      "vram_mb": 0
+    },
+    "api_type": "openai_stt",
+    "health_endpoint": "/health",
+    "features": [
+      "multilingual",
+      "streaming",
+      "99_languages"
+    ],
+    "default_model": "Systran/faster-whisper-small.en",
+    "model_pull": {
+      "endpoint": "/v1/models/{model}",
+      "method": "POST",
+      "list_installed": "/v1/models",
+      "list_available": "/v1/registry?task=automatic-speech-recognition"
+    },
+    "augmentum_env": {
+      "AUGMENTUM_STT_PROVIDER_URL": "http://{container_name}:{internal_port}"
+    }
+  },
+  {
+    "id": "fish-tts",
+    "name": "Fish Speech",
+    "description": "Emotion-aware TTS with voice cloning. Non-commercial model (CC-BY-NC-SA); needs a HuggingFace token.",
+    "category": "tts",
+    "image": "fishaudio/fish-speech:server-cuda@sha256:5a82e482f1c5d42b3b17258e24c415117864e019969d2601f614069087885ed9",
+    "internal_port": 8080,
+    "host_port": 6600,
+    "env": {
+      "COMPILE": "1",
+      "BACKEND": "cuda",
+      "AUGMENTUM_FISH_MODEL_REPO": "fishaudio/openaudio-s1-mini",
+      "AUGMENTUM_FISH_MODEL_DIR": "openaudio-s1-mini",
+      "LLAMA_CHECKPOINT_PATH": "checkpoints/openaudio-s1-mini",
+      "DECODER_CHECKPOINT_PATH": "checkpoints/openaudio-s1-mini/codec.pth",
+      "HF_TOKEN": "${AUGMENTUM_HUGGINGFACE_TOKEN:-}"
+    },
+    "entrypoint": [
+      "/bin/bash",
+      "-lc",
+      "set -e; DIR=\"checkpoints/${AUGMENTUM_FISH_MODEL_DIR:-openaudio-s1-mini}\"; REPO=\"${AUGMENTUM_FISH_MODEL_REPO:-fishaudio/openaudio-s1-mini}\"; if [ ! -f \"$DIR/codec.pth\" ]; then echo \"[augmentum] Downloading TTS model $REPO -> $DIR (first boot only)...\"; /app/.venv/bin/hf download \"$REPO\" --local-dir \"$DIR\"; fi; echo \"[augmentum] Model ready; starting Fish Speech (first boot compiles CUDA kernels, a few minutes)...\"; exec /app/start_server.sh"
+    ],
+    "volumes": {
+      "fish_models": "/app/checkpoints",
+      "fish_voices": "/app/references"
+    },
+    "health_check": {
+      "test": [
+        "CMD-SHELL",
+        "curl -sf http://localhost:8080/v1/health"
+      ],
+      "interval_s": 30,
+      "timeout_s": 10,
+      "retries": 5,
+      "start_period_s": 600
+    },
+    "gpu": {
+      "required": true,
+      "vram_mb": 8192,
+      "driver": "nvidia"
+    },
+    "api_type": "fish_tts",
+    "health_endpoint": "/v1/health",
+    "features": [
+      "voice_cloning",
+      "emotion_aware",
+      "gated_model",
+      "non_commercial"
+    ],
+    "requirements": {
+      "token": {
+        "setting": "huggingface_token",
+        "env": "AUGMENTUM_HUGGINGFACE_TOKEN",
+        "label": "HuggingFace access token",
+        "help_url": "https://huggingface.co/settings/tokens",
+        "reason": "Fish Speech downloads a gated model — accept its license on HuggingFace (huggingface.co/fishaudio/openaudio-s1-mini) and paste a read token."
+      },
+      "license": {
+        "id": "CC-BY-NC-SA-4.0",
+        "note": "OpenAudio models are non-commercial (CC-BY-NC-SA) — perfect for self-hosted personal use."
+      },
+      "model": {
+        "label": "Voice model",
+        "default": "openaudio-s1-mini",
+        "note": "First boot downloads the model and compiles CUDA kernels — this can take several minutes. Later starts are fast (model is cached).",
+        "choices": [
+          {
+            "id": "openaudio-s1-mini",
+            "label": "OpenAudio S1-mini (0.5B) — recommended, fast",
+            "size_note": "~1 GB",
+            "env": {
+              "AUGMENTUM_FISH_MODEL_REPO": "fishaudio/openaudio-s1-mini",
+              "AUGMENTUM_FISH_MODEL_DIR": "openaudio-s1-mini",
+              "LLAMA_CHECKPOINT_PATH": "checkpoints/openaudio-s1-mini",
+              "DECODER_CHECKPOINT_PATH": "checkpoints/openaudio-s1-mini/codec.pth"
+            }
+          },
+          {
+            "id": "openaudio-s1",
+            "label": "OpenAudio S1 (4B) — highest quality, needs HF access",
+            "size_note": "~8 GB, gated",
+            "env": {
+              "AUGMENTUM_FISH_MODEL_REPO": "fishaudio/openaudio-s1",
+              "AUGMENTUM_FISH_MODEL_DIR": "openaudio-s1",
+              "LLAMA_CHECKPOINT_PATH": "checkpoints/openaudio-s1",
+              "DECODER_CHECKPOINT_PATH": "checkpoints/openaudio-s1/codec.pth"
+            }
+          }
+        ]
+      }
+    },
+    "augmentum_env": {
+      "AUGMENTUM_TTS_FISH_URL": "http://{container_name}:{internal_port}"
+    }
+  },
+  {
+    "id": "kokoro-server",
+    "name": "Kokoro FastAPI",
+    "description": "CPU-friendly TTS with voice mixing. OpenAI-compatible, runs well without GPU.",
+    "category": "tts",
+    "image": "ghcr.io/remsky/kokoro-fastapi-cpu:v0.6.0",
+    "internal_port": 8880,
+    "host_port": 6300,
+    "env": {
+      "PYTHONPATH": "/app:/app/api",
+      "ALLOW_LOCAL_VOICE_SAVING": "true",
+      "ONNX_NUM_THREADS": "4",
+      "ONNX_INTER_OP_THREADS": "2",
+      "ONNX_EXECUTION_MODE": "parallel",
+      "ONNX_OPTIMIZATION_LEVEL": "all"
+    },
+    "volumes": {
+      "kokoro_voices": "/app/api/voices"
+    },
+    "health_check": {
+      "test": [
+        "CMD",
+        "curl",
+        "--fail",
+        "http://0.0.0.0:8880/health"
+      ],
+      "interval_s": 30,
+      "timeout_s": 10,
+      "retries": 3,
+      "start_period_s": 60
+    },
+    "gpu": {
+      "required": false,
+      "vram_mb": 0
+    },
+    "api_type": "openai_tts",
+    "health_endpoint": "/health",
+    "features": [
+      "voice_mixing",
+      "cpu_friendly"
+    ],
+    "augmentum_env": {
+      "AUGMENTUM_TTS_KOKORO_URL": "http://{container_name}:{internal_port}"
+    }
+  },
+  {
+    "id": "suwayomi",
+    "name": "Suwayomi",
+    "description": "Self-hosted manga/comic server (Tachidesk). Browse and read from hundreds of online sources; pages render in the in-app comic reader. One-click install provisions it, secures it with a managed Augmentum credential, and connects it to Files automatically.",
+    "category": "media",
+    "image": "ghcr.io/suwayomi/suwayomi-server:v2.1.1999",
+    "internal_port": 4567,
+    "host_port": 6480,
+    "https_port": 6800,
+    "env": {
+      "TZ": "UTC"
+    },
+    "volumes": {
+      "suwayomi_data": "/home/suwayomi/.local/share/Tachidesk"
+    },
+    "gpu": {
+      "required": false,
+      "vram_mb": 0
+    },
+    "api_type": "",
+    "health_endpoint": "/api/v1/settings/about",
+    "features": [
+      "manga",
+      "comics",
+      "managed_auth",
+      "self_hosted"
+    ]
+  },
+  {
+    "id": "jellyfin",
+    "name": "Jellyfin",
+    "description": "Free software media server for your own movies, shows, music, and live TV. One-click install provisions it, runs its first-time setup with a managed Augmentum admin account, and connects it to Files automatically. Streaming is proxied through Augmentum, so nothing is exposed.",
+    "category": "media",
+    "image": "jellyfin/jellyfin:10.11.11",
+    "internal_port": 8096,
+    "host_port": 6490,
+    "https_port": 6801,
+    "env": {
+      "TZ": "UTC",
+      "JELLYFIN_PublishedServerUrl": "http://0.0.0.0:8096"
+    },
+    "volumes": {
+      "jellyfin_config": "/config",
+      "jellyfin_cache": "/cache",
+      "jellyfin_media": "/media"
+    },
+    "gpu": {
+      "required": false,
+      "vram_mb": 0
+    },
+    "api_type": "",
+    "health_endpoint": "/health",
+    "features": [
+      "movies",
+      "shows",
+      "music",
+      "first_run_wizard",
+      "self_hosted"
+    ]
+  },
+  {
+    "id": "audiobookshelf",
+    "name": "Audiobookshelf",
+    "description": "Self-hosted audiobook and podcast server. One-click install provisions it, creates a managed Augmentum root account on first run, and connects it to Files so titles land in your Continue rail. Streaming is proxied through Augmentum.",
+    "category": "media",
+    "image": "ghcr.io/advplyr/audiobookshelf:2.19.0",
+    "internal_port": 80,
+    "host_port": 6500,
+    "https_port": 6802,
+    "env": {
+      "TZ": "UTC"
+    },
+    "volumes": {
+      "abs_config": "/config",
+      "abs_metadata": "/metadata",
+      "abs_audiobooks": "/audiobooks",
+      "abs_podcasts": "/podcasts"
+    },
+    "gpu": {
+      "required": false,
+      "vram_mb": 0
+    },
+    "api_type": "",
+    "health_endpoint": "/healthcheck",
+    "features": [
+      "audiobooks",
+      "podcasts",
+      "first_run_wizard",
+      "self_hosted"
+    ]
+  },
+  {
+    "id": "komga",
+    "name": "Komga",
+    "description": "Self-hosted comic and manga server for your own CBZ/CBR/PDF/EPUB library. One-click install provisions it, claims it with a managed Augmentum admin, and connects it to Files so books read in the in-app comic reader. Pages are proxied through Augmentum.",
+    "category": "media",
+    "image": "gotson/komga:1.25.0",
+    "internal_port": 25600,
+    "host_port": 6510,
+    "https_port": 6803,
+    "env": {
+      "TZ": "UTC"
+    },
+    "volumes": {
+      "komga_config": "/config",
+      "komga_data": "/data"
+    },
+    "gpu": {
+      "required": false,
+      "vram_mb": 0
+    },
+    "api_type": "",
+    "health_endpoint": "/actuator/health",
+    "features": [
+      "comics",
+      "manga",
+      "first_run_wizard",
+      "self_hosted"
+    ]
+  }
+]

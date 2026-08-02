@@ -1,0 +1,31 @@
+{
+  "schema": "augmentum.pose-primitive.v1",
+  "name": "thoughtful_chin_touch",
+  "tags": ["thinking", "self-touch", "contemplative"],
+  "description": "Right hand at chin (chin_R affordance), left arm rests at side. Head pitched slightly down + spine subtle lean.",
+  "family": "thinking",
+
+  "anchors": {
+    "rightHand": {
+      "type": "region-contact",
+      "region": "chin",
+      "tolerance": 0.02,
+      "fingerStyle": "chin_R"
+    },
+    "leftHand": {
+      "type": "free-space"
+    }
+  },
+
+  "body": {
+    "head":  { "pitch": 8 },
+    "spine": { "forwardLean": 3 }
+  },
+
+  "provenance": {
+    "source": "manual",
+    "curatedBy": "maintainer",
+    "createdAt": "2026-05-14",
+    "notes": "fingerStyle 'chin_R' is the full-arm affordance authored on the bundled roster. Region 'chin' is metadata for cross-VRM affordance swapping later. Head pitch + spine lean compose on top of the affordance."
+  }
+}

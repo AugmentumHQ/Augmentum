@@ -1,0 +1,992 @@
+services:
+  # ---- Core (always starts) ----
+  # ---- HTTPS reverse proxy (always-on; the LAN-supported access path) ----
+  # Access: https://<your-ip>:6443
+  #
+  # On startup, the entrypoint computes a SAN list from
+  # AUGMENTUM_TLS_EXTRA_SANS (which start.sh / start.bat auto-populate
+  # with the host's RFC1918 IPv4 addresses on Linux/macOS/Windows when
+  # the operator hasn't set it explicitly). A hash of the SAN list is
+  # persisted alongside the cert; when the operator's IPs change, the
+  # cert auto-regenerates rather than serving a stale name-mismatch
+  # cert until someone wipes caddy_data manually.
+  #
+  # Browser use: accept the certificate warning once per accessing
+  # device. For stricter stacks, import the persisted cert into the
+  # device's trust store.
+  #
+  # HTTP still available on port 6100 alongside HTTPS on 6443; the
+  # augmentum FastAPI server redirects browser GETs over HTTP to
+  # HTTPS when the host header is non-loopback (see
+  # _HttpsRedirectMiddleware in proxy/server.py).
+  caddy:
+    image: caddy:2-alpine
+    # Runaway backstop (B3). Measured working set is a small fraction of
+    # this; the limit exists so a leak here can never reach the host.
+    mem_limit: 512m
+    # Restart after crashes + host reboots, but respect `docker compose stop`.
+    # Caddy has no healthcheck so autoheal doesn't watch it; restart policy
+    # alone covers its failure modes (caddy is stateless).
+    restart: unless-stopped
+    ports:
+      # Default-private: bind to loopback only. Set AUGMENTUM_BIND_HOST=0.0.0.0
+      # in .env to expose on the LAN (required for mic/camera access on phones
+      # since browsers gate those behind HTTPS, and HTTPS only matters when
+      # reachable from a non-localhost device).
+      - "${AUGMENTUM_BIND_HOST:-127.0.0.1}:6443:6443"
+      # Isolated coder-preview origin. Same cert, different external
+      # port = different browser origin = no cookie crossover from the
+      # main app. Off by default in settings (coder_preview_isolation_
+      # enabled=False); operator flips that AFTER confirming the port
+      # is reachable. See docs/superpowers/specs/2026-05-27-preview-
+      # origin-isolation-design.md.
+      - "${AUGMENTUM_BIND_HOST:-127.0.0.1}:6444:6444"
+      # Reserved TLS front-door range for provisioned media servers. Each
+      # installed media server (Jellyfin, Suwayomi, …) gets a real HTTPS
+      # listener on a dedicated port in this range, terminated by Caddy
+      # with the same trusted cert and reverse-proxied to the container's
+      # internal HTTP. Augmentum writes the per-server site block into the
+      # shared caddy_sites volume at install time (imported below). Range is
+      # published once at compose time because Docker port bindings are
+      # fixed at container creation; the snippets fill it dynamically.
+      # Inherits the same loopback-by-default / LAN-on-opt-in posture as
+      # 6443/6444. https_port values live in providers/catalog.json.
+      # Range chosen clear of the dynamic provider/media ports (62xx-67xx,
+      # incl. sesame-csm on 6700) so the front doors never collide.
+      - "${AUGMENTUM_BIND_HOST:-127.0.0.1}:6800-6809:6800-6809"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      # Per-media-server TLS front-door site blocks, written by Augmentum
+      # (rw on its side) and imported by the Caddyfile below. Survives
+      # restarts so front doors come back on a cold start with no action.
+      - caddy_sites:/etc/caddy/sites
+    # Caddy reaches game-stream containers via host.docker.internal
+    # (their ports are mapped on the host because the agsp containers
+    # run on Docker's default bridge network, not the augmentum
+    # compose network). On Linux Docker without Desktop, the
+    # host-gateway alias is needed for that hostname to resolve.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - CADDY_CONFIG=/etc/caddy/Caddyfile
+      - AUGMENTUM_TLS_EXTRA_SANS=${AUGMENTUM_TLS_EXTRA_SANS:-}
+      # Forward the SAN-list override from the host .env into the
+      # container so the cert-bootstrap script (which reads
+      # $AUGMENTUM_TLS_EXTRA_SANS at runtime) actually sees it.
+      # Without this line, only the default SANs land in the cert
+      # and reaching augmentum on a LAN/Tailscale IP shows
+      # "Not Secure / HTTPS struck through" even with the root CA
+      # imported.
+      - AUGMENTUM_TLS_EXTRA_SANS
+      # Front-gate domain (e.g. "aug.lan"). When set, the cert bootstrap
+      # below adds a wildcard SAN (DNS:*.<domain> + apex) so every
+      # <service>.<domain> gate host is trusted off the same leaf.
+      - AUGMENTUM_GATE_DOMAIN=${AUGMENTUM_GATE_DOMAIN:-}
+    depends_on:
+      augmentum:
+        # service_started, NOT service_healthy (2026-07-02 boot-latency
+        # work): waiting for the app's healthcheck meant the TLS front
+        # door didn't even EXIST during startup — users got
+        # connection-refused instead of any feedback. Caddy now rises
+        # with the container and serves the boot page below (see
+        # handle_errors in the :6443 site block) until the app answers.
+        condition: service_started
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        # Two-tier cert: a persistent root CA + a leaf cert signed by it.
+        # This replaces an earlier one-shot self-signed cert that had no
+        # CA chain. With a real chain, the operator imports the root CA
+        # once per device and EVERY future leaf cert (after SAN changes,
+        # IP changes, regenerations) is auto-trusted — which is what
+        # browsers require for Service Worker + Web Push registration.
+        # SWs refuse to register against an untrusted HTTPS origin even
+        # when the user has accepted the cert warning for navigation.
+        #
+        # The root CA persists forever (until /data/ca.crt is deleted).
+        # The leaf regenerates whenever the desired SAN list changes
+        # (LAN IP rotation, new Tailscale address, etc.). Both files
+        # live on the caddy_data volume so they survive container
+        # recreates.
+
+        apk add --no-cache openssl >/dev/null 2>&1
+
+        # ── 1. Root CA (persistent) ────────────────────────────────
+        NEW_CA=0
+        if [ ! -f /data/ca.crt ] || [ ! -f /data/ca.key ]; then
+          openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 \
+            -days 7300 -nodes \
+            -subj "/CN=Augmentum Local Root CA" \
+            -addext "basicConstraints=critical,CA:true" \
+            -addext "keyUsage=critical,keyCertSign,cRLSign" \
+            -keyout /data/ca.key -out /data/ca.crt 2>/dev/null
+          chmod 600 /data/ca.key
+          NEW_CA=1
+          echo "Generated Augmentum root CA (20-year, install on each device)"
+        fi
+
+        # ── 2. Leaf cert (re-issued when SANs change) ──────────────
+        EXTRA_SANS="$${AUGMENTUM_TLS_EXTRA_SANS:-}"
+        SAN_LIST="DNS:localhost,DNS:augmentum,DNS:augmentum.local,DNS:host.docker.internal,IP:127.0.0.1,IP:0.0.0.0"
+        if [ -n "$$EXTRA_SANS" ]; then
+          SAN_LIST="$$SAN_LIST,$$EXTRA_SANS"
+        fi
+        # Front-gate wildcard: trust <service>.<gate> + the apex off this leaf.
+        GATE_DOMAIN="$${AUGMENTUM_GATE_DOMAIN:-}"
+        if [ -n "$$GATE_DOMAIN" ]; then
+          SAN_LIST="$$SAN_LIST,DNS:$$GATE_DOMAIN,DNS:*.$$GATE_DOMAIN"
+        fi
+        DESIRED_HASH=$$(printf '%s' "$$SAN_LIST" | sha256sum | cut -c1-16)
+        STORED_HASH=""
+        [ -f /data/cert.sans.hash ] && STORED_HASH=$$(cat /data/cert.sans.hash 2>/dev/null || true)
+        if [ "$$NEW_CA" = "0" ] \
+            && [ -f /data/cert.pem ] && [ -f /data/key.pem ] \
+            && [ "$$STORED_HASH" = "$$DESIRED_HASH" ]; then
+          echo "Reusing existing leaf cert (SAN list unchanged, hash=$$DESIRED_HASH)"
+        else
+          if [ "$$NEW_CA" = "1" ]; then
+            echo "New root CA — re-issuing leaf"
+          elif [ -f /data/cert.pem ]; then
+            echo "SAN list changed (stored=$$STORED_HASH desired=$$DESIRED_HASH) — re-issuing leaf"
+          fi
+          cat > /tmp/leaf.ext <<EOFEXT
+        basicConstraints=CA:FALSE
+        keyUsage=digitalSignature,keyEncipherment
+        extendedKeyUsage=serverAuth
+        subjectAltName=$$SAN_LIST
+        EOFEXT
+          openssl ecparam -genkey -name prime256v1 -out /data/key.pem 2>/dev/null
+          openssl req -new -key /data/key.pem -subj "/CN=augmentum" \
+            -out /tmp/leaf.csr 2>/dev/null
+          openssl x509 -req -in /tmp/leaf.csr -CA /data/ca.crt -CAkey /data/ca.key \
+            -CAcreateserial -days 3650 -extfile /tmp/leaf.ext \
+            -out /tmp/leaf.crt 2>/dev/null
+          # Concat leaf + root → cert.pem so Caddy serves the full
+          # chain. Without this the browser sees just a leaf with an
+          # unknown issuer and can't validate even after the user
+          # installs the root CA.
+          cat /tmp/leaf.crt /data/ca.crt > /data/cert.pem
+          chmod 600 /data/key.pem
+          rm -f /tmp/leaf.ext /tmp/leaf.csr /tmp/leaf.crt
+          printf '%s' "$$DESIRED_HASH" > /data/cert.sans.hash
+          echo "Generated leaf cert (chain to root CA) with SANs: $$SAN_LIST"
+        fi
+
+        # ── 3. iOS .mobileconfig (one-tap profile install) ─────────
+        # iOS / iPadOS can't install a raw .crt without manual nav
+        # through Settings. A signed-or-unsigned configuration
+        # profile (.mobileconfig) installs in ~4 taps from Safari.
+        # Regenerated whenever the CA changes; the UUIDs are derived
+        # from the cert fingerprint so re-downloads "update" rather
+        # than stack a duplicate profile.
+        if [ "$$NEW_CA" = "1" ] || [ ! -f /data/ca.mobileconfig ]; then
+          CA_DER_B64=$$(openssl x509 -in /data/ca.crt -outform DER | base64 | tr -d '\n')
+          CERT_FP=$$(openssl x509 -in /data/ca.crt -fingerprint -sha256 -noout | sed 's/.*=//' | tr -d ':' | tr 'A-Z' 'a-z')
+          # Derive two stable UUID-shaped strings from the fingerprint
+          # halves so the profile updates in place across re-downloads.
+          U1=$$(echo "$$CERT_FP" | cut -c1-32)
+          U2=$$(echo "$$CERT_FP" | cut -c33-64)
+          UUID_CERT=$$(echo "$$U1" | sed 's/^\(........\)\(....\)\(....\)\(....\)\(............\)$$/\1-\2-\3-\4-\5/')
+          UUID_PROFILE=$$(echo "$$U2" | sed 's/^\(........\)\(....\)\(....\)\(....\)\(............\)$$/\1-\2-\3-\4-\5/')
+          cat > /data/ca.mobileconfig <<MOBEND
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+          <key>PayloadContent</key>
+          <array>
+            <dict>
+              <key>PayloadCertificateFileName</key>
+              <string>augmentum-root-ca.crt</string>
+              <key>PayloadContent</key>
+              <data>$$CA_DER_B64</data>
+              <key>PayloadDescription</key>
+              <string>Augmentum local certificate authority — trust this to allow Service Worker + Web Push from your local Augmentum server.</string>
+              <key>PayloadDisplayName</key>
+              <string>Augmentum Local Root CA</string>
+              <key>PayloadIdentifier</key>
+              <string>local.augmentum.ca.cert</string>
+              <key>PayloadType</key>
+              <string>com.apple.security.root</string>
+              <key>PayloadUUID</key>
+              <string>$$UUID_CERT</string>
+              <key>PayloadVersion</key>
+              <integer>1</integer>
+            </dict>
+          </array>
+          <key>PayloadDescription</key>
+          <string>Installs the Augmentum local root CA so this device trusts the local server's HTTPS cert. Required for browser push notifications.</string>
+          <key>PayloadDisplayName</key>
+          <string>Augmentum Local Trust</string>
+          <key>PayloadIdentifier</key>
+          <string>local.augmentum.ca.profile</string>
+          <key>PayloadOrganization</key>
+          <string>Augmentum</string>
+          <key>PayloadType</key>
+          <string>Configuration</string>
+          <key>PayloadUUID</key>
+          <string>$$UUID_PROFILE</string>
+          <key>PayloadVersion</key>
+          <integer>1</integer>
+        </dict>
+        </plist>
+        MOBEND
+          echo "Generated iOS .mobileconfig profile"
+        fi
+
+        # Boot page served by the handle_errors block in the :6443 site
+        # while the app upstream is still starting (see Boot page comment
+        # in the Caddyfile below). Written as a file so Caddy's
+        # {placeholder} expansion never touches the CSS/JS braces.
+        mkdir -p /srv
+        cat > /srv/augmentum-boot.html <<'BOOTEOF'
+        <!doctype html>
+        <html><head><meta charset="utf-8">
+        <title>Augmentum &mdash; waking</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="color-scheme" content="dark">
+        <style>
+          /* NOTE: this file is authored inside compose.yaml — no literal
+             single dollar-signs allowed (compose interpolation eats them). */
+          html,body{margin:0;height:100%}
+          body{display:flex;align-items:center;justify-content:center;overflow:hidden;
+               background-color:#0f1014;
+               background:radial-gradient(125% 120% at 50% 40%,#1c1e26 0%,#141519 58%,#0f1014 100%);
+               color:#e7e7ea;font:16px/1.5 'Instrument Sans',system-ui,-apple-system,sans-serif}
+          /* Aurora backdrop: three blurred blobs, each with a cool gradient
+             (::before) and a warm gradient (::after) crossfaded by opacity —
+             the whole field breathes cool (periwinkle / violet / blue) to
+             warm (amber / rose) and back. Opacity is used (not animated
+             gradient colors) because Chromium doesn't repaint currentColor
+             gradients mid-animation. The sky oversizes the viewport so the
+             blur falloff at the layer edge lands off-screen. */
+          .sky{position:fixed;inset:-18vmax;filter:blur(90px) saturate(1.2);opacity:.5;pointer-events:none}
+          .blob{position:absolute;border-radius:50%}
+          .blob::before,.blob::after{content:"";position:absolute;inset:0;border-radius:50%}
+          .blob::before{background:radial-gradient(circle at 50% 50%,var(--cool) 0%,transparent 65%);
+                        animation:ebb 24s ease-in-out var(--d,0s) infinite}
+          .blob::after{background:radial-gradient(circle at 50% 50%,var(--warm) 0%,transparent 65%);
+                       opacity:0;animation:tide 24s ease-in-out var(--d,0s) infinite}
+          @keyframes ebb{0%,100%{opacity:1}50%{opacity:.22}}
+          @keyframes tide{0%,100%{opacity:0}50%{opacity:1}}
+          .b1{width:75vmax;height:75vmax;top:-12vmax;left:-4vmax;--cool:#7aa2f7;--warm:#f2a35c;
+              animation:drift1 37s ease-in-out infinite alternate}
+          .b2{width:65vmax;height:65vmax;bottom:-10vmax;right:0;--cool:#8b5cf6;--warm:#e4566e;
+              --d:-2s;animation:drift2 43s ease-in-out infinite alternate}
+          .b3{width:55vmax;height:55vmax;top:calc(50% - 27vmax);left:calc(50% - 27vmax);
+              --cool:#38b6d8;--warm:#e8883a;
+              --d:-4s;animation:drift3 31s ease-in-out infinite alternate}
+          @keyframes drift1{to{transform:translate(9vmax,7vmax) scale(1.12)}}
+          @keyframes drift2{to{transform:translate(-8vmax,-6vmax) scale(1.08)}}
+          @keyframes drift3{to{transform:translate(-10vmax,6vmax) scale(1.15)}}
+          .stage{position:relative;display:flex;flex-direction:column;align-items:center;gap:20px;
+                 animation:rise .7s ease both;text-align:center}
+          h1{font-size:clamp(16px,3.4vw,23px);font-weight:600;letter-spacing:.34em;
+             text-transform:uppercase;margin:0;padding-left:.34em;white-space:nowrap;
+             text-shadow:0 0 24px rgba(138,160,255,.25)}
+          .dots{display:inline-block;width:2em;text-align:left}
+          .dots span{opacity:0;animation:d1 2.1s infinite}
+          .dots span:nth-child(2){animation-name:d2}
+          .dots span:nth-child(3){animation-name:d3}
+          @keyframes d1{0%{opacity:0}8%,86%{opacity:1}94%,100%{opacity:0}}
+          @keyframes d2{0%,30%{opacity:0}38%,86%{opacity:1}94%,100%{opacity:0}}
+          @keyframes d3{0%,60%{opacity:0}68%,86%{opacity:1}94%,100%{opacity:0}}
+          @keyframes rise{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:none}}
+          .hint{font-size:12.5px;letter-spacing:.02em;color:#9aa0ae;margin:0;
+                min-height:1.2em;opacity:0;transition:opacity .8s ease}
+          .hint.show{opacity:.75}
+          @media (prefers-reduced-motion:reduce){
+            .blob,.blob::before,.blob::after,.stage{animation:none}
+            .dots span{animation:none;opacity:1}
+          }
+        </style></head>
+        <body>
+          <div class="sky" aria-hidden="true">
+            <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+          </div>
+          <main class="stage" role="status" aria-live="polite">
+            <h1>Waking Augmentum<span class="dots" aria-hidden="true"><span>.</span><span>.</span><span>.</span></span></h1>
+            <p class="hint" id="s"></p>
+          </main>
+          <script>
+            let n=0;
+            const s=document.getElementById('s');
+            const t=setInterval(async()=>{
+              n++;
+              try{
+                const r=await fetch('/api/auth/status',{cache:'no-store'});
+                if(r.ok){clearInterval(t);location.reload();return;}
+              }catch(e){}
+              if(n>4){
+                s.textContent='Still starting ('+ (n*2.5|0) +'s)... large first boots can take a minute.';
+                s.classList.add('show');
+              }
+            },2500);
+          </script>
+        </body></html>
+        BOOTEOF
+
+        # Per-SERVICE "still starting" page, served by the handle_errors block
+        # in every front-door snippet (providers/caddy_front_door.py) while a
+        # marketplace app's container is up but not yet answering (first-time
+        # setup: DB migrations, model/data downloads — e.g. libretranslate
+        # pulls gigabytes of language models before it binds its port). Distinct
+        # from augmentum-boot.html: it names the SERVICE (from the subdomain),
+        # explains it's finishing background setup, and polls the service's own
+        # URL — reloading only when the real app answers (detected via the
+        # absence of the X-Augmentum-Service-Starting marker header this block
+        # sets). No literal single dollar-signs (compose interpolation).
+        cat > /srv/service-starting.html <<'SVCEOF'
+        <!doctype html>
+        <html><head><meta charset="utf-8">
+        <title>Finishing setup&hellip;</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="color-scheme" content="dark">
+        <style>
+          html,body{margin:0;height:100%}
+          body{display:flex;align-items:center;justify-content:center;overflow:hidden;
+               background-color:#0f1014;
+               background:radial-gradient(125% 120% at 50% 40%,#1c1e26 0%,#141519 58%,#0f1014 100%);
+               color:#e7e7ea;font:16px/1.5 system-ui,-apple-system,sans-serif}
+          .sky{position:fixed;inset:-18vmax;filter:blur(90px) saturate(1.2);opacity:.42;pointer-events:none}
+          .blob{position:absolute;border-radius:50%}
+          .blob::before{content:"";position:absolute;inset:0;border-radius:50%;
+                        background:radial-gradient(circle at 50% 50%,var(--c) 0%,transparent 65%);
+                        animation:ebb 24s ease-in-out var(--d,0s) infinite}
+          @keyframes ebb{0%,100%{opacity:1}50%{opacity:.3}}
+          .b1{width:75vmax;height:75vmax;top:-12vmax;left:-4vmax;--c:#7aa2f7;
+              animation:drift1 37s ease-in-out infinite alternate}
+          .b2{width:62vmax;height:62vmax;bottom:-10vmax;right:0;--c:#8b5cf6;--d:-2s;
+              animation:drift2 43s ease-in-out infinite alternate}
+          @keyframes drift1{to{transform:translate(9vmax,7vmax) scale(1.12)}}
+          @keyframes drift2{to{transform:translate(-8vmax,-6vmax) scale(1.08)}}
+          .stage{position:relative;display:flex;flex-direction:column;align-items:center;gap:16px;
+                 animation:rise .7s ease both;text-align:center;max-width:33rem;padding:0 26px}
+          .spin{width:32px;height:32px;border-radius:50%;border:3px solid rgba(255,255,255,.14);
+                border-top-color:#8aa0ff;animation:sp 1s linear infinite}
+          @keyframes sp{to{transform:rotate(360deg)}}
+          h1{font-size:clamp(18px,3.4vw,24px);font-weight:600;margin:0;letter-spacing:.01em}
+          .name{color:#8aa0ff;word-break:break-word}
+          .hint{font-size:13.5px;color:#9aa0ae;margin:0;line-height:1.6}
+          .sub{font-size:12px;color:#767c8a;margin:0;min-height:1.2em}
+          @keyframes rise{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:none}}
+          @media (prefers-reduced-motion:reduce){.blob::before,.stage,.spin{animation:none}}
+        </style></head>
+        <body>
+          <div class="sky" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div></div>
+          <main class="stage" role="status" aria-live="polite">
+            <div class="spin" aria-hidden="true"></div>
+            <h1>Setting up <span class="name" id="nm">this app</span></h1>
+            <p class="hint">It's installed and running &mdash; finishing first-time setup in the
+               background. Some apps download data or models on first launch, which can take a few
+               minutes. This page refreshes on its own the moment it's ready.</p>
+            <p class="sub" id="sub"></p>
+          </main>
+          <script>
+            var label=(location.hostname||"").split(".")[0];
+            if(label && !/^[0-9]/.test(label)){ document.getElementById("nm").textContent=label; }
+            var n=0, sub=document.getElementById("sub");
+            setInterval(function(){
+              n++;
+              fetch(location.href,{cache:"no-store",redirect:"manual"}).then(function(r){
+                if(!r.headers.get("X-Augmentum-Service-Starting")){ location.reload(); }
+              }).catch(function(){});
+              if(n>3){ sub.textContent="Still setting up (" + ((n*3)|0) + "s)…"; }
+            },3000);
+          </script>
+        </body></html>
+        SVCEOF
+
+        cat > /etc/caddy/Caddyfile <<'EOF'
+        {
+          servers {
+            listener_wrappers {
+              http_redirect
+              tls
+            }
+          }
+        }
+        # Per-media-server TLS front doors (one :PORT {…} block per file),
+        # written by Augmentum into the shared caddy_sites volume at install
+        # time. Top-level import (outside any site block); a glob that
+        # matches nothing is not an error, so this is inert until the first
+        # media server is installed. Re-read on every cold start, so front
+        # doors are restart-safe without Augmentum doing anything.
+        import /etc/caddy/sites/*.caddy
+
+        :6443 {
+          tls /data/cert.pem /data/key.pem
+
+          header Strict-Transport-Security "max-age=3600; includeSubDomains"
+
+          # ── Boot page ─────────────────────────────────────────
+          # Caddy now starts with the augmentum CONTAINER (depends_on
+          # service_started, not service_healthy), so during the app's
+          # startup window the upstream refuses connections -> 502.
+          # Serve the self-contained boot page written to /srv by the
+          # entrypoint script above (a FILE, not an inline respond —
+          # Caddy expands {placeholders} inside respond bodies, which
+          # would mangle the page's CSS/JS braces). The page polls
+          # /api/auth/status and reloads into the real UI the moment
+          # the app answers.
+          handle_errors 502 503 {
+            rewrite * /augmentum-boot.html
+            root * /srv
+            file_server
+            header Content-Type "text/html; charset=utf-8"
+            header Cache-Control "no-store"
+          }
+
+          # ── Root CA download ─────────────────────────────────
+          # Users install this once per device to trust every cert
+          # this Caddy issues. Required for Service Worker + Web Push
+          # registration (browsers refuse SW install on untrusted
+          # HTTPS even after the user accepts the navigation warning).
+          # Served unauthenticated — public-key material, no secrets.
+          # The file is the same /data/ca.crt the leaf is signed by.
+          @rootca path /caddy-root-ca
+          handle @rootca {
+            rewrite * /ca.crt
+            root * /data
+            file_server {
+              hide /data/ca.key /data/key.pem /data/cert.pem
+            }
+            header Content-Type "application/x-x509-ca-cert"
+            header Content-Disposition "attachment; filename=augmentum-root-ca.crt"
+            header Cache-Control "max-age=0, no-cache"
+          }
+
+          # iOS configuration profile — one-tap install on iPhone/iPad.
+          # MIME type ``application/x-apple-aspen-config`` triggers the
+          # Settings handoff: Safari "downloads" the profile and the
+          # user is prompted in Settings to review + install.
+          @rootcamob path /caddy-root-ca.mobileconfig
+          handle @rootcamob {
+            rewrite * /ca.mobileconfig
+            root * /data
+            file_server {
+              hide /data/ca.key /data/key.pem /data/cert.pem /data/ca.crt
+            }
+            header Content-Type "application/x-apple-aspen-config"
+            header Content-Disposition "attachment; filename=augmentum-root-ca.mobileconfig"
+            header Cache-Control "max-age=0, no-cache"
+          }
+
+          # ── Game-stream proxy ─────────────────────────────────
+          # Selkies' WebRTC viewer is served HTTP-only inside the
+          # agsp container. Iframing it directly from this HTTPS
+          # page is mixed-content blocked. We transparently proxy
+          # /stream/<port>/* through here so the stream is on the
+          # same origin as the parent (no mixed-content) and the
+          # browser pads it with our TLS cert.
+          #
+          # The agsp containers expose 8080->host:<port> on Docker's
+          # default bridge, NOT the augmentum compose network, so
+          # Caddy reaches them through host.docker.internal.
+          @stream path_regexp stream ^/stream/(\d+)(/.*)?$
+          handle @stream {
+            uri strip_prefix /stream/{re.stream.1}
+            reverse_proxy host.docker.internal:{re.stream.1} {
+              flush_interval -1
+              transport http {
+                read_timeout 600s
+                write_timeout 600s
+              }
+            }
+          }
+
+          # ── Default route: Augmentum proxy ────────────────────
+          reverse_proxy augmentum:6100 {
+            flush_interval -1
+            transport http {
+              read_timeout 600s
+              write_timeout 600s
+            }
+          }
+        }
+
+        # ── Isolated coder-preview origin ─────────────────────────
+        # Different external port = different browser origin = no
+        # cookie crossover from the main Augmentum app. Same self-
+        # signed cert (covers all SAN hosts on any port).
+        #
+        # The X-Augmentum-Preview-Listener header tells the FastAPI
+        # app (via _PreviewListenerGate middleware) to enforce two
+        # invariants: (1) reject any path not under /api/coder/preview/
+        # with 404, (2) use preview-session cookie auth instead of the
+        # main session cookie (which won't be sent across origins).
+        :6444 {
+          tls /data/cert.pem /data/key.pem
+
+          header Strict-Transport-Security "max-age=3600; includeSubDomains"
+
+          reverse_proxy augmentum:6100 {
+            header_up X-Augmentum-Preview-Listener "true"
+            flush_interval -1
+            transport http {
+              read_timeout 600s
+              write_timeout 600s
+            }
+          }
+        }
+        EOF
+        # The import glob needs its directory to exist before caddy parses
+        # the Caddyfile (the shared volume is mounted here, but be defensive
+        # in case it's empty on a fresh install).
+        mkdir -p /etc/caddy/sites
+        # The augmentum container (non-root user) writes per-server front-door
+        # snippets into this SHARED volume. Docker inits the named volume
+        # root-owned, so without this the app gets EPERM and no front door is
+        # ever written. caddy runs as root here, so it can open the perms; the
+        # setting persists on the volume across restarts.
+        chmod 777 /etc/caddy/sites
+        caddy run --config /etc/caddy/Caddyfile
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+  # ---- Docker socket proxy ----
+  # Sits between Augmentum / autoheal and the Docker daemon, exposing
+  # ONLY the API surface those services actually need (containers, images,
+  # volumes, networks, exec). If augmentum is ever RCE'd the attacker can
+  # manage workspace containers but cannot escape to the host because the
+  # proxy refuses BUILD / SWARM / SYSTEM / privileged-exec calls.
+  #
+  # See `tecnativa/docker-socket-proxy` README for the full ACL matrix.
+  # Pinned to 0.3.0; bump when vendoring all Docker bases by digest.
+  docker-proxy:
+    image: tecnativa/docker-socket-proxy:0.3.0
+    # Runaway backstop (B3). Measured working set is a small fraction of
+    # this; the limit exists so a leak here can never reach the host.
+    mem_limit: 128m
+    restart: unless-stopped
+    privileged: false
+    # NOTE: read_only would block the entrypoint from writing
+    # /usr/local/etc/haproxy/haproxy.cfg from the env-driven template,
+    # so the container is left writable. The image's ATTACK surface
+    # is just haproxy + a templated config — small enough that the
+    # marginal hardening of read_only isn't worth the operational risk.
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      # Endpoint allowlist — anything not enumerated here returns 403.
+      - CONTAINERS=1
+      - IMAGES=1
+      - VOLUMES=1
+      - NETWORKS=1
+      - EXEC=1     # required for coder-mode interactive shells
+      - INFO=1     # autoheal needs /info
+      - POST=1     # required for any write operations
+      # BUILD: required by the add-on installer (Discover -> Add-ons),
+      # which builds capability images (game-stream base/luanti/emulator/
+      # browser) from Dockerfiles that ship inside this repo. Without it
+      # `POST /build` returns 403 and no add-on can be installed in-app.
+      #
+      # Honest accounting of what this costs, since the header above
+      # advertises that BUILD is refused: it is NOT a new escalation
+      # path. CONTAINERS=1 + POST=1 already permit creating a container
+      # from an arbitrary image with an arbitrary host bind mount, which
+      # is strictly more powerful than producing an image. The build
+      # context Augmentum sends is a narrow tar of
+      # ./services/game-stream (mounted read-only at /app/addon-build),
+      # never the repo root, and the Dockerfile path is chosen from the
+      # catalog rather than from request input.
+      #
+      # Set to 0 to harden: add-ons then have to be built on the host
+      # with `start.sh build` / `start.bat build`, and the Discover
+      # cards report "build unavailable" instead of offering Install.
+      - BUILD=${AUGMENTUM_DOCKER_PROXY_BUILD:-1}
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+  augmentum:
+    # Production install pulls the published image; dev overlay
+    # (compose.dev.yaml) re-adds `build:` + source bind mounts.
+    # Variant selection: AUGMENTUM_VARIANT=cpu (default) or gpu.
+    image: ghcr.io/augmentumhq/augmentum:${AUGMENTUM_VARIANT:-cpu}-latest
+    # NO mem_limit by default, and that is deliberate — see below before
+    # setting AUGMENTUM_MEM_LIMIT. This container hosts the llama-server
+    # subprocesses (Slots A/B/C), whose host-memory footprint for a single
+    # model load is roughly DOUBLE the GGUF on disk:
+    #
+    #   1. llama.cpp mmaps the whole .gguf — every page it touches is
+    #      charged to this cgroup as page cache (17.9 GB of cache for a
+    #      17.8 GB model, with only ~1.5 GB of actual rss);
+    #   2. on WSL2/WDDM, a cudaMalloc for the weights buffer takes a
+    #      host-memory backing allocation that is ALSO charged here.
+    #
+    # A 32 GB limit therefore made a 17.8 GB model fail to load on a 24 GB
+    # card with the GPU completely idle: 17.9 GB of mmap cache + a 16.0 GB
+    # device-backing allocation = 33.9 GB against a 32 GB ceiling, and
+    # cudaMalloc returned "out of memory" — pointing the blame at VRAM that
+    # was in fact 23 GB free. Every layer-reduction retry hit the same wall.
+    #
+    # If you do set a limit, size it at >= 2x your largest GGUF plus KV and
+    # workspace, not 1x. Real budgeting belongs to the in-process governor;
+    # a cgroup kill here does not stop one process, it takes down every
+    # model slot at once, which reads to the user as "everything vanished".
+    #
+    # NOTE on Docker Desktop / WSL2: that stack runs cgroup **v1**, which
+    # has no `memory.high`. There is no throttle-before-kill rung there —
+    # reaching the number is an immediate OOM kill, no soft landing.
+    mem_limit: ${AUGMENTUM_MEM_LIMIT:-0}
+    # Self-heal policy: Docker respawns on crash/OOM/host-reboot; the
+    # `autoheal=true` label tells the autoheal sidecar to also restart
+    # if the healthcheck flips to unhealthy (hang without crash).
+    restart: unless-stopped
+    labels:
+      - autoheal=true
+    networks:
+      # `default` = all peer services (caddy, searxng, docker-proxy, …).
+      # `executor_net` (internal, no egress) = the ONLY route to the code
+      # executor, so the executor itself can stay off `default` and remain
+      # air-gapped from the internet/LAN while still reachable here.
+      - default
+      - executor_net
+    ports:
+      # See AUGMENTUM_BIND_HOST comment on the caddy service above. Default
+      # 127.0.0.1 = localhost-only; set to 0.0.0.0 to expose on the LAN.
+      - "${AUGMENTUM_BIND_HOST:-127.0.0.1}:6100:6100"
+    volumes:
+      - augmentum_data:/data
+      - image_output:/data/image_output
+      # Shared with the caddy container: Augmentum writes one Caddy site
+      # block per provisioned media server here (a real HTTPS front door),
+      # then triggers `caddy reload`. See providers/caddy_front_door.py.
+      - caddy_sites:/caddy-sites
+      - augmentum_cache:/home/augmentum/.cache
+      - augmentum_models:/home/augmentum/.wespeaker
+      - ./data/voices:/data/voices
+      - ./config:/config:ro
+      # Read-only view of the host augmentum source tree so the coder
+      # self-test endpoint can seed a workspace with the live (including
+      # uncommitted) project files. Endpoint refuses to run if this path
+      # is missing or empty, so OSS installs that don't mount it see a
+      # graceful error rather than a partial seed.
+      - .:/host-augmentum-src:ro
+      # Narrow rw mount so the SearXNG outbound-proxy manager can write
+      # ``outgoing.proxies`` into SearXNG's settings.yml without
+      # broadening the rest of ./config to writable. SearXNG itself
+      # bind-mounts the same host directory at /etc/searxng (see the
+      # searxng service below); both containers see changes immediately,
+      # and Augmentum triggers a SearXNG container restart for the new
+      # proxy to take effect.
+      - ./config/searxng:/srv/searxng_config:rw
+      # Runtime pose assets — atlases, affordance vocab, body-geometry, and
+      # VRMA motion clips. Bind-mounted read-only so the proxy server's
+      # /poses scoped StaticFiles mount (allowlist-filtered) can serve them.
+      # Not COPIED into the image so we don't ship user-private pose
+      # captures or the extraction Python scripts; the server-side allowlist
+      # is the public exposure boundary, this mount just makes files
+      # available inside the container.
+      #
+      # Includes poses/external/sillytavern-pack (the ~99MB BVH motion pack
+      # served via /bvh-library) as a sub-path under the same parent mount.
+      - ./poses:/app/poses:ro
+      # Discover surface catalog — data/marketplace/listings.json is the
+      # canonical curated title catalog (games / web apps / streamed bundles).
+      # Bind-mounted read-only so hot edits during dev light up Discover
+      # without a rebuild. In production the file is COPIED into the image
+      # by Dockerfile so the mount is purely additive — the loader picks
+      # whichever it finds first via Path("data/marketplace/listings.json").
+      - ./data/marketplace:/app/data/marketplace:ro
+      # Game-stream persistent state. These live in CORE, not in
+      # compose.game-stream.yaml, because the streaming images are
+      # installable in-app as add-ons (Discover -> Add-ons) and an
+      # in-app install cannot append an overlay to .augmentum.conf.
+      # Declared here, a user who installs the emulator add-on gets
+      # working saves; declared in the overlay only, streaming would
+      # come up fine while memory cards, save states and NAND silently
+      # had nowhere to live -- a data-loss bug that looks like success.
+      # The overlay still bind-mounts nothing extra; it only builds.
+      - game_stream_worlds:/data/game_stream/worlds
+      - game_stream_emulator_saves:/data/game_stream/emulator-saves
+      # Narrow, read-only build context for add-on images. The add-on
+      # builder tars ONLY this directory (every COPY in the four
+      # game-stream Dockerfiles reads from services/game-stream/scripts/),
+      # so an add-on build never ships the repo root to the daemon.
+      - ./services/game-stream:/app/addon-build/game-stream:ro
+    depends_on:
+      # service_started, NOT service_healthy: searxng (web search) and executor
+      # (code-exec) are RUNTIME features the app handles gracefully when not yet
+      # ready — they are not needed to boot. Gating augmentum's START on their
+      # HEALTH stranded augmentum (and caddy, which depends on it) in "Created"
+      # whenever a dep was slow to go healthy (image pull / WSL restart / OOM)
+      # and the foreground `docker compose up` ended before the gate cleared —
+      # the recurring "augmentum + caddy never start, stay dead" bug.
+      searxng:
+        condition: service_started
+      executor:
+        condition: service_started
+      docker-proxy:
+        condition: service_started
+    # Makes `host.docker.internal` resolvable on Linux hosts too (Docker
+    # Desktop on Mac/Windows provides it by default). Used by the media
+    # server auto-detector to probe the user's box for services like
+    # Audiobookshelf / Emby running on default ports.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      # aiodocker reads DOCKER_HOST automatically; this routes every
+      # Docker API call through the docker-proxy ACL instead of the
+      # raw socket on the host.
+      - DOCKER_HOST=tcp://docker-proxy:2375
+      - AUGMENTUM_SEARXNG_BASE_URL=http://searxng:8080
+      - AUGMENTUM_EXECUTOR_BASE_URL=http://executor:5000
+      - AUGMENTUM_DATA_DIR=/data
+      # OCR engine selection for comic/manga narration. There is no env_file on
+      # this service, so host .env keys only reach the app if forwarded here
+      # explicitly. Defaults preserve current behaviour (docling sidecar).
+      # Defaults are spelled out rather than left empty: pydantic rejects "" for
+      # a bool field, so an unset AUGMENTUM_OCR_ENABLED forwarded as an empty
+      # string fails Settings() validation and the container never boots.
+      - AUGMENTUM_OCR_ENABLED=${AUGMENTUM_OCR_ENABLED:-false}
+      - AUGMENTUM_OCR_ENGINE=${AUGMENTUM_OCR_ENGINE:-docling}
+      - AUGMENTUM_OCR_VLM_MODEL=${AUGMENTUM_OCR_VLM_MODEL:-}
+      - AUGMENTUM_OCR_VLM_MAX_TOKENS=${AUGMENTUM_OCR_VLM_MAX_TOKENS:-1024}
+      - AUGMENTUM_OCR_VLM_TIMEOUT_S=${AUGMENTUM_OCR_VLM_TIMEOUT_S:-120}
+      - AUGMENTUM_OCR_VLM_PROMPT=${AUGMENTUM_OCR_VLM_PROMPT:-}
+      # Tell the app its own memory ceiling, in MiB. Docker mounts the
+      # cgroup read-only and, on cgroup v1, reports an "unlimited" sentinel
+      # when no limit is set — so the in-process sizing helpers cannot
+      # always discover the limit that actually applies to them.
+      # EMPTY by default, matching the absent `mem_limit` above: a stale
+      # number here shrinks --cache-ram and the KV budget for a ceiling
+      # that isn't real. If you set AUGMENTUM_MEM_LIMIT, set this too —
+      # same number, in MiB.
+      - AUGMENTUM_MEMORY_LIMIT_MIB=${AUGMENTUM_MEMORY_LIMIT_MIB:-}
+      # Front-gate domain — the app needs it to scope the session cookie and
+      # to write the gate Caddy snippets (apex + per-service subdomains).
+      - AUGMENTUM_GATE_DOMAIN=${AUGMENTUM_GATE_DOMAIN:-}
+      # Host interface provisioned-service ports bind to (default loopback);
+      # the app reads this to set HostIp on the containers it creates.
+      - AUGMENTUM_BIND_HOST=${AUGMENTUM_BIND_HOST:-127.0.0.1}
+      - AUGMENTUM_IMAGE_ENABLED=${AUGMENTUM_IMAGE_ENABLED:-false}
+      - AUGMENTUM_HUGGINGFACE_TOKEN=${AUGMENTUM_HUGGINGFACE_TOKEN:-}
+      - AUGMENTUM_OLLAMA_BASE_URL=${AUGMENTUM_OLLAMA_BASE_URL:-}
+      - AUGMENTUM_LLAMACPP_BASE_URL=${AUGMENTUM_LLAMACPP_BASE_URL:-}
+      - AUGMENTUM_OPENAI_API_KEY=${AUGMENTUM_OPENAI_API_KEY:-}
+      - AUGMENTUM_OPENAI_BASE_URL=${AUGMENTUM_OPENAI_BASE_URL:-https://api.openai.com/v1}
+      - AUGMENTUM_DEFAULT_BACKEND=${AUGMENTUM_DEFAULT_BACKEND:-engine}
+      - AUGMENTUM_STT_PROVIDER_URL=${AUGMENTUM_STT_PROVIDER_URL:-}
+      - AUGMENTUM_STT_DEFAULT_MODEL=${AUGMENTUM_STT_DEFAULT_MODEL:-}
+      - AUGMENTUM_TTS_KOKORO_URL=${AUGMENTUM_TTS_KOKORO_URL:-}
+      - AUGMENTUM_TTS_CHATTERBOX_URL=${AUGMENTUM_TTS_CHATTERBOX_URL:-}
+      - AUGMENTUM_TTS_CHATTERBOX_TURBO_URL=${AUGMENTUM_TTS_CHATTERBOX_TURBO_URL:-}
+      - AUGMENTUM_TTS_QWEN_URL=${AUGMENTUM_TTS_QWEN_URL:-}
+      - AUGMENTUM_TTS_FISH_URL=${AUGMENTUM_TTS_FISH_URL:-}
+      # Generic OpenAI-compatible TTS endpoint (bring your own /v1/audio/speech
+      # server: Higgs Audio v3 via sglang-omni, a peer's TTS, OpenAI, etc.)
+      - AUGMENTUM_TTS_OPENAI_URL=${AUGMENTUM_TTS_OPENAI_URL:-}
+      # Affect -> voice style cues for omni TTS (her mood drives delivery)
+      - AUGMENTUM_COMPANION_VOICE_EMOTION_TAG=${AUGMENTUM_COMPANION_VOICE_EMOTION_TAG:-false}
+      - AUGMENTUM_TTS_POCKET_BUILTIN=${AUGMENTUM_TTS_POCKET_BUILTIN:-false}
+      - AUGMENTUM_TTS_POCKET_LANGUAGE=${AUGMENTUM_TTS_POCKET_LANGUAGE:-english}
+      # HuggingFace auth — required for gated repos. Pocket TTS voice
+      # cloning lives in ``kyutai/pocket-tts`` which is gated on terms
+      # acceptance. Accept the terms at https://huggingface.co/kyutai/pocket-tts
+      # and put a read-scope token in HF_TOKEN to unlock cloning.
+      # Without it Pocket TTS still works — just falls back to the
+      # built-in voice catalog (alba, marius, etc.) — but
+      # ``get_state_for_audio_prompt(wav_path)`` for cloned voices
+      # raises a clear error.
+      - HF_TOKEN=${HF_TOKEN:-}
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN:-}
+      - AUGMENTUM_ENGINE_MODEL_DIR=${AUGMENTUM_ENGINE_MODEL_DIR:-/data/models}
+      - AUGMENTUM_LLAMACPP_MODEL_DIR=${AUGMENTUM_LLAMACPP_MODEL_DIR:-/data/llama_models}
+      - AUGMENTUM_ENGINE_EXTRA_MODEL_DIRS=${AUGMENTUM_ENGINE_EXTRA_MODEL_DIRS:-}
+      - AUGMENTUM_PUBLIC_HOST=${AUGMENTUM_PUBLIC_HOST:-}
+      # Auto-detected LAN + Tailscale IPs (start.sh / start.bat populate this for
+      # the TLS cert). The mobile-pair /finish handler reuses the Tailscale
+      # (100.64/10) entry to hand phones an automatic off-LAN endpoint — no
+      # operator config and, unlike AUGMENTUM_PUBLIC_HOST, no cast-URL impact.
+      - AUGMENTUM_TLS_EXTRA_SANS=${AUGMENTUM_TLS_EXTRA_SANS:-}
+      # Connect durable off-network guest transport (Tailscale Funnel tier).
+      # start.sh/start.bat auto-detect the ts.net MagicDNS name; the funnel URL/
+      # port/live flags are operator opt-ins. Empty = funnel tier unavailable and
+      # the ladder falls to the anonymous cloudflared last resort.
+      - AUGMENTUM_TAILNET_HOSTNAME=${AUGMENTUM_TAILNET_HOSTNAME:-}
+      - AUGMENTUM_CONNECT_FUNNEL=${AUGMENTUM_CONNECT_FUNNEL:-}
+      - AUGMENTUM_CONNECT_FUNNEL_URL=${AUGMENTUM_CONNECT_FUNNEL_URL:-}
+      - AUGMENTUM_CONNECT_FUNNEL_PORT=${AUGMENTUM_CONNECT_FUNNEL_PORT:-}
+      - AUGMENTUM_CONNECT_FUNNEL_LIVE=${AUGMENTUM_CONNECT_FUNNEL_LIVE:-}
+      - AUGMENTUM_GAME_STREAM_IDLE_TIMEOUT_SECONDS=${AUGMENTUM_GAME_STREAM_IDLE_TIMEOUT_SECONDS:-3600}
+      - AUGMENTUM_GAME_STREAM_MOUSE_SENSITIVITY=${AUGMENTUM_GAME_STREAM_MOUSE_SENSITIVITY:-0.2}
+      # In-app resource monitor: when set, fetch host RAM/CPU from the
+      # host stats agent (scripts/host_stats_agent.py) so the panel can
+      # show host vs container side by side. Leave empty to auto-probe
+      # http://host.docker.internal:6109/stats (works on Docker Desktop
+      # once the agent is running); set TOKEN to match the agent's --token.
+      - AUGMENTUM_HOST_STATS_URL=${AUGMENTUM_HOST_STATS_URL:-}
+      - AUGMENTUM_HOST_STATS_TOKEN=${AUGMENTUM_HOST_STATS_TOKEN:-}
+      - AUGMENTUM_LOG_LEVEL=INFO
+      - TZ=${TZ:-}
+      # Redirect model caches to persistent volume so models don't re-download on rebuild
+      - HF_HOME=/home/augmentum/.cache/huggingface
+      - WESPEAKER_CACHE_DIR=/home/augmentum/.cache/wespeaker
+      - FASTEMBED_CACHE_PATH=/home/augmentum/.cache/fastembed
+      # Routes huggingface_hub downloads through the Rust-based hf_transfer
+      # parallel-range backend. Without this, Xet-backed image-model pulls
+      # (Z-Image / Z-Anime / etc.) run single-stream and bottleneck at a few
+      # KB/s. The `hf_transfer` package is installed in the Docker image.
+      - HF_HUB_ENABLE_HF_TRANSFER=${HF_HUB_ENABLE_HF_TRANSFER:-1}
+    healthcheck:
+      # The endpoint itself is trivial (returns a string), so a 5s timeout
+      # only fails if the asyncio event loop is starved. That happens
+      # legitimately during heavy model loads and during long generations
+      # on big MoE models with partial CPU offload — autoheal restarting
+      # mid-generation kills the warm slot and forces a full reload, which
+      # is strictly worse than tolerating the transient unresponsiveness.
+      # Tuning: ~3 minutes of consecutive failures before flagging.
+      test: ["CMD-SHELL", "curl -sf http://localhost:6100/ || exit 1"]
+      interval: 30s
+      timeout: 15s
+      retries: 6
+      start_period: 30s
+    logging:
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  searxng:
+    image: searxng/searxng:2026.7.22-ef8f6470e
+    # Runaway backstop (B3). Measured working set is a small fraction of
+    # this; the limit exists so a leak here can never reach the host.
+    mem_limit: 1g
+    restart: unless-stopped
+    labels:
+      - autoheal=true
+    volumes:
+      - ./config/searxng:/etc/searxng:rw
+    environment:
+      - SEARXNG_SECRET=${SEARXNG_SECRET:-change-me-in-production}
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging:
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  executor:
+    # Production install pulls the published image; dev overlay
+    # (compose.dev.yaml) re-adds `build:` so local executor changes take
+    # effect. Pulling avoids a cold compile of the scientific-Python wheels
+    # (numpy/scipy/…) on first `up`, which is minutes of apparent hang.
+    image: ghcr.io/augmentumhq/augmentum-executor:latest
+    restart: unless-stopped
+    labels:
+      - autoheal=true
+    networks:
+      # ONLY the internal network — no egress. Untrusted, model-generated
+      # snippets run here and have no reason to reach the internet or LAN.
+      # augmentum reaches this container via executor_net (it joins both).
+      - executor_net
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    environment:
+      # Pin BLAS / OMP / numexpr to single-thread. Default thread pools
+      # allocate large per-thread workspaces — on a 512M-1G container they
+      # ran out of heap on moderate numpy workloads with
+      # "OpenBLAS error: Memory allocation still failed after 10 retries".
+      # The executor is single-CPU anyway (cpus: "1.0"), so the threading
+      # only burns memory without giving back parallelism.
+      - OPENBLAS_NUM_THREADS=1
+      - OMP_NUM_THREADS=1
+      - MKL_NUM_THREADS=1
+      - NUMEXPR_NUM_THREADS=1
+    tmpfs:
+      - /work:size=100M,uid=1000,gid=1000
+      - /tmp:size=50M,uid=1000,gid=1000
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+          pids: 64
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:5000/health')\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # ---- Self-healing supervisor ----
+  # Watches the Docker daemon for containers labeled `autoheal=true` and
+  # restarts them when their healthcheck flips to unhealthy. Docker's own
+  # restart policy (set on each service above) only covers crashes/exits;
+  # autoheal covers hangs where the process stays alive but stops
+  # responding (deadlock, event-loop stall, stuck DB connection).
+  #
+  # Image is pinned by major version; willfarrell/autoheal is the
+  # community-standard sidecar (~10M+ pulls, actively maintained).
+  autoheal:
+    image: willfarrell/autoheal:1.2.0
+    # Runaway backstop (B3). Measured working set is a small fraction of
+    # this; the limit exists so a leak here can never reach the host.
+    mem_limit: 128m
+    restart: unless-stopped
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=autoheal
+      - AUTOHEAL_INTERVAL=30       # seconds between health polls
+      - AUTOHEAL_START_PERIOD=60   # grace period after container start
+    volumes:
+      # autoheal:1.2.0 hard-checks for a unix socket and cannot use the
+      # docker-proxy TCP endpoint. Acceptable: the autoheal image is a
+      # ~30-line shell loop that polls health labels and calls restart —
+      # vastly smaller attack surface than augmentum (the container we
+      # actually care about isolating from the raw socket).
+      - /var/run/docker.sock:/var/run/docker.sock
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+networks:
+  executor_net:
+    internal: true
+  workspace_net:
+    driver: bridge
+
+volumes:
+  augmentum_data:
+  augmentum_cache:
+  augmentum_models:
+  ollama_models:
+  llama_models:
+  image_models:
+  image_output:
+  caddy_data:
+  caddy_config:
+  # Per-media-server TLS front-door site blocks; shared rw between the
+  # augmentum container (writes) and caddy (imports). See compose mounts
+  # above and providers/caddy_front_door.py.
+  caddy_sites:
+  # ---- Game-stream persistent state (core, not overlay) ----
+  # See the mount comment on the augmentum service for why these are
+  # core: the streaming images install in-app as add-ons, and an in-app
+  # install can't add an overlay.
+  game_stream_worlds:
+    name: augmentum_game_stream_worlds
+  # Per-user emulator save volume. Layout under the mount root:
+  #   /<user_id>/<emulator>/<emulator's native config dir contents>
+  # e.g. /<user_id>/dolphin/Config/Dolphin.ini, .../GC/<memcards>,
+  #      .../StateSaves/<savestates>, .../Wii/<NAND>
+  # The runtime layer bind-mounts the per-user dir over each emulator's
+  # default config path inside the container.
+  game_stream_emulator_saves:
+    name: augmentum_game_stream_emulator_saves

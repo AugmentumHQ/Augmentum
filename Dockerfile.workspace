@@ -1,0 +1,305 @@
+# Augmentum Workspace — pre-baked dev environments for coder mode containers.
+#
+# Multi-stage build, one named target per tooling profile. Profile inheritance
+# is physical here (FROM power AS browser) so the build mirrors the resolver
+# in augmentum/coder/profiles.py. Profile catalog + install-line emitter live
+# in profiles.py — keep this file aligned with that one when adding profiles.
+#
+# Build all profile tags (recommended — call from start.bat/start.sh build):
+#   docker build -t augmentum-workspace:standard --target standard -f Dockerfile.workspace .
+#   docker build -t augmentum-workspace:power    --target power    -f Dockerfile.workspace .
+#   docker build -t augmentum-workspace:browser  --target browser  -f Dockerfile.workspace .
+#   docker tag augmentum-workspace:browser augmentum-workspace:latest
+#
+# Build a single profile:
+#   docker build -t augmentum-workspace:power --target power -f Dockerfile.workspace .
+#
+# Pre-installs dev tools, language runtimes, and AI coding CLI prerequisites
+# so workspace creation is instant (~1s) instead of waiting for apt-get (~60s).
+#
+# Spec: docs/superpowers/specs/2026-06-02-tooling-profile-system-v2.md
+
+# ============================================================================
+# Stage: standard — fast baseline for most Python/JS/Go/Rust work.
+# ============================================================================
+# Base image pinned to digest — see Dockerfile header for rotation
+# procedure (scripts/upgrade_base_images.sh).
+FROM ubuntu:24.04@sha256:786a8b558f7be160c6c8c4a54f9a57274f3b4fb1491cf65146521ae77ff1dc54 AS standard
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    # npm global packages go here (no sudo needed)
+    NPM_CONFIG_PREFIX=/usr/local \
+    # Python won't buffer stdout/stderr (better for terminal streaming)
+    PYTHONUNBUFFERED=1 \
+    # pip: no warnings about running as root
+    PIP_ROOT_USER_ACTION=ignore
+
+# --- Core dev tools + language runtimes ---
+# Ranked by frequency of "agent had to apt-get install this mid-task"
+# complaints from transcripts. GUI-lib stack (python3-tk + xvfb +
+# x11-utils) was added 2026-04-22 after the Pong-game transcript
+# where turtle code couldn't run because tkinter wasn't available
+# AND no X display existed.
+RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends \
+    # Editors & terminal tools
+    nano vim-tiny less tree jq httpie \
+    # Version control
+    git git-lfs \
+    # Network tools
+    curl wget ca-certificates openssh-client \
+    # Build essentials (gcc, make, etc.)
+    build-essential pkg-config \
+    # C library headers for pip-built Python packages. libffi / zlib /
+    # bz2 / readline / sqlite cover >90% of the "please install the
+    # Python development headers" errors we see on wheels.
+    libffi-dev libsqlite3-dev zlib1g-dev libbz2-dev libreadline-dev \
+    libssl-dev libxml2-dev libxslt1-dev \
+    # Python 3 + tkinter (for turtle / tkinter GUI code — otherwise
+    # tkinter imports raise ModuleNotFoundError even though python3 is
+    # installed).
+    python3 python3-pip python3-venv python3-dev python3-tk \
+    # Headless display stack — ``xvfb-run <cmd>`` makes turtle /
+    # pygame / matplotlib / any tk-using code runnable in the
+    # container without a real X server. Agent guide documents this
+    # pattern.
+    xvfb x11-utils \
+    # Go
+    golang-go \
+    # Database clients — agents building webapps often want to point
+    # at sqlite / postgres / redis without pulling the server-side.
+    sqlite3 postgresql-client redis-tools \
+    # Image / media basics (imagemagick small; ffmpeg-free excludes
+    # the large libav bundle but still provides image conversion).
+    imagemagick \
+    # Useful extras
+    unzip file sudo ripgrep fd-find bash-completion \
+    && rm -rf /var/lib/apt/lists/*
+
+# --- Python: symlink + allow system-wide pip ---
+# Ubuntu 24.04 blocks system-wide pip (PEP 668). Remove the guard — this is a container.
+RUN ln -sf /usr/bin/python3 /usr/local/bin/python && \
+    rm -f /usr/lib/python3*/EXTERNALLY-MANAGED && \
+    python3 -m pip install --no-cache-dir --ignore-installed setuptools wheel
+
+# --- Python dev tools (pre-installed so they're always available) ---
+# pytest-asyncio rides along with pytest — async test suites are common
+# enough that agents repeatedly had to install it mid-task.
+RUN python3 -m pip install --no-cache-dir \
+    --ignore-installed \
+    pytest pytest-asyncio ruff black mypy \
+    requests httpx flask fastapi uvicorn \
+    aider-chat
+
+# --- Node.js 20 LTS (NodeSource) ---
+# Ubuntu 24.04's apt nodejs is 18, too old for the Claude Code CLI. Install
+# 20.x from NodeSource so ``@anthropic-ai/claude-code`` installs and the coder
+# can drive Claude inside the container ("run with Claude"). NodeSource node
+# bundles npm.
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y -qq nodejs && \
+    rm -rf /var/lib/apt/lists/*
+
+# --- Node.js: install common global tools + the Claude Code CLI ---
+# With Node 20 the CLI installs cleanly. The driver execs ``claude -p
+# --output-format stream-json`` inside the workspace; the credential is passed
+# per-exec via env (CLAUDE_CODE_OAUTH_TOKEN), never on the command line.
+RUN npm install -g \
+    typescript ts-node \
+    eslint prettier \
+    @anthropic-ai/claude-code
+
+# --- Rust toolchain (rustup) ---
+# Canonical env extension lives at /etc/profile.d/augmentum-tools.sh so
+# non-interactive login shells (``bash -lc``) pick it up without needing
+# to touch .bashrc (which only interactive shells source). Any future
+# tool that writes to ~/.bashrc should add its env here instead — that
+# way ``shell_exec`` sees it on the very next command.
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
+    sh -s -- -y --default-toolchain stable --profile minimal && \
+    mkdir -p /etc/profile.d && \
+    printf '%s\n' \
+      '# Augmentum: tools installed outside system PATH (cargo, pipx, etc.)' \
+      '[ -f /root/.cargo/env ] && . /root/.cargo/env' \
+      > /etc/profile.d/augmentum-tools.sh && \
+    chmod 0644 /etc/profile.d/augmentum-tools.sh
+
+# Belt-and-suspenders: also extend PATH at the container ENV level so
+# non-shell execs (e.g. running rustc directly via ``exec``) resolve
+# without a login shell. profile.d covers env vars beyond PATH; this
+# covers plain binary lookup.
+ENV PATH="/root/.cargo/bin:/root/.local/bin:${PATH}"
+
+# --- fd symlink (Ubuntu packages it as fdfind) ---
+RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd 2>/dev/null || true
+
+# --- Workspace directory ---
+RUN mkdir -p /workspace
+
+# --- Shell environment ---
+RUN echo 'cd /workspace' >> /root/.bashrc && \
+    echo 'alias ll="ls -la"' >> /root/.bashrc && \
+    echo 'alias py="python3"' >> /root/.bashrc && \
+    echo 'alias python="python3"' >> /root/.bashrc && \
+    # Make the prompt recognizable but let the container manager override it
+    echo 'export PS1="\[\033[1;32m\]workspace\[\033[0m\]:\[\033[1;34m\]\w\[\033[0m\]\$ "' >> /root/.bashrc
+
+# --- Git defaults (overridden per-workspace by container manager) ---
+RUN git config --global user.email 'agent@augmentum.local' && \
+    git config --global user.name 'Augmentum Agent' && \
+    git config --global init.defaultBranch main
+
+# Profile-identifier label — read by the agent's environment dump and
+# by validate_tooling_profiles.py to confirm a built tag matches its
+# declared image_tag in profiles.py.
+LABEL augmentum.tooling_profile="standard"
+
+WORKDIR /workspace
+CMD ["tail", "-f", "/dev/null"]
+
+
+# ============================================================================
+# Stage: power — adds process/network inspection, modern Python/JS tooling,
+# and native build/debug helpers. Inherits from standard.
+# Package list MUST match _POWER_APT / _POWER_PIP / _POWER_NPM in
+# augmentum/coder/profiles.py — keep in sync.
+# ============================================================================
+FROM standard AS power
+
+RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends \
+    procps iproute2 lsof dnsutils netcat-openbsd psmisc net-tools \
+    cmake ninja-build gdb strace shellcheck shfmt zip rsync \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN python3 -m pip install --no-cache-dir --ignore-installed \
+    uv pipx pre-commit pytest-cov ipython
+
+RUN corepack enable 2>/dev/null || true && \
+    npm install -g pnpm yarn
+
+LABEL augmentum.tooling_profile="power"
+
+
+# ============================================================================
+# Stage: browser — since 2026-07-17 this is power plus nothing: browser
+# automation moved to the shared agent-browser sidecar service
+# (Dockerfile.browser / compose.browser.yaml), retiring the per-workspace
+# Playwright + Chromium install (~600MB and the profile's slow first
+# setup). The stage/tag stays so existing workspaces and the default
+# profile id keep resolving; keep in sync with the "browser" entry in
+# augmentum/coder/profiles.py.
+# ============================================================================
+FROM power AS browser
+
+LABEL augmentum.tooling_profile="browser"
+
+
+# ============================================================================
+# Stage: pentest — power profile plus the canonical authorized-pentest CLI
+# set: nmap, ZAP, msfconsole, sqlmap, hashcat, gobuster, SecLists, more.
+# Inherits from power. Largest profile (~4 GB) because of Metasploit +
+# exploitdb + ZAP + the SecLists wordlist pack.
+#
+# Package list MUST match _PENTEST_APT / _PENTEST_PIP / _PENTEST_POST in
+# augmentum/coder/profiles.py — keep in sync.
+#
+# Metasploit vendoring: same pattern as Dockerfile.llama-server — the .deb
+# is fetched once at build time from Rapid7's apt pool, sha256-verified,
+# and installed locally (no persistent apt source, no foreign apt key).
+# METASPLOIT_VERSION + METASPLOIT_SHA256 build args come from the pin
+# files at repo root. ``scripts/upgrade_msf.sh`` / ``.bat`` updates both
+# pins atomically when bumping versions.
+#
+# Refuses to build when METASPLOIT_SHA256=UNPINNED — the build args are
+# required so a fresh clone doesn't silently install an unverified
+# package. Run ``scripts/upgrade_msf.sh`` first to populate the pins.
+# ============================================================================
+FROM power AS pentest
+
+ARG METASPLOIT_VERSION
+ARG METASPLOIT_SHA256
+
+# --- Pentest apt set ---
+RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends \
+    nmap masscan nikto sqlmap hydra hashcat john \
+    dirb wfuzz tshark whatweb dnsenum dnsrecon \
+    smbclient enum4linux libimage-exiftool-perl \
+    responder exploitdb zaproxy \
+    && rm -rf /var/lib/apt/lists/*
+
+# --- Framework + protocol libs (pip) ---
+# theHarvester / impacket / scapy / zap-cli all have brittle apt packages
+# or none at all — pip is the canonical install path for these.
+RUN python3 -m pip install --no-cache-dir --ignore-installed \
+    theHarvester impacket scapy ffuf-py zap-cli
+
+# --- Gobuster: single static binary, vendored from upstream release ---
+RUN curl -fsSL -o /tmp/gobuster.tgz \
+      "https://github.com/OJ/gobuster/releases/download/v3.6.0/gobuster_Linux_x86_64.tar.gz" \
+ && tar -xzf /tmp/gobuster.tgz -C /usr/local/bin gobuster \
+ && rm /tmp/gobuster.tgz
+
+# --- SecLists: canonical word-list pack for web / fuzzing work ---
+# ~700 MB on disk. Pinned to a shallow clone so the image stays
+# reproducible for the build day; bumping = re-run the upgrade workflow.
+RUN git clone --depth=1 https://github.com/danielmiessler/SecLists.git /opt/seclists
+
+# --- Metasploit: vendored .deb with sha256 verification ---
+# Refuses to build with placeholder pins so the SHA cannot silently drift.
+RUN if [ -z "${METASPLOIT_VERSION}" ] || [ -z "${METASPLOIT_SHA256}" ] \
+    || [ "${METASPLOIT_SHA256}" = "UNPINNED" ]; then \
+      echo "ERROR: pentest stage requires METASPLOIT_VERSION and METASPLOIT_SHA256 build args." >&2; \
+      echo "       Run scripts/upgrade_msf.sh to populate the pins, then retry the build." >&2; \
+      exit 1; \
+    fi \
+ && curl -fsSL -o /tmp/msf.deb \
+      "https://apt.metasploit.com/pool/main/m/metasploit-framework/metasploit-framework_${METASPLOIT_VERSION}-1rapid7-1_amd64.deb" \
+ && echo "${METASPLOIT_SHA256}  /tmp/msf.deb" | sha256sum -c - \
+ && apt-get update -qq \
+ && apt-get install -y -qq --no-install-recommends /tmp/msf.deb \
+ && rm /tmp/msf.deb \
+ && rm -rf /var/lib/apt/lists/*
+
+LABEL augmentum.tooling_profile="pentest"
+# Pinned vendor versions are recorded as labels so a forensic
+# ``docker inspect`` can confirm what shipped without re-deriving from
+# build history. validate_tooling_profiles.py reads the build args to
+# catch drift between the Dockerfile and the pin files.
+LABEL augmentum.metasploit_version="${METASPLOIT_VERSION}"
+LABEL augmentum.metasploit_sha256="${METASPLOIT_SHA256}"
+
+
+# ============================================================================
+# Stage: creative — power profile plus Blender headless + glTF pipeline for
+# procedural 3D asset creation and game-ready GLB export (the game foundry).
+# Inherits from power. Blender runs headless via the bpy API under xvfb on
+# CPU (Eevee) — no GPU dependency. ~2.5 GB.
+#
+# Package list MUST match _CREATIVE_APT / _CREATIVE_PIP in
+# augmentum/coder/profiles.py — keep in sync.
+# ============================================================================
+FROM power AS creative
+
+# --- Creative apt set: Blender + xvfb + the GL/X11 runtime libs Blender
+#     links even in --background mode. ---
+RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends \
+    blender xvfb \
+    libgl1 libglu1-mesa libxi6 libxrender1 libxxf86vm1 libsm6 \
+    && rm -rf /var/lib/apt/lists/*
+
+# --- glTF pipeline libs (inspect/patch GLB without launching Blender) ---
+RUN python3 -m pip install --no-cache-dir --ignore-installed \
+    trimesh pygltflib
+
+# --- Version-exact bpy API reference, generated by introspecting THIS image's
+#     Blender (not downloaded — offline + never version-drifts). Baked into
+#     /opt/blender-reference and copied into each creative workspace on
+#     creation (see _CREATIVE_POST in augmentum/coder/profiles.py). Raises the
+#     ceiling for models of every size: grep the exact operator signature
+#     instead of guessing it. ---
+COPY scripts/gen_bpy_reference.py /opt/gen_bpy_reference.py
+RUN xvfb-run -a blender --background --python /opt/gen_bpy_reference.py \
+    && ls -la /opt/blender-reference/
+
+LABEL augmentum.tooling_profile="creative"

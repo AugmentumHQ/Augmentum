@@ -1,0 +1,10 @@
+# Tor SOCKS proxy for SearXNG egress — routes engine requests through
+# rotating Tor exit IPs so upstream engines (Bing/Brave/Startpage/…) stop
+# fingerprinting and banning our single datacenter IP. Keyless.
+# See docs: 2026-08-01 doc_search retrieval rework.
+SocksPort 0.0.0.0:9050
+DataDirectory /var/lib/tor
+Log notice stdout
+ClientOnly 1
+# If the local network blocks Tor itself, uncomment bridges + pluggable
+# transports (obfs4/snowflake) — see config/tor/torrc.bridges.example.
