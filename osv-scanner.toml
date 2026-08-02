@@ -1,0 +1,78 @@
+# OSV-Scanner ignore config — mirrors the --ignore-vuln list in
+# .github/workflows/security.yml (pip-audit job). Auto-discovered by
+# osv-scanner because it sits at the repo root alongside the scanned
+# lockfiles (requirements.lock, uv.lock).
+#
+# These are DEFERRED, not dismissed: each needs a major/risky dependency
+# upgrade that can break the running stack and requires a full test cycle.
+# The safe leaf-dep CVEs were already bumped in the lock; these four remain:
+#   - torch     2.8  -> 2.10/2.13 (CUDA + model-stack compat)
+#   - starlette 1.0  -> 1.3       (FastAPI coupling)
+#   - mcp       1.27 -> 1.28
+#   - diffusers 0.37 -> 0.38
+# Revisit in a dedicated tested dependency-bump pass.
+
+# --- torch ---
+[[IgnoredVulns]]
+id = "PYSEC-2025-193"
+reason = "torch major bump (2.8->2.9.1) deferred to a tested dependency pass"
+[[IgnoredVulns]]
+id = "PYSEC-2025-194"
+reason = "torch major bump (2.8->2.13) deferred to a tested dependency pass"
+[[IgnoredVulns]]
+id = "PYSEC-2025-195"
+reason = "torch major bump (2.8->2.10) deferred to a tested dependency pass"
+[[IgnoredVulns]]
+id = "PYSEC-2025-203"
+reason = "torch major bump (2.8->2.9) deferred to a tested dependency pass"
+[[IgnoredVulns]]
+id = "PYSEC-2025-204"
+reason = "torch major bump (2.8->2.9) deferred to a tested dependency pass"
+[[IgnoredVulns]]
+id = "PYSEC-2025-206"
+reason = "torch major bump (2.8->2.9) deferred to a tested dependency pass"
+[[IgnoredVulns]]
+id = "PYSEC-2026-139"
+reason = "torch — no fixed version published yet; monitoring"
+[[IgnoredVulns]]
+id = "PYSEC-2026-2286"
+reason = "torch major bump (2.8->2.10) deferred to a tested dependency pass"
+
+# --- starlette (coupled to FastAPI) ---
+[[IgnoredVulns]]
+id = "PYSEC-2026-161"
+reason = "starlette 1.0->1.3 deferred — coupled to FastAPI, needs test cycle"
+[[IgnoredVulns]]
+id = "PYSEC-2026-248"
+reason = "starlette 1.0->1.3 deferred — coupled to FastAPI, needs test cycle"
+[[IgnoredVulns]]
+id = "PYSEC-2026-249"
+reason = "starlette 1.0->1.3 deferred — coupled to FastAPI, needs test cycle"
+[[IgnoredVulns]]
+id = "PYSEC-2026-2280"
+reason = "starlette 1.0->1.3 deferred — coupled to FastAPI, needs test cycle"
+[[IgnoredVulns]]
+id = "PYSEC-2026-2281"
+reason = "starlette 1.0->1.3 deferred — coupled to FastAPI, needs test cycle"
+
+# --- mcp ---
+[[IgnoredVulns]]
+id = "PYSEC-2026-3481"
+reason = "mcp 1.27->1.28 deferred to a tested dependency pass"
+[[IgnoredVulns]]
+id = "PYSEC-2026-3482"
+reason = "mcp 1.27->1.28 deferred to a tested dependency pass"
+[[IgnoredVulns]]
+id = "PYSEC-2026-3483"
+reason = "mcp 1.27->1.28 deferred to a tested dependency pass"
+
+# --- diffusers ---
+[[IgnoredVulns]]
+id = "PYSEC-2026-2446"
+reason = "diffusers 0.37->0.38 deferred to a tested dependency pass"
+[[IgnoredVulns]]
+id = "PYSEC-2026-40"
+reason = "diffusers 0.37->0.38 deferred to a tested dependency pass"
+[[IgnoredVulns]]
+id = "PYSEC-2026-41"
+reason = "diffusers 0.37->0.38 deferred to a tested dependency pass"
