@@ -83,9 +83,14 @@ jobs:
       # a running services stack) and `slow` (heavy benchmarks) are
       # deselected — those need a richer environment than CI provides.
       - name: pytest
+        # --timeout: a single hung test (e.g. one that opens a socket with no
+        # timeout) fails at 120s and is NAMED, instead of blocking the whole job
+        # until its 30-min ceiling. --durations surfaces the slowest tests.
         run: |
           pytest tests/ -q \
             -m "not live and not slow" \
+            --timeout=120 \
+            --durations=15 \
             --junitxml=pytest-junit.xml
 
       - name: Upload pytest junit

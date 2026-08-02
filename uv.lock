@@ -358,6 +358,7 @@ dev = [
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-httpx" },
+    { name = "pytest-timeout" },
     { name = "respx" },
     { name = "ruff" },
     { name = "safetensors" },
@@ -450,6 +451,7 @@ requires-dist = [
     { name = "pytest", marker = "extra == 'dev'", specifier = "==8.3.5" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = "==0.24.0" },
     { name = "pytest-httpx", marker = "extra == 'dev'", specifier = "==0.34.0" },
+    { name = "pytest-timeout", marker = "extra == 'dev'", specifier = ">=2.3.0" },
     { name = "python-docx", specifier = ">=1.1.0" },
     { name = "python-pptx", specifier = ">=1.0.0" },
     { name = "pywebpush", specifier = ">=2.0.0" },
@@ -3697,6 +3699,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/86/08/d0be3fe5645c6cd9396093a9ddf97d60814a3b066fd5b38ddced34a13d14/pytest_httpx-0.34.0.tar.gz", hash = "sha256:3ca4b0975c0f93b985f17df19e76430c1086b5b0cce32b1af082d8901296a735", size = 54108 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/2c/72/7138a0faf5d780d6b9ceedef22da0b66ae8e22a676a12fd55a05c0cdd979/pytest_httpx-0.34.0-py3-none-any.whl", hash = "sha256:42cf0a66f7b71b9111db2897e8b38a903abd33a27b11c48aff4a3c7650313af2", size = 19440 },
+]
+
+[[package]]
+name = "pytest-timeout"
+version = "2.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ac/82/4c9ecabab13363e72d880f2fb504c5f750433b2b6f16e99f4ec21ada284c/pytest_timeout-2.4.0.tar.gz", hash = "sha256:7e68e90b01f9eff71332b25001f85c75495fc4e3a836701876183c4bcfd0540a", size = 17973 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fa/b6/3127540ecdf1464a00e5a01ee60a1b09175f6913f0644ac748494d9c4b21/pytest_timeout-2.4.0-py3-none-any.whl", hash = "sha256:c42667e5cdadb151aeb5b26d114aff6bdf5a907f176a007a30b940d3d865b5c2", size = 14382 },
 ]
 
 [[package]]
