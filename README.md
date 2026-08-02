@@ -394,10 +394,23 @@ docker compose up -d
 docker compose ps        # confirm every service is "Up"
 ```
 
-If it keeps timing out, the cause is almost always local networking rather than
-Augmentum:
+If it keeps timing out on the **same layer every time** (a `TLS handshake
+timeout` from `production.cloudfront.docker.com`, while `ghcr.io` images pull
+fine), that's almost always an **MTU mismatch** — not Augmentum. It's the most
+common Docker-on-WSL2 / Docker Desktop networking issue: small images pull, but
+the large packets a TLS handshake needs exceed a network hop's MTU and get
+dropped, so the handshake hangs. Retrying won't help because it's a stable
+condition. **The fix:**
 
-- **WSL2 (Windows):** a wedged network stack causes repeated TLS timeouts. Run
+- **Lower Docker's MTU.** Docker Desktop → **Settings → Docker Engine** → add
+  `"mtu": 1400` to the JSON, **Apply & Restart**, then re-pull. If 1400 doesn't
+  do it, try `1350` or `1280`. (Confirm it's MTU from Windows CMD:
+  `ping -f -l 1450 production.cloudfront.docker.com` — if 1450 fails but a lower
+  size succeeds, MTU is the cause.)
+
+Other, rarer causes:
+
+- **WSL2 (Windows):** a wedged network stack causes repeated timeouts. Run
   `wsl --shutdown` from PowerShell, restart Docker Desktop, then re-pull.
 - **Behind a proxy / restrictive firewall:** make sure `ghcr.io` and
   `*.docker.com` (including `production.cloudfront.docker.com`) are reachable.

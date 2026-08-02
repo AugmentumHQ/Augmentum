@@ -127,9 +127,16 @@ for attempt in 1 2 3 4 5; do
   fi
 done
 if [ "$ok" != 1 ]; then
-  echo "  Pull still failing after 5 attempts — almost always a network/CDN issue, not Augmentum."
-  echo "  Re-run 'docker compose pull' (it resumes). A wedged WSL2 network can cause this:"
-  echo "  'wsl --shutdown' from PowerShell, restart Docker, then retry."
+  echo "  Pull still failing after 5 attempts — a network issue, not Augmentum (the"
+  echo "  failing host is Docker Hub CDN, not our images)."
+  echo ""
+  echo "  MOST LIKELY FIX — MTU mismatch (very common on Docker Desktop / WSL2): if it"
+  echo "  fails on the SAME layer with a TLS handshake timeout, open Docker Desktop >"
+  echo "  Settings > Docker Engine, add  \"mtu\": 1400  to the JSON, Apply & Restart,"
+  echo "  then re-run: docker compose pull && docker compose up -d"
+  echo ""
+  echo "  Other causes: wedged WSL2 network (run wsl --shutdown from PowerShell, restart"
+  echo "  Docker, re-pull) or a proxy/firewall blocking *.docker.com."
   exit 1
 fi
 docker compose up -d
