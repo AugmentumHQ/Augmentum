@@ -739,6 +739,14 @@ from augmentum.coder.write_churn import (
     escalation_handoff_body,
 )
 
+# Break thresholds re-exported for augmentum.modes.coder.handler (and tests that
+# import them via handler). Unused within THIS module — the import IS the
+# re-export — so they carry noqa: F401 to survive lint sweeps. (Restoring these
+# after a ruff --fix pass removed them and broke handler's import chain.)
+from augmentum.loops.breakers import (
+    ACTION_STAGNATION_BREAK as _ACTION_STAGNATION_BREAK,  # noqa: F401
+)
+
 # Coordination-churn detector. Weak models can get stuck repeatedly
 # calling ``task_list`` / ``ask_user`` instead of taking the next
 # concrete step. We nudge earlier here than the broader stagnation
@@ -759,6 +767,7 @@ from augmentum.loops.breakers import COORDINATION_ONLY_NUDGE_AT as _COORDINATION
 # explicitly to change something (code, config, or env) before the
 # next shell retry, or to explain what it thinks is wrong.
 from augmentum.loops.breakers import FAILING_SHELL_NUDGE_AT as _FAILING_SHELL_NUDGE_AT
+from augmentum.loops.breakers import HYBRID_MAX_ITERS as _HYBRID_MAX_ITERS  # noqa: F401
 
 # Identical-call loop detector. A model that re-issues the SAME tool with
 # the SAME arguments and gets byte-identical output is stuck even when each
@@ -818,8 +827,12 @@ from augmentum.loops.breakers import (
     NATIVE_SERIAL_TOOL_NAMES as _NATIVE_SERIAL_TOOL_NAMES,
 )
 from augmentum.loops.breakers import (
+    NO_WRITE_PROGRESS_BREAK as _NO_WRITE_PROGRESS_BREAK,  # noqa: F401
+)
+from augmentum.loops.breakers import (
     PARALLEL_READ_TOOLS as _HYBRID_PARALLEL_READ_TOOLS,
 )
+from augmentum.loops.breakers import SAME_FILE_EDIT_BREAK as _SAME_FILE_EDIT_BREAK  # noqa: F401
 
 # Silent-success fog detector. A shell_exec that returns "(exit 0,
 # command succeeded with no stdout)" is honest but opaque. When 3+
@@ -829,6 +842,12 @@ from augmentum.loops.breakers import (
 # nudge fires once per turn, pushing the model toward a diagnostic
 # (ps / curl / ls) before its next mutation.
 from augmentum.loops.breakers import SILENT_SUCCESS_NUDGE_AT as _SILENT_SUCCESS_NUDGE_AT
+from augmentum.loops.breakers import (
+    TEST_FAILURE_STREAK_BREAK as _TEST_FAILURE_STREAK_BREAK,  # noqa: F401
+)
+from augmentum.loops.breakers import (
+    VALIDATION_ERROR_STREAK_BREAK as _VALIDATION_ERROR_STREAK_BREAK,  # noqa: F401
+)
 
 # ---------------------------------------------------------------------------
 # Termination Quality Gate — nudge messages (Phase 3.6)

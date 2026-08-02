@@ -742,6 +742,14 @@ async def warmup_tts(conn, voice: str = "", *, user_id: str = "") -> None:
         log.debug("tts_warmup_failed", error=str(exc))
 
 
-# Re-export from tts module for backward compatibility
+# Re-export from tts module for backward compatibility. These are unused here —
+# the import IS the re-export (augmentum.proxy.voice_routes imports them from
+# this module) — so they carry noqa: F401 to survive lint sweeps.
 # Re-export from text_cleaning module — single source of truth.
 # The canonical implementation lives in augmentum/voice/text_cleaning.py.
+from augmentum.voice.text_cleaning import clean_for_tts  # noqa: E402, F401, F811
+from augmentum.voice.tts import (  # noqa: E402, F401, F811
+    prefetch_tts_audio,
+    send_prefetched_audio,
+    stream_tts_sentence,
+)
