@@ -206,8 +206,9 @@ installs** via Android Studio (no app-store release yet).
   **cast-based**: send any surface (chat, avatar, comics, audio, live TV, or a
   game) to a screen from the web UI or your phone. The cast receiver runs in any
   browser; an optional native **Android TV receiver app**
-  (`augmentum/cast/android-tv-receiver/`, built in Android Studio) gives you a
-  dedicated always-on TV client — the most experimental piece of the three.
+  (`augmentum/cast/android-tv-receiver/`) gives you a dedicated always-on TV
+  client — the most experimental piece of the three. Full build + sideload
+  walkthrough: **[Android TV Receiver guide](docs/cast-android-tv.md)**.
 
 Both are optional. The server and its bundled web UI are fully usable on their
 own.
@@ -651,10 +652,10 @@ Two ways to help, and they matter equally:
   translations. It's a large surface with room to move, and a second set of eyes
   on this code is exactly what it needs next.
 - **Fund the time** *(optional, and it changes nothing above)* — [buy a
-  coffee](https://donate.stripe.com/dRm14pdwxcj5glcdQS0RG02) or [GitHub
-  Sponsors](https://github.com/sponsors/AugmentumHQ). It keeps the distillation,
-  tuning, and integration work moving — the parts that stall without time. The
-  same links live in the app under **Settings → About**.
+  coffee](https://donate.stripe.com/dRm14pdwxcj5glcdQS0RG02). It keeps the
+  distillation, tuning, and integration work moving — the parts that stall
+  without time. The same link lives in the app under **Settings → About**.
+  (GitHub Sponsors is coming once the org is enrolled.)
 
 ## License
 

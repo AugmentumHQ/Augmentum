@@ -90,14 +90,24 @@ async function _showLivingAvatar(greeters) {
         <div class="firstrun-greeters">
           <div class="firstrun-prompt">Choose who greets you</div>
           <div class="firstrun-greeter-row">
-            ${greeters.map((a, i) => `
+            ${greeters.map((a, i) => {
+              const letter = escapeHtml((a.name || '?').slice(0, 1));
+              // A fresh instance has no rendered thumbnails — the endpoint
+              // serves a 1x1 transparent placeholder (or 404s). Show the img
+              // only if it's a real picture; onload/onerror fall back to the
+              // letter avatar so cards are never blank.
+              const face = a.thumbnail_url
+                ? `<img src="${escapeHtml(a.thumbnail_url)}" alt="${escapeHtml(a.name || '')}" loading="lazy"
+                       onload="if(this.naturalWidth<=1){this.style.display='none';this.nextElementSibling.style.display='flex'}"
+                       onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                   <span class="firstrun-greeter-fallback" style="display:none">${letter}</span>`
+                : `<span class="firstrun-greeter-fallback">${letter}</span>`;
+              return `
               <button class="firstrun-greeter" data-idx="${i}" title="${escapeHtml(a.name || 'Avatar')}">
-                ${a.thumbnail_url
-                  ? `<img src="${escapeHtml(a.thumbnail_url)}" alt="${escapeHtml(a.name || '')}" loading="lazy">`
-                  : `<span class="firstrun-greeter-fallback">${escapeHtml((a.name || '?').slice(0, 1))}</span>`}
+                ${face}
                 <span class="firstrun-greeter-name">${escapeHtml(a.name || 'Avatar')}</span>
-              </button>
-            `).join('')}
+              </button>`;
+            }).join('')}
           </div>
         </div>
       </div>

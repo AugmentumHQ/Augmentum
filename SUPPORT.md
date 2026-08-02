@@ -35,8 +35,8 @@ Honestly, the most common form of support is using the product and telling someo
 **Contribute back.** Code, docs, knowledge packs, translations, character cards, voice samples — anything the project ships. Reproducible bug reports count too.
 
 **Sponsor development.**
-- [GitHub Sponsors](https://github.com/sponsors/AugmentumHQ) — one-time or recurring, any amount
 - [One-time tip](https://donate.stripe.com/dRm14pdwxcj5glcdQS0RG02) — pay what you want, no account needed
+- GitHub Sponsors — coming once the org is enrolled (one-time or recurring, any amount)
 - Open Collective — coming once the project qualifies for fiscal hosting; the ledger will be public when it does
 
 No supporter-only features. No badges. No tiered perks. What you get is the same whether you give nothing, five dollars, or five hundred. That's the deal and I'm not going to change it.

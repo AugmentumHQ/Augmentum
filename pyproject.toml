@@ -57,13 +57,14 @@ dependencies = [
     "tiktoken>=0.7.0",
     "webrtc-noise-gain>=1.2.0",
     "onnxruntime>=1.17.0",
-    # Local streaming STT (English). Pinned at 0.0.51 in requirements.lock.
-    # GOTCHA: this release's moonshine_voice.__version__ wrongly reports
-    # "0.1.0" — trust `pip show` / importlib.metadata, NOT __version__.
-    # We deliberately stay on 0.0.51: releases 0.0.52–0.0.62 add TTS, intent
-    # recognition, and non-English G2P/bindings we don't consume, and touch
-    # NOTHING in the English streaming ASR core we actually use. Only bump for
-    # word-level timestamps (the one STT-relevant addition) + a rebuild/smoke.
+    # Local streaming STT (English). Pinned at 0.0.52 in requirements.lock.
+    # GOTCHA: moonshine_voice.__version__ mis-reports — trust `pip show` /
+    # importlib.metadata, NOT __version__.
+    # Was pinned at 0.0.51, but PyPI YANKED it (available versions jump
+    # 0.0.49 -> 0.0.52), which broke the hash-locked build. Bumped to the next
+    # available, 0.0.52 — per upstream it adds TTS/intent/G2P we don't consume
+    # but touches NOTHING in the English streaming ASR core we use. uv confirms
+    # no new transitive deps; verified with a full CPU image build.
     "moonshine-voice>=0.0.44",
     "transformers>=4.36.0",
     "kokoro-onnx>=0.4.0",
