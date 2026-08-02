@@ -28,6 +28,9 @@ ignore = [
     "B905",  # zip-without-explicit-strict — behavior is correct without strict=
     # --- pyupgrade migrations deferred (behavior-adjacent, not worth churn now) ---
     "UP031",  # printf-string-formatting — 2 sites, low value
+    "UP038",  # non-pep604-isinstance — REMOVED from newer ruff as counterproductive
+              # (isinstance(x, (A, B)) is fine and often faster than A | B). CI's
+              # pinned ruff 0.8.6 still emits it; ignore to match modern behavior.
     "UP042",  # replace-str-enum — changing Enum base classes is behavior-adjacent
     # --- pyflakes: kept live EXCEPT this one ---
     "F841",  # unused-variable — frequently intentional (unpacking / kept-for-clarity)

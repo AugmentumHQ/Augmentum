@@ -138,7 +138,10 @@ jobs:
             LLAMA_SERVER_IMAGE=ghcr.io/augmentumhq/augmentum-llama-server-cpu:${{ steps.llama_ver.outputs.version }}
 
       - name: Trivy scan (filesystem + OS + secrets)
-        uses: aquasecurity/trivy-action@v0.28.0
+        # v0.33.1: pins its internal setup-trivy by immutable SHA. Older tags
+        # (v0.28.0/v0.30.0) referenced setup-trivy tags aquasecurity later
+        # DELETED (v0.2.1/v0.2.2), which fails at "Set up job".
+        uses: aquasecurity/trivy-action@v0.33.1
         with:
           image-ref: augmentum:audit-${{ github.sha }}
           format: 'sarif'
