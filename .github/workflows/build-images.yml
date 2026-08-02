@@ -7,13 +7,14 @@ name: build-images
 #   - tags v*    : rebuilds and also tags the version (:cpu-vX.Y.Z, :gpu-vX.Y.Z)
 #   - manual     : workflow_dispatch with optional skip flags
 #
-# Build chain:
-#   llama-server (matrix: cpu, gpu)  →  augmentum (matrix: cpu, gpu)
+# Build chain (DECOUPLED per variant so a CPU release never waits on the slow
+# CUDA build — most users are CPU):
+#   llama-server-cpu  →  augmentum-cpu   (Dockerfile,     FROMs augmentum-llama-server-cpu)
+#   llama-server-gpu  →  augmentum-gpu   (Dockerfile.gpu, FROMs augmentum-llama-server)
+#   sidecars (executor, agent-browser)   — independent
 #
-# Each augmentum variant pulls its sibling llama-server (CPU pairs with
-# augmentum-llama-server-cpu; GPU pairs with augmentum-llama-server) by
-# build-arg. The llama-server images only rebuild when LLAMA_SERVER_VERSION
-# changes, so the matrix re-runs are cheap on cached layers.
+# The llama-server images only rebuild when LLAMA_SERVER_VERSION changes, so the
+# re-runs are cheap on cached layers.
 
 on:
   push:
@@ -42,6 +43,13 @@ on:
         default: false
         type: boolean
 
+# Cancel a superseded in-flight run on the same ref so rapid pushes don't stack
+# redundant (slow, CUDA) builds. A tag build gets its own group so it's never
+# cancelled by a subsequent branch push.
+concurrency:
+  group: build-images-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   REGISTRY: ghcr.io
   # Org name lowercased — GHCR rejects uppercase chars in image refs.
@@ -49,139 +57,190 @@ env:
 
 jobs:
   # --------------------------------------------------------------------------
-  # llama-server — built once per LLAMA_SERVER_VERSION bump.
-  # Matrix: GPU (CUDA build) + CPU (generic x86_64 build).
+  # llama-server — CPU and GPU as SEPARATE jobs so each augmentum variant can
+  # depend on only its own sibling (the CPU image doesn't wait on the CUDA build).
+  # Built once per LLAMA_SERVER_VERSION bump; cheap on cached layers otherwise.
   # --------------------------------------------------------------------------
-  llama-server:
+  llama-server-cpu:
     if: ${{ !inputs.skip_llama_server }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - variant: gpu
-            dockerfile: Dockerfile.llama-server
-            package: augmentum-llama-server
-            scope: llama-server-gpu
-            platforms: linux/amd64
-          # CPU llama-server base. amd64-only for launch; when arm64 lands, this
-          # must go multi-arch too so the CPU augmentum image (which FROMs it)
-          # can build a native arm64 leg.
-          - variant: cpu
-            dockerfile: Dockerfile.llama-server-cpu
-            package: augmentum-llama-server-cpu
-            scope: llama-server-cpu
-            platforms: linux/amd64   # arm64 deferred to a post-launch fast-follow
     steps:
       - uses: actions/checkout@v4
-
       - name: Read pinned llama.cpp version
         id: llama_ver
         run: echo "version=$(cat LLAMA_SERVER_VERSION | tr -d '[:space:]')" >> $GITHUB_OUTPUT
-
       - name: Set up QEMU (for arm64 emulation on amd64 runners)
         uses: docker/setup-qemu-action@v3
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
-
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build & push ${{ matrix.variant }} llama-server
+      - name: Build & push CPU llama-server
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ${{ matrix.dockerfile }}
+          file: Dockerfile.llama-server-cpu
           push: true
-          platforms: ${{ matrix.platforms }}
+          # amd64-only for launch. When arm64 lands, this must go multi-arch too
+          # so the CPU augmentum image (which FROMs it) can build a native arm64 leg.
+          platforms: linux/amd64
           tags: |
-            ${{ env.REGISTRY }}/${{ env.ORG }}/${{ matrix.package }}:${{ steps.llama_ver.outputs.version }}
-            ${{ env.REGISTRY }}/${{ env.ORG }}/${{ matrix.package }}:latest
+            ${{ env.REGISTRY }}/${{ env.ORG }}/augmentum-llama-server-cpu:${{ steps.llama_ver.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.ORG }}/augmentum-llama-server-cpu:latest
           build-args: |
             LLAMA_CPP_VERSION=${{ steps.llama_ver.outputs.version }}
-          cache-from: type=gha,scope=${{ matrix.scope }}
-          cache-to: type=gha,scope=${{ matrix.scope }},mode=max
+          cache-from: type=gha,scope=llama-server-cpu
+          cache-to: type=gha,scope=llama-server-cpu,mode=max
 
-  # --------------------------------------------------------------------------
-  # Augmentum CPU + GPU variants — built in parallel via matrix.
-  # Each pulls its sibling llama-server image as a build stage.
-  # --------------------------------------------------------------------------
-  augmentum:
+  llama-server-gpu:
+    if: ${{ !inputs.skip_llama_server }}
     runs-on: ubuntu-latest
-    needs: [llama-server]
-    if: always() && !contains(needs.*.result, 'failure')
     permissions:
       contents: read
       packages: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          # amd64-only for the initial launch — the tested path. arm64 (Apple
-          # Silicon / ARM Linux) is a planned fast-follow: flip the platforms
-          # line back to `linux/amd64,linux/arm64` once a real arm64 build is
-          # watched green. The QEMU setup step above is left in place so that's
-          # a one-line change.
-          - variant: cpu
-            dockerfile: Dockerfile
-            llama_package: augmentum-llama-server-cpu
-            platforms: linux/amd64   # arm64 deferred to a post-launch fast-follow
-          # GPU variant is amd64-only — NVIDIA CUDA has no arm64 equivalent here.
-          - variant: gpu
-            dockerfile: Dockerfile.gpu
-            llama_package: augmentum-llama-server
-            platforms: linux/amd64
     steps:
       - uses: actions/checkout@v4
-
       - name: Read pinned llama.cpp version
         id: llama_ver
         run: echo "version=$(cat LLAMA_SERVER_VERSION | tr -d '[:space:]')" >> $GITHUB_OUTPUT
-
       - name: Set up QEMU (for arm64 emulation on amd64 runners)
         uses: docker/setup-qemu-action@v3
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
-
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Compute tags
-        id: tags
-        run: |
-          tags="${{ env.REGISTRY }}/${{ env.ORG }}/augmentum:${{ matrix.variant }}-${{ github.sha }}"
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            tags="$tags,${{ env.REGISTRY }}/${{ env.ORG }}/augmentum:${{ matrix.variant }}-latest"
-          fi
-          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            version="${GITHUB_REF#refs/tags/}"
-            tags="$tags,${{ env.REGISTRY }}/${{ env.ORG }}/augmentum:${{ matrix.variant }}-${version}"
-          fi
-          echo "tags=$tags" >> $GITHUB_OUTPUT
-
-      - name: Build & push ${{ matrix.variant }} variant
+      - name: Build & push GPU llama-server
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ${{ matrix.dockerfile }}
+          file: Dockerfile.llama-server
           push: true
-          platforms: ${{ matrix.platforms }}
+          platforms: linux/amd64
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.ORG }}/augmentum-llama-server:${{ steps.llama_ver.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.ORG }}/augmentum-llama-server:latest
+          build-args: |
+            LLAMA_CPP_VERSION=${{ steps.llama_ver.outputs.version }}
+          cache-from: type=gha,scope=llama-server-gpu
+          cache-to: type=gha,scope=llama-server-gpu,mode=max
+
+  # --------------------------------------------------------------------------
+  # Augmentum CPU — depends ONLY on llama-server-cpu, so it publishes as soon as
+  # the CPU chain is done, regardless of the (slow) GPU build.
+  # --------------------------------------------------------------------------
+  augmentum-cpu:
+    runs-on: ubuntu-latest
+    needs: [llama-server-cpu]
+    # Run even when llama-server-cpu was skipped (workflow_dispatch reuse path);
+    # only bail if it actually failed.
+    if: ${{ always() && needs.llama-server-cpu.result != 'failure' }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read pinned llama.cpp version
+        id: llama_ver
+        run: echo "version=$(cat LLAMA_SERVER_VERSION | tr -d '[:space:]')" >> $GITHUB_OUTPUT
+      - name: Set up QEMU (for arm64 emulation on amd64 runners)
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Compute tags
+        id: tags
+        run: |
+          tags="${{ env.REGISTRY }}/${{ env.ORG }}/augmentum:cpu-${{ github.sha }}"
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            tags="$tags,${{ env.REGISTRY }}/${{ env.ORG }}/augmentum:cpu-latest"
+          fi
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            version="${GITHUB_REF#refs/tags/}"
+            tags="$tags,${{ env.REGISTRY }}/${{ env.ORG }}/augmentum:cpu-${version}"
+          fi
+          echo "tags=$tags" >> $GITHUB_OUTPUT
+      - name: Build & push CPU variant
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          # amd64-only for the initial launch. arm64 (Apple Silicon / ARM Linux)
+          # is a planned fast-follow: flip to `linux/amd64,linux/arm64` once a real
+          # arm64 build is watched green (the QEMU step above stays for that).
+          platforms: linux/amd64
           tags: ${{ steps.tags.outputs.tags }}
           build-args: |
-            LLAMA_SERVER_IMAGE=${{ env.REGISTRY }}/${{ env.ORG }}/${{ matrix.llama_package }}:${{ steps.llama_ver.outputs.version }}
-          cache-from: type=gha,scope=${{ matrix.variant }}
-          cache-to: type=gha,scope=${{ matrix.variant }},mode=max
+            LLAMA_SERVER_IMAGE=${{ env.REGISTRY }}/${{ env.ORG }}/augmentum-llama-server-cpu:${{ steps.llama_ver.outputs.version }}
+          cache-from: type=gha,scope=cpu
+          cache-to: type=gha,scope=cpu,mode=max
+
+  # --------------------------------------------------------------------------
+  # Augmentum GPU — depends ONLY on llama-server-gpu. NVIDIA CUDA has no arm64
+  # equivalent here, so amd64-only.
+  # --------------------------------------------------------------------------
+  augmentum-gpu:
+    runs-on: ubuntu-latest
+    needs: [llama-server-gpu]
+    if: ${{ always() && needs.llama-server-gpu.result != 'failure' }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read pinned llama.cpp version
+        id: llama_ver
+        run: echo "version=$(cat LLAMA_SERVER_VERSION | tr -d '[:space:]')" >> $GITHUB_OUTPUT
+      - name: Set up QEMU (for arm64 emulation on amd64 runners)
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Compute tags
+        id: tags
+        run: |
+          tags="${{ env.REGISTRY }}/${{ env.ORG }}/augmentum:gpu-${{ github.sha }}"
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            tags="$tags,${{ env.REGISTRY }}/${{ env.ORG }}/augmentum:gpu-latest"
+          fi
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            version="${GITHUB_REF#refs/tags/}"
+            tags="$tags,${{ env.REGISTRY }}/${{ env.ORG }}/augmentum:gpu-${version}"
+          fi
+          echo "tags=$tags" >> $GITHUB_OUTPUT
+      - name: Build & push GPU variant
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.gpu
+          push: true
+          platforms: linux/amd64
+          tags: ${{ steps.tags.outputs.tags }}
+          build-args: |
+            LLAMA_SERVER_IMAGE=${{ env.REGISTRY }}/${{ env.ORG }}/augmentum-llama-server:${{ steps.llama_ver.outputs.version }}
+          cache-from: type=gha,scope=gpu
+          cache-to: type=gha,scope=gpu,mode=max
 
   # --------------------------------------------------------------------------
   # Sidecar images — the code executor and the agent-browser. Independent of
