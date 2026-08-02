@@ -11,7 +11,18 @@
 # For the GPU variant or to choose which optional services run, see the README
 # or run setup.bat from a git clone of the repo.
 
-$ErrorActionPreference = "Stop"
+# NOT "Stop": this script drives external tools (wsl, docker) that legitimately
+# exit nonzero (e.g. `command -v docker` before Docker is installed) and print
+# benign warnings to stderr (WSL's "Processing /etc/fstab with mount -a failed").
+# Under "Stop", PowerShell turns those into fatal NativeCommandErrors and aborts
+# the install. We check results explicitly instead ($LASTEXITCODE, Test-Path,
+# variable contents); the one place a hard failure matters (the compose.yaml
+# download) gets an explicit -ErrorAction Stop below.
+$ErrorActionPreference = "Continue"
+# PS 7.4+ also throws on nonzero native exit codes unless this is disabled.
+if (Get-Variable -Name PSNativeCommandUseErrorActionPreference -Scope Global -ErrorAction Ignore) {
+    $PSNativeCommandUseErrorActionPreference = $false
+}
 $RawBase = "https://raw.githubusercontent.com/AugmentumHQ/Augmentum/main"
 
 Write-Host "=== Augmentum Installer (Windows) ===" -ForegroundColor Cyan
@@ -74,7 +85,7 @@ if (-not (Test-Path "compose.yaml")) {
     Write-Host "Setting up Augmentum in .\$targetDir ..." -ForegroundColor Cyan
     New-Item -ItemType Directory -Force -Path $targetDir | Out-Null
     Set-Location $targetDir
-    Invoke-WebRequest -UseBasicParsing -Uri "$RawBase/compose.yaml" -OutFile "compose.yaml"
+    Invoke-WebRequest -UseBasicParsing -Uri "$RawBase/compose.yaml" -OutFile "compose.yaml" -ErrorAction Stop
     if (-not (Test-Path ".env")) {
         @"
 AUGMENTUM_VARIANT=cpu
