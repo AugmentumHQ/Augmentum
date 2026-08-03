@@ -4302,7 +4302,7 @@ function createModal() {
             <input type="checkbox" id="setting-coder-subagents-enabled">
             <span>Enable subagent dispatch (<code>task_dispatch</code> tool)</span>
           </label>
-          <p style="font-size:var(--text-xs);color:var(--text-muted);margin:0 0 var(--space-sm) 0">Off by default while the feature beds in. Flip on once you've reviewed available roles for your stack.</p>
+          <p style="font-size:var(--text-xs);color:var(--text-muted);margin:0 0 var(--space-sm) 0">On by default — the six built-in roles ship ready, and it costs nothing when the model doesn't call the tool (just one extra entry in the schema). Turn it off to hide <code>task_dispatch</code> from a model that mishandles delegation. Admin-only: this is an install-wide setting.</p>
 
           <div class="settings-row" style="margin-top:var(--space-sm)">
             <div style="flex:1">
@@ -5939,6 +5939,15 @@ function bindModalEvents() {
   const csaEnabledToggle = modalEl.querySelector('#setting-coder-subagents-enabled');
   if (csaEnabledToggle) {
     csaEnabledToggle.addEventListener('change', () => {
+      // Install-wide, admin-only. If the account isn't admin (or currentUser
+      // hasn't resolved yet and the disable-gate raced), the PUT would 403 and
+      // the toggle would silently revert on the next load. Revert NOW and say
+      // why, instead of pretending the flip took.
+      if (!isAdmin()) {
+        csaEnabledToggle.checked = !!settings.coderSubagentsEnabled;
+        showToast('Subagent dispatch is an install-wide, admin-only setting — sign in as an admin to change it.', 'warning');
+        return;
+      }
       settings.coderSubagentsEnabled = !!csaEnabledToggle.checked;
       void _csaCommitImmediate();
     });
