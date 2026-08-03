@@ -68,7 +68,7 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Read pinned llama.cpp version
         id: llama_ver
         run: echo "version=$(cat LLAMA_SERVER_VERSION | tr -d '[:space:]')" >> $GITHUB_OUTPUT
@@ -106,7 +106,7 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Read pinned llama.cpp version
         id: llama_ver
         run: echo "version=$(cat LLAMA_SERVER_VERSION | tr -d '[:space:]')" >> $GITHUB_OUTPUT
@@ -149,7 +149,7 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Read pinned llama.cpp version
         id: llama_ver
         run: echo "version=$(cat LLAMA_SERVER_VERSION | tr -d '[:space:]')" >> $GITHUB_OUTPUT
@@ -203,7 +203,7 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Read pinned llama.cpp version
         id: llama_ver
         run: echo "version=$(cat LLAMA_SERVER_VERSION | tr -d '[:space:]')" >> $GITHUB_OUTPUT
@@ -270,7 +270,7 @@ jobs:
             scope: agent-browser
             platforms: linux/amd64   # arm64 deferred to a post-launch fast-follow
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up QEMU (for arm64 emulation on amd64 runners)
         uses: docker/setup-qemu-action@v3
