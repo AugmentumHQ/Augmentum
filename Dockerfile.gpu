@@ -19,7 +19,7 @@ FROM ${LLAMA_SERVER_IMAGE} AS llama-builder
 # ---- Runtime stage ----
 # Base image pinned to a specific digest — see Dockerfile header for
 # the rotation procedure (scripts/upgrade_base_images.sh).
-FROM nvidia/cuda:12.8.1-cudnn-runtime-ubuntu22.04@sha256:17e2934e1fa96152b14f78078bfbafd0f00f391df995dc6c641a720fce1202bb
+FROM nvidia/cuda:13.3.1-cudnn-runtime-ubuntu22.04@sha256:d613b00c36d11fc3acc8923ef5d7672d30f469c1a9049906fbd993dd2ba8155f
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONDONTWRITEBYTECODE=1
