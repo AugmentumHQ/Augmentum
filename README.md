@@ -97,6 +97,33 @@ Then open **https://localhost:6443** and accept the local certificate warning
 once. Plain HTTP is also available at **http://localhost:6100/ui**. The first
 account you create becomes the admin; after that, registration closes.
 
+### Trusted HTTPS on every device
+
+Accepting the browser warning is fine for using Augmentum *on the host machine*.
+But some features are browser "secure-context" features — **microphone and camera,
+the WebSocket voice/live-update stream, push notifications, and casting to a TV** —
+and they only work over HTTPS a device actually *trusts*. To get that (and to stop
+seeing the warning) on your phone, tablet, or other computers on your LAN, install
+Augmentum's root certificate:
+
+- **In the app:** **Settings → Trust server certificate.** It detects your OS and
+  walks you through the one-time install — an Apple one-tap profile on iOS/macOS,
+  the system certificate flow on Android/Windows/Linux. One tap on most devices.
+- **Manually:** download it from **`/caddy-root-ca`** (`.crt`) or, on Apple
+  devices, **`/caddy-root-ca.mobileconfig`** (one-tap profile), and add it to your
+  device's trusted roots.
+
+It's a **one-time setup per device**. Augmentum serves its own HTTPS through a
+self-signed [Caddy](https://caddyserver.com/) root CA, so once a device trusts
+that root, every Augmentum origin on your network is fully secured — no warnings,
+no broken microphone.
+
+> Want it reachable *and* trusted from outside your LAN with no port-forwarding?
+> The setup wizard can put Augmentum behind **Tailscale Funnel** or a
+> **Cloudflare** tunnel — a real, publicly-trusted HTTPS URL, no certificate to
+> install on the visitor's side. See [Connect](docs/connect.md) for how the
+> reachability tiers work.
+
 ## What it can do
 
 Augmentum isn't a bundle of separate tools — it's **one AI with many surfaces
@@ -321,7 +348,10 @@ answer no, start later with `./start.sh -d` or `start.bat -d`.
 
 Open **https://localhost:6443** and accept the local certificate warning once.
 Plain HTTP is also available at **http://localhost:6100/ui**. The first account
-you create becomes the admin; after that, registration closes.
+you create becomes the admin; after that, registration closes. To use Augmentum
+from your phone or other devices — with a working microphone, notifications, and
+casting — install the root certificate (**Settings → Trust server certificate**);
+see [Trusted HTTPS on every device](#trusted-https-on-every-device).
 
 ### Pull-only installer (CPU-only, no clone)
 
