@@ -261,6 +261,36 @@ installs** via Android Studio (no app-store release yet).
 Both are optional. The server and its bundled web UI are fully usable on their
 own.
 
+## The engine: what we add to `llama.cpp`
+
+Augmentum serves its own models through a bundled `llama-server`, but the binary
+is only the substrate. Around it sits ~27K lines of orchestration that turn a
+single-model runner into a coordinated, agent-facing inference layer. Where
+Ollama and LM Studio manage one model in one process, Augmentum manages a fleet:
+
+- **Multi-slot serving** — three independent `llama-server` slots (primary chat,
+  idle-by-default utility, and a resident classifier) coordinated under one VRAM
+  budget, so summarization never evicts your chat model and voice never waits on
+  a cold load.
+- **KV session persistence** — conversation state is saved to disk and restored
+  (or replayed) on return, so a long session resumes in milliseconds instead of
+  a 10–30s re-prefill.
+- **Speculative turn generation** — the engine runs the turn against your draft
+  on idle GPU cycles; an unchanged draft streams at ~0 ms TTFT.
+- **Per-hardware VRAM autofit** — a self-calibrating EMA of observed peak usage
+  sets GPU layers and context length so a dropped-in GGUF just loads, and gets
+  more accurate over time.
+- **Per-model sampling profiles** — known-good sampling auto-imported by model
+  family (Qwen3 `top_k=20`, Gemma-4 `temperature=1.0`, …) through a five-layer
+  override stack.
+- **Federation, load balancing, and API translation** — one registry unifies
+  local, cloud, Ollama, and peer backends; virtual load balancers fail over
+  silently; and Augmentum speaks the Anthropic *and* OpenAI APIs so any client
+  reaches any backend.
+
+Full technical breakdown, with a capability-by-capability comparison to Ollama
+and LM Studio: **[The Augmentum Engine](docs/engine.md)**.
+
 ## Quick Start
 
 ### Recommended path — setup wizard
@@ -456,7 +486,7 @@ Full guides live in **[`docs/`](docs/README.md)**. A few starting points:
   [Companion](docs/companion.md) · [Voice & wake word](docs/voice.md) ·
   [Narrative & roleplay](docs/narrative.md) · [Image generation](docs/image.md) ·
   [Discover & installing services](docs/discover.md) · [Powers](docs/powers.md) ·
-  [Model Manager](docs/model-manager.md)
+  [Model Manager](docs/model-manager.md) · [The Engine](docs/engine.md)
 - **Pointing an AI agent at the repo?** [`AGENTS.md`](AGENTS.md) — install/run +
   codebase map so a coding harness can set it up and answer questions.
 - **Your network:** [Fabric](docs/fabric.md) ·
