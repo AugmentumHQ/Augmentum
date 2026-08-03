@@ -107,7 +107,7 @@ file-extras = [
     "PyMuPDF>=1.24.0",
     "pypdf>=4.0.0",
     "pillow-heif>=0.16.0",
-    "matplotlib>=3.8.0",
+    "matplotlib>=3.11.1",
 ]
 # Image generation deps split by hardware tier. The CPU subset is everything
 # diffusers needs to run on a CPU-only host; the full ``image`` extra adds
