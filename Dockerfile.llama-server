@@ -15,7 +15,7 @@
 
 # Base image pinned to digest — see Dockerfile header for the rotation
 # procedure (scripts/upgrade_base_images.sh).
-FROM nvidia/cuda:12.8.1-devel-ubuntu22.04@sha256:a99a1860ba8e2916e5c3e73b72ec4c4301653a84586e05bfc9a2aa2d58027e97
+FROM nvidia/cuda:13.3.1-devel-ubuntu22.04@sha256:c13e01184a7fb2a90814153fdff2250f08312377887d2673cf5bc769876a37f3
 
 # Default pin — keep in sync with LLAMA_SERVER_VERSION at the repo root.
 # Changing this without going through upgrade_llama_server.sh means the version
@@ -71,7 +71,7 @@ RUN cmake -B build \
 # Dockerfile.gpu into the real GPU image (cuda:*-cudnn-runtime), which supplies
 # libcublas/libcudnn/libgomp and the driver-injected libcuda. Do not add CUDA
 # runtime libs here — it would bloat the carrier and duplicate the GPU image.
-FROM nvidia/cuda:12.8.1-base-ubuntu22.04@sha256:001469ea0f3dec85a1ca929aeea3b58ae369d4c11228b10aec1f642bb6ca7a6f
+FROM nvidia/cuda:13.3.1-base-ubuntu22.04@sha256:ea2a388e99273207c6389b3098a61ebca5ab41d31168dfc4350d0cfa614703e4
 COPY --from=0 /build/llama.cpp/build/bin/llama-server /usr/local/bin/llama-server
 COPY --from=0 /build/llama.cpp/build/bin/llama-lookup-create /usr/local/bin/llama-lookup-create
 COPY --from=0 /build/llama.cpp/build/bin/*.so /usr/local/lib/
