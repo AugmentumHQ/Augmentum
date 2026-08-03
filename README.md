@@ -489,7 +489,7 @@ Full guides live in **[`docs/`](docs/README.md)**. A few starting points:
   [Model Manager](docs/model-manager.md) · [The Engine](docs/engine.md)
 - **Pointing an AI agent at the repo?** [`AGENTS.md`](AGENTS.md) — install/run +
   codebase map so a coding harness can set it up and answer questions.
-- **Your network:** [Fabric](docs/fabric.md) ·
+- **Your network:** [Connect](docs/connect.md) · [Fabric](docs/fabric.md) ·
   [Connect federation](docs/connect-federation.md) ·
   [External MCP servers](docs/connect-external-mcp-servers.md) ·
   [Use Augmentum from Claude](docs/connect-to-claude-mcp.md)
