@@ -125,7 +125,7 @@ image-cpu = [
 ]
 image = [
     "augmentum[image-cpu]",
-    "xformers>=0.0.28",
+    "xformers>=0.0.35",
     "bitsandbytes>=0.43.0",
 ]
 dev = [
