@@ -582,7 +582,7 @@ Both streaming and non-streaming responses are supported. To force a processing 
 
 ## Configuration
 
-All settings are controlled via environment variables with the `AUGMENTUM_` prefix. Copy `.env.example` to `.env` and adjust as needed.
+Deployment-critical settings are controlled via environment variables with the `AUGMENTUM_` prefix — copy `.env.example` to `.env` and adjust as needed. That covers the essentials; **most operational settings** (model management, voice, companion behavior, image generation, knowledge packs, and much more) are configured in the in-app **Settings** panel after first launch. The tables below document the common env vars, not the full surface.
 
 > **Getting more out of your hardware:** the in-app **Model Manager** has
 > power-user settings worth knowing about — run large mixture-of-experts models
@@ -609,7 +609,7 @@ All settings are controlled via environment variables with the `AUGMENTUM_` pref
 | `AUGMENTUM_DEFAULT_TEMPERATURE` | -- | Sampling temperature |
 | `AUGMENTUM_DEFAULT_TOP_P` | -- | Top-p (nucleus) sampling |
 | `AUGMENTUM_DEFAULT_TOP_K` | -- | Top-k sampling |
-| `AUGMENTUM_DEFAULT_NUM_CTX` | `4096` | Context window size |
+| `AUGMENTUM_DEFAULT_NUM_CTX` | `8192` | Context window size |
 
 ### UARF Analytical Tuning
 
@@ -626,7 +626,7 @@ All settings are controlled via environment variables with the `AUGMENTUM_` pref
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `AUGMENTUM_NARRATIVE_CONTEXT_BUDGET` | `4000` | Token budget for narrative context injection |
+| `AUGMENTUM_NARRATIVE_CONTEXT_BUDGET` | `0` | Token budget for narrative context injection (`0` = unlimited; the real cap is `AUGMENTUM_NARRATIVE_CONTEXT_LIMIT`) |
 | `AUGMENTUM_NARRATIVE_AUTO_PERSIST` | `true` | Automatically persist narrative state |
 | `AUGMENTUM_NARRATIVE_CONSISTENCY_FREQUENCY` | `5` | Run consistency checks every N turns |
 
