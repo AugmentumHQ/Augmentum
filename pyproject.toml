@@ -11,18 +11,18 @@ license = "AGPL-3.0-or-later"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.115.12",
-    "uvicorn[standard]==0.34.2",
-    "httpx==0.27.2",
-    "pydantic==2.12.5",
-    "pydantic-settings==2.9.1",
-    "aiosqlite==0.20.0",
+    "uvicorn[standard]==0.52.0",
+    "httpx==0.28.1",
+    "pydantic==2.13.4",
+    "pydantic-settings==2.14.2",
+    "aiosqlite==0.22.1",
     "structlog==24.4.0",
     "pyyaml==6.0.2",
     # TTS script routing dictionary tier (augmentum/voice/script_routing.py)
     # — kanji→romaji and han→pinyin. Pure-python, small; the built-in
     # table romanizers (kana/hangul/cyrillic/greek) work without them.
     "pykakasi==2.3.0",
-    "pypinyin==0.53.0",
+    "pypinyin==0.55.0",
     "trafilatura>=1.12.0",
     "curl_cffi>=0.7.0",
     "extruct>=0.18.0",
@@ -135,13 +135,13 @@ dev = [
     "augmentum[image-cpu]",
     "pytest==8.3.5",
     "pytest-asyncio==0.24.0",
-    "pytest-httpx==0.34.0",
+    "pytest-httpx==0.36.2",
     # Fail a hung test fast (and name it) instead of blocking the whole CI job
     # until the 30-min job timeout. See the --timeout flag in test.yml.
     "pytest-timeout>=2.3.0",
     "respx>=0.22.0",
-    "ruff==0.8.6",
-    "coverage==7.6.12",
+    "ruff==0.16.1",
+    "coverage==7.15.2",
 ]
 
 [project.scripts]
