@@ -1,0 +1,2511 @@
+{
+  "version": 1,
+  "_comment": [
+    "Augmentum Marketplace catalog. Edit this file to add/remove curated",
+    "listings. Each listing names an `install_via` Source (js13k,",
+    "agsp-profile, internal, service_manifest, ...) and an",
+    "`install_payload` dict forwarded to that installer.",
+    "",
+    "Entry naming: 'mkt:<short-slug>' for ids. Keep titles short. Use",
+    "the description for a paragraph; the tagline is the one-liner.",
+    "The catalog loader runs upsert-by-id and soft-delists removed",
+    "entries -- no migration needed.",
+    "",
+    "kind='service' entries are SERVICE APP MANIFESTS (2026-07-18",
+    "service-OS design, docs/superpowers/specs/). Rules enforced at",
+    "load: install_via must be 'service_manifest'; image must be",
+    "version- or digest-pinned (':latest' rejected); the `browser`",
+    "block is REQUIRED (what does the user see after install?).",
+    "The prior game entries were removed 2026-06-17 (delist baseline)."
+  ],
+  "listings": [
+    {
+      "id": "mkt:uptime-kuma",
+      "title": "Uptime Kuma",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Self-hosted uptime monitoring with a beautiful status page.",
+      "description": "Monitor your services, websites, and APIs with notifications when something goes down. First launch opens a setup page to create your admin account. Runs entirely on your box.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/uptime-kuma/icon.svg",
+      "source_url": "https://github.com/louislam/uptime-kuma",
+      "metadata": {
+        "developer": "Louis Lam",
+        "website": "https://uptime.kuma.pet",
+        "license": "MIT",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/uptime-kuma/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/uptime-kuma/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/uptime-kuma/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "uptime-kuma",
+          "name": "Uptime Kuma",
+          "image": "louislam/uptime-kuma:2.4.0",
+          "port": 3001,
+          "volumes": {
+            "data": "/app/data"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          }
+        },
+        "browser": {
+          "after_install": "setup_page",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 300
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/app/data"
+          ]
+        },
+        "integration": {
+          "notifications": {
+            "events": [
+              "monitor.down",
+              "monitor.up"
+            ]
+          }
+        }
+      },
+      "category": "networking",
+      "tags": [
+        "monitoring",
+        "status",
+        "self-hosted"
+      ]
+    },
+    {
+      "id": "mkt:navidrome",
+      "title": "Navidrome",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Your music collection, streamed anywhere.",
+      "description": "A modern, fast music server and streamer for your own files. Point it at your music folder during install; the web player opens right after. Subsonic-compatible apps work out of the box.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/navidrome/icon.svg",
+      "source_url": "https://github.com/navidrome/navidrome",
+      "metadata": {
+        "developer": "Navidrome contributors",
+        "website": "https://www.navidrome.org",
+        "license": "GPL-3.0",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/navidrome/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/navidrome/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/navidrome/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "navidrome",
+          "name": "Navidrome",
+          "image": "deluan/navidrome:0.58.0",
+          "port": 4533,
+          "env": {
+            "ND_SCANSCHEDULE": "1h"
+          },
+          "volumes": {
+            "data": "/data"
+          },
+          "media_mount": "/music",
+          "healthcheck": {
+            "path": "/ping",
+            "timeout_s": 60
+          }
+        },
+        "browser": {
+          "after_install": "setup_page",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 200
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/data"
+          ]
+        },
+        "integration": {
+          "provider_bridge": {
+            "protocol": "subsonic",
+            "category": "music"
+          }
+        }
+      },
+      "category": "media",
+      "tags": [
+        "music",
+        "media",
+        "streaming"
+      ]
+    },
+    {
+      "id": "mkt:radicale",
+      "title": "Radicale (Calendar & Contacts)",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "A tiny CalDAV/CardDAV server for your calendars and contacts.",
+      "description": "Sync calendars and contacts across your devices without a cloud account. Works with iOS, Android (DAVx5), Thunderbird, and anything speaking CalDAV/CardDAV.",
+      "source_url": "https://github.com/Kozea/Radicale",
+      "metadata": {
+        "developer": "Kozea",
+        "website": "https://radicale.org",
+        "license": "GPL-3.0"
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "radicale",
+          "name": "Radicale",
+          "image": "tomsquest/docker-radicale:3.7.6.0",
+          "port": 5232,
+          "volumes": {
+            "data": "/data"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 45
+          }
+        },
+        "browser": {
+          "after_install": "login",
+          "path": "/.web/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 128,
+          "disk_mb": 100
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/data"
+          ]
+        },
+        "integration": {
+          "calendar": {
+            "protocol": "caldav",
+            "path": "/radicale"
+          }
+        }
+      },
+      "category": "files",
+      "tags": [
+        "calendar",
+        "contacts",
+        "caldav",
+        "sync"
+      ],
+      "thumbnail_url": "https://cdn.jsdelivr.net/gh/selfhst/icons/png/radicale.png"
+    },
+    {
+      "id": "mkt:syncthing",
+      "title": "Syncthing",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Continuous file sync between your devices, no cloud in between.",
+      "description": "Keeps folders in sync across your computers and phones, peer to peer and encrypted. First launch opens the web UI where you set a GUI password and add devices. Direct transfers use port 22000 when reachable; otherwise Syncthing falls back to community relays, which is slower but works everywhere.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/syncthing/icon.svg",
+      "source_url": "https://github.com/syncthing/syncthing",
+      "metadata": {
+        "developer": "The Syncthing Foundation",
+        "website": "https://syncthing.net",
+        "license": "MPL-2.0",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/syncthing/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/syncthing/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/syncthing/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "syncthing",
+          "name": "Syncthing",
+          "image": "syncthing/syncthing:2.1.2",
+          "port": 8384,
+          "volumes": {
+            "data": "/var/syncthing"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          }
+        },
+        "browser": {
+          "after_install": "setup_page",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 200
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/var/syncthing"
+          ]
+        }
+      },
+      "category": "files",
+      "tags": [
+        "sync",
+        "files",
+        "p2p"
+      ]
+    },
+    {
+      "id": "mkt:vaultwarden",
+      "title": "Vaultwarden",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Your own Bitwarden-compatible password vault.",
+      "description": "A lightweight server for the official Bitwarden apps and browser extensions. Everything is end-to-end encrypted with your master password. After install, create your account on the web vault, then point your Bitwarden clients at this server's HTTPS address.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/vaultwarden/icon.svg",
+      "source_url": "https://github.com/dani-garcia/vaultwarden",
+      "metadata": {
+        "developer": "Daniel García & contributors",
+        "website": "https://github.com/dani-garcia/vaultwarden",
+        "license": "AGPL-3.0",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/vaultwarden/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/vaultwarden/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/vaultwarden/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "vaultwarden",
+          "name": "Vaultwarden",
+          "image": "vaultwarden/server:1.36.0",
+          "port": 8089,
+          "volumes": {
+            "data": "/data"
+          },
+          "healthcheck": {
+            "path": "/alive",
+            "timeout_s": 90
+          },
+          "env": {
+            "ROCKET_PORT": "8089"
+          }
+        },
+        "browser": {
+          "after_install": "setup_page",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 300
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/data"
+          ]
+        }
+      },
+      "category": "files",
+      "tags": [
+        "passwords",
+        "security",
+        "bitwarden"
+      ]
+    },
+    {
+      "id": "mkt:stirling-pdf",
+      "title": "Stirling PDF",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Merge, split, rotate, convert, and edit PDFs in your browser.",
+      "description": "A complete PDF toolbox that runs entirely on your box — nothing you upload leaves it. Includes OCR in many languages, compression, page reordering, conversions, and more. Opens ready to use, no account needed.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/stirling-pdf/icon.svg",
+      "source_url": "https://github.com/Stirling-Tools/Stirling-PDF",
+      "metadata": {
+        "developer": "Stirling Tools",
+        "website": "https://stirlingtools.com",
+        "license": "MIT",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/stirling-pdf/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/stirling-pdf/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/stirling-pdf/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "stirling-pdf",
+          "name": "Stirling PDF",
+          "image": "stirlingtools/stirling-pdf:2.14.2",
+          "port": 8080,
+          "volumes": {
+            "tessdata": "/usr/share/tessdata",
+            "configs": "/configs",
+            "logs": "/logs",
+            "pipeline": "/pipeline"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 180
+          },
+          "env": {
+            "DOCKER_ENABLE_SECURITY": "false",
+            "LANGS": "ALL"
+          }
+        },
+        "browser": {
+          "after_install": "status",
+          "path": "/",
+          "credentials": "none"
+        },
+        "resources": {
+          "ram_mb": 1024,
+          "disk_mb": 800
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/configs",
+            "/logs",
+            "/pipeline",
+            "/usr/share/tessdata"
+          ]
+        }
+      },
+      "category": "files",
+      "tags": [
+        "pdf",
+        "documents",
+        "tools"
+      ]
+    },
+    {
+      "id": "mkt:memos",
+      "title": "Memos",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Capture quick thoughts in a lightweight, private notes stream.",
+      "description": "A privacy-first note-taking service with markdown, tags, and a timeline view. The first account you create becomes the admin.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/memos/icon.svg",
+      "source_url": "https://github.com/usememos/memos",
+      "metadata": {
+        "developer": "usememos",
+        "website": "https://www.usememos.com",
+        "license": "MIT",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/memos/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/memos/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/memos/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "memos",
+          "name": "Memos",
+          "image": "neosmemo/memos:0.29.1",
+          "port": 5230,
+          "volumes": {
+            "data": "/var/opt/memos"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "env": {
+            "MEMOS_MODE": "prod"
+          }
+        },
+        "browser": {
+          "after_install": "setup_page",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 128,
+          "disk_mb": 200
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/var/opt/memos"
+          ]
+        }
+      },
+      "category": "files",
+      "tags": [
+        "notes",
+        "markdown",
+        "journal"
+      ]
+    },
+    {
+      "id": "mkt:flatnotes",
+      "title": "flatnotes",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Database-less markdown notes — every note is a plain file.",
+      "description": "A clean note-taking app where each note lives as a Markdown file you can back up, sync, or edit with anything. You choose the admin password during install; sign in as 'admin'.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/flatnotes/icon.svg",
+      "source_url": "https://github.com/dullage/flatnotes",
+      "metadata": {
+        "developer": "Adam Dullage",
+        "website": "https://github.com/dullage/flatnotes",
+        "license": "MIT",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/flatnotes/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/flatnotes/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/flatnotes/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "flatnotes",
+          "name": "flatnotes",
+          "image": "dullage/flatnotes:v5.5.4",
+          "port": 8080,
+          "volumes": {
+            "data": "/data"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "env": {
+            "FLATNOTES_AUTH_TYPE": "password",
+            "FLATNOTES_USERNAME": "admin"
+          },
+          "env_prompts": [
+            {
+              "key": "FLATNOTES_PASSWORD",
+              "label": "Password for the admin account",
+              "secret": true
+            },
+            {
+              "key": "FLATNOTES_SECRET_KEY",
+              "label": "Session secret (auto-generated)",
+              "secret": true,
+              "generate": true
+            }
+          ]
+        },
+        "browser": {
+          "after_install": "login",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 128,
+          "disk_mb": 100
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/data"
+          ]
+        }
+      },
+      "category": "files",
+      "tags": [
+        "notes",
+        "markdown"
+      ]
+    },
+    {
+      "id": "mkt:trilium",
+      "title": "Trilium Notes",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "A personal knowledge base with an infinitely deep note tree.",
+      "description": "Build a structured knowledge base: hierarchical notes, cloning, relations, scripting, and encryption for protected notes. First launch walks you through setup and password creation.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/trilium-notes/icon.svg",
+      "source_url": "https://github.com/TriliumNext/Trilium",
+      "metadata": {
+        "developer": "TriliumNext",
+        "website": "https://github.com/TriliumNext",
+        "license": "AGPL-3.0",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/trilium-notes/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/trilium-notes/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/trilium-notes/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "trilium",
+          "name": "Trilium Notes",
+          "image": "triliumnext/trilium:v0.103.0",
+          "port": 8080,
+          "volumes": {
+            "data": "/data"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "env": {
+            "TRILIUM_DATA_DIR": "/data"
+          }
+        },
+        "browser": {
+          "after_install": "setup_page",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 512,
+          "disk_mb": 400
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/data"
+          ]
+        }
+      },
+      "category": "files",
+      "tags": [
+        "notes",
+        "knowledge-base",
+        "wiki"
+      ]
+    },
+    {
+      "id": "mkt:pingvin-share",
+      "title": "Pingvin Share",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Share files with anyone via links — a self-hosted WeTransfer.",
+      "description": "Upload files and get shareable links with optional expiry and passwords. The first account you register becomes the admin. Sharing outside your network requires this server to be reachable from outside.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/pingvin-share/icon.svg",
+      "source_url": "https://github.com/stonith404/pingvin-share",
+      "metadata": {
+        "developer": "Elias Schneider",
+        "website": "https://stonith404.github.io/pingvin-share/introduction",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/pingvin-share/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/pingvin-share/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/pingvin-share/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "pingvin-share",
+          "name": "Pingvin Share",
+          "image": "stonith404/pingvin-share:v1.13.0",
+          "port": 3000,
+          "volumes": {
+            "data": "/opt/app/backend/data",
+            "images": "/opt/app/frontend/public/img"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          }
+        },
+        "browser": {
+          "after_install": "setup_page",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 384,
+          "disk_mb": 300
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/opt/app/backend/data",
+            "/opt/app/frontend/public/img"
+          ]
+        }
+      },
+      "category": "files",
+      "tags": [
+        "file-sharing",
+        "uploads"
+      ]
+    },
+    {
+      "id": "mkt:duplicati",
+      "title": "Duplicati",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Encrypted backups to any storage you already have.",
+      "description": "Back up to S3, Backblaze, Google Drive, OneDrive, SFTP, WebDAV, and more — always encrypted before it leaves your box. You set the web console password during install. Optionally point it at a library folder to include in backups.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/duplicati/icon.svg",
+      "source_url": "https://github.com/duplicati/duplicati",
+      "metadata": {
+        "developer": "Duplicati team",
+        "website": "https://duplicati.com",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/duplicati/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/duplicati/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/duplicati/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "duplicati",
+          "name": "Duplicati",
+          "image": "duplicati/duplicati:2.3.0.4",
+          "port": 8200,
+          "volumes": {
+            "data": "/data"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "env": {
+            "DUPLICATI__WEBSERVICE_PORT": "8200",
+            "DUPLICATI__WEBSERVICE_INTERFACE": "any",
+            "DUPLICATI__WEBSERVICE_ALLOWED_HOSTNAMES": "*"
+          },
+          "env_prompts": [
+            {
+              "key": "DUPLICATI__WEBSERVICE_PASSWORD",
+              "label": "Web console password",
+              "secret": true
+            }
+          ],
+          "media_mount": "/source"
+        },
+        "browser": {
+          "after_install": "login",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 512,
+          "disk_mb": 300
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/data"
+          ]
+        }
+      },
+      "category": "files",
+      "tags": [
+        "backup",
+        "encryption",
+        "cloud"
+      ]
+    },
+    {
+      "id": "mkt:mealie",
+      "title": "Mealie",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Recipe manager and meal planner — import recipes from any URL.",
+      "description": "Paste a recipe link and Mealie imports the ingredients and steps. Plan meals, build shopping lists, and share with your household. Create your account on first launch.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/mealie/icon.svg",
+      "source_url": "https://github.com/mealie-recipes/mealie",
+      "metadata": {
+        "developer": "Mealie contributors",
+        "website": "https://docs.mealie.io",
+        "license": "AGPL-3.0",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/mealie/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/mealie/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/mealie/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "mealie",
+          "name": "Mealie",
+          "image": "ghcr.io/mealie-recipes/mealie:v3.20.1",
+          "port": 9000,
+          "volumes": {
+            "data": "/app/data"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "env": {
+            "ALLOW_SIGNUP": "true",
+            "MAX_WORKERS": "1",
+            "WEB_CONCURRENCY": "1"
+          }
+        },
+        "browser": {
+          "after_install": "setup_page",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 512,
+          "disk_mb": 300
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/app/data"
+          ]
+        }
+      },
+      "category": "files",
+      "tags": [
+        "recipes",
+        "meal-planning",
+        "household"
+      ]
+    },
+    {
+      "id": "mkt:grocy",
+      "title": "Grocy",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Groceries, chores, and household management — beyond your fridge.",
+      "description": "Track what's in stock, what's expiring, chores, and shopping lists. Sign in with the default account (admin / admin) and change the password right away.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/grocy/icon.svg",
+      "source_url": "https://github.com/grocy/grocy",
+      "metadata": {
+        "developer": "Bernd Bestel",
+        "website": "https://grocy.info",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/grocy/1.webp",
+          "https://getumbrel.github.io/umbrel-apps-gallery/grocy/2.webp",
+          "https://getumbrel.github.io/umbrel-apps-gallery/grocy/3.webp"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "grocy",
+          "name": "Grocy",
+          "image": "linuxserver/grocy:4.6.0",
+          "port": 80,
+          "volumes": {
+            "config": "/config"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "env": {
+            "PUID": "1000",
+            "PGID": "1000",
+            "TZ": "Etc/UTC"
+          }
+        },
+        "browser": {
+          "after_install": "login",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 200
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/config"
+          ]
+        }
+      },
+      "category": "files",
+      "tags": [
+        "groceries",
+        "household",
+        "inventory"
+      ]
+    },
+    {
+      "id": "mkt:homebox",
+      "title": "HomeBox",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Inventory for your home — know what you own and where it is.",
+      "description": "Catalog your belongings with labels, locations, warranty details, and attachments. Register your account on first launch.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/homebox/icon.svg",
+      "source_url": "https://github.com/sysadminsmedia/homebox",
+      "metadata": {
+        "developer": "SysAdmins Media",
+        "website": "https://homebox.software",
+        "license": "AGPL-3.0",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/homebox/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/homebox/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/homebox/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "homebox",
+          "name": "HomeBox",
+          "image": "ghcr.io/sysadminsmedia/homebox:0.26.2",
+          "port": 7745,
+          "volumes": {
+            "data": "/data"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "env_prompts": [
+            {
+              "key": "HBOX_AUTH_API_KEY_PEPPER",
+              "label": "API key signing secret (auto-generated)",
+              "secret": true,
+              "generate": true
+            }
+          ]
+        },
+        "browser": {
+          "after_install": "setup_page",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 128,
+          "disk_mb": 100
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/data"
+          ]
+        }
+      },
+      "category": "files",
+      "tags": [
+        "inventory",
+        "organization",
+        "home"
+      ]
+    },
+    {
+      "id": "mkt:heimdall",
+      "title": "Heimdall",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "One tidy start page for all your self-hosted services.",
+      "description": "A simple, good-looking dashboard of links to everything you run. Opens ready to use — add your apps and links straight away.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/heimdall/icon.svg",
+      "source_url": "https://github.com/linuxserver/Heimdall",
+      "metadata": {
+        "developer": "LinuxServer.io",
+        "website": "https://heimdall.site",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/heimdall/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/heimdall/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/heimdall/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "heimdall",
+          "name": "Heimdall",
+          "image": "linuxserver/heimdall:2.8.1",
+          "port": 80,
+          "volumes": {
+            "config": "/config"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "env": {
+            "PUID": "1000",
+            "PGID": "1000"
+          }
+        },
+        "browser": {
+          "after_install": "status",
+          "path": "/",
+          "credentials": "none"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 150
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/config"
+          ]
+        }
+      },
+      "category": "files",
+      "tags": [
+        "dashboard",
+        "launcher",
+        "homepage"
+      ]
+    },
+    {
+      "id": "mkt:wallos",
+      "title": "Wallos",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Track recurring subscriptions and see what they really cost.",
+      "description": "Log your subscriptions, get renewal reminders, and see monthly and yearly totals by category. Register your account on first launch.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/wallos/icon.svg",
+      "source_url": "https://github.com/ellite/Wallos",
+      "metadata": {
+        "developer": "Wallos",
+        "website": "https://wallosapp.com",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/wallos/1.webp",
+          "https://getumbrel.github.io/umbrel-apps-gallery/wallos/2.webp",
+          "https://getumbrel.github.io/umbrel-apps-gallery/wallos/3.webp"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "wallos",
+          "name": "Wallos",
+          "image": "bellamy/wallos:5.2.0",
+          "port": 80,
+          "volumes": {
+            "db": "/var/www/html/db",
+            "logos": "/var/www/html/images/uploads/logos"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "env": {
+            "TZ": "Etc/UTC"
+          }
+        },
+        "browser": {
+          "after_install": "setup_page",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 150
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/var/www/html/db",
+            "/var/www/html/images/uploads/logos"
+          ]
+        }
+      },
+      "category": "files",
+      "tags": [
+        "subscriptions",
+        "finance",
+        "budget"
+      ]
+    },
+    {
+      "id": "mkt:calibre-web",
+      "title": "Calibre-Web",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "A clean web library for browsing and reading your eBooks.",
+      "description": "Browse, read, and download your Calibre eBook library from any browser. Sign in with the default account (admin / admin123), change the password, then point it at your books folder.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/calibre-web/icon.svg",
+      "source_url": "https://github.com/janeczku/calibre-web",
+      "metadata": {
+        "developer": "Janeczku & contributors",
+        "license": "GPL-3.0",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/calibre-web/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/calibre-web/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/calibre-web/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "calibre-web",
+          "name": "Calibre-Web",
+          "image": "linuxserver/calibre-web:0.6.26",
+          "port": 8083,
+          "volumes": {
+            "config": "/config"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "env": {
+            "PUID": "1000",
+            "PGID": "1000"
+          },
+          "media_mount": "/books"
+        },
+        "browser": {
+          "after_install": "login",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 200
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/config"
+          ]
+        }
+      },
+      "category": "media",
+      "tags": [
+        "ebooks",
+        "books",
+        "reading"
+      ]
+    },
+    {
+      "id": "mkt:metube",
+      "title": "MeTube",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Download videos from YouTube and hundreds of other sites.",
+      "description": "A friendly web UI for yt-dlp: paste a link, pick a format, and the download lands in its library folder. Opens ready to use.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/metube/icon.svg",
+      "source_url": "https://github.com/alexta69/metube",
+      "metadata": {
+        "developer": "Alex Shnitman",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/metube/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/metube/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/metube/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "metube",
+          "name": "MeTube",
+          "image": "ghcr.io/alexta69/metube:2026.07.13",
+          "port": 8081,
+          "volumes": {
+            "downloads": "/downloads"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          }
+        },
+        "browser": {
+          "after_install": "status",
+          "path": "/",
+          "credentials": "none"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 200
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/downloads"
+          ]
+        }
+      },
+      "category": "media",
+      "tags": [
+        "youtube",
+        "downloads",
+        "video"
+      ]
+    },
+    {
+      "id": "mkt:pinchflat",
+      "title": "Pinchflat",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Automatically archive YouTube channels and playlists.",
+      "description": "Subscribe to channels or playlists and Pinchflat keeps local copies as new videos land — built on yt-dlp, designed for media-server layouts. Opens ready to use; you can add a password in its settings.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/pinchflat/icon.svg",
+      "source_url": "https://github.com/kieraneglin/pinchflat",
+      "metadata": {
+        "developer": "Kieran Eglin",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/pinchflat/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/pinchflat/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/pinchflat/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "pinchflat",
+          "name": "Pinchflat",
+          "image": "ghcr.io/kieraneglin/pinchflat:v2025.6.6",
+          "port": 8945,
+          "volumes": {
+            "config": "/config",
+            "downloads": "/downloads"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          }
+        },
+        "browser": {
+          "after_install": "status",
+          "path": "/",
+          "credentials": "none"
+        },
+        "resources": {
+          "ram_mb": 512,
+          "disk_mb": 300
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/config",
+            "/downloads"
+          ]
+        }
+      },
+      "category": "media",
+      "tags": [
+        "youtube",
+        "archiving",
+        "automation"
+      ]
+    },
+    {
+      "id": "mkt:freshrss",
+      "title": "FreshRSS",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Follow every site you care about from one fast RSS reader.",
+      "description": "A free, self-hosted feed aggregator with keyboard-friendly reading, filters, and mobile client support. First launch runs a short setup wizard.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/freshrss/icon.svg",
+      "source_url": "https://github.com/FreshRSS/FreshRSS",
+      "metadata": {
+        "developer": "FreshRSS community",
+        "website": "https://freshrss.org",
+        "license": "AGPL-3.0",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/freshrss/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/freshrss/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/freshrss/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "freshrss",
+          "name": "FreshRSS",
+          "image": "linuxserver/freshrss:1.29.1",
+          "port": 80,
+          "volumes": {
+            "config": "/config"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "env": {
+            "PUID": "1000",
+            "PGID": "1000"
+          }
+        },
+        "browser": {
+          "after_install": "setup_page",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 200
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/config"
+          ]
+        }
+      },
+      "category": "media",
+      "tags": [
+        "rss",
+        "news",
+        "reading"
+      ]
+    },
+    {
+      "id": "mkt:librespeed",
+      "title": "LibreSpeed",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Test connection speed between your devices and this server.",
+      "description": "A lightweight, no-tracking speed test served from your own box — useful for checking your LAN and Wi-Fi, not just your internet. Opens ready to use.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/librespeed/icon.svg",
+      "source_url": "https://github.com/librespeed/speedtest",
+      "metadata": {
+        "developer": "LibreSpeed",
+        "website": "https://librespeed.org",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/librespeed/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/librespeed/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/librespeed/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "librespeed",
+          "name": "LibreSpeed",
+          "image": "ghcr.io/librespeed/speedtest:6.1.0",
+          "port": 8080,
+          "volumes": {
+            "config": "/config"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "env": {
+            "PUID": "1000",
+            "PGID": "1000"
+          }
+        },
+        "browser": {
+          "after_install": "status",
+          "path": "/",
+          "credentials": "none"
+        },
+        "resources": {
+          "ram_mb": 128,
+          "disk_mb": 100
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/config"
+          ]
+        }
+      },
+      "category": "networking",
+      "tags": [
+        "speedtest",
+        "network"
+      ]
+    },
+    {
+      "id": "mkt:myspeed",
+      "title": "MySpeed",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Automatic speed tests with 30 days of history.",
+      "description": "Runs scheduled internet speed tests and charts the results so you can spot slowdowns and hold your ISP to its promises. Opens ready to use; a password can be set in its settings.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/myspeed/icon.svg",
+      "source_url": "https://github.com/gnmyt/myspeed",
+      "metadata": {
+        "developer": "Mathias Wagner",
+        "website": "https://myspeed.dev",
+        "license": "MIT",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/myspeed/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/myspeed/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/myspeed/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "myspeed",
+          "name": "MySpeed",
+          "image": "germannewsmaker/myspeed:1.0.9",
+          "port": 5216,
+          "volumes": {
+            "data": "/myspeed/data"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          }
+        },
+        "browser": {
+          "after_install": "status",
+          "path": "/",
+          "credentials": "none"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 150
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/myspeed/data"
+          ]
+        }
+      },
+      "category": "networking",
+      "tags": [
+        "speedtest",
+        "monitoring",
+        "history"
+      ]
+    },
+    {
+      "id": "mkt:changedetection",
+      "title": "changedetection.io",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Watch any web page and get notified when it changes.",
+      "description": "Track prices, restocks, job posts, or any page content, with flexible filters and dozens of notification targets. Opens ready to use; a password can be set in its settings.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/changedetection-io/icon.svg",
+      "source_url": "https://github.com/dgtlmoon/changedetection.io",
+      "metadata": {
+        "developer": "dgtlmoon",
+        "website": "https://changedetection.io",
+        "license": "Apache-2.0",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/changedetection-io/1.webp",
+          "https://getumbrel.github.io/umbrel-apps-gallery/changedetection-io/2.webp",
+          "https://getumbrel.github.io/umbrel-apps-gallery/changedetection-io/3.webp"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "changedetection",
+          "name": "changedetection.io",
+          "image": "ghcr.io/dgtlmoon/changedetection.io:0.55.8",
+          "port": 5000,
+          "volumes": {
+            "datastore": "/datastore"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "env": {
+            "HIDE_REFERER": "true",
+            "DISABLE_VERSION_CHECK": "true"
+          }
+        },
+        "browser": {
+          "after_install": "status",
+          "path": "/",
+          "credentials": "none"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 200
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/datastore"
+          ]
+        }
+      },
+      "category": "automation",
+      "tags": [
+        "monitoring",
+        "alerts",
+        "web"
+      ]
+    },
+    {
+      "id": "mkt:n8n",
+      "title": "n8n",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Build automation workflows connecting hundreds of services.",
+      "description": "A visual workflow builder: triggers, branches, code steps, and integrations for hundreds of apps and APIs. Create the owner account on first launch.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/n8n/icon.svg",
+      "source_url": "https://github.com/n8n-io/n8n",
+      "metadata": {
+        "developer": "n8n GmbH",
+        "website": "https://n8n.io",
+        "license": "Sustainable Use License (fair-code)",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/n8n/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/n8n/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/n8n/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "n8n",
+          "name": "n8n",
+          "image": "n8nio/n8n:2.30.5",
+          "port": 5678,
+          "volumes": {
+            "data": "/home/node/.n8n"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "env": {
+            "N8N_SECURE_COOKIE": "false",
+            "N8N_DIAGNOSTICS_ENABLED": "false"
+          }
+        },
+        "browser": {
+          "after_install": "setup_page",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 512,
+          "disk_mb": 400
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/home/node/.n8n"
+          ]
+        }
+      },
+      "category": "automation",
+      "tags": [
+        "workflows",
+        "integration",
+        "no-code"
+      ]
+    },
+    {
+      "id": "mkt:node-red",
+      "title": "Node-RED",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Wire together devices, APIs, and services with visual flows.",
+      "description": "Low-code programming for event-driven automation — drag nodes, wire them up, deploy. Opens ready to use; admin auth can be enabled in its settings file.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/node-red/icon.svg",
+      "source_url": "https://github.com/node-red/node-red",
+      "metadata": {
+        "developer": "OpenJS Foundation",
+        "website": "https://nodered.org",
+        "license": "Apache-2.0",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/node-red/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/node-red/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/node-red/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "node-red",
+          "name": "Node-RED",
+          "image": "nodered/node-red:5.0.1",
+          "port": 1880,
+          "volumes": {
+            "data": "/data"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          }
+        },
+        "browser": {
+          "after_install": "status",
+          "path": "/",
+          "credentials": "none"
+        },
+        "resources": {
+          "ram_mb": 384,
+          "disk_mb": 300
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/data"
+          ]
+        }
+      },
+      "category": "automation",
+      "tags": [
+        "iot",
+        "flows",
+        "wiring"
+      ]
+    },
+    {
+      "id": "mkt:code-server",
+      "title": "code-server",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "VS Code in your browser, running on your own box.",
+      "description": "The full VS Code experience served from this machine — consistent dev environment from any device. You set the editor password during install.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/code-server/icon.svg",
+      "source_url": "https://github.com/coder/code-server",
+      "metadata": {
+        "developer": "Coder",
+        "website": "https://coder.com",
+        "license": "MIT",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/code-server/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/code-server/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/code-server/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "code-server",
+          "name": "code-server",
+          "image": "codercom/code-server:4.128.0",
+          "port": 8080,
+          "volumes": {
+            "home": "/home/coder"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "env_prompts": [
+            {
+              "key": "PASSWORD",
+              "label": "Editor password",
+              "secret": true
+            }
+          ]
+        },
+        "browser": {
+          "after_install": "login",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 1024,
+          "disk_mb": 500
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/home/coder"
+          ]
+        }
+      },
+      "category": "developer",
+      "tags": [
+        "vscode",
+        "editor",
+        "ide"
+      ]
+    },
+    {
+      "id": "mkt:ittools",
+      "title": "IT-Tools",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "A big box of handy tools for developers, in one page.",
+      "description": "⚙️ It-Tools is an open-source project hosted on GitHub that provides a collection of practical online tools for developers and IT professionals. The tools are designed to be easy to use, offering a great user experience. The project includes various features that simplify common tasks, such as URL decoding, QR code generation, JSON formatting, and XML formatting.\n\nA key feature of the project is the ability to self-host the application. Users can run the tools on their own servers using Docker, which is especially useful for developers who want an independent environment. The Docker installati",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/ittools/icon.svg",
+      "source_url": "https://github.com/CorentinTh/it-tools",
+      "metadata": {
+        "source_store": "umbrel",
+        "developer": "Corentin Thomasset",
+        "website": "https://it-tools.tech/",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/ittools/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/ittools/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/ittools/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "ittools",
+          "name": "IT-Tools",
+          "image": "corentinth/it-tools:2024.10.22-7ca5933",
+          "port": 80,
+          "volumes": {
+            "data": "/data"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          }
+        },
+        "browser": {
+          "after_install": "status",
+          "path": "/",
+          "credentials": "none"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 300
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/data"
+          ]
+        }
+      },
+      "category": "developer",
+      "tags": [
+        "developer"
+      ]
+    },
+    {
+      "id": "mkt:gitea",
+      "title": "Gitea",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "A painless self-hosted Git service (single-container, SQLite).",
+      "description": "Gitea is a painless self-hosted all-in-one software development service, it includes Git hosting, code review, team collaboration, package registry and CI/CD. It is similar to GitHub, Bitbucket and GitLab. \n\n- Code Hosting\nGitea supports creating and managing repositories, browsing commit history and code files, reviewing and merging code submissions, managing collaborators, handling branches, and more. It also supports many common Git features such as tags, Cherry-pick, hooks, integrated collaboration tools, and more.\n\n- Lightweight and Fast\nOne of Gitea's design goals is to be lightweight an",
+      "thumbnail_url": "https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/Gitea/icon.svg",
+      "source_url": "https://github.com/go-gitea/gitea",
+      "metadata": {
+        "source_store": "casaos",
+        "developer": "Gitea",
+        "gallery": [
+          "https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/Gitea/screenshot-1.png",
+          "https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/Gitea/screenshot-2.png",
+          "https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/Gitea/screenshot-3.png"
+        ],
+        "website": "https://about.gitea.com"
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "gitea",
+          "name": "Gitea",
+          "image": "gitea/gitea:1.26.2",
+          "port": 3000,
+          "volumes": {
+            "data": "/data"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "env": {
+            "USER_GID": "1000",
+            "USER_UID": "1000"
+          }
+        },
+        "browser": {
+          "after_install": "setup_page",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 300
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/data"
+          ]
+        }
+      },
+      "category": "developer",
+      "tags": [
+        "developer"
+      ]
+    },
+    {
+      "id": "mkt:drawio",
+      "title": "Draw.io",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Diagramming and whiteboarding app.",
+      "description": "draw.io is a JavaScript, client-side editor for general diagramming and whiteboarding.",
+      "thumbnail_url": "https://raw.githubusercontent.com/runtipi/runtipi-appstore/master/apps/drawio/metadata/logo.jpg",
+      "source_url": "https://github.com/jgraph/drawio",
+      "metadata": {
+        "source_store": "runtipi",
+        "developer": "JGraph",
+        "website": "https://www.drawio.com/"
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "drawio",
+          "name": "Draw.io",
+          "image": "jgraph/drawio:30.3.14",
+          "port": 8080,
+          "volumes": {
+            "data": "/data"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          }
+        },
+        "browser": {
+          "after_install": "status",
+          "path": "/",
+          "credentials": "none"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 300
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/data"
+          ]
+        }
+      },
+      "category": "developer",
+      "tags": [
+        "utilities"
+      ]
+    },
+    {
+      "id": "mkt:cyberchef",
+      "title": "CyberChef",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "The Cyber Swiss Army Knife",
+      "description": "CyberChef is a web app for encryption, encoding, compression, and data analysis.",
+      "thumbnail_url": "https://raw.githubusercontent.com/runtipi/runtipi-appstore/master/apps/cyberchef/metadata/logo.jpg",
+      "source_url": "https://github.com/gchq/CyberChef",
+      "metadata": {
+        "source_store": "runtipi",
+        "developer": "GCHQ"
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "cyberchef",
+          "name": "CyberChef",
+          "image": "ghcr.io/gchq/cyberchef:11.2.0",
+          "port": 8080,
+          "volumes": {
+            "data": "/data"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          }
+        },
+        "browser": {
+          "after_install": "status",
+          "path": "/",
+          "credentials": "none"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 300
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/data"
+          ]
+        }
+      },
+      "category": "developer",
+      "tags": [
+        "utilities",
+        "security"
+      ]
+    },
+    {
+      "id": "mkt:ntfy",
+      "title": "Ntfy",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Ntfy, a simple server for sending and receiving notification messages.",
+      "description": "Send push notifications to any devices using a simple HTTP PUT or POST request. Note: installs open (no accounts) — add users and access control in its settings if this server is reachable beyond your LAN.",
+      "thumbnail_url": "https://raw.githubusercontent.com/runtipi/runtipi-appstore/master/apps/ntfy/metadata/logo.jpg",
+      "source_url": "https://github.com/binwiederhier/ntfy",
+      "metadata": {
+        "source_store": "runtipi",
+        "developer": "https://github.com/binwiederhier",
+        "website": "https://ntfy.sh/"
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "ntfy",
+          "name": "Ntfy",
+          "image": "binwiederhier/ntfy:v2.26.0",
+          "port": 80,
+          "volumes": {
+            "ntfy": "/var/cache/ntfy",
+            "etc-ntfy": "/etc/ntfy",
+            "lib": "/var/lib/ntfy"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "command": [
+            "serve"
+          ]
+        },
+        "browser": {
+          "after_install": "status",
+          "path": "/",
+          "credentials": "none"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 300
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/etc/ntfy",
+            "/var/cache/ntfy",
+            "/var/lib/ntfy"
+          ]
+        }
+      },
+      "category": "automation",
+      "tags": [
+        "utilities"
+      ]
+    },
+    {
+      "id": "mkt:gotify",
+      "title": "Gotify",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Gotify, a simple server for sending and receiving notification messages.",
+      "description": "Simple server for sending and receiving notification messages.",
+      "thumbnail_url": "https://raw.githubusercontent.com/runtipi/runtipi-appstore/master/apps/gotify/metadata/logo.jpg",
+      "source_url": "https://github.com/gotify/server",
+      "metadata": {
+        "source_store": "runtipi",
+        "developer": "gotigy",
+        "website": "https://gotify.net"
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "gotify",
+          "name": "Gotify",
+          "image": "gotify/server:2.9.1",
+          "port": 80,
+          "volumes": {
+            "data": "/app/data"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "env_prompts": [
+            {
+              "key": "GOTIFY_DEFAULTUSER_NAME",
+              "label": "Gotify username",
+              "secret": false
+            },
+            {
+              "key": "GOTIFY_DEFAULTUSER_PASS",
+              "label": "Gotify password",
+              "secret": true
+            }
+          ]
+        },
+        "browser": {
+          "after_install": "login",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 300
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/app/data"
+          ]
+        }
+      },
+      "category": "automation",
+      "tags": [
+        "utilities"
+      ]
+    },
+    {
+      "id": "mkt:beszel",
+      "title": "Beszel",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Lightweight server monitoring.",
+      "description": "A lightweight server monitoring hub with historical data, docker stats, and alerts.",
+      "thumbnail_url": "https://raw.githubusercontent.com/runtipi/runtipi-appstore/master/apps/beszel/metadata/logo.jpg",
+      "source_url": "https://github.com/henrygd/beszel",
+      "metadata": {
+        "source_store": "runtipi",
+        "developer": "henrygd"
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "beszel",
+          "name": "Beszel",
+          "image": "henrygd/beszel:0.18.7",
+          "port": 8090,
+          "volumes": {
+            "beszel-data": "/beszel_data"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          }
+        },
+        "browser": {
+          "after_install": "setup_page",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 300
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/beszel_data"
+          ]
+        }
+      },
+      "category": "networking",
+      "tags": [
+        "utilities"
+      ]
+    },
+    {
+      "id": "mkt:actual-budget",
+      "title": "Actual Budget",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Local-first OpenSource Budget tool",
+      "description": "Actual is a local-first personal finance tool. It is 100% free and open-source, written in NodeJS, it has a synchronization element so that all your changes can move between devices without any heavy lifting.",
+      "thumbnail_url": "https://raw.githubusercontent.com/runtipi/runtipi-appstore/master/apps/actual-budget/metadata/logo.jpg",
+      "source_url": "https://github.com/actualbudget/actual",
+      "metadata": {
+        "source_store": "runtipi",
+        "developer": "Shift Reset LLC"
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "actual-budget",
+          "name": "Actual Budget",
+          "image": "actualbudget/actual-server:26.7.0",
+          "port": 5006,
+          "volumes": {
+            "data": "/data"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          }
+        },
+        "browser": {
+          "after_install": "setup_page",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 300
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/data"
+          ]
+        }
+      },
+      "category": "files",
+      "tags": [
+        "finance"
+      ]
+    },
+    {
+      "id": "mkt:privatebin",
+      "title": "PrivateBin",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "A minimalist, open source online pastebin",
+      "description": "⚠️ PrivateBin requires HTTPS and exposure to the public internet to work. The easiest way to do this is with the Cloudflare Tunnel app or Nginx Proxy Manager app on the Umbrel App Store.\n\nPrivateBin is an open-source, minimalist, and encrypted pastebin service. It allows users to share text or code snippets securely, with end-to-end encryption, ensuring that only the intended recipient can read the contents. The server hosting PrivateBin cannot decrypt or access the data being shared, providing a high level of privacy.\n\nHere are some key features of PrivateBin:\n\n🔒 End-to-End Encryption: All da",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/privatebin/icon.svg",
+      "source_url": "https://github.com/PrivateBin/PrivateBin",
+      "metadata": {
+        "source_store": "umbrel",
+        "developer": "PrivateBin Community",
+        "website": "https://privatebin.info/",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/privatebin/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/privatebin/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/privatebin/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "privatebin",
+          "name": "PrivateBin",
+          "image": "privatebin/nginx-fpm-alpine:2.0.5",
+          "port": 8080,
+          "volumes": {
+            "data": "/srv/data"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          }
+        },
+        "browser": {
+          "after_install": "status",
+          "path": "/",
+          "credentials": "none"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 300
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/srv/data"
+          ]
+        }
+      },
+      "category": "files",
+      "tags": [
+        "files"
+      ]
+    },
+    {
+      "id": "mkt:jellyseerr",
+      "title": "Seerr",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Beautiful media discovery and request management",
+      "description": "Seerr is a free and open source software application for managing requests for your media library.\n\nIt integrates with the media server of your choice: Jellyfin, Plex, and Emby. In addition, it integrates with your existing services, such as Sonarr, Radarr.\n\nSeerr scans your libraries at regular intervals, so it knows which items are already available on your server.\nIt also integrates with the popular DVR applications Radarr and Sonarr, and supports activity monitoring within Seerr itself.\n\n🛠️ SET-UP INSTRUCTIONS\n\nDuring initial set-up, you will need to input your Umbrel device's IP address t",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/jellyseerr/icon.svg",
+      "source_url": "https://github.com/seerr-team/seerr",
+      "metadata": {
+        "source_store": "umbrel",
+        "developer": "Seerr Team",
+        "website": "https://docs.seerr.dev/",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/jellyseerr/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/jellyseerr/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/jellyseerr/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "jellyseerr",
+          "name": "Seerr",
+          "image": "ghcr.io/seerr-team/seerr:v3.3.0",
+          "port": 5055,
+          "volumes": {
+            "config": "/app/config"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          }
+        },
+        "browser": {
+          "after_install": "setup_page",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 300
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/app/config"
+          ]
+        }
+      },
+      "category": "media",
+      "tags": [
+        "media"
+      ]
+    },
+    {
+      "id": "mkt:kavita",
+      "title": "Kavita",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Kavita is a fast, feature rich, cross platform reading server",
+      "description": "Kavita is a fast, feature rich, cross platform reading server Point your library at the /media folder (optionally bound to a host folder at install).",
+      "thumbnail_url": "https://raw.githubusercontent.com/runtipi/runtipi-appstore/master/apps/kavita/metadata/logo.jpg",
+      "source_url": "https://github.com/Kareadita/Kavita",
+      "metadata": {
+        "source_store": "runtipi",
+        "developer": "Kareadita"
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "kavita",
+          "name": "Kavita",
+          "image": "jvmilazz0/kavita:0.9.0",
+          "port": 5000,
+          "volumes": {
+            "config": "/kavita/config"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "media_mount": "/media"
+        },
+        "browser": {
+          "after_install": "setup_page",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 256,
+          "disk_mb": 300
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/kavita/config"
+          ]
+        }
+      },
+      "category": "media",
+      "tags": [
+        "media"
+      ]
+    },
+    {
+      "id": "mkt:libretranslate",
+      "title": "LibreTranslate",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Free and Open Source machine translation API",
+      "description": "⚠️ Removal Notice: The LibreTranslate app has been disabled over trademark issues.\n⚠️ This app may take up to 10 minutes or more to become accessible after installation, depending on your hardware and internet connection. LibreTranslate must first download around 10 GB of translation models in the background before the UI becomes available. Please be patient.\n\nLibreTranslate is a free and Open Source Machine Translation API, entirely self-hosted. Unlike other APIs, it doesn't rely on proprietary providers such as Google or Azure to perform translations. Instead, its translation engine is power Downloads translation models on first start — allow a few GB of disk and some time.",
+      "thumbnail_url": "https://getumbrel.github.io/umbrel-apps-gallery/libretranslate/icon.svg",
+      "source_url": "https://github.com/LibreTranslate/LibreTranslate",
+      "metadata": {
+        "source_store": "umbrel",
+        "developer": "LibreTranslate Contributors",
+        "website": "https://libretranslate.com",
+        "gallery": [
+          "https://getumbrel.github.io/umbrel-apps-gallery/libretranslate/1.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/libretranslate/2.jpg",
+          "https://getumbrel.github.io/umbrel-apps-gallery/libretranslate/3.jpg"
+        ]
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "libretranslate",
+          "name": "LibreTranslate",
+          "image": "libretranslate/libretranslate:v1.6.5",
+          "port": 5000,
+          "volumes": {
+            "db": "/app/db",
+            "local": "/home/libretranslate/.local"
+          },
+          "healthcheck": {
+            "path": "/",
+            "timeout_s": 90
+          },
+          "env": {
+            "LT_API_KEYS": "true",
+            "LT_API_KEYS_DB_PATH": "/app/db/api_keys.db",
+            "LT_UPDATE_MODELS": "true"
+          }
+        },
+        "browser": {
+          "after_install": "status",
+          "path": "/",
+          "credentials": "none"
+        },
+        "resources": {
+          "ram_mb": 2048,
+          "disk_mb": 4000
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/app/db",
+            "/home/libretranslate/.local"
+          ]
+        }
+      },
+      "category": "files",
+      "tags": [
+        "ai"
+      ]
+    },
+    {
+      "id": "mkt:open-webui",
+      "title": "Open WebUI",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "A familiar ChatGPT-style interface, wired to your Augmentum models automatically.",
+      "description": "A polished, self-hosted chat UI for large language models. On install, Augmentum points it at your own served models, voices, and transcription — no API keys to paste, no endpoints to configure. Sign in, pick a model, and chat. Your data stays in this container (SQLite); Augmentum handles HTTPS and access.",
+      "thumbnail_url": "https://raw.githubusercontent.com/open-webui/open-webui/main/static/favicon.png",
+      "source_url": "https://github.com/open-webui/open-webui",
+      "metadata": {
+        "developer": "Open WebUI",
+        "website": "https://openwebui.com",
+        "license": "BSD-3-Clause"
+      },
+      "install_via": "service_manifest",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "open-webui",
+          "name": "Open WebUI",
+          "image": "ghcr.io/open-webui/open-webui:v0.10.2",
+          "port": 8080,
+          "volumes": {
+            "data": "/app/backend/data"
+          },
+          "healthcheck": {
+            "path": "/health",
+            "timeout_s": 120
+          },
+          "env": {
+            "AUDIO_TTS_ENGINE": "openai",
+            "AUDIO_STT_ENGINE": "openai",
+            "RAG_EMBEDDING_ENGINE": "openai",
+            "ENABLE_IMAGE_GENERATION": "true",
+            "IMAGE_GENERATION_ENGINE": "openai",
+            "ENABLE_WEB_SEARCH": "true",
+            "WEB_SEARCH_ENGINE": "searxng",
+            "SEARXNG_QUERY_URL": "http://searxng:8080/search?q=<query>",
+            "IMAGE_SIZE": "512x512"
+          }
+        },
+        "browser": {
+          "after_install": "setup_page",
+          "path": "/",
+          "credentials": "user_set"
+        },
+        "resources": {
+          "ram_mb": 1024,
+          "disk_mb": 2000
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/app/backend/data"
+          ]
+        },
+        "integration": {
+          "augmentum_backend": {
+            "base_url_env": [
+              "OPENAI_API_BASE_URL",
+              "AUDIO_TTS_OPENAI_API_BASE_URL",
+              "AUDIO_STT_OPENAI_API_BASE_URL",
+              "RAG_OPENAI_API_BASE_URL",
+              "IMAGES_OPENAI_API_BASE_URL"
+            ],
+            "api_key_env": [
+              "OPENAI_API_KEY",
+              "AUDIO_TTS_OPENAI_API_KEY",
+              "AUDIO_STT_OPENAI_API_KEY",
+              "RAG_OPENAI_API_KEY",
+              "IMAGES_OPENAI_API_KEY"
+            ]
+          }
+        }
+      },
+      "category": "ai",
+      "tags": [
+        "ai",
+        "chat",
+        "llm",
+        "ui",
+        "assistant"
+      ]
+    },
+    {
+      "id": "mkt:vllm-engine",
+      "title": "vLLM Engine",
+      "kind": "service",
+      "publisher": "augmentum",
+      "tagline": "Serve any Hugging Face model architecture the built-in engine cannot.",
+      "description": "A GPU inference engine (vLLM + llama-swap) for model architectures the bundled llama-server cannot load yet - brand-new archs served from their safetensors weights via trust_remote_code, hot-swapped by model name. Optional; installs with a one-time image download. Requires an NVIDIA GPU.",
+      "thumbnail_url": "https://cdn.jsdelivr.net/gh/vllm-project/vllm@main/docs/assets/logos/vllm-logo-only-light.png",
+      "source_url": "https://github.com/vllm-project/vllm",
+      "metadata": {
+        "developer": "vLLM + llama-swap",
+        "website": "https://docs.vllm.ai",
+        "license": "Apache-2.0"
+      },
+      "install_via": "service_staged",
+      "install_payload": {
+        "manifest_version": 1,
+        "service": {
+          "id": "vllm-swap",
+          "name": "vLLM Engine",
+          "image": "augmentumhq/vllm-swap:v0.25.1",
+          "port": 8080,
+          "volumes": {
+            "models": "/root/.cache/huggingface"
+          },
+          "healthcheck": {
+            "path": "/health",
+            "timeout_s": 180
+          }
+        },
+        "browser": {
+          "after_install": "status",
+          "path": "/",
+          "credentials": "none"
+        },
+        "resources": {
+          "gpu": true,
+          "ram_mb": 8000,
+          "disk_mb": 20000
+        },
+        "lifecycle": {
+          "backup_paths": [
+            "/root/.cache/huggingface"
+          ]
+        },
+        "backend": {
+          "key": "vllm",
+          "internal_port": 8080,
+          "path": "/v1", "mount_model_dirs": true
+        }
+      },
+      "category": "providers",
+      "tags": [
+        "engine",
+        "gpu",
+        "inference",
+        "safetensors"
+      ]
+    },
+
+    {
+      "_comment": [
+        "ADD-ONS (kind: 'addon', install_via: 'addon_build').",
+        "An add-on is not a service: it is a capability Augmentum gains,",
+        "not a product you open. No port, no healthcheck, no long-running",
+        "container -- the image is inventory the runtime spawns per session.",
+        "These entries carry PRESENTATION ONLY. Every buildable fact (image",
+        "tag, Dockerfile, pinned build args, dependencies, measured disk and",
+        "build time, license notice) lives in augmentum/addons/catalog.py and",
+        "is merged in by discover_routes, because a recipe and the code that",
+        "builds it must version together. The listing points at an addon_id."
+      ],
+      "id": "mkt:addon-game-stream-emulator",
+      "title": "Console emulation",
+      "kind": "addon",
+      "publisher": "augmentum",
+      "tagline": "Play GameCube, Wii and PS2 games, streamed to any device.",
+      "description": "Adds console emulation to your Library. Augmentum builds Dolphin and PCSX2 on your machine, then streams them over WebRTC — so a game running on your tower is playable on a phone, tablet or TV with a controller, and picks up where you left off. Memory cards, save states and NAND persist per profile.\n\nThis is an add-on, not an app: nothing runs until you launch a title, and nothing appears in your browser tabs. Installing builds the image and keeps it available; uninstalling deletes the build and removes console emulation from Augmentum.\n\nNo games and no BIOS are included — you supply your own.",
+      "thumbnail_url": "/ui/icons/addons/console-emulation.svg",
+      "source_url": "https://dolphin-emu.org/",
+      "metadata": {
+        "developer": "Dolphin Emulator Project, PCSX2 Team",
+        "license": "GPLv2 (Dolphin), GPLv3 (PCSX2) — built locally, not redistributed",
+        "gallery": [
+          "/ui/icons/addons/console-emulation.svg"
+        ]
+      },
+      "install_via": "addon_build",
+      "install_payload": {
+        "addon_id": "game-stream-emulator"
+      },
+      "category": "addons",
+      "tags": [
+        "games",
+        "emulation",
+        "streaming",
+        "library"
+      ]
+    },
+
+    {
+      "id": "mkt:addon-game-stream-luanti",
+      "title": "Luanti worlds",
+      "kind": "addon",
+      "publisher": "augmentum",
+      "tagline": "A streamed voxel sandbox with persistent per-profile worlds.",
+      "description": "Adds Luanti (the open-source voxel sandbox formerly called Minetest) to your Library as a streamed title. Worlds live on your server and survive container recycling, so you can build from a desktop and come back on a tablet.\n\nThis is an add-on, not an app: nothing runs until you launch a world. Installing builds the image and keeps it available; uninstalling deletes the build and removes Luanti from Augmentum. Your saved worlds are kept.",
+      "thumbnail_url": "/ui/icons/addons/luanti-worlds.svg",
+      "source_url": "https://www.luanti.org/",
+      "metadata": {
+        "developer": "Luanti contributors",
+        "license": "LGPLv2.1 — built locally",
+        "gallery": [
+          "/ui/icons/addons/luanti-worlds.svg"
+        ]
+      },
+      "install_via": "addon_build",
+      "install_payload": {
+        "addon_id": "game-stream-luanti"
+      },
+      "category": "addons",
+      "tags": [
+        "games",
+        "sandbox",
+        "streaming",
+        "library"
+      ]
+    },
+
+    {
+      "id": "mkt:addon-stream-browser",
+      "title": "Cast to TV",
+      "kind": "addon",
+      "publisher": "augmentum",
+      "tagline": "Send Augmentum's own surfaces to a TV or receiver.",
+      "description": "Adds casting of Augmentum's web surfaces — the 3D avatar, the notebook, the comic reader — to any receiver on your network. A headless browser renders the surface on your server and streams the result, so the receiving screen needs nothing but a browser.\n\nThis is an add-on, not an app: a renderer starts when you cast and stops when you're done. Installing builds the image and keeps it available; uninstalling deletes the build and removes casting of web surfaces from Augmentum.",
+      "thumbnail_url": "/ui/icons/addons/cast-to-tv.svg",
+      "source_url": "https://github.com/selkies-project/selkies",
+      "metadata": {
+        "developer": "Augmentum, Selkies project",
+        "license": "Includes Google Chrome (proprietary) — downloaded from Google at build time under your acceptance of its terms",
+        "gallery": [
+          "/ui/icons/addons/cast-to-tv.svg"
+        ]
+      },
+      "install_via": "addon_build",
+      "install_payload": {
+        "addon_id": "stream-browser"
+      },
+      "category": "addons",
+      "tags": [
+        "cast",
+        "media",
+        "streaming"
+      ]
+    }
+  ]
+}

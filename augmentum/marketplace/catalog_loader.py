@@ -55,7 +55,18 @@ class CatalogLoadError(Exception):
     asked for strict loading."""
 
 
-_DEFAULT_CATALOG_PATH = Path("data/marketplace/listings.json")
+# The curated catalog ships BAKED inside the package (augmentum/marketplace/
+# curated_listings.json), so every install — pull-only or checkout — populates
+# Discover out of the box. (It previously read data/marketplace/listings.json,
+# which is gitignored runtime data + bind-mounted empty on a fresh install, so
+# Discover showed only the 8 baked providers.) An operator can still override by
+# dropping their own data/marketplace/listings.json (bind-mounted); it wins when
+# present.
+_BAKED_CATALOG_PATH = Path(__file__).parent / "curated_listings.json"
+_OPERATOR_CATALOG_PATH = Path("data/marketplace/listings.json")
+_DEFAULT_CATALOG_PATH = (
+    _OPERATOR_CATALOG_PATH if _OPERATOR_CATALOG_PATH.is_file() else _BAKED_CATALOG_PATH
+)
 
 
 async def load_catalog_into_store(
