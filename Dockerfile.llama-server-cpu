@@ -16,7 +16,7 @@
 
 # Base image pinned to digest — see Dockerfile header for the rotation
 # procedure (scripts/upgrade_base_images.sh).
-FROM ubuntu:22.04@sha256:4f838adc7181d9039ac795a7d0aba05a9bd9ecd480d294483169c5def983b64d AS builder
+FROM ubuntu:25.10@sha256:7cc5e35f6567ee8c66d2abb4aab0fd866669e6207c237c3a8f0947a5c7f17092 AS builder
 
 ARG LLAMA_CPP_VERSION=b9181
 ENV DEBIAN_FRONTEND=noninteractive
@@ -51,7 +51,7 @@ RUN cmake -B build \
 
 # Final stage — minimal runtime, just the binary + libgomp (OpenMP runtime
 # llama.cpp links against for threading). Same digest pin as builder stage.
-FROM ubuntu:22.04@sha256:4f838adc7181d9039ac795a7d0aba05a9bd9ecd480d294483169c5def983b64d
+FROM ubuntu:25.10@sha256:7cc5e35f6567ee8c66d2abb4aab0fd866669e6207c237c3a8f0947a5c7f17092
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libgomp1 libcurl4 ca-certificates && \
